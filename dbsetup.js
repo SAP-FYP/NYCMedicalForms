@@ -72,6 +72,7 @@ const CREATE_TABLE_SQL = `
     formStatus VARCHAR(50) NOT NULL,
     examinationDate DATE NOT NULL,
     email VARCHAR(255) NOT NULL,
+    review VARCHAR(255) NOT NULL,
     PRIMARY KEY (studentNRIC)
     );
 
