@@ -11,6 +11,8 @@ const CREATE_TABLE_SQL = `
     contactNo INT NOT NULL,
     groupID VARCHAR(255) NOT NULL,
     created_at DATETIME NOT NULL,
+    disabled BOOLEAN NOT NULL DEFAULT FALSE,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     PRIMARY KEY (email)
     );
 
