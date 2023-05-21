@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./index.css">
+    <link href="https://fonts.cdnfonts.com/css/myriad-pro" rel="stylesheet">
+    <!-- Font Awsome CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
+    <!-- Axios Library-->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <title>Document</title>
+</head>
+
+<body>
+    <section class="container-fluid w-100 wrapper">
+        <div class="row">
+            <div class="col-1 pl-2">
+                <ul class="sideMenuBar">
+                    <li class="expandMenu nav-item">
+                        <svg id="openMenuContainer" class="align-self-center openMenu"
+                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48.91 48.91">
+                            <g>
+                                <rect id="openMenuIcon" x="1" y="1" width="46.91" height="46.91" rx="8.6" ry="8.6" />
+                                <rect x="30.07" y="15.91" width="3.36" height="17.09" rx="1.63" ry="1.63" />
+                                <path
+                                    d="M15.88,13.79c.49-.02,.9,.15,1.24,.49,3,2.99,6,5.98,8.99,8.98,.71,.71,.69,1.69-.02,2.4-2.98,2.99-5.96,5.97-8.96,8.94-.7,.7-1.75,.7-2.41,.04-.67-.67-.66-1.73,.06-2.45,2.44-2.45,4.89-4.9,7.36-7.33,.36-.35,.31-.53-.02-.85-2.45-2.42-4.89-4.86-7.32-7.29-.85-.85-.73-2.12,.23-2.71,.26-.16,.54-.24,.85-.23Z" />
+                            </g>
+                        </svg>
+                    </li>
+                    <div class="navIconContainer">
+                        <li class="d-flex align-items-center nav-item">
+                            <svg class="navSVG" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30.34 30.34">
+                                <g>
+                                    <path class="navIcon disabledIcon"
+                                        d="M29.99,7.21c-.47-1.73-1.35-3.23-2.65-4.47C25.67,1.14,23.67,.24,21.35,.04c-.05,0-.09-.03-.14-.04h-1.3c-.25,.04-.5,.08-.76,.11-2.2,.32-4.1,1.26-5.6,2.87-2.55,2.72-3.31,5.93-2.34,9.53,.05,.2,.02,.32-.12,.46-1.19,1.18-2.38,2.37-3.56,3.56-2.38,2.38-4.76,4.76-7.14,7.14C.13,23.92,0,24.19,0,24.54c0,1.6,0,3.2,0,4.8,0,.64,.35,1,.99,1,1.61,0,3.22,0,4.83,0,.32,0,.57-.1,.79-.33,.37-.37,.74-.74,1.11-1.11,.28-.27,.38-.59,.32-.97-.04-.31-.06-.63-.11-.94-.03-.2,0-.28,.23-.29,.47-.02,.94-.07,1.41-.13,.71-.08,.97-.36,1.03-1.06,.04-.47,.09-.94,.12-1.42,.01-.17,.06-.22,.24-.19,.34,.05,.69,.08,1.03,.12,.65,.08,1.1-.3,1.1-.95,0-.45,0-.91,0-1.36,0-.17,.05-.22,.22-.21,.41,.01,.83,0,1.24,0,.36,.01,.65-.11,.9-.37,.65-.65,1.31-1.28,1.95-1.94,.16-.17,.3-.19,.52-.13,2.26,.65,4.49,.56,6.65-.41,2.81-1.27,4.59-3.43,5.43-6.38,.17-.61,.23-1.24,.34-1.86v-1.3c-.11-.64-.17-1.28-.35-1.91Zm-6.95,2.7c-1.49-.04-2.65-1.24-2.61-2.69,.03-1.49,1.26-2.67,2.71-2.62,1.49,.05,2.64,1.26,2.6,2.7-.05,1.49-1.25,2.65-2.7,2.61Z" />
+                                </g>
+                            </svg>
+                            <span class="navIconText disabledText"></span>
+                        </li>
+                        <li class="d-flex align-items-center nav-item">
+                            <svg class="navSVG" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28.53 33.69">
+                                <g>
+                                    <g>
+                                        <ellipse class="navIcon disabledIcon" cx="13.91" cy="8.77" rx="9.21" ry="8.77" />
+                                        <path class="navIcon disabledIcon"
+                                            d="M14.45,20.28h-.36c-7.78,0-14.09,6-14.09,13.41H0s28.53,0,28.53,0h0c0-7.4-6.31-13.41-14.09-13.41Z" />
+                                    </g>
+                                </g>
+                            </svg>
+                            <span class="navIconText disabledText"></span>
+                        </li>
+                        <li class="d-flex align-items-center nav-item">
+                            <svg class="navSVG" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 27.54 35.05">
+                                <g>
+                                    <path class="navIcon"
+                                        d="M0,17.51c0-5.33,0-10.66,0-15.99C0,.47,.46,0,1.49,0,7.84,0,14.19,0,20.53,0c.52,0,.92,.17,1.28,.54,1.71,1.72,3.42,3.44,5.14,5.14,.4,.39,.58,.82,.58,1.38-.01,8.82,0,17.65,0,26.47,0,1.06-.45,1.52-1.53,1.52-8.16,0-16.32,0-24.48,0-1.08,0-1.53-.45-1.53-1.55,0-5.33,0-10.66,0-15.99Zm13.81-1.23c-2.05,0-4.09,0-6.14,0-.84,0-1.4,.5-1.41,1.24,0,.74,.56,1.26,1.39,1.26,4.08,0,8.16,0,12.24,0,.83,0,1.39-.52,1.39-1.26,0-.74-.57-1.24-1.41-1.24-2.02,0-4.04,0-6.06,0Zm-1.27,6.26c-1.62,0-3.23,0-4.85,0-.86,0-1.43,.51-1.43,1.26,0,.74,.58,1.24,1.41,1.24,3.23,0,6.47,0,9.7,0,.83,0,1.4-.51,1.41-1.24,0-.75-.57-1.26-1.43-1.26-1.6,0-3.21,0-4.81,0Zm-1.27-12.52c-1.21,0-2.42,0-3.64,0-.8,0-1.36,.51-1.37,1.24,0,.73,.56,1.26,1.35,1.26,2.44,0,4.87,0,7.31,0,.79,0,1.35-.53,1.35-1.26,0-.72-.57-1.24-1.37-1.24-1.21,0-2.42,0-3.64,0Z" />
+                                </g>
+                            </svg>
+                            <span class="navIconText"></span>
+                        </li>
+                    </div>
+                    <li class="expandMenu signOutContainer">
+                        <a href="#">
+                        <svg id="signOutSVG" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48.91 48.91">
+                            <g>
+                                <rect class="signOutIcon x=" 1" y="1" width="46.91" height="46.91" rx="8.6" ry="8.6" />
+
+                                <path
+                                    d="M22,40.58c-.82-.17-1.5-.64-2.21-1.05-1.75-1.01-3.5-2.02-5.25-3.03-1.09-.63-1.63-1.57-1.63-2.81,0-6.2,0-12.41,0-18.61,0-1.88,1.36-3.24,3.24-3.24,4.6,0,9.21,0,13.81,0,1.88,0,3.24,1.35,3.25,3.23,0,1.24,0,2.49,0,3.73,0,.68-.43,1.16-1.03,1.16-.6,0-1.03-.47-1.04-1.15,0-1.24,0-2.49,0-3.73,0-.74-.42-1.18-1.16-1.18-3.96,0-7.92,0-11.88,0-.07,0-.15-.03-.23,.05,.43,.25,.84,.49,1.26,.73,1.56,.9,3.12,1.81,4.69,2.7,1.16,.66,1.72,1.63,1.71,2.96-.01,4.42,0,8.83-.01,13.25,0,.28,.06,.36,.35,.36,1.34-.02,2.68,0,4.01,0,.82,0,1.24-.42,1.25-1.24,0-1.07,0-2.13,0-3.2,0-.67,.42-1.13,1.02-1.14,.61,0,1.05,.46,1.05,1.14,0,1.09,0,2.19,0,3.28-.01,1.8-1.28,3.14-3.08,3.2-1.42,.04-2.84,.02-4.27,0-.25,0-.34,.06-.33,.32,.01,.54,.06,1.09-.03,1.63-.22,1.31-1.18,2.29-2.49,2.57-.06,.01-.13,0-.18,.06h-.84Z" />
+                                <path
+                                    d="M35.04,22.82c-.34-.33-.68-.66-1.02-1-.46-.46-.49-1.1-.06-1.52,.42-.42,1.05-.4,1.5,.06,.94,.93,1.87,1.86,2.8,2.8,.47,.47,.46,1.07,0,1.54-.93,.94-1.86,1.87-2.8,2.8-.45,.45-1.08,.46-1.5,.04-.41-.42-.39-1.05,.05-1.5,.32-.33,.65-.65,.97-.98,.01-.01,.02-.03,.04-.06-.1-.08-.21-.04-.31-.04-2.34,0-4.68,0-7.02,0-.18,0-.36,0-.53-.06-.48-.16-.75-.64-.67-1.16,.08-.48,.5-.83,1.01-.84,1.86,0,3.72,0,5.59,0,.64,0,1.28,0,1.93,0,.01-.02,.02-.05,.03-.07Z" />
+                            </g>
+                        </svg>
+                        <span class="signOutText"></span>
+                        </a>
+                        
+                    </li>
+                </ul>
+            </div>
+            <div class="col-11 p-0 bgOverlay">
+                <div class="overviewContainer">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="obsLogoContainer">
+                            <img src="../assets/Logo.png" alt="logo" class="py-2 h-auto" id="obsLogo">
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <h2 class="profileText my-2">Tim Tam Man</h2>
+                            <svg class="ms-3 h-auto" id="profileIconContainer" xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 69.4 69.4">
+                                <g id="Layer_44">
+                                    <circle id="profileCircle" cx="34.7" cy="34.7" r="34.02" />
+                                    <path id="profileIcon"
+                                        d="M35.87,38.86h-.44c-9.42,0-17.06,7.27-17.06,16.24h0s34.56,0,34.56,0h0c0-8.97-7.64-16.24-17.06-16.24Z" />
+                                    <path id="profileIcon"
+                                        d="M35.21,14.3c-6.16,0-11.16,4.75-11.16,10.62s4.99,10.62,11.16,10.62,11.16-4.75,11.16-10.62-4.99-10.62-11.16-10.62Z" />
+                                </g>
+                            </svg>
+                        </div>
+                    </div>
+                    <h2 class="overviewText">Overview</h2>
+                    <div class="d-flex flex-wrap justify-content-center">
+                        <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePending">
+                            <div>
+                                <h2 class="text-center m-auto p-0">Pending</h2>
+                                <h1 class="text-center m-auto p-0">2</h1>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-wrap align-items-center justify-content-center rectangleApproved">
+                            <div>
+                                <h2 class="text-center m-auto p-0">Approved</h2>
+                                <h1 class="text-center m-auto p-0">2</h1>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-wrap align-items-center justify-content-center rectangleRejected">
+                            <div>
+                                <h2 class="text-center m-auto p-0">Rejected</h2>
+                                <h1 class="text-center m-auto p-0">2</h1>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-outline mb-4 m-0 w-100">
+                        <div class="input-group d-flex flex-wrap w-100 px-3 mx-auto my-0" id="searchInputContainer">
+                            <input type="search" class="form-control bg-white" id="searchInput"
+                                placeholder="Search by NRIC, Name, Class, School" aria-label="Search" />
+                            <button class="btn btn-outline-secondary bg-white searchIconContainer" type="button">
+                                <i class="fa fa-search searchIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <svg id="filterContainer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48.91 48.91">
+                            <g>
+                                <rect id="filterIconContainer" x="1" y="1" width="46.91" height="46.91" rx="8.6"
+                                    ry="8.6" />
+                                <g id="filterIcon">
+                                    <path
+                                        d="M15.34,23.15c.57,0,1.13-.01,1.7,0,.27,0,.41-.08,.53-.33,.69-1.46,2.07-2.28,3.75-2.14,1.55,.13,2.64,.99,3.2,2.43,.73,1.86-.19,4-2,4.78-1.87,.81-4.03,.05-4.92-1.77-.15-.3-.31-.41-.64-.4-1.1,.02-2.21,0-3.31,0-.31,0-.61-.04-.87-.21-.43-.27-.68-.8-.59-1.28,.09-.53,.49-.95,1.01-1.05,.59-.11,1.19-.03,1.78-.05,.12,0,.23,0,.35,0Z" />
+                                    <path
+                                        d="M36.63,34.5c-.61,0-1.21,0-1.82,0-.21,0-.3,.09-.39,.27-.69,1.43-1.85,2.2-3.41,2.23-1.91,.03-3.43-1.32-3.75-3.09-.44-2.4,1.4-4.57,3.84-4.48,1.54,.06,2.65,.84,3.32,2.23,.1,.21,.21,.29,.44,.28,1.19-.01,2.39,0,3.58,0,.77,0,1.34,.54,1.34,1.25,0,.74-.56,1.29-1.33,1.3-.61,0-1.21,0-1.82,0Z" />
+                                    <path
+                                        d="M39.78,15.68c0,2.08-1.7,3.79-3.78,3.8-2.07,0-3.8-1.71-3.81-3.78,0-2.06,1.73-3.81,3.79-3.81,2.07,0,3.8,1.72,3.8,3.79Z" />
+                                    <path
+                                        d="M20.99,16.96c-2.51,0-5.02,0-7.54,0-.94,0-1.54-.94-1.16-1.8,.21-.47,.6-.71,1.1-.76,.08,0,.16,0,.23,0,4.9,0,9.79,0,14.69,0,.39,0,.74,.08,1.03,.35,.38,.36,.52,.92,.33,1.4-.19,.49-.65,.81-1.18,.81-2.5,0-5,0-7.51,0Z" />
+                                    <path
+                                        d="M33.49,25.75c-1.61,0-3.22,0-4.84,0-.45,0-.85-.11-1.15-.47-.61-.73-.25-1.85,.68-2.06,.15-.03,.31-.05,.46-.05,3.22,0,6.45,0,9.67,0,.47,0,.89,.12,1.19,.52,.3,.41,.37,.86,.14,1.33-.25,.51-.69,.74-1.23,.74-.87,.01-1.74,0-2.61,0-.77,0-1.54,0-2.32,0Z" />
+                                    <path
+                                        d="M18.47,31.94c1.68,0,3.36,0,5.04,0,.58,0,1.05,.38,1.2,.94,.15,.53-.08,1.11-.54,1.4-.22,.14-.46,.21-.72,.21-3.32,0-6.64,0-9.97,0-.75,0-1.31-.58-1.31-1.3,0-.7,.57-1.25,1.31-1.25,1.66,0,3.32,0,4.98,0Z" />
+                                </g>
+                            </g>
+                        </svg>
+                    </div>
+
+                </div>
+                <div class="bg-white rounded overflow-auto tableContainer">
+                    <table>
+                        <thead>
+                            <th>
+                                <svg id="checkBoxTop" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20.42 20.42">
+                                    <g>
+                                        <rect x=".5" y=".5" width="19.42" height="19.42" rx="2.11" ry="2.11" />
+                                    </g>
+                                </svg>
+                            </th>
+                            <th>NRIC</th>
+                            <th>NAME</th>
+                            <th>CLASS</th>
+                            <th>SCHOOL</th>
+                            <th>ELIGIBILITY</th>
+                            <th>COURSE DATE</th>
+                            <th>STATUS</th>
+                            <th></th>
+                        </thead>
+                        <tbody id="getAllForms">
+                            <!-- Row 1 -->
+                            <tr data-bs-toggle="modal" data-bs-target="#staticBackdrop1">
+                                <td><svg id="checkBox" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20.42 20.42">
+                                        <g>
+                                            <rect class="cls-1" x=".5" y=".5" width="19.42" height="19.42" rx="2.11"
+                                                ry="2.11" />
+                                        </g>
+                                    </svg></td>
+                                <td>T0998987H</td>
+                                <td>Isaci Leong Cho Jing</td>
+                                <td>4E2</td>
+                                <td>Kent Ridge Secondary School</td>
+                                <td>Fit</td>
+                                <td>04/05/2023</td>
+                                <td>
+                                    <div class="pillPending">Pending</div>
+                                </td>
+                                <td><svg class="tripleDot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30.24 8.29">
+                                        <g>
+                                            <ellipse class="tripleDot" cx="4.36" cy="4.15" rx="4.36" ry="4.15" />
+                                            <ellipse class="tripleDot" cx="15.12" cy="4.15" rx="4.36" ry="4.15" />
+                                            <ellipse class="tripleDot" cx="25.88" cy="4.15" rx="4.36" ry="4.15" />
+                                        </g>
+                                    </svg>
+                                </td>
+                            </tr>
+                            <!-- Row 2 -->
+                            <tr data-bs-toggle="modal" data-bs-target="#staticBackdropAppr">
+                                <td><svg id="checkBox" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20.42 20.42">
+                                        <g>
+                                            <rect class="cls-1" x=".5" y=".5" width="19.42" height="19.42" rx="2.11"
+                                                ry="2.11" />
+                                        </g>
+                                    </svg></td>
+                                <td>T0998987H</td>
+                                <td>Isaci Leong Cho Jing</td>
+                                <td>4E2</td>
+                                <td>Kent Ridge Secondary School</td>
+                                <td>Fit</td>
+                                <td>04/05/2023</td>
+                                <td>
+                                    <div class="pillApproved">Approved</div>
+                                </td>
+                                <td><svg class="tripleDot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30.24 8.29">
+                                        <g id="user_page_v2">
+                                            <g>
+                                                <ellipse class="tripleDot" cx="4.36" cy="4.15" rx="4.36" ry="4.15" />
+                                                <ellipse class="tripleDot" cx="15.12" cy="4.15" rx="4.36" ry="4.15" />
+                                                <ellipse class="tripleDot" cx="25.88" cy="4.15" rx="4.36" ry="4.15" />
+                                            </g>
+                                        </g>
+                                    </svg>
+                                </td>
+                            </tr>
+                            <!-- Row 3 -->
+                            <tr data-bs-toggle="modal" data-bs-target="#staticBackdropRej">
+                                <td><svg id="checkBox" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20.42 20.42">
+                                        <g>
+                                            <rect class="cls-1" x=".5" y=".5" width="19.42" height="19.42" rx="2.11"
+                                                ry="2.11" />
+                                        </g>
+                                    </svg></td>
+                                <td>T0998987H</td>
+                                <td>Isaci Leong Cho Jing</td>
+                                <td>4E2</td>
+                                <td>Kent Ridge Secondary School</td>
+                                <td>Fit</td>
+                                <td>04/05/2023</td>
+                                <td>
+                                    <div class="pillRejected">Rejected</div>
+                                </td>
+                                <td><svg class="tripleDot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30.24 8.29">
+                                        <g id="user_page_v2">
+                                            <g>
+                                                <ellipse class="tripleDot" cx="4.36" cy="4.15" rx="4.36" ry="4.15" />
+                                                <ellipse class="tripleDot" cx="15.12" cy="4.15" rx="4.36" ry="4.15" />
+                                                <ellipse class="tripleDot" cx="25.88" cy="4.15" rx="4.36" ry="4.15" />
+                                            </g>
+                                        </g>
+                                    </svg>
+                                </td>
+                            </tr>
+                            <!-- Row 4 -->
+                            <tr data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                <td><svg id="checkBox" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20.42 20.42">
+                                        <g>
+                                            <rect class="cls-1" x=".5" y=".5" width="19.42" height="19.42" rx="2.11"
+                                                ry="2.11" />
+                                        </g>
+                                    </svg></td>
+                                <td>T0998987H</td>
+                                <td>Isaci Leong Cho Jing</td>
+                                <td>4E2</td>
+                                <td>Kent Ridge Secondary School</td>
+                                <td>Fit</td>
+                                <td>04/05/2023</td>
+                                <td>
+                                    <div class="pillParent">Pending Parents</div>
+                                </td>
+                                <td><svg class="tripleDot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30.24 8.29">
+                                        <g id="user_page_v2">
+                                            <g>
+                                                <ellipse class="tripleDot" cx="4.36" cy="4.15" rx="4.36" ry="4.15" />
+                                                <ellipse class="tripleDot" cx="15.12" cy="4.15" rx="4.36" ry="4.15" />
+                                                <ellipse class="tripleDot" cx="25.88" cy="4.15" rx="4.36" ry="4.15" />
+                                            </g>
+                                        </g>
+                                    </svg>
+                                </td>
+                            </tr>
+                            <!-- Row 5 -->
+                            <tr data-bs-toggle="modal" data-bs-target="#staticBackdrop2">
+                                <td><svg id="checkBox" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20.42 20.42">
+                                        <g>
+                                            <rect class="cls-1" x=".5" y=".5" width="19.42" height="19.42" rx="2.11"
+                                                ry="2.11" />
+                                        </g>
+                                    </svg></td>
+                                <td>T0998987H</td>
+                                <td>Isaci Leong Cho Jing</td>
+                                <td>4E2</td>
+                                <td>Kent Ridge Secondary School</td>
+                                <td>Fit</td>
+                                <td>04/05/2023</td>
+                                <td>
+                                    <div class="pillPending">Pending</div>
+                                </td>
+                                <td><svg class="tripleDot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30.24 8.29">
+                                        <g>
+                                            <ellipse class="tripleDot" cx="4.36" cy="4.15" rx="4.36" ry="4.15" />
+                                            <ellipse class="tripleDot" cx="15.12" cy="4.15" rx="4.36" ry="4.15" />
+                                            <ellipse class="tripleDot" cx="25.88" cy="4.15" rx="4.36" ry="4.15" />
+                                        </g>
+                                    </svg>
+                                </td>
+                            </tr>
+                            <!-- Row 6 -->
+                            <tr data-bs-toggle="modal" data-bs-target="#staticBackdrop3">
+                                <td><svg id="checkBox" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20.42 20.42">
+                                        <g>
+                                            <rect class="cls-1" x=".5" y=".5" width="19.42" height="19.42" rx="2.11"
+                                                ry="2.11" />
+                                        </g>
+                                    </svg></td>
+                                <td>T0998987H</td>
+                                <td>Isaci Leong Cho Jing</td>
+                                <td>4E2</td>
+                                <td>Kent Ridge Secondary School</td>
+                                <td>Fit</td>
+                                <td>04/05/2023</td>
+                                <td>
+                                    <div class="pillPending">Pending</div>
+                                </td>
+                                <td><svg class="tripleDot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30.24 8.29">
+                                        <g>
+                                            <ellipse class="tripleDot" cx="4.36" cy="4.15" rx="4.36" ry="4.15" />
+                                            <ellipse class="tripleDot" cx="15.12" cy="4.15" rx="4.36" ry="4.15" />
+                                            <ellipse class="tripleDot" cx="25.88" cy="4.15" rx="4.36" ry="4.15" />
+                                        </g>
+                                    </svg>
+                                </td>
+                            </tr>
+                            <!-- Row 7 -->
+                            <tr data-bs-toggle="modal" data-bs-target="#staticBackdrop4">
+                                <td><svg id="checkBox" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20.42 20.42">
+                                        <g>
+                                            <rect class="cls-1" x=".5" y=".5" width="19.42" height="19.42" rx="2.11"
+                                                ry="2.11" />
+                                        </g>
+                                    </svg></td>
+                                <td>T0998987H</td>
+                                <td>Isaci Leong Cho Jing</td>
+                                <td>4E2</td>
+                                <td>Kent Ridge Secondary School</td>
+                                <td>Fit</td>
+                                <td>04/05/2023</td>
+                                <td>
+                                    <div class="pillPending">Pending</div>
+                                </td>
+                                <td><svg class="tripleDot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30.24 8.29">
+                                        <g>
+                                            <ellipse class="tripleDot" cx="4.36" cy="4.15" rx="4.36" ry="4.15" />
+                                            <ellipse class="tripleDot" cx="15.12" cy="4.15" rx="4.36" ry="4.15" />
+                                            <ellipse class="tripleDot" cx="25.88" cy="4.15" rx="4.36" ry="4.15" />
+                                        </g>
+                                    </svg>
+                                </td>
+                            </tr>
+                            <!-- Row 8 -->
+                            <tr data-bs-toggle="modal" data-bs-target="#staticBackdrop5">
+                                <td><svg id="checkBox" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20.42 20.42">
+                                        <g>
+                                            <rect class="cls-1" x=".5" y=".5" width="19.42" height="19.42" rx="2.11"
+                                                ry="2.11" />
+                                        </g>
+                                    </svg></td>
+                                <td>T0998987H</td>
+                                <td>Isaci Leong Cho Jing</td>
+                                <td>4E2</td>
+                                <td>Kent Ridge Secondary School</td>
+                                <td>Fit</td>
+                                <td>04/05/2023</td>
+                                <td>
+                                    <div class="pillPending">Pending</div>
+                                </td>
+                                <td><svg class="tripleDot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30.24 8.29">
+                                        <g>
+                                            <ellipse class="tripleDot" cx="4.36" cy="4.15" rx="4.36" ry="4.15" />
+                                            <ellipse class="tripleDot" cx="15.12" cy="4.15" rx="4.36" ry="4.15" />
+                                            <ellipse class="tripleDot" cx="25.88" cy="4.15" rx="4.36" ry="4.15" />
+                                        </g>
+                                    </svg>
+                                </td>
+                            </tr>
+                            <!-- Row 9 -->
+                            <tr data-bs-toggle="modal" data-bs-target="#staticBackdrop6">
+                                <td><svg id="checkBox" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20.42 20.42">
+                                        <g>
+                                            <rect class="cls-1" x=".5" y=".5" width="19.42" height="19.42" rx="2.11"
+                                                ry="2.11" />
+                                        </g>
+                                    </svg></td>
+                                <td>T0998987H</td>
+                                <td>Isaci Leong Cho Jing</td>
+                                <td>4E2</td>
+                                <td>Kent Ridge Secondary School</td>
+                                <td>Fit</td>
+                                <td>04/05/2023</td>
+                                <td>
+                                    <div class="pillPending">Pending</div>
+                                </td>
+                                <td><svg class="tripleDot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30.24 8.29">
+                                        <g>
+                                            <ellipse class="tripleDot" cx="4.36" cy="4.15" rx="4.36" ry="4.15" />
+                                            <ellipse class="tripleDot" cx="15.12" cy="4.15" rx="4.36" ry="4.15" />
+                                            <ellipse class="tripleDot" cx="25.88" cy="4.15" rx="4.36" ry="4.15" />
+                                        </g>
+                                    </svg>
+                                </td>
+                            </tr>
+                            <!-- Row 10 -->
+                            <tr data-bs-toggle="modal" data-bs-target="#staticBackdrop7">
+                                <td><svg id="checkBox" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20.42 20.42">
+                                        <g>
+                                            <rect class="cls-1" x=".5" y=".5" width="19.42" height="19.42" rx="2.11"
+                                                ry="2.11" />
+                                        </g>
+                                    </svg></td>
+                                <td>T0998987H</td>
+                                <td>Isaci Leong Cho Jing</td>
+                                <td>4E2</td>
+                                <td>Kent Ridge Secondary School</td>
+                                <td>Fit</td>
+                                <td>04/05/2023</td>
+                                <td>
+                                    <div class="pillPending">Pending</div>
+                                </td>
+                                <td><svg class="tripleDot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30.24 8.29">
+                                        <g id="user_page_v2">
+                                            <g>
+                                                <ellipse class="tripleDot" cx="4.36" cy="4.15" rx="4.36" ry="4.15" />
+                                                <ellipse class="tripleDot" cx="15.12" cy="4.15" rx="4.36" ry="4.15" />
+                                                <ellipse class="tripleDot" cx="25.88" cy="4.15" rx="4.36" ry="4.15" />
+                                            </g>
+                                        </g>
+                                    </svg>
+                                </td>
+                            </tr>
+                            <!-- Row 11 -->
+                            <tr data-bs-toggle="modal" data-bs-target="#staticBackdrop8">
+                                <td><svg id="checkBox" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20.42 20.42">
+                                        <g>
+                                            <rect class="cls-1" x=".5" y=".5" width="19.42" height="19.42" rx="2.11"
+                                                ry="2.11" />
+                                        </g>
+                                    </svg></td>
+                                <td>T0998987H</td>
+                                <td>Isaci Leong Cho Jing</td>
+                                <td>4E2</td>
+                                <td>Kent Ridge Secondary School</td>
+                                <td>Fit</td>
+                                <td>04/05/2023</td>
+                                <td>
+                                    <div class="pillPending">Pending</div>
+                                </td>
+                                <td><svg class="tripleDot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30.24 8.29">
+                                        <g id="user_page_v2">
+                                            <g>
+                                                <ellipse class="tripleDot" cx="4.36" cy="4.15" rx="4.36" ry="4.15" />
+                                                <ellipse class="tripleDot" cx="15.12" cy="4.15" rx="4.36" ry="4.15" />
+                                                <ellipse class="tripleDot" cx="25.88" cy="4.15" rx="4.36" ry="4.15" />
+                                            </g>
+                                        </g>
+                                    </svg>
+                                </td>
+                            </tr>
+                            <!-- Row 12 -->
+                            <tr data-bs-toggle="modal" data-bs-target="#staticBackdrop9">
+                                <td><svg id="checkBox" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20.42 20.42">
+                                        <g>
+                                            <rect class="cls-1" x=".5" y=".5" width="19.42" height="19.42" rx="2.11"
+                                                ry="2.11" />
+                                        </g>
+                                    </svg></td>
+                                <td>T0998987H</td>
+                                <td>Isaci Leong Cho Jing</td>
+                                <td>4E2</td>
+                                <td>Kent Ridge Secondary School</td>
+                                <td>Fit</td>
+                                <td>04/05/2023</td>
+                                <td>
+                                    <div class="pillPending">Pending</div>
+                                </td>
+                                <td><svg class="tripleDot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30.24 8.29">
+                                        <g id="user_page_v2">
+                                            <g>
+                                                <ellipse class="tripleDot" cx="4.36" cy="4.15" rx="4.36" ry="4.15" />
+                                                <ellipse class="tripleDot" cx="15.12" cy="4.15" rx="4.36" ry="4.15" />
+                                                <ellipse class="tripleDot" cx="25.88" cy="4.15" rx="4.36" ry="4.15" />
+                                            </g>
+                                        </g>
+                                    </svg>
+                                </td>
+                            </tr>
+                            <!-- Row 13 -->
+                            <tr data-bs-toggle="modal" data-bs-target="#staticBackdrop10">
+                                <td><svg id="checkBox" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20.42 20.42">
+                                        <g>
+                                            <rect class="cls-1" x=".5" y=".5" width="19.42" height="19.42" rx="2.11"
+                                                ry="2.11" />
+                                        </g>
+                                    </svg></td>
+                                <td>T0998987H</td>
+                                <td>Isaci Leong Cho Jing</td>
+                                <td>4E2</td>
+                                <td>Kent Ridge Secondary School</td>
+                                <td>Fit</td>
+                                <td>04/05/2023</td>
+                                <td>
+                                    <div class="pillPending">Pending</div>
+                                </td>
+                                <td><svg class="tripleDot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30.24 8.29">
+                                        <g id="user_page_v2">
+                                            <g>
+                                                <ellipse class="tripleDot" cx="4.36" cy="4.15" rx="4.36" ry="4.15" />
+                                                <ellipse class="tripleDot" cx="15.12" cy="4.15" rx="4.36" ry="4.15" />
+                                                <ellipse class="tripleDot" cx="25.88" cy="4.15" rx="4.36" ry="4.15" />
+                                            </g>
+                                        </g>
+                                    </svg>
+                                </td>
+                            </tr>
+                            <!-- Row 14 -->
+                            <tr data-bs-toggle="modal" data-bs-target="#staticBackdrop11">
+                                <td><svg id="checkBox" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20.42 20.42">
+                                        <g>
+                                            <rect class="cls-1" x=".5" y=".5" width="19.42" height="19.42" rx="2.11"
+                                                ry="2.11" />
+                                        </g>
+                                    </svg></td>
+                                <td>T0998987H</td>
+                                <td>Isaci Leong Cho Jing</td>
+                                <td>4E2</td>
+                                <td>Kent Ridge Secondary School</td>
+                                <td>Fit</td>
+                                <td>04/05/2023</td>
+                                <td>
+                                    <div class="pillPending">Pending</div>
+                                </td>
+                                <td><svg class="tripleDot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30.24 8.29">
+                                        <g id="user_page_v2">
+                                            <g>
+                                                <ellipse class="tripleDot" cx="4.36" cy="4.15" rx="4.36" ry="4.15" />
+                                                <ellipse class="tripleDot" cx="15.12" cy="4.15" rx="4.36" ry="4.15" />
+                                                <ellipse class="tripleDot" cx="25.88" cy="4.15" rx="4.36" ry="4.15" />
+                                            </g>
+                                        </g>
+                                    </svg>
+                                </td>
+                            </tr>
+                        </tbody>
+
+
+                        <div id="exportBtn"></div>
+                    </table>
+                    <!-- Modal 1 for export -->
+                    <div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false"
+                        tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header border-0">
+                                    <div class="d-flex align-items-center">
+                                        <svg id="formSVG" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 87.99 87.99">
+                                            <g id="Layer_44">
+                                                <g>
+                                                    <rect id="formIconContainer" x="1.11" y="1.11" width="85.76"
+                                                        height="85.76" rx="7.82" ry="7.82" />
+                                                    <path id="formIcon"
+                                                        d="M26.87,43.97c0-6.63,0-13.26,0-19.89,0-1.3,.57-1.88,1.85-1.88,7.89,0,15.79,0,23.68,0,.65,0,1.15,.21,1.6,.67,2.12,2.14,4.25,4.28,6.4,6.39,.49,.49,.72,1.02,.72,1.72-.01,10.97,0,21.95,0,32.92,0,1.32-.57,1.89-1.9,1.89-10.15,0-20.3,0-30.44,0-1.35,0-1.91-.56-1.91-1.93,0-6.63,0-13.26,0-19.89Zm17.17-1.53c-2.55,0-5.09,0-7.64,0-1.04,0-1.74,.62-1.75,1.54,0,.92,.7,1.57,1.73,1.57,5.07,0,10.15,0,15.22,0,1.03,0,1.73-.65,1.73-1.57,0-.92-.71-1.54-1.75-1.54-2.51,0-5.03,0-7.54,0Zm-1.58,7.78c-2.01,0-4.02,0-6.03,0-1.07,0-1.78,.63-1.77,1.57,0,.92,.72,1.54,1.75,1.54,4.02,0,8.04,0,12.06,0,1.04,0,1.74-.63,1.75-1.55,0-.93-.71-1.57-1.78-1.57-1.99,0-3.99,0-5.98,0Zm-1.58-15.57c-1.51,0-3.02,0-4.52,0-1,0-1.69,.64-1.7,1.54,0,.9,.69,1.57,1.68,1.57,3.03,0,6.06,0,9.09,0,.98,0,1.68-.66,1.68-1.57,0-.9-.71-1.54-1.7-1.54-1.51,0-3.02,0-4.52,0Z" />
+                                                </g>
+                                            </g>
+                                        </svg>
+                                        <h2 class="modal-title fs-5" id="staticBackdropLabel">Form Details</h2>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <div id="pillForm" class="d-flex align-items-center">
+                                            <svg id="eyeSVG" xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 264.73 157.58">
+                                                <g id="Layer_44">
+                                                    <g>
+                                                        <path class="eyeIcon"
+                                                            d="M264.73,80.86c-1.66,4.77-5.2,8.28-8.29,12.03-16.67,20.22-36.11,37.12-59.62,49.02-16.05,8.12-32.97,13.3-50.92,15-34.89,3.31-66.43-5.95-95.33-25.22-18.76-12.51-34.4-28.29-48.03-46.14-3.36-4.4-3.37-9.17-.02-13.55,15.73-20.59,34.11-38.3,56.57-51.49C77.65,9.61,97.55,2.68,119.08,.65c31.34-2.96,60.29,4.33,87.22,20.26,22.27,13.17,40.44,30.84,56.07,51.29,1.06,1.39,1.57,3.02,2.35,4.54v4.14Zm-131.79,53.53c31.16-.46,55.39-25.59,55.06-57.09-.31-29.66-26.02-54.53-55.94-54.1-31.48,.45-55.6,25.35-55.29,57.07,.28,29.78,26.02,54.57,56.17,54.12Z" />
+                                                        <path class="eyeIcon"
+                                                            d="M162.35,78.82c-.11,16.61-13.83,30.07-30.5,29.91-16.24-.15-29.5-13.74-29.41-30.15,.09-16.51,13.9-29.92,30.65-29.76,16.11,.15,29.37,13.75,29.26,30Z" />
+                                                    </g>
+                                                </g>
+                                            </svg>
+                                            <span class="ms-2">View Only</span>
+                                        </div>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                </div>
+                                <div class="modal-body ">   
+                                    <!--FORM-->                                             
+                                    <form style="height:100%; background-color: #C7D3EF;">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <h4>Student Section:</h4>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="mb-3">
+                                                        <label for="applicantName" class="form-label">Name of
+                                                            Applicant</label>
+                                                        <input type="text" class="form-control" id="applicantName" value="Ng Shao Wei, Jerry" disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-6 col-12">
+                                                    <div class="mb-3">
+                                                        <label for="schoolOrg"
+                                                            class="form-label">Organization/School</label>
+                                                        <input type="text" class="form-control" id="schoolOrg" value="Singapore Secondary School" disabled>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="personalId" class="form-label">Personal
+                                                            Identification Number:<br>(Birth
+                                                            Cert/NRIC/FIN)</label>
+                                                        <input type="text" class="form-control" id="personalId" value="T0889875G" disabled>
+                                                    </div>
+
+                                                </div>
+                                                <div class="col-xl-6 col-12">
+                                                    <div class="mb-3">
+                                                        <label for="designation"
+                                                            class="form-label">Designation/class</label>
+                                                        <input type="text" class="form-control" id="designation" value="4E3" disabled>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="courseDate" class="form-label mt-xl-4">Course
+                                                            Date</label>
+                                                        <input type="date" class="form-control" id="courseDate" value="2023-11-02" disabled>
+                                                    </div>
+
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="row mt-xl-3 mb-3">
+                                                        <div class="col-xl-6 col-12">
+                                                            <label for="tetanusVaccine" class="form-label">Period of
+                                                                Tetanus Vaccination: <br>(if
+                                                                not declared on the e-reg form)</label>
+                                                        </div>
+                                                        <div class="col-xl-6 col-12 ">
+                                                            <input type="date" class="form-control" id="tetanusVaccine" value="2023-11-02" disabled>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 mb-3">
+                                                    <h4>Physician Section:</h4>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <div class="col-12 text-center mb-4">
+                                                        <label for="medical_check">I, the undersigned, have assessed the
+                                                            Applicant's Registration
+                                                            Form,<br>examined the Applicant & recommend him/her to be
+                                                            (please tick):</label>
+                                                    </div>
+                                                    <div class="col-12 text-center mb-4">
+
+                                                        <div class="form-check form-check-inline" style="border: 10px;">
+                                                            <input class="form-check-input" type="radio"
+                                                                name="fit_status" id="fit_with_condition"
+                                                                value="fit_with_condition">
+                                                            <label class="form-check-label" for="fit_with_condition">Fit
+                                                                with condition</label>
+                                                        </div>
+
+                                                        <div class="form-check form-check-inline">
+                                                            <input class="form-check-input" type="radio"
+                                                                name="fit_status" id="fit" value="fit">
+                                                            <label class="form-check-label" for="fit">Fit</label>
+                                                        </div>
+
+                                                        <div class="form-check form-check-inline">
+                                                            <input class="form-check-input" type="radio"
+                                                                name="fit_status" id="unfit" value="unfit">
+                                                            <label class="form-check-label" for="unfit">Unfit</label>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="form-group">
+                                                        <div class="col-12 text-center mb-3">
+                                                            <label for="medical_text">Subject to additional information
+                                                                provided on the following:<br>condition(s)(any):
+                                                            </label>
+                                                        </div>
+                                                        <textarea class="form-control mb-5" id="medical_text"
+                                                            name="medical_text" rows="10"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="mb-3">
+                                                        <label for="physicianName" class="form-label">Name of
+                                                            Physician:</label>
+                                                        <input type="text" class="form-control" id="physicianName">
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-6 col-12">
+                                                    <div class="mb-3">
+                                                        <label for="mcrNo" class="form-label">Physician MCR No:</label>
+                                                        <input type="text" class="form-control" id="mcrNo">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="clinicName" class="form-label">Name Of
+                                                            Clinic</label>
+                                                        <input type="text" class="form-control" id="clinicName">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="date" class="form-label">Date</label>
+                                                        <input type="date" class="form-control" id="date">
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-6 col-12 mb-3">
+                                                    <div class="mb-3">
+                                                        <label for="contactNo" class="form-label">Contact No:</label>
+                                                        <input type="text" class="form-control" id="contactNo">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="clinicAddress" class="form-label">Address Of
+                                                            Clinic</label>
+                                                        <input type="text" class="form-control" id="clinicAddress">
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 text-center mb-3">
+                                                    <h5>Signature</h5>
+                                                </div>
+                                                <div class="col-12 text-center">
+                                                    <canvas id="signatureCanvas"
+                                                        style="border: 1px solid #485EAB; background-color: white;"></canvas>
+                                                    <input type="hidden" id="signatureData" name="signatureData">
+                                                </div>
+                                                <div class="col-12 text-center mb-5">
+                                                    <button id="clearSignatureBtn"
+                                                        class="btn btn-secondary btn-sm">Clear Signature</button>
+                                                </div>
+                                                <div class="col-12 mb-3">
+                                                    <h4>Partnership Management Team:</h4>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="col-12 text-center mb-4">
+                                                        <label for="medical_check" class="text-center mx-auto w-75">I, the undersigned, have assessed the
+                                                            Applicant's Registration Form,
+                                                            examined the Applicant & approve him/her to be (please tick):</label>
+                                                    </div>
+                                                    <div class=" col-12 text-center mb-3 d-flex justify-content-center align-items-center mt-3">
+                                                        <button type="button" class="btn btn-secondary approve-btn">Approve</button>
+                                                        <div class="verticalLine mx-3"></div>
+                                                        <button type="button" class="btn btn-secondary reject-btn">Reject</button>
+                                                    </div>
+
+                                                </div>
+                                                <div class="col-12 mb-3 text-end">
+                                                    <button id="exportBtn" class="btn btn-primary btn-lg"
+                                                        type="submit">Export</button>
+                                                </div>
+                                            </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal 2 for export -->
+                    <div class="modal fade" id="staticBackdrop2" data-bs-backdrop="static" data-bs-keyboard="false"
+                        tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header border-0">
+                                    <div class="d-flex align-items-center">
+                                        <svg id="formSVG" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 87.99 87.99">
+                                            <g id="Layer_44">
+                                                <g>
+                                                    <rect id="formIconContainer" x="1.11" y="1.11" width="85.76"
+                                                        height="85.76" rx="7.82" ry="7.82" />
+                                                    <path id="formIcon"
+                                                        d="M26.87,43.97c0-6.63,0-13.26,0-19.89,0-1.3,.57-1.88,1.85-1.88,7.89,0,15.79,0,23.68,0,.65,0,1.15,.21,1.6,.67,2.12,2.14,4.25,4.28,6.4,6.39,.49,.49,.72,1.02,.72,1.72-.01,10.97,0,21.95,0,32.92,0,1.32-.57,1.89-1.9,1.89-10.15,0-20.3,0-30.44,0-1.35,0-1.91-.56-1.91-1.93,0-6.63,0-13.26,0-19.89Zm17.17-1.53c-2.55,0-5.09,0-7.64,0-1.04,0-1.74,.62-1.75,1.54,0,.92,.7,1.57,1.73,1.57,5.07,0,10.15,0,15.22,0,1.03,0,1.73-.65,1.73-1.57,0-.92-.71-1.54-1.75-1.54-2.51,0-5.03,0-7.54,0Zm-1.58,7.78c-2.01,0-4.02,0-6.03,0-1.07,0-1.78,.63-1.77,1.57,0,.92,.72,1.54,1.75,1.54,4.02,0,8.04,0,12.06,0,1.04,0,1.74-.63,1.75-1.55,0-.93-.71-1.57-1.78-1.57-1.99,0-3.99,0-5.98,0Zm-1.58-15.57c-1.51,0-3.02,0-4.52,0-1,0-1.69,.64-1.7,1.54,0,.9,.69,1.57,1.68,1.57,3.03,0,6.06,0,9.09,0,.98,0,1.68-.66,1.68-1.57,0-.9-.71-1.54-1.7-1.54-1.51,0-3.02,0-4.52,0Z" />
+                                                </g>
+                                            </g>
+                                        </svg>
+                                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Form Details</h1>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <div id="pillForm" class="d-flex align-items-center">
+                                            <svg id="eyeSVG" xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 264.73 157.58">
+                                                <g id="Layer_44">
+                                                    <g>
+                                                        <path class="eyeIcon"
+                                                            d="M264.73,80.86c-1.66,4.77-5.2,8.28-8.29,12.03-16.67,20.22-36.11,37.12-59.62,49.02-16.05,8.12-32.97,13.3-50.92,15-34.89,3.31-66.43-5.95-95.33-25.22-18.76-12.51-34.4-28.29-48.03-46.14-3.36-4.4-3.37-9.17-.02-13.55,15.73-20.59,34.11-38.3,56.57-51.49C77.65,9.61,97.55,2.68,119.08,.65c31.34-2.96,60.29,4.33,87.22,20.26,22.27,13.17,40.44,30.84,56.07,51.29,1.06,1.39,1.57,3.02,2.35,4.54v4.14Zm-131.79,53.53c31.16-.46,55.39-25.59,55.06-57.09-.31-29.66-26.02-54.53-55.94-54.1-31.48,.45-55.6,25.35-55.29,57.07,.28,29.78,26.02,54.57,56.17,54.12Z" />
+                                                        <path class="eyeIcon"
+                                                            d="M162.35,78.82c-.11,16.61-13.83,30.07-30.5,29.91-16.24-.15-29.5-13.74-29.41-30.15,.09-16.51,13.9-29.92,30.65-29.76,16.11,.15,29.37,13.75,29.26,30Z" />
+                                                    </g>
+                                                </g>
+                                            </svg>
+                                            <span class="ms-2">View Only</span>
+                                        </div>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                </div>
+                                <div class="modal-body ">
+                                    <h3>FORM DETAILS....</h3>
+                                    <br>
+                                    <h4>PARTNERSHIP MANAGEMENT TEAM:</h4>
+                                    <div class="text-center">
+                                        <p class="text-center mx-auto w-75">I, the undersigned, have assessed the
+                                            Applicant's Registration Form,
+                                            examined the Applicant & approve him/her to be (please tick):</p>
+                                        <div class="d-flex justify-content-center align-items-center mt-3">
+                                            <button type="button" class="btn btn-secondary approve-btn">Approve</button>
+                                            <div class="verticalLine mx-3"></div>
+                                            <button type="button" class="btn btn-secondary reject-btn">Reject</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal 3 for export -->
+                    <div class="modal fade" id="staticBackdrop3" data-bs-backdrop="static" data-bs-keyboard="false"
+                        tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header border-0">
+                                    <div class="d-flex align-items-center">
+                                        <svg id="formSVG" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 87.99 87.99">
+                                            <g id="Layer_44">
+                                                <g>
+                                                    <rect id="formIconContainer" x="1.11" y="1.11" width="85.76"
+                                                        height="85.76" rx="7.82" ry="7.82" />
+                                                    <path id="formIcon"
+                                                        d="M26.87,43.97c0-6.63,0-13.26,0-19.89,0-1.3,.57-1.88,1.85-1.88,7.89,0,15.79,0,23.68,0,.65,0,1.15,.21,1.6,.67,2.12,2.14,4.25,4.28,6.4,6.39,.49,.49,.72,1.02,.72,1.72-.01,10.97,0,21.95,0,32.92,0,1.32-.57,1.89-1.9,1.89-10.15,0-20.3,0-30.44,0-1.35,0-1.91-.56-1.91-1.93,0-6.63,0-13.26,0-19.89Zm17.17-1.53c-2.55,0-5.09,0-7.64,0-1.04,0-1.74,.62-1.75,1.54,0,.92,.7,1.57,1.73,1.57,5.07,0,10.15,0,15.22,0,1.03,0,1.73-.65,1.73-1.57,0-.92-.71-1.54-1.75-1.54-2.51,0-5.03,0-7.54,0Zm-1.58,7.78c-2.01,0-4.02,0-6.03,0-1.07,0-1.78,.63-1.77,1.57,0,.92,.72,1.54,1.75,1.54,4.02,0,8.04,0,12.06,0,1.04,0,1.74-.63,1.75-1.55,0-.93-.71-1.57-1.78-1.57-1.99,0-3.99,0-5.98,0Zm-1.58-15.57c-1.51,0-3.02,0-4.52,0-1,0-1.69,.64-1.7,1.54,0,.9,.69,1.57,1.68,1.57,3.03,0,6.06,0,9.09,0,.98,0,1.68-.66,1.68-1.57,0-.9-.71-1.54-1.7-1.54-1.51,0-3.02,0-4.52,0Z" />
+                                                </g>
+                                            </g>
+                                        </svg>
+                                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Form Details</h1>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <div id="pillForm" class="d-flex align-items-center">
+                                            <svg id="eyeSVG" xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 264.73 157.58">
+                                                <g id="Layer_44">
+                                                    <g>
+                                                        <path class="eyeIcon"
+                                                            d="M264.73,80.86c-1.66,4.77-5.2,8.28-8.29,12.03-16.67,20.22-36.11,37.12-59.62,49.02-16.05,8.12-32.97,13.3-50.92,15-34.89,3.31-66.43-5.95-95.33-25.22-18.76-12.51-34.4-28.29-48.03-46.14-3.36-4.4-3.37-9.17-.02-13.55,15.73-20.59,34.11-38.3,56.57-51.49C77.65,9.61,97.55,2.68,119.08,.65c31.34-2.96,60.29,4.33,87.22,20.26,22.27,13.17,40.44,30.84,56.07,51.29,1.06,1.39,1.57,3.02,2.35,4.54v4.14Zm-131.79,53.53c31.16-.46,55.39-25.59,55.06-57.09-.31-29.66-26.02-54.53-55.94-54.1-31.48,.45-55.6,25.35-55.29,57.07,.28,29.78,26.02,54.57,56.17,54.12Z" />
+                                                        <path class="eyeIcon"
+                                                            d="M162.35,78.82c-.11,16.61-13.83,30.07-30.5,29.91-16.24-.15-29.5-13.74-29.41-30.15,.09-16.51,13.9-29.92,30.65-29.76,16.11,.15,29.37,13.75,29.26,30Z" />
+                                                    </g>
+                                                </g>
+                                            </svg>
+                                            <span class="ms-2">View Only</span>
+                                        </div>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                </div>
+                                <div class="modal-body ">
+                                    <h3>FORM DETAILS....</h3>
+                                    <br>
+                                    <h4>PARTNERSHIP MANAGEMENT TEAM:</h4>
+                                    <div class="text-center">
+                                        <p class="text-center mx-auto w-75">I, the undersigned, have assessed the
+                                            Applicant's Registration Form,
+                                            examined the Applicant & approve him/her to be (please tick):</p>
+                                        <div class="d-flex justify-content-center align-items-center mt-3">
+                                            <button type="button" class="btn btn-secondary approve-btn">Approve</button>
+                                            <div class="verticalLine mx-3"></div>
+                                            <button type="button" class="btn btn-secondary reject-btn">Reject</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal 4 for export -->
+                    <div class="modal fade" id="staticBackdrop4" data-bs-backdrop="static" data-bs-keyboard="false"
+                        tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header border-0">
+                                    <div class="d-flex align-items-center">
+                                        <svg id="formSVG" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 87.99 87.99">
+                                            <g id="Layer_44">
+                                                <g>
+                                                    <rect id="formIconContainer" x="1.11" y="1.11" width="85.76"
+                                                        height="85.76" rx="7.82" ry="7.82" />
+                                                    <path id="formIcon"
+                                                        d="M26.87,43.97c0-6.63,0-13.26,0-19.89,0-1.3,.57-1.88,1.85-1.88,7.89,0,15.79,0,23.68,0,.65,0,1.15,.21,1.6,.67,2.12,2.14,4.25,4.28,6.4,6.39,.49,.49,.72,1.02,.72,1.72-.01,10.97,0,21.95,0,32.92,0,1.32-.57,1.89-1.9,1.89-10.15,0-20.3,0-30.44,0-1.35,0-1.91-.56-1.91-1.93,0-6.63,0-13.26,0-19.89Zm17.17-1.53c-2.55,0-5.09,0-7.64,0-1.04,0-1.74,.62-1.75,1.54,0,.92,.7,1.57,1.73,1.57,5.07,0,10.15,0,15.22,0,1.03,0,1.73-.65,1.73-1.57,0-.92-.71-1.54-1.75-1.54-2.51,0-5.03,0-7.54,0Zm-1.58,7.78c-2.01,0-4.02,0-6.03,0-1.07,0-1.78,.63-1.77,1.57,0,.92,.72,1.54,1.75,1.54,4.02,0,8.04,0,12.06,0,1.04,0,1.74-.63,1.75-1.55,0-.93-.71-1.57-1.78-1.57-1.99,0-3.99,0-5.98,0Zm-1.58-15.57c-1.51,0-3.02,0-4.52,0-1,0-1.69,.64-1.7,1.54,0,.9,.69,1.57,1.68,1.57,3.03,0,6.06,0,9.09,0,.98,0,1.68-.66,1.68-1.57,0-.9-.71-1.54-1.7-1.54-1.51,0-3.02,0-4.52,0Z" />
+                                                </g>
+                                            </g>
+                                        </svg>
+                                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Form Details</h1>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <div id="pillForm" class="d-flex align-items-center">
+                                            <svg id="eyeSVG" xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 264.73 157.58">
+                                                <g id="Layer_44">
+                                                    <g>
+                                                        <path class="eyeIcon"
+                                                            d="M264.73,80.86c-1.66,4.77-5.2,8.28-8.29,12.03-16.67,20.22-36.11,37.12-59.62,49.02-16.05,8.12-32.97,13.3-50.92,15-34.89,3.31-66.43-5.95-95.33-25.22-18.76-12.51-34.4-28.29-48.03-46.14-3.36-4.4-3.37-9.17-.02-13.55,15.73-20.59,34.11-38.3,56.57-51.49C77.65,9.61,97.55,2.68,119.08,.65c31.34-2.96,60.29,4.33,87.22,20.26,22.27,13.17,40.44,30.84,56.07,51.29,1.06,1.39,1.57,3.02,2.35,4.54v4.14Zm-131.79,53.53c31.16-.46,55.39-25.59,55.06-57.09-.31-29.66-26.02-54.53-55.94-54.1-31.48,.45-55.6,25.35-55.29,57.07,.28,29.78,26.02,54.57,56.17,54.12Z" />
+                                                        <path class="eyeIcon"
+                                                            d="M162.35,78.82c-.11,16.61-13.83,30.07-30.5,29.91-16.24-.15-29.5-13.74-29.41-30.15,.09-16.51,13.9-29.92,30.65-29.76,16.11,.15,29.37,13.75,29.26,30Z" />
+                                                    </g>
+                                                </g>
+                                            </svg>
+                                            <span class="ms-2">View Only</span>
+                                        </div>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                </div>
+                                <div class="modal-body ">
+                                    <h3>FORM DETAILS....</h3>
+                                    <br>
+                                    <h4>PARTNERSHIP MANAGEMENT TEAM:</h4>
+                                    <div class="text-center">
+                                        <p class="text-center mx-auto w-75">I, the undersigned, have assessed the
+                                            Applicant's Registration Form,
+                                            examined the Applicant & approve him/her to be (please tick):</p>
+                                        <div class="d-flex justify-content-center align-items-center mt-3">
+                                            <button type="button" class="btn btn-secondary approve-btn">Approve</button>
+                                            <div class="verticalLine mx-3"></div>
+                                            <button type="button" class="btn btn-secondary reject-btn">Reject</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal 5 for export -->
+                    <div class="modal fade" id="staticBackdrop5" data-bs-backdrop="static" data-bs-keyboard="false"
+                        tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header border-0">
+                                    <div class="d-flex align-items-center">
+                                        <svg id="formSVG" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 87.99 87.99">
+                                            <g id="Layer_44">
+                                                <g>
+                                                    <rect id="formIconContainer" x="1.11" y="1.11" width="85.76"
+                                                        height="85.76" rx="7.82" ry="7.82" />
+                                                    <path id="formIcon"
+                                                        d="M26.87,43.97c0-6.63,0-13.26,0-19.89,0-1.3,.57-1.88,1.85-1.88,7.89,0,15.79,0,23.68,0,.65,0,1.15,.21,1.6,.67,2.12,2.14,4.25,4.28,6.4,6.39,.49,.49,.72,1.02,.72,1.72-.01,10.97,0,21.95,0,32.92,0,1.32-.57,1.89-1.9,1.89-10.15,0-20.3,0-30.44,0-1.35,0-1.91-.56-1.91-1.93,0-6.63,0-13.26,0-19.89Zm17.17-1.53c-2.55,0-5.09,0-7.64,0-1.04,0-1.74,.62-1.75,1.54,0,.92,.7,1.57,1.73,1.57,5.07,0,10.15,0,15.22,0,1.03,0,1.73-.65,1.73-1.57,0-.92-.71-1.54-1.75-1.54-2.51,0-5.03,0-7.54,0Zm-1.58,7.78c-2.01,0-4.02,0-6.03,0-1.07,0-1.78,.63-1.77,1.57,0,.92,.72,1.54,1.75,1.54,4.02,0,8.04,0,12.06,0,1.04,0,1.74-.63,1.75-1.55,0-.93-.71-1.57-1.78-1.57-1.99,0-3.99,0-5.98,0Zm-1.58-15.57c-1.51,0-3.02,0-4.52,0-1,0-1.69,.64-1.7,1.54,0,.9,.69,1.57,1.68,1.57,3.03,0,6.06,0,9.09,0,.98,0,1.68-.66,1.68-1.57,0-.9-.71-1.54-1.7-1.54-1.51,0-3.02,0-4.52,0Z" />
+                                                </g>
+                                            </g>
+                                        </svg>
+                                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Form Details</h1>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <div id="pillForm" class="d-flex align-items-center">
+                                            <svg id="eyeSVG" xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 264.73 157.58">
+                                                <g id="Layer_44">
+                                                    <g>
+                                                        <path class="eyeIcon"
+                                                            d="M264.73,80.86c-1.66,4.77-5.2,8.28-8.29,12.03-16.67,20.22-36.11,37.12-59.62,49.02-16.05,8.12-32.97,13.3-50.92,15-34.89,3.31-66.43-5.95-95.33-25.22-18.76-12.51-34.4-28.29-48.03-46.14-3.36-4.4-3.37-9.17-.02-13.55,15.73-20.59,34.11-38.3,56.57-51.49C77.65,9.61,97.55,2.68,119.08,.65c31.34-2.96,60.29,4.33,87.22,20.26,22.27,13.17,40.44,30.84,56.07,51.29,1.06,1.39,1.57,3.02,2.35,4.54v4.14Zm-131.79,53.53c31.16-.46,55.39-25.59,55.06-57.09-.31-29.66-26.02-54.53-55.94-54.1-31.48,.45-55.6,25.35-55.29,57.07,.28,29.78,26.02,54.57,56.17,54.12Z" />
+                                                        <path class="eyeIcon"
+                                                            d="M162.35,78.82c-.11,16.61-13.83,30.07-30.5,29.91-16.24-.15-29.5-13.74-29.41-30.15,.09-16.51,13.9-29.92,30.65-29.76,16.11,.15,29.37,13.75,29.26,30Z" />
+                                                    </g>
+                                                </g>
+                                            </svg>
+                                            <span class="ms-2">View Only</span>
+                                        </div>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                </div>
+                                <div class="modal-body ">
+                                    <h3>FORM DETAILS....</h3>
+                                    <br>
+                                    <h4>PARTNERSHIP MANAGEMENT TEAM:</h4>
+                                    <div class="text-center">
+                                        <p class="text-center mx-auto w-75">I, the undersigned, have assessed the
+                                            Applicant's Registration Form,
+                                            examined the Applicant & approve him/her to be (please tick):</p>
+                                        <div class="d-flex justify-content-center align-items-center mt-3">
+                                            <button type="button" class="btn btn-secondary approve-btn">Approve</button>
+                                            <div class="verticalLine mx-3"></div>
+                                            <button type="button" class="btn btn-secondary reject-btn">Reject</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal 6 for export -->
+                    <div class="modal fade" id="staticBackdrop6" data-bs-backdrop="static" data-bs-keyboard="false"
+                        tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header border-0">
+                                    <div class="d-flex align-items-center">
+                                        <svg id="formSVG" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 87.99 87.99">
+                                            <g id="Layer_44">
+                                                <g>
+                                                    <rect id="formIconContainer" x="1.11" y="1.11" width="85.76"
+                                                        height="85.76" rx="7.82" ry="7.82" />
+                                                    <path id="formIcon"
+                                                        d="M26.87,43.97c0-6.63,0-13.26,0-19.89,0-1.3,.57-1.88,1.85-1.88,7.89,0,15.79,0,23.68,0,.65,0,1.15,.21,1.6,.67,2.12,2.14,4.25,4.28,6.4,6.39,.49,.49,.72,1.02,.72,1.72-.01,10.97,0,21.95,0,32.92,0,1.32-.57,1.89-1.9,1.89-10.15,0-20.3,0-30.44,0-1.35,0-1.91-.56-1.91-1.93,0-6.63,0-13.26,0-19.89Zm17.17-1.53c-2.55,0-5.09,0-7.64,0-1.04,0-1.74,.62-1.75,1.54,0,.92,.7,1.57,1.73,1.57,5.07,0,10.15,0,15.22,0,1.03,0,1.73-.65,1.73-1.57,0-.92-.71-1.54-1.75-1.54-2.51,0-5.03,0-7.54,0Zm-1.58,7.78c-2.01,0-4.02,0-6.03,0-1.07,0-1.78,.63-1.77,1.57,0,.92,.72,1.54,1.75,1.54,4.02,0,8.04,0,12.06,0,1.04,0,1.74-.63,1.75-1.55,0-.93-.71-1.57-1.78-1.57-1.99,0-3.99,0-5.98,0Zm-1.58-15.57c-1.51,0-3.02,0-4.52,0-1,0-1.69,.64-1.7,1.54,0,.9,.69,1.57,1.68,1.57,3.03,0,6.06,0,9.09,0,.98,0,1.68-.66,1.68-1.57,0-.9-.71-1.54-1.7-1.54-1.51,0-3.02,0-4.52,0Z" />
+                                                </g>
+                                            </g>
+                                        </svg>
+                                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Form Details</h1>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <div id="pillForm" class="d-flex align-items-center">
+                                            <svg id="eyeSVG" xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 264.73 157.58">
+                                                <g id="Layer_44">
+                                                    <g>
+                                                        <path class="eyeIcon"
+                                                            d="M264.73,80.86c-1.66,4.77-5.2,8.28-8.29,12.03-16.67,20.22-36.11,37.12-59.62,49.02-16.05,8.12-32.97,13.3-50.92,15-34.89,3.31-66.43-5.95-95.33-25.22-18.76-12.51-34.4-28.29-48.03-46.14-3.36-4.4-3.37-9.17-.02-13.55,15.73-20.59,34.11-38.3,56.57-51.49C77.65,9.61,97.55,2.68,119.08,.65c31.34-2.96,60.29,4.33,87.22,20.26,22.27,13.17,40.44,30.84,56.07,51.29,1.06,1.39,1.57,3.02,2.35,4.54v4.14Zm-131.79,53.53c31.16-.46,55.39-25.59,55.06-57.09-.31-29.66-26.02-54.53-55.94-54.1-31.48,.45-55.6,25.35-55.29,57.07,.28,29.78,26.02,54.57,56.17,54.12Z" />
+                                                        <path class="eyeIcon"
+                                                            d="M162.35,78.82c-.11,16.61-13.83,30.07-30.5,29.91-16.24-.15-29.5-13.74-29.41-30.15,.09-16.51,13.9-29.92,30.65-29.76,16.11,.15,29.37,13.75,29.26,30Z" />
+                                                    </g>
+                                                </g>
+                                            </svg>
+                                            <span class="ms-2">View Only</span>
+                                        </div>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                </div>
+                                <div class="modal-body ">
+                                    <h3>FORM DETAILS....</h3>
+                                    <br>
+                                    <h4>PARTNERSHIP MANAGEMENT TEAM:</h4>
+                                    <div class="text-center">
+                                        <p class="text-center mx-auto w-75">I, the undersigned, have assessed the
+                                            Applicant's Registration Form,
+                                            examined the Applicant & approve him/her to be (please tick):</p>
+                                        <div class="d-flex justify-content-center align-items-center mt-3">
+                                            <button type="button" class="btn btn-secondary approve-btn">Approve</button>
+                                            <div class="verticalLine mx-3"></div>
+                                            <button type="button" class="btn btn-secondary reject-btn">Reject</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal 7 for export -->
+                    <div class="modal fade" id="staticBackdrop7" data-bs-backdrop="static" data-bs-keyboard="false"
+                        tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header border-0">
+                                    <div class="d-flex align-items-center">
+                                        <svg id="formSVG" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 87.99 87.99">
+                                            <g id="Layer_44">
+                                                <g>
+                                                    <rect id="formIconContainer" x="1.11" y="1.11" width="85.76"
+                                                        height="85.76" rx="7.82" ry="7.82" />
+                                                    <path id="formIcon"
+                                                        d="M26.87,43.97c0-6.63,0-13.26,0-19.89,0-1.3,.57-1.88,1.85-1.88,7.89,0,15.79,0,23.68,0,.65,0,1.15,.21,1.6,.67,2.12,2.14,4.25,4.28,6.4,6.39,.49,.49,.72,1.02,.72,1.72-.01,10.97,0,21.95,0,32.92,0,1.32-.57,1.89-1.9,1.89-10.15,0-20.3,0-30.44,0-1.35,0-1.91-.56-1.91-1.93,0-6.63,0-13.26,0-19.89Zm17.17-1.53c-2.55,0-5.09,0-7.64,0-1.04,0-1.74,.62-1.75,1.54,0,.92,.7,1.57,1.73,1.57,5.07,0,10.15,0,15.22,0,1.03,0,1.73-.65,1.73-1.57,0-.92-.71-1.54-1.75-1.54-2.51,0-5.03,0-7.54,0Zm-1.58,7.78c-2.01,0-4.02,0-6.03,0-1.07,0-1.78,.63-1.77,1.57,0,.92,.72,1.54,1.75,1.54,4.02,0,8.04,0,12.06,0,1.04,0,1.74-.63,1.75-1.55,0-.93-.71-1.57-1.78-1.57-1.99,0-3.99,0-5.98,0Zm-1.58-15.57c-1.51,0-3.02,0-4.52,0-1,0-1.69,.64-1.7,1.54,0,.9,.69,1.57,1.68,1.57,3.03,0,6.06,0,9.09,0,.98,0,1.68-.66,1.68-1.57,0-.9-.71-1.54-1.7-1.54-1.51,0-3.02,0-4.52,0Z" />
+                                                </g>
+                                            </g>
+                                        </svg>
+                                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Form Details</h1>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <div id="pillForm" class="d-flex align-items-center">
+                                            <svg id="eyeSVG" xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 264.73 157.58">
+                                                <g id="Layer_44">
+                                                    <g>
+                                                        <path class="eyeIcon"
+                                                            d="M264.73,80.86c-1.66,4.77-5.2,8.28-8.29,12.03-16.67,20.22-36.11,37.12-59.62,49.02-16.05,8.12-32.97,13.3-50.92,15-34.89,3.31-66.43-5.95-95.33-25.22-18.76-12.51-34.4-28.29-48.03-46.14-3.36-4.4-3.37-9.17-.02-13.55,15.73-20.59,34.11-38.3,56.57-51.49C77.65,9.61,97.55,2.68,119.08,.65c31.34-2.96,60.29,4.33,87.22,20.26,22.27,13.17,40.44,30.84,56.07,51.29,1.06,1.39,1.57,3.02,2.35,4.54v4.14Zm-131.79,53.53c31.16-.46,55.39-25.59,55.06-57.09-.31-29.66-26.02-54.53-55.94-54.1-31.48,.45-55.6,25.35-55.29,57.07,.28,29.78,26.02,54.57,56.17,54.12Z" />
+                                                        <path class="eyeIcon"
+                                                            d="M162.35,78.82c-.11,16.61-13.83,30.07-30.5,29.91-16.24-.15-29.5-13.74-29.41-30.15,.09-16.51,13.9-29.92,30.65-29.76,16.11,.15,29.37,13.75,29.26,30Z" />
+                                                    </g>
+                                                </g>
+                                            </svg>
+                                            <span class="ms-2">View Only</span>
+                                        </div>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                </div>
+                                <div class="modal-body ">
+                                    <h3>FORM DETAILS....</h3>
+                                    <br>
+                                    <h4>PARTNERSHIP MANAGEMENT TEAM:</h4>
+                                    <div class="text-center">
+                                        <p class="text-center mx-auto w-75">I, the undersigned, have assessed the
+                                            Applicant's Registration Form,
+                                            examined the Applicant & approve him/her to be (please tick):</p>
+                                        <div class="d-flex justify-content-center align-items-center mt-3">
+                                            <button type="button" class="btn btn-secondary approve-btn">Approve</button>
+                                            <div class="verticalLine mx-3"></div>
+                                            <button type="button" class="btn btn-secondary reject-btn">Reject</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal Approved form -->
+                    <div class="modal fade" id="staticBackdropAppr" data-bs-keyboard="false" tabindex="-1"
+                        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-body text-center">
+                                    <h3 class=" text-center">Form is approved!</h3>
+                                    <h5>The Form has been approved.</h5>
+                                    <img src="../assets/Approved.png" alt="approved" class=" h-auto" id="errorIcon">
+
+                                    <div class="d-flex justify-content-center align-items-center pt-2">
+                                        <button type="button" class="btn btn-primary successBtn"
+                                            data-bs-dismiss="modal">Confirm</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal Rejected form -->
+                    <div class="modal fade" id="staticBackdropRej" data-bs-keyboard="false" tabindex="-1"
+                        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-body text-center">
+                                    <h3 class=" text-center">Form is rejected!</h3>
+                                    <h5>The Form has been rejected.</h5>
+                                    <img src="../assets/Rejected.png" alt="rejected" class=" h-auto" id="errorIcon">
+
+                                    <div class="d-flex justify-content-center align-items-center pt-2">
+                                        <button type="button" class="btn btn-primary successBtn"
+                                            data-bs-dismiss="modal">Confirm</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <script src="./index.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"
+        integrity="sha384-zYPOMqeu1DAVkHiLqWBUTcbYfZ8osu1Nd6Z89ify25QV9guujx43ITvfi12/QExE"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js"
+        integrity="sha384-Y4oOpwW3duJdCWv5ly8SCFYWqFDsfob/3GkgExXKV4idmbt98QcxXYs9UoXAB7BZ"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
