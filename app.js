@@ -61,7 +61,7 @@ app.post('/login', (req, res, next) => {
     return userModel
         .loginUser(credentials)
         .then((result) => {
-            //console.log(result);
+            console.log(result);
 
             let payload = {
                 'email': result.email,
@@ -74,9 +74,9 @@ app.post('/login', (req, res, next) => {
             };
 
             jwt.sign(payload, JWT_SECRET, tokenConfig, (error, token) => {
-                //console.log(error)
 
                 if (error) {
+                    console.log(error)
                     throw "Failed to sign JWT"
                 };
 
@@ -90,7 +90,7 @@ app.post('/login', (req, res, next) => {
             })
         })
         .catch((error) => {
-            //console.log(error)
+            console.log(error)
 
             if (error == "Invalid email or password") {
                 return res.status(400).json({ error: error.message });
