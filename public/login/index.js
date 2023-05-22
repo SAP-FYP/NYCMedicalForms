@@ -27,7 +27,16 @@ window.addEventListener('DOMContentLoaded', function () {
             return response.json();
 
         }).then((jsonData) => {
-            console.log(jsonData)
+            console.log(jsonData);
+            let user = jsonData.user.nameOfUser;
+            let url;
+
+            if (user == "Isaac") {
+                url = "/docForm"
+            } else if (user == "admin") {
+                url = "/pmt"
+            }
+            this.window.location.href = url;
             // do something with data + token
 
         }).catch((error) => {
