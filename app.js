@@ -1,7 +1,9 @@
 const express = require("express");
-const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 const jwt = require("jsonwebtoken");
+const bcrypt = require('bcrypt');
+const moment = require('moment');
 
 const verifyUser = require('./auth/userAuth')
 const userModel = require('./model/user')
@@ -44,10 +46,10 @@ app.post('/api', async (req, res, next) => {
 });
 
 /**
- * Feature: Medical Examiner Login 
- * Method: POST
+ * User: Medical Examiner
  */
 
+// Login
 app.post('/login', (req, res, next) => {
     const credentials = {
         email: req.body.email,
@@ -63,6 +65,14 @@ app.post('/login', (req, res, next) => {
         .then((result) => {
             console.log(result);
 
+            // CHECK HASH
+            if (!bcrypt.compareSync(credentials.password, result.password)) {
+                const error = new Error("Invalid email or password");
+                error.status = 401;
+                throw error;
+            }
+
+            // SET JWT
             let payload = {
                 'email': result.email,
                 'permissionGroup': result.groupID
@@ -73,11 +83,15 @@ app.post('/login', (req, res, next) => {
                 algorithm: "HS256"
             };
 
+            // SIGN JWT
             jwt.sign(payload, JWT_SECRET, tokenConfig, (error, token) => {
 
                 if (error) {
                     console.log(error)
-                    throw "Failed to sign JWT"
+
+                    const error = new Error("Failed to sign JWT");
+                    error.status = 500;
+                    throw error;
                 };
 
                 res.cookie('jwt', token, {
@@ -86,17 +100,17 @@ app.post('/login', (req, res, next) => {
                     sameSite: 'strict'
                 });
 
+                delete result.password;
                 return res.json({ user: result });
             })
         })
         .catch((error) => {
             console.log(error)
 
-            if (error == "Invalid email or password") {
-                return res.status(400).json({ error: error.message });
-            } else if (error == "JWT Sign Error") {
+            if (error.status == 401) {
                 return res.status(401).json({ error: error.message });
             }
+
             return res.status(error.status || 500).json({ error: error.message });
         })
 });
@@ -105,5 +119,80 @@ app.get('/jwt', (req, res, next) => {
     const jwt = req.cookies.jwt;
     return res.send(jwt);
 })
+
+/**
+ * User: Super Admin
+ */
+
+// Login
+app.post('obs-admin/login', (req, res, next) => {
+    const credentials = {
+        email: req.body.email,
+        password: req.body.password,
+    };
+
+    if (!credentials.email || !credentials.password) {
+        return res.status(400).json({ error: 'Invalid email or password' });
+    }
+
+    return userModel
+        .loginUser(credentials)
+        .then((result) => {
+            console.log(result);
+
+            // CHECK HASH
+            if (!bcrypt.compareSync(credentials.password, result.password)) {
+                const error = new Error("Invalid email or password");
+                error.status = 401;
+                throw error;
+            }
+
+            // SET JWT
+            let payload = {
+                'email': result.email,
+                'permissionGroup': result.groupID
+            }
+
+            let tokenConfig = {
+                expiresIn: 28800,
+                algorithm: "HS256"
+            };
+
+            // SIGN JWT
+            jwt.sign(payload, JWT_SECRET, tokenConfig, (error, token) => {
+
+                if (error) {
+                    console.log(error)
+
+                    const error = new Error("Failed to sign JWT");
+                    error.status = 500;
+                    throw error;
+                };
+
+                res.cookie('jwt', token, {
+                    httpOnly: true,
+                    secure: false,
+                    sameSite: 'strict'
+                });
+
+                delete result.password;
+                return res.json({ user: result });
+            })
+        })
+        .catch((error) => {
+            console.log(error)
+
+            if (error.status == 401) {
+                return res.status(401).json({ error: error.message });
+            }
+
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+});
+
+// Create Account
+app.post('obs-admin/newuser', (req, res, next) => {
+
+});
 
 module.exports = app;
