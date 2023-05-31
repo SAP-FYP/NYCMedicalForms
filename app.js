@@ -4,6 +4,10 @@ const bodyParser = require('body-parser');
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const moment = require('moment');
+const elasticEmail = require('elasticemail');
+const elasticEmailClient = elasticEmail.createClient({
+    apiKey: 'B6367067A6A7C2EFA0A061BAA2870D55CC68F6E840437BE4AA7C1B8AA9F8365579E46D48022CCF49D974DA3E0CC53280'
+});
 
 const verifyUser = require('./auth/userAuth')
 const userModel = require('./model/user')
@@ -194,5 +198,29 @@ app.post('obs-admin/login', (req, res, next) => {
 app.post('obs-admin/newuser', (req, res, next) => {
 
 });
+
+// Email test
+app.post('/send-email', (req, res) => {
+    const { email } = req.body;
+      // Compose the email parameters
+      const emailParams = {
+        to: email,
+        subject: 'Your Lol',
+        from: 'leebarry008@gmail.com',
+        body: '<p>Hello, this is the body text of the email!</p>',
+      };
+  
+      // Send the email using Elastic Email SDK
+      elasticEmailClient.mailer.send(emailParams, (err, result) => {
+        if (err) {
+          console.error('Failed to send email:', err);
+          res.status(500).send('Failed to send email');
+        } else {
+          console.log('Email sent successfully:', result);
+          res.status(200).send('Email sent successfully');
+        }
+      });
+    });
+  
 
 module.exports = app;
