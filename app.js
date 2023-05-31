@@ -46,7 +46,7 @@ app.post('/api', async (req, res, next) => {
 });
 
 /**
- * User: Medical Examiner
+ * User: General
  */
 
 // Login
@@ -109,7 +109,7 @@ app.post('/login', (req, res, next) => {
         .catch((error) => {
             console.log(error)
             return res.status(error.status || 500).json({ error: error.message });
-        })
+        });
 });
 
 app.get('/jwt', (req, res, next) => {
@@ -120,72 +120,6 @@ app.get('/jwt', (req, res, next) => {
 /**
  * User: Super Admin
  */
-
-// Login
-app.post('obs-admin/login', (req, res, next) => {
-    const credentials = {
-        email: req.body.email,
-        password: req.body.password,
-    };
-
-    if (!credentials.email || !credentials.password) {
-        return res.status(400).json({ error: 'Invalid email or password' });
-    }
-
-    return userModel
-        .loginUser(credentials)
-        .then((result) => {
-            console.log(result);
-
-            // CHECK HASH
-            if (!bcrypt.compareSync(credentials.password, result.password)) {
-                const error = new Error("Invalid email or password");
-                error.status = 401;
-                throw error;
-            }
-
-            // SET JWT
-            let payload = {
-                'email': result.email,
-                'permissionGroup': result.groupID
-            }
-
-            let tokenConfig = {
-                expiresIn: 28800,
-                algorithm: "HS256"
-            };
-
-            // SIGN JWT
-            jwt.sign(payload, JWT_SECRET, tokenConfig, (error, token) => {
-
-                if (error) {
-                    console.log(error)
-
-                    const error = new Error("Failed to sign JWT");
-                    error.status = 500;
-                    throw error;
-                };
-
-                res.cookie('jwt', token, {
-                    httpOnly: true,
-                    secure: false,
-                    sameSite: 'strict'
-                });
-
-                delete result.password;
-                return res.json({ user: result });
-            })
-        })
-        .catch((error) => {
-            console.log(error)
-
-            if (error.status == 401) {
-                return res.status(401).json({ error: error.message });
-            }
-
-            return res.status(error.status || 500).json({ error: error.message });
-        })
-});
 
 // Create Account
 app.post('obs-admin/newuser', (req, res, next) => {
