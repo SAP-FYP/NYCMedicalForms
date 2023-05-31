@@ -57,7 +57,9 @@ app.post('/login', (req, res, next) => {
     };
 
     if (!credentials.email || !credentials.password) {
-        return res.status(400).json({ error: 'Invalid email or password' });
+        const error = new Error("Empty email or password");
+        error.status = 400;
+        throw error;
     }
 
     return userModel
@@ -106,11 +108,6 @@ app.post('/login', (req, res, next) => {
         })
         .catch((error) => {
             console.log(error)
-
-            if (error.status == 401) {
-                return res.status(401).json({ error: error.message });
-            }
-
             return res.status(error.status || 500).json({ error: error.message });
         })
 });

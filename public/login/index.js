@@ -19,6 +19,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 const error = new Error("Invalid email or password");
                 error.code = response.status;
                 throw error;
+
             } else if (response.status !== 200) {
                 const error = new Error("Unknown Error");
                 error.code = response.status;
@@ -28,18 +29,24 @@ window.addEventListener('DOMContentLoaded', function () {
 
         }).then((jsonData) => {
             console.log(jsonData)
-            // do something with data + token
+            // redirect to medical form
 
         }).catch((error) => {
             console.log(error)
+            this.alert(error)
             // display error
         })
     }
 
     loginForm.onsubmit = (e) => {
         e.preventDefault();
-        const email = loginForm.querySelector('#login-email').value
-        const password = loginForm.querySelector('#login-password').value
-        login(email, password)
+        const email = loginForm.querySelector('#login-email').value.trim();
+        const password = loginForm.querySelector('#login-password').value;
+
+        if (!email || !password) {
+            this.alert("Please fill in empty fields")
+        } else {
+            login(email, password)
+        }
     };
 })
