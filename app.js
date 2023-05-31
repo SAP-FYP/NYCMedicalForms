@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 
 const verifyUser = require('./auth/userAuth')
 const userModel = require('./model/user')
+const pmtModel = require('./model/pmt')
 const JWT_SECRET = process.env.SECRETKEY;
 
 const app = express();
@@ -106,4 +107,19 @@ app.get('/jwt', (req, res, next) => {
     return res.send(jwt);
 })
 
+//////////////////////////////////////////////////////
+// Feature: PMT Retrieve All Submissions
+// http://localhost:3000/api/pmt/all
+// Method: GET
+//////////////////////////////////////////////////////
+app.get('/api/pmt/all', /*verifyUser,*/ async (req, res, next) => {
+    return pmtModel
+        .retrieveAllSubmissions()
+        .then((result) => {
+            return res.json(result[0]);
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        });
+});
 module.exports = app;
