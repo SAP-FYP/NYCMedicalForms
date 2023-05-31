@@ -316,23 +316,19 @@ td:first-child {
 }
 
 #checkBoxTop {
-    transform: translateX(13px);
+    transform: translateY(4px);
+    margin-left: 12px;
     width: 20px;
-    fill: #ffffff;
-    stroke:#485eab;
-    stroke-miterlimit:12;
+    height: 20px;
 }
 #checkBox {
-    transform: translateX(13px);
+    transform: translateY(4px);
+    margin-left: 12px;
     width: 20px;
-    fill:#ffffff;
-    stroke:#485eab;
-    stroke-miterlimit:10;
+    height: 20px;
 }
 
 /*MODALS*/
-
-
 .modal-content {
     background-color: #c7d3ef !important;
     border: 2px solid #485eab !important;
@@ -396,6 +392,12 @@ fill: #485eab;
     color: #485eab !important;
 }
 
+/*FORM*/
+form {
+    height: 100%;
+    background-color: #C7D3EF;
+   
+}
   
 /* for custom scrollbar for webkit browser*/
 
