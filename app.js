@@ -122,4 +122,6 @@ app.get('/api/pmt/all', /*verifyUser,*/ async (req, res, next) => {
             return res.status(error.status || 500).json({ error: error.message });
         });
 });
+
+
 module.exports = app;
