@@ -19,20 +19,20 @@ const CREATE_TABLE_SQL = `
     );
 
     CREATE TABLE IF NOT EXISTS \`group\` (
-    groupId INT NOT NULL,
-    groupName VARCHAR(255) NOT NULL,
+    groupId INT NOT NULL AUTO_INCREMENT,
+    groupName VARCHAR(255) NOT NULL UNIQUE,
     PRIMARY KEY (groupId)
     );
 
     CREATE TABLE IF NOT EXISTS groupPerm (
-    groupId INT NOT NULL,
+    groupId INT NOT NULL ,
     permsId INT NOT NULL,
     PRIMARY KEY (groupId, permsId)
     );
 
     CREATE TABLE IF NOT EXISTS permission (
-    permsId INT NOT NULL,
-    permsName VARCHAR(255) NOT NULL,
+    permsId INT NOT NULL AUTO_INCREMENT,
+    permsName VARCHAR(255) NOT NULL UNIQUE,
     permsDescription VARCHAR(255) NOT NULL,
     PRIMARY KEY (permsId)
     );
@@ -64,6 +64,7 @@ const CREATE_TABLE_SQL = `
     parentSignature BLOB NOT NULL,
     dateOfAcknowledgement DATE NOT NULL,
     parentContactNo INT NOT NULL,
+    parentEmail VARCHAR(255) NOT NULL,
     statusOfAcknowledgement VARCHAR(50) NOT NULL,
     PRIMARY KEY (studentId)
     );
