@@ -28,3 +28,26 @@ module.exports.updateUserPermission = function updateUserPermission(email, group
             throw error;
         })
 }
+
+module.exports.updateAccountStatus = function disableUser(email, status) {
+    const sql = `UPDATE user SET isDisabled = ? WHERE email = ?`;
+    return query(sql, [status, email])
+        .then((result) => {
+            return result;
+        })
+        .catch((error) => {
+            throw error;
+        })
+}
+
+module.exports.deleteUser = function deleteUser(email) {
+    const sql = `Update user SET isDeleted = 1 WHERE email = ?`;
+    return query(sql, [email])
+        .then((result) => {
+            return result;
+        })
+        .catch((error) => {
+            throw error;
+        })
+}
+

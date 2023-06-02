@@ -137,6 +137,33 @@ app.put('/obs-admin/update-user-group', (req, res, next) => {
         .catch((error) => {
             return res.status(error.status || 500).json({ error: error.message });
         })
-})
+});
+
+// Disable Account
+app.put('/obs-admin/update-account-status', (req, res, next) => {
+    const { email, status } = req.body;
+    // TODO: Error handling and validation
+    return userModel.updateAccountStatus(email, status)
+        .then((result) => {
+            return res.json(result);
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+});
+
+
+// Delete Account
+app.put('/obs-admin/delete-user', (req, res, next) => {
+    const { email } = req.body;
+    // TODO: Error handling and validation
+    return userModel.deleteUser(email)
+        .then((result) => {
+            return res.json(result);
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+});
 
 module.exports = app;
