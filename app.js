@@ -126,4 +126,17 @@ app.post('obs-admin/newuser', (req, res, next) => {
 
 });
 
+// Update User Permission Group
+app.put('/obs-admin/update-user-group', (req, res, next) => {
+    const { email, groupId } = req.body;
+    // TODO: Error handling and validation
+    return userModel.updateUserPermission(email, groupId)
+        .then((result) => {
+            return res.json(result);
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+})
+
 module.exports = app;

@@ -17,3 +17,14 @@ module.exports.loginUser = function loginUser(credentials) {
             throw error;
         })
 }
+
+module.exports.updateUserPermission = function updateUserPermission(email, groupId) {
+    const sql = `UPDATE user SET groupID = ? WHERE email = ?`;
+    return query(sql, [groupId, email])
+        .then((result) => {
+            return result;
+        })
+        .catch((error) => {
+            throw error;
+        })
+}
