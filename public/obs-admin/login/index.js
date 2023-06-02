@@ -29,7 +29,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
         }).then((jsonData) => {
             console.log(jsonData)
-            // redirect to medical form
+            // redirect to superadmin/pmt/mst form
 
         }).catch((error) => {
             console.log(error)
