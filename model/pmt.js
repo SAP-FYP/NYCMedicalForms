@@ -6,7 +6,6 @@ module.exports.retrieveAllSubmissions = function retrieveAllSubmissions() {
                     FROM form F
                     JOIN student S ON F.studentId = S.studentId
                     JOIN parentAcknowledgement PA ON F.studentId = PA.studentId
-                    JOIN doctor D ON F.doctorMCR = D.doctorMCR
                     ;`;
     return query(sql)
         .then((result) => {
@@ -20,3 +19,22 @@ module.exports.retrieveAllSubmissions = function retrieveAllSubmissions() {
         });
 };
 
+module.exports.retrieveSubmission = function retrieveSubmission(nameOfStudent) {
+     const sql = `SELECT *
+                  FROM form F
+                  JOIN student S ON F.studentId = S.studentId
+                  JOIN parentAcknowledgement PA ON F.studentId = PA.studentId
+                  JOIN doctor D ON F.doctorMCR = D.doctorMCR
+                  WHERE S.nameOfStudent= ?;`;
+        return query(sql, [nameOfStudent])
+            .then((result) => {
+                if (result.length === 0) {
+                    throw new Error(nameOfStudent + "submission not found");
+                }
+                return result;
+            }
+            )
+            .catch((error) => {
+                throw new Error(error);
+            });
+};
