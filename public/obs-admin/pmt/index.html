@@ -84,7 +84,7 @@
                 <div class="overviewContainer">
                     <div class="d-flex align-items-center justify-content-between">
                         <div class="obsLogoContainer">
-                            <img src="../assets/Logo.png" alt="logo" class="py-2 h-auto" id="obsLogo">
+                            <img src="/public/assets/Logo.png" alt="logo" class="py-2 h-auto" id="obsLogo">
                         </div>
                         <div class="d-flex align-items-center">
                             <h2 class="profileText my-2">Tim Tam Man</h2>
@@ -102,7 +102,25 @@
                     </div>
                     <h2 class="overviewText">Overview</h2>
                     <div class="d-flex flex-wrap justify-content-center statusContainer">
-                         <!-- Template for status -->
+                        <!-- Template for status -->
+                        <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePending">
+                            <div>
+                                <h2 class="text-center m-auto p-0">Pending</h2>
+                                <h1 class="text-center m-auto p-0 pendingAmt">Loading...</h1>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-wrap align-items-center justify-content-center rectangleApproved">
+                            <div>
+                                <h2 class="text-center m-auto p-0">Approved</h2>
+                                <h1 class="text-center m-auto p-0 apprAmt">Loading...</h1>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-wrap align-items-center justify-content-center rectangleRejected">
+                            <div>
+                                <h2 class="text-center m-auto p-0">Rejected</h2>
+                                <h1 class="text-center m-auto p-0 rejAmt">Loading...</h1>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="form-outline mb-4 m-0 w-100">
@@ -155,26 +173,50 @@
                         </thead>
                         <tbody id="getAllForms">
                              <!-- Template for rows of table -->
+                            <tr>
+                                <td><input type="checkbox" id="checkBox" ></td>
+                                <td class="studentNRIC"> <div class="modalBtn" >Loading...</div></td>
+                                <td nameOfStudent="" class="studentName"><div class="modalBtn" >Loading...</div></td>
+                                <td class="studentClass"><div class="modalBtn" >Loading...</div></td>
+                                <td class="studentSch"><div class="modalBtn" >Loading...</div></td>
+                                <td class="studentEligibility"><div class="modalBtn" >Loading...</div></td>
+                                <td class="courseDate"><div class="modalBtn" >Loading...</div></td>
+                                <td>
+                                    <div class="modalBtn" >
+                                      
+                                        <div class="pillPending">Loading...</div>
+                                  
+                                    </div>
+                                </td>
+                                <td><svg class="tripleDot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30.24 8.29">
+                                        <g>
+                                            <ellipse class="tripleDot" cx="4.36" cy="4.15" rx="4.36" ry="4.15" />
+                                            <ellipse class="tripleDot" cx="15.12" cy="4.15" rx="4.36" ry="4.15" />
+                                            <ellipse class="tripleDot" cx="25.88" cy="4.15" rx="4.36" ry="4.15" />
+                                        </g>
+                                    </svg>
+                                </td>
+                            </tr>
                             
                             
                         </tbody>
 
 
-                        <div id="exportBtn"></div>
+                        
                     </table>
                     <!-- Modal Form -->
                     <div class="formModalContainer">
-                      
+                      <!-- Template for #staticBackdrop/Form modal -->
                     </div>
                     <!-- Modal Approve-->
                     <div class="apprModalContainer">
-
+                        <!-- Template for #staticBackdropAppr/Approved modal -->
                     </div>
                    
 
                     <!-- Modal Rejected -->
                     <div class="rejModalContainer">
-                    
+                        <!-- Template for #staticBackdropRej/Rejected modal -->
                     </div>
                     
 
@@ -207,17 +249,17 @@
     <template class="row-table-template">
         <tr>
             <td><input type="checkbox" id="checkBox"></td>
-            <td class="studentNRIC">T0998987H</td>
-            <td nameOfStudent="" class="studentName">Isaci Leong Cho Jing</td>
-            <td class="studentClass">4E2</td>
-            <td class="studentSch">Kent Ridge Secondary School</td>
-            <td class="studentEligibility">Fit</td>
-            <td class="courseDate">04/05/2023</td>
+            <td class="studentNRIC ">T0998987H</td>
+            <td nameOfStudent="" class="studentName ">Isaci Leong Cho Jing</td>
+            <td class="studentClass ">4E2</td>
+            <td class="studentSch ">Kent Ridge Secondary School</td>
+            <td class="studentEligibility ">Fit</td>
+            <td class="courseDate ">04/05/2023</td>
             <td>
-                <div class="modalBtn" >
-                    <a href="#" class="studentForm">
+                <div class="modalBtn">
+                    
                     <div class="pillPending">Pending</div>
-                    </a>
+                  
                 </div>
             </td>
             <td><svg class="tripleDot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30.24 8.29">

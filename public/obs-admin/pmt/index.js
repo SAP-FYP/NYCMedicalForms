@@ -20,24 +20,32 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log(formCounts.pending);
 
       // Get references to the status container and template
-      const statusContainer = document.querySelector('.statusContainer');
-      const template = document.querySelector('.status-template');
+      // const statusContainer = document.querySelector('.statusContainer');
+      // const template = document.querySelector('.status-template');
 
       // Clone the template and append it to the status container
-      const templateContent = template.content;
-      const clonedTemplate = document.importNode(templateContent, true);
+      // const templateContent = template.content;
+      // const clonedTemplate = document.importNode(templateContent, true);
 
-      const pendingAmtElement = clonedTemplate.querySelector('.pendingAmt');
-      const apprAmtElement = clonedTemplate.querySelector('.apprAmt');
-      const rejAmtElement = clonedTemplate.querySelector('.rejAmt');
+      // const pendingAmtElement = clonedTemplate.querySelector('.pendingAmt');
+      // const apprAmtElement = clonedTemplate.querySelector('.apprAmt');
+      // const rejAmtElement = clonedTemplate.querySelector('.rejAmt');
+
+      // pendingAmtElement.textContent = `${formCounts.pending}`;
+      // apprAmtElement.textContent = `${formCounts.approved}`;
+      // rejAmtElement.textContent = `${formCounts.rejected}`;
+
+      // statusContainer.appendChild(clonedTemplate);
+      // console.log(formData);
+
+      const pendingAmtElement = document.querySelector('.pendingAmt');
+      const apprAmtElement = document.querySelector('.apprAmt');
+      const rejAmtElement = document.querySelector('.rejAmt');
 
       pendingAmtElement.textContent = `${formCounts.pending}`;
       apprAmtElement.textContent = `${formCounts.approved}`;
       rejAmtElement.textContent = `${formCounts.rejected}`;
 
-      statusContainer.appendChild(clonedTemplate);
-      console.log(formData);
-      
       // Loop through the data and add it to the page
       for (i = 0; i < formData.length; i++) {
         const dateObj = new Date(formData[i].courseDate);
@@ -50,6 +58,10 @@ document.addEventListener("DOMContentLoaded", function () {
         const getAllForms = document.querySelector('#getAllForms');
         const rowTemplate = document.querySelector('.row-table-template');
 
+        //clear html content in getAllForms once
+        if (i === 0) {
+          getAllForms.innerHTML = "";
+        }
         // Clone the template and append it to the status container
         const templateContent = rowTemplate.content;
         const clonedRowTemplate = document.importNode(templateContent, true);
@@ -58,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
         studentNRICCell.textContent = `***${formData[i].studentNRIC}`;
 
         const nameOfStudentCell = clonedRowTemplate.querySelector('.studentName');
-        nameOfStudentCell.textContent = formData[i].nameOfStudent; 
+        nameOfStudentCell.textContent = formData[i].nameOfStudent;
         nameOfStudentCell.setAttribute("nameOfStudent", formData[i].nameOfStudent);
 
         const classCell = clonedRowTemplate.querySelector('.studentClass');
@@ -73,9 +85,11 @@ document.addEventListener("DOMContentLoaded", function () {
         const formattedDateCell = clonedRowTemplate.querySelector('.courseDate');
         formattedDateCell.textContent = formattedDate;
 
+        //give all .modalBtn the setAttribute data-bs-toggle="modal"
+        
         const pillDivCell = clonedRowTemplate.querySelector('.modalBtn');
         pillDivCell.setAttribute("data-bs-toggle", "modal");
-        pillDivCell.setAttribute("data-bs-target", `#staticBackdrop${i + 1}`);
+        // pillDivCell.setAttribute("data-bs-target", `#staticBackdrop${i + 1}`);
 
         const formStatusDiv = clonedRowTemplate.querySelector('.pillPending');
         formStatusDiv.textContent = formData[i].formStatus;
@@ -89,11 +103,11 @@ document.addEventListener("DOMContentLoaded", function () {
           formStatusDiv.classList.add("pillApproved");
         }
 
-    
-        
+
+
         getAllForms.appendChild(clonedRowTemplate);
 
-         function handleFormClick(index) {
+        function handleFormClick(index) {
           //index = i;
           // Check if the index is within the valid range of the formData array
           if (index >= 0 && index < formData.length) {
@@ -129,7 +143,7 @@ document.addEventListener("DOMContentLoaded", function () {
           // Perform additional actions or make API requests using the studentName
           axios.get(`${API_URL}/${studentName}`)
             .then(function (response) {
-              
+
               const formData = response.data[0];
               console.log(response.data);
 
@@ -142,95 +156,98 @@ document.addEventListener("DOMContentLoaded", function () {
 
               //Format the examDate
               const dateObj2 = new Date(formData.examinationDate);
-        
+
               const year2 = dateObj2.getFullYear();
               const month2 = String(dateObj2.getMonth() + 1).padStart(2, "0");
               const day2 = String(dateObj2.getDate()).padStart(2, "0");
               const formattedExamDate = `${year2}-${month2}-${day2}`;
 
               // Handle the response
-               // Get references to the form modal containers and templates
-               
-                const formContainer = document.querySelector('.formModalContainer');
-                //clear all values within the form modal 
-                
-                const formTemplate = document.querySelector('.form-modal-template');
+              // Get references to the form modal containers and templates
 
-                // Clone the template and append it to the form modal containers
-                // Copy the HTML content of the template
-                const templateContent = formTemplate.content;
-                // Create a copy of the template content
-                const clonedTemplate = document.importNode(templateContent, true);
+              const formContainer = document.querySelector('.formModalContainer');
+              //clear all values within the form modal 
+
+              const formTemplate = document.querySelector('.form-modal-template');
+
+              // Clone the template and append it to the form modal containers
+              // Copy the HTML content of the template
+              const templateContent = formTemplate.content;
+              // Create a copy of the template content
+              const clonedTemplate = document.importNode(templateContent, true);
 
 
-                let nameInput = clonedTemplate.querySelector('#applicantName');
-                let schoolInput = clonedTemplate.querySelector('#schoolOrg');
-                let nricInput = clonedTemplate.querySelector('#personalId');
-                let classInput = clonedTemplate.querySelector('#designation');
-                let courseDateInput = clonedTemplate.querySelector('#courseDate');
-                let dateVacInput = clonedTemplate.querySelector('#tetanusVaccine');
-                let additonalInput = clonedTemplate.querySelector('#medicalText');
-                let doctorNameInput = clonedTemplate.querySelector('#physicianName');
-                let doctoMCRInput = clonedTemplate.querySelector('#mcrNo');
-                let clinicNameInput = clonedTemplate.querySelector('#clinicName');
-                let examDateInput = clonedTemplate.querySelector('#examDate');
-                let doctorContactInput = clonedTemplate.querySelector('#contactNo');
-                let clinicAddressInput = clonedTemplate.querySelector('#clinicAddress');
-                let doctorSignatureInput = clonedTemplate.querySelector('#signatureData');
+              const nameInput = clonedTemplate.querySelector('#applicantName');
+              const schoolInput = clonedTemplate.querySelector('#schoolOrg');
+              const nricInput = clonedTemplate.querySelector('#personalId');
+              const classInput = clonedTemplate.querySelector('#designation');
+              const courseDateInput = clonedTemplate.querySelector('#courseDate');
+              const dateVacInput = clonedTemplate.querySelector('#tetanusVaccine');
+              const additonalInput = clonedTemplate.querySelector('#medicalText');
+              const doctorNameInput = clonedTemplate.querySelector('#physicianName');
+              const doctoMCRInput = clonedTemplate.querySelector('#mcrNo');
+              const clinicNameInput = clonedTemplate.querySelector('#clinicName');
+              const examDateInput = clonedTemplate.querySelector('#examDate');
+              const doctorContactInput = clonedTemplate.querySelector('#contactNo');
+              const clinicAddressInput = clonedTemplate.querySelector('#clinicAddress');
+              const doctorSignatureInput = clonedTemplate.querySelector('#signatureData');
 
-                
-                nameInput.value = `${formData.nameOfStudent}`;
-                console.log(formData.nameOfStudent+' eeeee')
-                schoolInput.value = `${formData.school}`;
-                nricInput.value = `${formData.studentNRIC}`;
-                classInput.value = `${formData.class}`;
-                courseDateInput.value = `${formattedCourseDate}`;
-                dateVacInput.value = `${formData.dateOfVaccination}`;
-                additonalInput.value = `${formData.review}`;
-                doctorNameInput.value = `${formData.nameOfDoctor}`;
-                doctoMCRInput.value = `${formData.doctorMCR}`;
-                clinicNameInput.value = `${formData.nameOfClinic}`;
-                examDateInput.value = `${formattedExamDate}`;
-                doctorContactInput.value = `${formData.contactNo}`;
-                clinicAddressInput.value = `${formData.clinicAddress}`;
-                doctorSignatureInput.value = `${formData.signature}`;
 
-                const closeBtn = clonedTemplate.querySelector('.closeBtn');
-                closeBtn.addEventListener('click', function () {
-                  // Clear the form modal container
-                  formContainer.innerHTML = '';
-                });
-                 
-                
-                formContainer.appendChild(clonedTemplate);
+              nameInput.value = `${formData.nameOfStudent}`;
+              console.log(formData.nameOfStudent + ' eeeee')
+              schoolInput.value = `${formData.school}`;
+              nricInput.value = `${formData.studentNRIC}`;
+              classInput.value = `${formData.class}`;
+              courseDateInput.value = `${formattedCourseDate}`;
+              dateVacInput.value = `${formData.dateOfVaccination}`;
+              additonalInput.value = `${formData.review}`;
+              doctorNameInput.value = `${formData.nameOfDoctor}`;
+              doctoMCRInput.value = `${formData.doctorMCR}`;
+              clinicNameInput.value = `${formData.nameOfClinic}`;
+              examDateInput.value = `${formattedExamDate}`;
+              doctorContactInput.value = `${formData.contactNo}`;
+              clinicAddressInput.value = `${formData.clinicAddress}`;
+              doctorSignatureInput.value = `${formData.signature}`;
 
-                // Display the approve modal
-                 // Get references to the approve modal containers and templates
-                 const apprContainer = document.querySelector('.apprModalContainer');
-                 const apprTemplate = document.querySelector('.appr-modal-template');
- 
-                 // Clone the template and append it to the approve modal containers
-                 const apprTemplateContent = apprTemplate.content;
-                 const apprClonedTemplate = document.importNode(apprTemplateContent, true);
+              const closeBtn = clonedTemplate.querySelector('.closeBtn');
+              closeBtn.addEventListener('click', function () {
+                // Clear the form modal container
+                formContainer.innerHTML = '';
+              });
 
-                 apprContainer.appendChild(apprClonedTemplate);
+             //export code
+             
 
-                 // Display the approve modal
-                 // Get references to the approve modal containers and templates
-                 const rejContainer = document.querySelector('.rejModalContainer');
-                 const rejTemplate = document.querySelector('.rej-modal-template');
- 
-                 // Clone the template and append it to the approve modal containers
-                 const rejTemplateContent = rejTemplate.content;
-                 const rejClonedTemplate = document.importNode(rejTemplateContent, true);
+              formContainer.appendChild(clonedTemplate);
 
-                 rejContainer.appendChild(rejClonedTemplate);
+              // Display the approve modal
+              // Get references to the approve modal containers and templates
+              const apprContainer = document.querySelector('.apprModalContainer');
+              const apprTemplate = document.querySelector('.appr-modal-template');
+
+              // Clone the template and append it to the approve modal containers
+              const apprTemplateContent = apprTemplate.content;
+              const apprClonedTemplate = document.importNode(apprTemplateContent, true);
+
+              apprContainer.appendChild(apprClonedTemplate);
+
+              // Display the approve modal
+              // Get references to the approve modal containers and templates
+              const rejContainer = document.querySelector('.rejModalContainer');
+              const rejTemplate = document.querySelector('.rej-modal-template');
+
+              // Clone the template and append it to the approve modal containers
+              const rejTemplateContent = rejTemplate.content;
+              const rejClonedTemplate = document.importNode(rejTemplateContent, true);
+
+              rejContainer.appendChild(rejClonedTemplate);
 
             })
             .catch(function (error) {
               // Handle errors
               console.log(error);
             });
+          
         })
       }
     })
@@ -298,41 +315,5 @@ hamburgerIcon.addEventListener("click", function () {
   }
 });
 
-const exportBtn = document.querySelector("#exportBtn");
-form.addEventListener("submit", (e) => {
-  e.preventDefault(); // prevent the default form submission behavior
 
-  const applicantName = document.getElementById("applicantName").value;
-  const schoolOrg = document.getElementById("schoolOrg").value;
-  const classNo = document.getElementById("designation").value;
-  const courseDate = document.getElementById("courseDate").value;
-
-  // create a new workbook
-  const workbook = XLSX.utils.book_new();
-
-  // create a new worksheet with the form data
-  const worksheet = XLSX.utils.json_to_sheet(
-    [
-      {
-        "Name of Applicant": applicantName,
-        "Organization/School": schoolOrg,
-        "Designation/Class": classNo,
-        "Course Date": courseDate,
-      },
-    ],
-    {
-      header: [
-        "Name of Applicant",
-        "Organization/School",
-        "Designation/Class",
-        "Course Date",
-      ],
-    }
-  );
-
-  // add the worksheet to the workbook
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Student Data");
-
-  // save the workbook as an Excel file
-  XLSX.writeFile(workbook, "StudentForm.xlsx");
-});
+//export function
