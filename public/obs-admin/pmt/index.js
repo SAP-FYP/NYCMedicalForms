@@ -216,18 +216,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
              
 
-              //call exportToExcel function
-              const exportBtn = clonedTemplate.querySelector("#exportBtn");
-              exportBtn.addEventListener("click", (e) => {
-                e.preventDefault(); // prevent the default form submission behavior
-                // Get the values of the input fields
-                const applicantName = nameInput.value
-                const schoolOrg = schoolInput.value
-                const classNo = classInput.value
-                const courseDate = courseDateInput.value
-                exportToExcel(applicantName, schoolOrg, classNo, courseDate);
-                console.log(applicantName, schoolOrg, classNo, courseDate);
-              });
+              //excel export
              
 
               formContainer.appendChild(clonedTemplate);
@@ -339,35 +328,4 @@ hamburgerIcon.addEventListener("click", function () {
   }
 });
 
-function exportToExcel(applicantName, schoolOrg, classNo, courseDate) {
-  
-  // create a new workbook
-  const workbook = XLSX.utils.book_new();
-
-  // create a new worksheet with the form data
-  const worksheet = XLSX.utils.json_to_sheet(
-    [
-      {
-        "Name of Applicant": applicantName,
-        "Organization/School": schoolOrg,
-        "Designation/Class": classNo,
-        "Course Date": courseDate,
-      },
-    ],
-    {
-      header: [
-        "Name of Applicant",
-        "Organization/School",
-        "Designation/Class",
-        "Course Date",
-      ],
-    }
-  );
-
-  // add the worksheet to the workbook
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Student Data");
-
-  // save the workbook as an Excel file
-  XLSX.writeFile(workbook, "StudentForm.xlsx");
-
-}
+//excel function
