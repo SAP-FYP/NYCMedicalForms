@@ -85,8 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const formattedDateCell = clonedRowTemplate.querySelector('.courseDate');
         formattedDateCell.textContent = formattedDate;
 
-        //give all .modalBtn the setAttribute data-bs-toggle="modal"
-        
+        //give all .modalBtn the set
         const pillDivCell = clonedRowTemplate.querySelector('.modalBtn');
         pillDivCell.setAttribute("data-bs-toggle", "modal");
         // pillDivCell.setAttribute("data-bs-target", `#staticBackdrop${i + 1}`);
@@ -215,7 +214,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 formContainer.innerHTML = '';
               });
 
-             //export code
+             
+
+              //call exportToExcel function
+              const exportBtn = clonedTemplate.querySelector("#exportBtn");
+              exportBtn.addEventListener("click", (e) => {
+                e.preventDefault(); // prevent the default form submission behavior
+                // Get the values of the input fields
+                const applicantName = nameInput.value
+                const schoolOrg = schoolInput.value
+                const classNo = classInput.value
+                const courseDate = courseDateInput.value
+                exportToExcel(applicantName, schoolOrg, classNo, courseDate);
+                console.log(applicantName, schoolOrg, classNo, courseDate);
+              });
              
 
               formContainer.appendChild(clonedTemplate);
@@ -229,6 +241,12 @@ document.addEventListener("DOMContentLoaded", function () {
               const apprTemplateContent = apprTemplate.content;
               const apprClonedTemplate = document.importNode(apprTemplateContent, true);
 
+              const confirmBtn = apprClonedTemplate.querySelector('.successBtn');
+              confirmBtn.addEventListener('click', function () {
+                // Clear the form modal container
+                formContainer.innerHTML = '';
+              });
+
               apprContainer.appendChild(apprClonedTemplate);
 
               // Display the approve modal
@@ -239,6 +257,12 @@ document.addEventListener("DOMContentLoaded", function () {
               // Clone the template and append it to the approve modal containers
               const rejTemplateContent = rejTemplate.content;
               const rejClonedTemplate = document.importNode(rejTemplateContent, true);
+
+              const confirm2Btn = rejClonedTemplate.querySelector('.successBtn');
+              confirm2Btn.addEventListener('click', function () {
+                // Clear the form modal container
+                formContainer.innerHTML = '';
+              });
 
               rejContainer.appendChild(rejClonedTemplate);
 
@@ -315,5 +339,35 @@ hamburgerIcon.addEventListener("click", function () {
   }
 });
 
+function exportToExcel(applicantName, schoolOrg, classNo, courseDate) {
+  
+  // create a new workbook
+  const workbook = XLSX.utils.book_new();
 
-//export function
+  // create a new worksheet with the form data
+  const worksheet = XLSX.utils.json_to_sheet(
+    [
+      {
+        "Name of Applicant": applicantName,
+        "Organization/School": schoolOrg,
+        "Designation/Class": classNo,
+        "Course Date": courseDate,
+      },
+    ],
+    {
+      header: [
+        "Name of Applicant",
+        "Organization/School",
+        "Designation/Class",
+        "Course Date",
+      ],
+    }
+  );
+
+  // add the worksheet to the workbook
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Student Data");
+
+  // save the workbook as an Excel file
+  XLSX.writeFile(workbook, "StudentForm.xlsx");
+
+}
