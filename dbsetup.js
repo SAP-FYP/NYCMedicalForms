@@ -9,13 +9,20 @@ const CREATE_TABLE_SQL = `
     nameOfUser VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     contactNo INT NOT NULL,
-    groupId VARCHAR(255) NOT NULL,
+    groupId INT NOT NULL,
     created_at DATETIME NOT NULL,
     isDisabled BOOLEAN NOT NULL DEFAULT FALSE,
     isDeleted BOOLEAN NOT NULL DEFAULT FALSE,
     invalidationDate DATETIME,
     passwordUpdated DATETIME,
+    roleId INT NOT NULL,
     PRIMARY KEY (email)
+    );
+
+    CREATE TABLE IF NOT EXISTS roles (
+    roleId INT NOT NULL AUTO_INCREMENT,
+    roleName VARCHAR(255) NOT NULL,
+    PRIMARY KEY (roleId)
     );
 
     CREATE TABLE IF NOT EXISTS \`group\` (
