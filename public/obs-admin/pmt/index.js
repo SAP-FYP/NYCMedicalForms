@@ -69,9 +69,11 @@ document.addEventListener("DOMContentLoaded", function () {
         const studentNRICCell = clonedRowTemplate.querySelector('.studentNRIC');
         studentNRICCell.textContent = `***${formData[i].studentNRIC}`;
 
+
         const nameOfStudentCell = clonedRowTemplate.querySelector('.studentName');
         nameOfStudentCell.textContent = formData[i].nameOfStudent;
         nameOfStudentCell.setAttribute("nameOfStudent", formData[i].nameOfStudent);
+
 
         const classCell = clonedRowTemplate.querySelector('.studentClass');
         classCell.textContent = formData[i].class;
@@ -85,13 +87,26 @@ document.addEventListener("DOMContentLoaded", function () {
         const formattedDateCell = clonedRowTemplate.querySelector('.courseDate');
         formattedDateCell.textContent = formattedDate;
 
-        //give all .modalBtn the set
-        const pillDivCell = clonedRowTemplate.querySelector('.modalBtn');
-        pillDivCell.setAttribute("data-bs-toggle", "modal");
+        //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
+        const modalBtn1 = clonedRowTemplate.querySelector('.modalBtn1');
+        const modalBtn2 = clonedRowTemplate.querySelector('.modalBtn2');
+        const modalBtn3 = clonedRowTemplate.querySelector('.modalBtn3');
+        const modalBtn4 = clonedRowTemplate.querySelector('.modalBtn4');
+        const modalBtn5 = clonedRowTemplate.querySelector('.modalBtn5');
+        const modalBtn6 = clonedRowTemplate.querySelector('.modalBtn6');
+        const modalBtn7 = clonedRowTemplate.querySelector('.modalBtn7');
+        const modalBtns = [modalBtn1,modalBtn2, modalBtn3, modalBtn4, modalBtn5, modalBtn6,modalBtn7];
+
+        modalBtns.forEach(function (modalBtn) {
+          modalBtn.setAttribute("data-bs-toggle", "modal");
+        });
+
+
         // pillDivCell.setAttribute("data-bs-target", `#staticBackdrop${i + 1}`);
 
         const formStatusDiv = clonedRowTemplate.querySelector('.pillPending');
         formStatusDiv.textContent = formData[i].formStatus;
+
 
         //To change the color of the pill
         if (formData[i].formStatus === "Pending") {
@@ -113,17 +128,20 @@ document.addEventListener("DOMContentLoaded", function () {
             // Retrieve the formStatus of the clicked form at the given index
             const formStatus = formData[index].formStatus;
 
-            // Add a CSS class based on the formStatus to pillDivCell
-            pillDivCell.classList.add(`${formStatus.toLowerCase()}Form`);
+            // // Add a CSS class based on the formStatus to pillDivCell
+            // pillDivCell.classList.add(`${formStatus.toLowerCase()}Form`);
 
+            //loop to add attribute to all .modalBtn
             // Set the appropriate data-bs-target attribute based on the formStatus
-            if (formStatus === "Pending") {
-              pillDivCell.setAttribute("data-bs-target", "#staticBackdrop");
-            } else if (formStatus === "Approved") {
-              pillDivCell.setAttribute("data-bs-target", "#staticBackdropAppr");
-            } else if (formStatus === "Rejected") {
-              pillDivCell.setAttribute("data-bs-target", "#staticBackdropRej");
-            }
+            modalBtns.forEach(function (modalBtn) {
+              if (formStatus === "Pending") {
+                modalBtn.setAttribute("data-bs-target", "#staticBackdrop");
+              } else if (formStatus === "Approved") {
+                modalBtn.setAttribute("data-bs-target", "#staticBackdropAppr");
+              } else if (formStatus === "Rejected") {
+                modalBtn.setAttribute("data-bs-target", "#staticBackdropRej");
+              }
+            });
 
 
           }
@@ -132,12 +150,16 @@ document.addEventListener("DOMContentLoaded", function () {
         // Call the handleFormClick function with the current value of i
         handleFormClick(i);
 
+        modalBtns.forEach(function (modalBtn) {
+          modalBtn.addEventListener("click", function () {
+            openModal();
+          });
+        });
+        function openModal() {
 
-       
 
-        pillDivCell.addEventListener("click", function () {
           const studentName = nameOfStudentCell.getAttribute("nameOfStudent");
-          
+
 
           // Perform additional actions or make API requests using the studentName
           axios.get(`${API_URL}/${studentName}`)
@@ -214,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 formContainer.innerHTML = '';
               });
 
-             
+
 
               //call exportToExcel function
               const exportBtn = clonedTemplate.querySelector("#exportBtn");
@@ -228,7 +250,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 exportToExcel(applicantName, schoolOrg, classNo, courseDate);
                 console.log(applicantName, schoolOrg, classNo, courseDate);
               });
-             
+
 
               formContainer.appendChild(clonedTemplate);
 
@@ -271,8 +293,9 @@ document.addEventListener("DOMContentLoaded", function () {
               // Handle errors
               console.log(error);
             });
-          
-        })
+
+        }
+
       }
     })
     .catch(function (error) {
@@ -340,7 +363,7 @@ hamburgerIcon.addEventListener("click", function () {
 });
 
 function exportToExcel(applicantName, schoolOrg, classNo, courseDate) {
-  
+
   // create a new workbook
   const workbook = XLSX.utils.book_new();
 
