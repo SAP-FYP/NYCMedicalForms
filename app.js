@@ -3,10 +3,11 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
-const moment = require('moment');
+const moment = require('moment-timezone');
 
 const verifyUser = require('./auth/userAuth')
 const userModel = require('./model/user')
+const adminModel = require('./model/admin')
 const JWT_SECRET = process.env.SECRETKEY;
 
 const app = express();
@@ -122,8 +123,85 @@ app.get('/jwt', (req, res, next) => {
  */
 
 // Create Account
-app.post('obs-admin/newuser', (req, res, next) => {
+app.post('/obs-admin/newuser', (req, res, next) => {
+    const newuser = {
+        name: req.body.name,
+        email: req.body.email,
+        contact: req.body.contact,
+        password: req.body.password,
+        permissionGroup: req.body.permissionGroup,
+        role: req.body.role
+    }
 
+    if (!newuser.name || !newuser.email || !newuser.contact || !newuser.password
+        || !newuser.permissionGroup || newuser.permissionGroup == -1 || newuser.role == -1) {
+        const error = new Error("Empty or invalid user information");
+        error.status = 400;
+        throw error;
+    }
+
+    // HASHING PASSWORD
+    bcrypt.hash(newuser.password, 10, async function (err, hash) {
+        if (err) {
+            return res.status(500).json({ error: 'Error hashing password' });
+        }
+
+        newuser.password = hash;
+        newuser.created_at = moment.tz('Asia/Singapore').format('YYYY-MM-DD hh:mm:ss')
+        newuser.passwordUpdated = moment.tz('Asia/Singapore').format('YYYY-MM-DD hh:mm:ss')
+
+        return adminModel
+            .createUser(newuser)
+            .then((result) => {
+                if (!result) {
+                    const error = new Error("Unable to create account")
+                    error.status = 500;
+                    throw error;
+                }
+                return res.sendStatus(201);
+            })
+            .catch((error) => {
+                if (error.code == "ER_DUP_ENTRY") {
+                    return res.status(422).json({ error: "Email or contact already exists" });
+                }
+                return res.status(error.status || 500).json({ error: error.message });
+            })
+    })
+
+});
+
+// Get Permission Groups
+app.get('/obs-admin/permission/groups', (req, res, next) => {
+    return adminModel
+        .getPermissionGroups()
+        .then((result) => {
+            if (!result) {
+                const error = new Error("No permission groups found")
+                error.status = 404;
+                throw error
+            }
+            return res.json({ result })
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+});
+
+// Get User Roles
+app.get('/obs-admin/roles', (req, res, next) => {
+    return adminModel
+        .getUserRoles()
+        .then((result) => {
+            if (!result) {
+                const error = new Error("No user roles found")
+                error.status = 404;
+                throw error
+            }
+            return res.json({ result })
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        })
 });
 
 module.exports = app;
