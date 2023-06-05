@@ -129,11 +129,12 @@ app.post('/obs-admin/newuser', (req, res, next) => {
         email: req.body.email,
         contact: req.body.contact,
         password: req.body.password,
-        permissionGroup: req.body.permissionGroup
+        permissionGroup: req.body.permissionGroup,
+        role: req.body.role
     }
 
     if (!newuser.name || !newuser.email || !newuser.contact || !newuser.password
-        || !newuser.permissionGroup || newuser.permissionGroup == 0) {
+        || !newuser.permissionGroup || newuser.permissionGroup == -1 || newuser.role == -1) {
         const error = new Error("Empty or invalid user information");
         error.status = 400;
         throw error;
@@ -176,6 +177,23 @@ app.get('/obs-admin/permission/groups', (req, res, next) => {
         .then((result) => {
             if (!result) {
                 const error = new Error("No permission groups found")
+                error.status = 404;
+                throw error
+            }
+            return res.json({ result })
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+});
+
+// Get User Roles
+app.get('/obs-admin/roles', (req, res, next) => {
+    return adminModel
+        .getUserRoles()
+        .then((result) => {
+            if (!result) {
+                const error = new Error("No user roles found")
                 error.status = 404;
                 throw error
             }
