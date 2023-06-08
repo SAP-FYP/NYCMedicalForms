@@ -29,6 +29,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
         }).then((jsonData) => {
             console.log(jsonData)
+            // role check
             // redirect to superadmin/pmt/mst form
 
         }).catch((error) => {

@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const moment = require('moment-timezone');
 
-const verifyUser = require('./auth/userAuth')
+const authHelper = require('./auth/userAuth')
 const userModel = require('./model/user')
 const adminModel = require('./model/admin')
 const JWT_SECRET = process.env.SECRETKEY;
@@ -64,9 +64,8 @@ app.post('/login', (req, res, next) => {
     }
 
     return userModel
-        .loginUser(credentials)
+        .getUser(credentials.email)
         .then((result) => {
-            console.log(result);
 
             // CHECK HASH
             if (!bcrypt.compareSync(credentials.password, result.password)) {
@@ -78,19 +77,23 @@ app.post('/login', (req, res, next) => {
             // SET JWT
             let payload = {
                 'email': result.email,
-                'permissionGroup': result.groupID
+                'name': result.nameOfUser,
+                'permissionGroup': result.groupId,
+                'role': result.roleId,
+                'picUrl': result.picUrl,
+                'contact': result.contactNo
             }
 
             let tokenConfig = {
                 expiresIn: 28800,
-                algorithm: "HS256"
+                algorithm: 'HS256'
             };
 
             // SIGN JWT
-            jwt.sign(payload, JWT_SECRET, tokenConfig, (error, token) => {
+            jwt.sign(payload, JWT_SECRET, tokenConfig, (err, token) => {
 
-                if (error) {
-                    console.log(error)
+                if (err) {
+                    console.log(err)
 
                     const error = new Error("Failed to sign JWT");
                     error.status = 500;
@@ -113,9 +116,35 @@ app.post('/login', (req, res, next) => {
         });
 });
 
+// Get User Info
+app.get('/user', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    const user = req.decodedToken;
+
+    if (!user) {
+        const error = new Error("Empty user");
+        error.status = 404;
+        throw error;
+    }
+
+    delete user.iat;
+    delete user.exp;
+    delete user.role;
+    delete user.permissionGroup;
+
+    return res.send({ user });
+})
+
+// JWT testing
 app.get('/jwt', (req, res, next) => {
-    const jwt = req.cookies.jwt;
-    return res.send(jwt);
+    const token = req.cookies.jwt;
+
+    // do using middleware
+    jwt.verify(token, JWT_SECRET, { algorithm: ['HSA256'] }, (error, decoded) => {
+        if (error) {
+            console.log(error)
+        }
+        return res.send(decoded);
+    })
 })
 
 /**
@@ -147,8 +176,8 @@ app.post('/obs-admin/newuser', (req, res, next) => {
         }
 
         newuser.password = hash;
-        newuser.created_at = moment.tz('Asia/Singapore').format('YYYY-MM-DD hh:mm:ss')
-        newuser.passwordUpdated = moment.tz('Asia/Singapore').format('YYYY-MM-DD hh:mm:ss')
+        newuser.created_at = moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss')
+        newuser.passwordUpdated = moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss')
 
         return adminModel
             .createUser(newuser)

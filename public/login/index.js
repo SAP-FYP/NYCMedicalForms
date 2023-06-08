@@ -17,12 +17,12 @@ window.addEventListener('DOMContentLoaded', () => {
         }).then((response) => {
             if (response.status === 400 || response.status === 401) {
                 const error = new Error("Invalid email or password");
-                error.code = response.status;
+                error.status = response.status;
                 throw error;
 
             } else if (response.status !== 200) {
                 const error = new Error("Unknown Error");
-                error.code = response.status;
+                error.status = response.status;
                 throw error;
             }
             return response.json();

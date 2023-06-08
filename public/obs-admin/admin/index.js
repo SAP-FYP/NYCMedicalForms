@@ -14,7 +14,7 @@ window.addEventListener('DOMContentLoaded', () => {
             if ((responses[0].status != 200 && responses[0].status != 404) ||
                 responses[1].status != 200 && responses[1].status != 404) {
                 const error = new Error('Unknown error')
-                error.code = 500;
+                error.status = 500;
                 throw error;
             }
 
@@ -29,13 +29,13 @@ window.addEventListener('DOMContentLoaded', () => {
             // Validate responses
             if (!userRole) {
                 const error = new Error('No roles found')
-                error.code = 404;
+                error.status = 404;
                 throw error;
             }
 
             if (!permGroups) {
                 const error = new Error('No permissions found')
-                error.code = 404;
+                error.status = 404;
                 throw error;
             }
 
