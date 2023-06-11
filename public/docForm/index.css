@@ -1,0 +1,36 @@
+#container {
+    background-image: url('../assets/background.png');
+    min-height: 100vh;
+}
+
+#menuContainer {
+    height: 150px;
+    border: 3px solid #485EAB;
+    background-color: #C7D3EF;
+}
+
+#sectionOneContainer {
+    height: 72px;
+    font-size: 20px;
+    gap: 10px;
+}
+
+#sectionTwoContainer {
+    font-size: 20px;
+    height: 72px;
+    gap: 10px;
+}
+
+#doctorForm {
+    border: 3px solid #485EAB;
+    background-color: #C7D3EF;
+}
+
+#checkContainer {
+    border: 10px;
+}
+
+#signatureCanvas {
+    border: 1px solid #485EAB;
+    background-color: white;
+}

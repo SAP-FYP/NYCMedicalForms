@@ -7,68 +7,85 @@
     <title>Responsive Example</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
-    <link type="stylesheet" href="index.css" />
-    
+    <link type="text/css" rel="stylesheet" href="index.css" />
 </head>
 
 <body>
-    <div class="container-fluid bg-black" style="background-image:url('../assets/background.png');min-height: 100vh;">
+    <div id="container" class="container-fluid bg-black">
         <div class="row justify-content-center">
             <!-- menu div -->
-            <div class="col-xl-2 col-md-2 col-12 col-sm-12 mt-xl-5 mt-md-5 me-xl-5 rounded-4 h-25"
-                style="height:150px;border:3px solid #485EAB;background-color: #C7D3EF;">
+            <div id="menuContainer" class="col-xl-2 col-md-2 col-12 col-sm-12 mt-xl-5 mt-md-5 me-xl-5 rounded-4 h-25" >
                 <div class="row">
-                    <div class="col-xl-12 col-md-12 col-sm-6 col-6 d-flex align-items-center justify-content-center"
-                        style="height:72px;font-size: 20px;">Section 1
+                    <div id="sectionOneContainer" class="col-xl-12 col-md-12 col-sm-6 col-6 d-flex align-items-center justify-content-center" >
+                        <svg id="Layer_2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 53.04 52.15" width="30" height="30">
+                            <defs><style>.cls-1{fill:#485eab;}</style></defs>
+                            <g id="Layer_44"><g>
+                                <path class="cls-1" d="M0,0V23.89H23.89V0H0ZM19.9,19.9H3.99V3.99h15.91v15.91Z"/>
+                                <path class="cls-1" d="M29.15,28.27v23.89h23.89V28.27H29.15Zm19.9,19.9h-15.91v-15.91h15.91v15.91Z"/>
+                                <path class="cls-1" d="M0,28.27v23.89H23.89V28.27H0Zm19.9,19.9H3.99v-15.91h15.91v15.91Z"/>
+                                <rect class="cls-1" x="29.15" y="0" width="23.89" height="23.89"/>
+                            </g></g>
+                        </svg>
+                        Section 1
                     </div>
-                    <div class="col-xl-12 col-md-12 col-sm-6 col-6 d-flex align-items-center justify-content-center"
-                        style="font-size: 20px;height:72px;">Section 2</div>
+                    <div id="sectionTwoContainer" class="col-xl-12 col-md-12 col-sm-6 col-6 d-flex align-items-center justify-content-center" >
+                        <svg id="Layer_2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 53.04 52.15" width="30" height="30">
+                            <defs><style>.cls-1{fill:#485eab;}</style></defs>
+                            <g id="Layer_44"><g>
+                                <path class="cls-1" d="M0,0V23.89H23.89V0H0ZM19.9,19.9H3.99V3.99h15.91v15.91Z"/>
+                                <path class="cls-1" d="M29.15,0V23.89h23.89V0H29.15Zm19.9,19.9h-15.91V3.99h15.91v15.91Z"/>
+                                <path class="cls-1" d="M29.15,28.27v23.89h23.89V28.27H29.15Zm19.9,19.9h-15.91v-15.91h15.91v15.91Z"/>
+                                <path class="cls-1" d="M0,28.27v23.89H23.89V28.27H0Zm19.9,19.9H3.99v-15.91h15.91v15.91Z"/>
+                                <rect class="cls-1" x="29.15" y="28.27" width="23.89" height="23.89"/>
+                            </g></g>
+                        </svg>
+                        Section 2
+                    </div>
                 </div>
             </div>
             <!-- form div -->
-            <form class="col-xl-6 col-md-8 col-12 col-sm-12 mt-xl-5 mt-md-5 me-xl-5 rounded-4 pt-3 p-xl-5 p-3"
-                style="height:85vh; overflow-y: auto;border:3px solid #485EAB;background-color: #C7D3EF;">
+            <form class="col-xl-6 col-md-8 col-12 col-sm-12 mt-xl-5 mt-md-5 mb-5 me-xl-5 rounded-4 pt-3 p-xl-5 p-3" id="doctorForm"
+                >
                 <div class="row">
-                    <div class="col-12">
+                    <div class="col-12 mb-3">
                         <h4>Student Section</h3>
                     </div>
-                    <div class="col-12">
+                    <div class="col-xl-6 col-12">
                         <div class="mb-3">
-                            <label for="applicantName" class="form-label">Name of Applicant</label>
-                            <input type="text" class="form-control" id="applicantName">
+                            <label for="studentName" class="form-label">Name of Applicant</label>
+                            <input type="text" class="form-control" id="studentName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="studentName" class="form-label">Date of Birth of Applicant</label>
+                            <input type="date" class="form-control" id="studentDateOfBirth" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="schoolName" class="form-label">Organization/School</label>
+                            <input type="text" class="form-control" id="schoolName" required>
                         </div>
                     </div>
                     <div class="col-xl-6 col-12">
                         <div class="mb-3">
-                            <label for="schoolOrg" class="form-label">Organization/School</label>
-                            <input type="text" class="form-control" id="schoolOrg">
+                            <label for="studentNRIC" class="form-label">Student NRIC</label>
+                            <input type="text" class="form-control" id="studentNRIC" maxlength="9" required>
                         </div>
                         <div class="mb-3">
-                            <label for="personalId" class="form-label">Personal Identification Number:<br>(Birth
-                                Cert/NRIC/FIN)</label>
-                            <input type="text" class="form-control" id="personalId">
-                        </div>
-
-                    </div>
-                    <div class="col-xl-6 col-12">
-                        <div class="mb-3">
-                            <label for="designation" class="form-label">Designation/class</label>
-                            <input type="text" class="form-control" id="designation">
+                            <label for="studentClass" class="form-label">Designation/class</label>
+                            <input type="text" class="form-control" id="studentClass" required>
                         </div>
                         <div class="mb-3">
-                            <label for="courseDate" class="form-label mt-xl-4">Course Date</label>
-                            <input type="date" class="form-control" id="courseDate">
+                            <label for="courseDate" class="form-label">Course Date</label>
+                            <input type="date" class="form-control" id="courseDate" required>
                         </div>
-
                     </div>
                     <div class="col-12">
                         <div class="row mt-xl-3 mb-3">
                             <div class="col-xl-6 col-12">
-                                <label for="tetanusVaccine" class="form-label">Period of Tetanus Vaccination: <br>(if
+                                <label for="dateOfVaccine" class="form-label">Period of Tetanus Vaccination: <br>(if
                                     not declared on the e-reg form)</label>
                             </div>
                             <div class="col-xl-6 col-12">
-                                <input type="date" class="form-control" id="tetanusVaccine">
+                                <input type="date" class="form-control" id="dateOfVaccine" required>
                             </div>
 
                         </div>
@@ -84,19 +101,19 @@
                         </div>
                         <div class="col-12 text-center mb-4">
 
-                            <div class="form-check form-check-inline" style="border: 10px;">
-                                <input class="form-check-input" type="radio" name="fit_status" id="fit_with_condition"
-                                    value="fit_with_condition">
+                            <div id="checkContainer" class="form-check form-check-inline" >
+                                <input class="form-check-input" type="radio" name="eligibility" id="Fit_With_Condition"
+                                    value="fit_with_condition" required>
                                 <label class="form-check-label" for="fit_with_condition">Fit with condition</label>
                             </div>
 
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="fit_status" id="fit" value="fit">
+                                <input class="form-check-input" type="radio" name="eligibility" id="fit" value="Fit" required>
                                 <label class="form-check-label" for="fit">Fit</label>
                             </div>
 
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="fit_status" id="unfit" value="unfit">
+                                <input class="form-check-input" type="radio" name="eligibility" id="unfit" value="Unfit" required>
                                 <label class="form-check-label" for="unfit">Unfit</label>
                             </div>
                         </div>
@@ -105,47 +122,52 @@
                     <div class="col-12">
                         <div class="form-group">
                             <div class="col-12 text-center mb-3">
-                                <label for="medical_text">Subject to additional information provided on the following:<br>condition(s)(any): </label>
+                                <label for="comment">Subject to additional information provided on the following:<br>condition(s)(any): </label>
                             </div>
-                            <textarea class="form-control mb-5" id="medical_text" name="medical_text" rows="10"></textarea>
+                            <textarea class="form-control mb-5" id="medical_text" name="comment" rows="10"></textarea>
                         </div>
                     </div>
                     <div class="col-12">
-                        <div class="mb-3">
-                            <label for="physicianName" class="form-label">Name of Physician:</label>
-                            <input type="text" class="form-control" id="physicianName">
+                        <label for="doctorMCR" class="form-label">Physician MCR No:</label>
+                        <div class="row">
+                            <div class="mb-3 col-8">
+                                <input type="text" class="form-control" id="doctorMCR" required>
+                            </div>
+                            <div class="mb-3 col-4">
+                                <button id="availabilityBtn" class="btn btn-secondary">Check Availability</button>
+                            </div>
                         </div>
                     </div>
                     <div class="col-xl-6 col-12">
                         <div class="mb-3">
-                            <label for="mcrNo" class="form-label">Physician MCR No:</label>
-                            <input type="text" class="form-control" id="mcrNo">
-                        </div>
+                                <label for="physicianName" class="form-label">Name of Physician:</label>
+                                <input type="text" class="form-control" id="physicianName" required>
+                            </div>
                         <div class="mb-3">
                             <label for="clinicName" class="form-label">Name Of Clinic</label>
-                            <input type="text" class="form-control" id="clinicName">
+                            <input type="text" class="form-control" id="clinicName" required>
                         </div>
                         <div class="mb-3">
                             <label for="date" class="form-label">Date</label>
-                            <input type="date" class="form-control" id="date">
+                            <input type="date" class="form-control" id="date" required>
                         </div>
                     </div>
                     <div class="col-xl-6 col-12 mb-3">
                         <div class="mb-3">
                             <label for="contactNo" class="form-label">Contact No:</label>
-                            <input type="text" class="form-control" id="contactNo">
+                            <input type="text" class="form-control" id="contactNo" required>
                         </div>
                         <div class="mb-3">
                             <label for="clinicAddress" class="form-label">Address Of Clinic</label>
-                            <input type="text" class="form-control" id="clinicAddress">
+                            <input type="text" class="form-control" id="clinicAddress" required>
                         </div>
                     </div>
                     <div class="col-12 text-center mb-3">
                         <h5>Signature</h5>
                     </div>
                     <div class="col-12 text-center">
-                        <canvas id="signatureCanvas" style="border: 1px solid #485EAB; background-color: white;"></canvas>
-                        <input type="hidden" id="signatureData" name="signatureData">
+                        <canvas id="signatureCanvas" ></canvas>
+                        <input type="hidden" id="signatureData" name="signatureData" required>
                     </div>
                     <div class="col-12 text-center mb-5">
                         <button id="clearSignatureBtn" class="btn btn-secondary btn-sm">Clear Signature</button>
