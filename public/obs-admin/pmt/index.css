@@ -131,21 +131,32 @@ body {
 
 /*PROFILE*/
 #profileIconContainer {
-    width: 50px;
+    margin-left: 20px !important;
+    height: 50px !important;
+    width: 50px !important;
 }
 .profileText {
-    
+    text-decoration: none;
+    color: #485eab;
     font-size: 26px;
+    white-space: nowrap;
+    font-weight: 500;
+    padding-left: 8px;
 }
-#profileCircle{
-    fill: #c7d3ef;
-    stroke: #485eab;
-    stroke-miterlimit: 10;
-    stroke-width: 1.36px;
+
+
+#profile-container {
+    margin-left: auto;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 300px;
+    transition: ease-in-out 150ms;
 }
-#profileIcon {
-    fill: #485eab;
+
+#profile-container:hover {
+    background-color: #dfdfdf;
 }
+
 /*Status*/
   .rectanglePending, .rectangleApproved, .rectangleRejected {
     margin: 10px;
@@ -234,9 +245,9 @@ body {
 .tableContainer {
     margin: 5px 40px 40px 20px;
     border: 2px solid #485eab !important;
-    border-radius: 10px !important;
+    border-radius: 18px !important;
     /* max-height: calc(100vh - 480px);  */
-    max-height: 70vh;
+    min-height: 386px;
 }
 table {
     border-collapse:separate !important;
