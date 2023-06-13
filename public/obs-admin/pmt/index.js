@@ -321,45 +321,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-const sideMenuBar = document.querySelector(".sideMenuBar");
-const hamburgerIcon = document.querySelector(".openMenu");
-const svgElement = document.querySelector("#openMenuContainer");
-const navIconTextElements = document.querySelectorAll(".navIconText");
-const bgOverlay = document.querySelector(".bgOverlay");
-const signOutText = document.querySelector(".signOutText");
-const anchorTag = document.querySelector("a");
+let navToggle = 0;
+const expandButton = document.getElementById("navbar-icons-arrow");
+const navbar = document.getElementById("nav-bar");
+const expandImg = document.getElementById("navbar-icons-arrow");
+const navbarLabels = document.getElementsByClassName("navbar-label");
+const headerName = document.getElementById('profile-user-name');
+const headerImg = document.getElementById('profile-user-image');
 
-const texts = ["Permission Groups", "Users", "Forms"];
 
-hamburgerIcon.addEventListener("click", function () {
-  sideMenuBar.classList.toggle("expanded");
+expandButton.addEventListener("click", function () {
+    if (!navToggle) {
+        navToggle = 1
+        navbar.style.width = "250px";
+        expandImg.src = "../../assets/images/navbar-collapse-icon.png"
+        for (let i = 0; i < navbarLabels.length; i++) {
+            navbarLabels[i].style.opacity = "1"
+        }
 
-  if (sideMenuBar.classList.contains("expanded")) {
-    svgElement.style.transform = "rotate(180deg)";
-    navIconTextElements.forEach((element, index) => {
-      element.textContent = texts[index];
-      element.style.display = "flex";
-      element.style.paddingTop = "30px";
-      element.style.paddingLeft = "20px";
-    });
-    signOutText.textContent = "Sign Out";
-    signOutText.style.color = "black";
-    signOutText.style.paddingLeft = "10px";
-    anchorTag.style.textDecoration = "none";
-  } else {
-    svgElement.style.transform = "rotate(0deg)";
-    sideMenuBar.classList.remove("expanded");
-    svgElement.style.transform = "rotate(0deg)";
-    navIconTextElements.forEach((element) => {
-      element.textContent = "";
-      element.style.display = "";
-      element.style.paddingTop = "";
-      element.style.paddingLeft = "";
-    });
-    signOutText.textContent = "";
-    signOutText.style.color = "";
-    signOutText.style.paddingLeft = "";
-  }
+    } else {
+        navToggle = 0
+        navbar.style.width = "70px";
+        expandImg.src = "../../assets/images/navbar-expand-icon.png"
+        for (let i = 0; i < navbarLabels.length; i++) {
+            navbarLabels[i].style.opacity = "0"
+        }
+    }
 });
 
 function exportToExcel(applicantName, schoolOrg, classNo, courseDate) {
