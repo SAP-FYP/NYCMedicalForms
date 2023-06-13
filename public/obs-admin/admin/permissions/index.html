@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="index.css" rel="stylesheet">
+    <link href="../../header-nav.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -19,23 +20,27 @@
         <div class="row">
             <div id="nav-bar">
                 <ul class="navbar-nav">
-                    <li><img id="navbar-icons-arrow" src="../../../assets/images/navbar-expand-icon.png"><a
-                            class="navbar-label">Collapse
+                    <li id="collapse-li"><img id="navbar-icons-arrow"
+                            src="../../../assets/images/navbar-expand-icon.png"><a class="navbar-label">Collapse
                             menu</a>
                     </li>
-                    <li><img id="navbar-icons-permission" src="../../../assets/images/permission-enabled-icon.png"><a
+                    <li id="permission-li"><img id="navbar-icons-permission"
+                            src="../../../assets/images/permission-enabled-icon.png"><a
                             class="navbar-label">Permissions</a></li>
-                    <li><img id="navbar-icons-profile" src="../../../assets/images/profile-enabled-icon.png"><a
-                            class="navbar-label">Users</a></li>
+                    <li id="user-li"><img id="navbar-icons-profile"
+                            src="../../../assets/images/profile-enabled-icon.png"><a class="navbar-label">Users</a></li>
+                    <li id="form-li"><img id="navbar-icons-forms" src="../../../assets/images/form-enabled-icon.png"><a
+                            class="navbar-label">Forms</a></li>
                     <li id="logout-li"><img id="navbar-icons-logout" src="../../../assets/images/logout-icon.png"><a
                             class="navbar-label">Logout</a></li>
                 </ul>
             </div>
         </div>
 
-        <!-- HEADER -->
         <div class="row" id="row-container">
             <div class="col-12" id="row-col">
+
+                <!-- HEADER -->
                 <div id="header-bar" class="col-12">
                     <img src="../../../assets/images/obs-logo.png">
 
@@ -52,14 +57,67 @@
                         <input id="search-input" type="text" class="form-control" placeholder="Search permission group">
                         <div id="spacer"></div>
                         <button id="clear-button" class="btn btn-outline-secondary" type="button"><i
-                                class="material-icons" style="font-size:24px;color:#485EAB;">close</i></button>
+                                class="material-icons search-bar-icons"
+                                style="font-size:24px;color:#485EAB;">close</i></button>
                         <button id="search-button" class="btn btn-outline-secondary" type="button"><i
-                                class="material-icons" style="font-size:24px;color:#485EAB;">search</i></button>
+                                class="material-icons search-bar-icons"
+                                style="font-size:24px;color:#485EAB;">search</i></button>
 
                     </div>
                 </div>
 
-                <!-- CONTAINER -->
+                <!-- MODAL -->
+                <div class="col-12 d-flex justify-content-end">
+                    <button style="border:none; cursor: default;" data-bs-toggle="modal"
+                        data-bs-target="#createPermissionModal" id="open-modal-button"><img id="create-permission-icon"
+                            src="../../../assets/images/create-permission-icon.png"></button>
+                </div>
+
+                <div class="modal fade" id="createPermissionModal" data-bs-backdrop="static" data-bs-keyboard="false"
+                    tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content" id="create-permission-modal">
+                            <div class="modal-header" id="modal-header">
+                                <img id="create-permission-modal-icon"
+                                    src="../../../assets/images/create-modal-icon.png">
+                                <h5 class="modal-title" id="staticBackdropLabel">Create New Permission Group</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <form id="create-permission-form">
+                                            <label class="form-label col-12" for="name-input">Name of Permission
+                                                Group</label>
+                                            <input class="form-input col-lg-6 col-12" id="name-input" type="text" />
+
+                                            <label class="form-label col-12" id="permission-input-label">Type of
+                                                permissions</label>
+
+                                            <div id="insert-checkbox-template">
+                                                <!-- checkbox template goes here -->
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer" id="modal-footer">
+                                <input id="confirm-permission-icon" alt="submit" type="image"
+                                    form="create-permission-form"
+                                    src="../../../assets/images/create-permission-icon.png"
+                                    style="background-color: white; display: inline;">
+
+                                <input id="edit-permission-icon" type="image"
+                                    src="../../../assets/images/create-permission-icon.png"
+                                    style="background-color: white; display: none;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- DATA CONTAINER -->
                 <div id="data-container" class="col-12">
                     <div id="data-title-container">
                         <input id="select-all-chkbox" type="checkbox">
@@ -67,22 +125,47 @@
                         <h5 class="col-4" style="margin-left: 7px;">TYPE</h5>
                     </div>
 
-                    <!-- ITEM -->
-                    <div class="item-container">
-                        <input class="select-item-chkbox" type="checkbox">
-                        <h5 class="col-5">Permission Group Name</h5>
-                        <h5 class="col-4">Permission Group Type</h5>
-                        <button class="more-button" value=""><i class="material-icons"
-                                style="font-size:28px;color:#485EAB;">more_horiz</i></button>
+                    <div id="insert-permission-group-template">
+                        <!-- permission group template goes here -->
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
+
+    <!-- TEMPLATES -->
+    <!-- PERMISSION GROUP TEMPLATE -->
+    <template id="permission-group-template">
+        <div class="item-container" value="">
+            <input class="select-item-chkbox" type="checkbox" value="">
+            <h5 class="col-5 permission-group-name" id="permission-group-name"></h5>
+            <h5 class="col-5 permission-group-type" id="permission-group-type"></h5>
+            <div class="dropstart" style="margin-left: auto;">
+                <button class="more-button" data-bs-toggle="dropdown" value="">
+                    <i class="material-icons more-button-icon" style="font-size:28px;color:#485EAB;">more_horiz</i>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item dropdown-edit" value="">Edit</a></li>
+                    <li><a class="dropdown-item dropdown-delete" value="">Delete</a></li>
+                </ul>
+            </div>
+        </div>
+    </template>
+
+    <!-- CHECKBOX TEMPLATE -->
+    <template id="checkbox-template">
+        <div class="checkbox-label-container col-5">
+            <input class="checkbox" type="checkbox" value="">
+            <label class="checkbox-label" for=""></label>
+        </div>
+    </template>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
         crossorigin="anonymous"></script>
+
+    <script src="../../header-nav.js"></script>
     <script src="index.js"></script>
 </body>
 

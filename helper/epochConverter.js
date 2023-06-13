@@ -16,5 +16,5 @@ module.exports.iatToLocale = function iatToLocale(iat) {
 */
 
 module.exports.localeToIat = function locateToIat(datetime) {
-    return moment(datetime, 'YYYY-MM-DD HH:mm:ss').utc().unix()
+    return moment.utc(datetime, 'YYYY-MM-DD HH:mm:ss').unix()
 }

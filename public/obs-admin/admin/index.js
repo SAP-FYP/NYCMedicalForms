@@ -1,15 +1,20 @@
 window.addEventListener('DOMContentLoaded', () => {
 
-    const createForm = this.document.querySelector("#create-user-form");
+    const createForm = document.querySelector("#create-user-form");
+    const roleInput = document.getElementById("role-input");
+    const permissionInput = document.getElementById("permission-input");
 
     // GET ROLES 
-    const getRoles = fetch('/obs-admin/roles')
+    const getRoles = fetch('/obs-admin/roles');
 
     // GET GROUPS
-    const getPermGroups = fetch('/obs-admin/permission/groups')
+    const getPermGroups = fetch('/obs-admin/permission/groups/-1');
 
     Promise.all([getRoles, getPermGroups])
         .then(async function (responses) {
+            // handle 404 here?
+            // since db throws 404
+            // no need to check at allJsonData
 
             if ((responses[0].status != 200 && responses[0].status != 404) ||
                 responses[1].status != 200 && responses[1].status != 404) {
@@ -28,15 +33,11 @@ window.addEventListener('DOMContentLoaded', () => {
 
             // Validate responses
             if (!userRole) {
-                const error = new Error('No roles found')
-                error.status = 404;
-                throw error;
+                // handle no roles
             }
 
             if (!permGroups) {
-                const error = new Error('No permissions found')
-                error.status = 404;
-                throw error;
+                // handle no perms group
             }
 
             // Handle data
@@ -78,7 +79,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 throw error;
 
             } else if (response.status == 422) {
-                const error = new Error("Email or contact already exists");
+                const error = new Error("Email already exists");
                 error.status = response.status
                 throw error;
 
@@ -108,8 +109,8 @@ window.addEventListener('DOMContentLoaded', () => {
         const contact = createForm.querySelector('#number-input').value.trim();
         const role = createForm.querySelector('#role-input').value;
 
-        if (!email || !permissionGroup || !name || !password || !contact || permissionGroup == -1 || role == -1) {
-            this.alert("Please fill in all fields");
+        if (!email || !permissionGroup || !name || !password || !contact || (permissionGroup == -1 && role != 1) || role == -1) {
+            alert("Please fill in all fields");
 
         } else {
             const newuser = {
@@ -122,6 +123,15 @@ window.addEventListener('DOMContentLoaded', () => {
             };
 
             createUser(newuser);
+        }
+    }
+
+    roleInput.onchange = (e) => {
+        if (e.target.value == 1) {
+            permissionInput.value = -1;
+            permissionInput.disabled = true;
+        } else {
+            permissionInput.disabled = false;
         }
     }
 })

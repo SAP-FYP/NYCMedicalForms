@@ -6,26 +6,27 @@ const momentHelper = require('../helper/epochConverter')
 
 module.exports.verifyToken = function verifyToken(req, res, next) {
     const token = req.cookies.jwt;
-
     if (!token) {
-        const error = new Error("No token found! Reason(Empty token)");
-        console.log('Error: ' + error.message);
 
-        res.clearCookie('jwt');
-        return res.status(401).json({ error: error.message });
+        // NO TOKEN
+        const error = new Error("No token found! Reason(Empty token)");
+        error.status = 401;
+        console.log('Error: ' + error.message);
+        return next(error);
 
     } else {
-        tokenConfig = { algorithm: ['HS256'] }
-
-        jwt.verify(token, JWT_SECRET, tokenConfig, function (err, decodedPayload) {
+        // CHECK TOKEN
+        jwt.verify(token, JWT_SECRET, { algorithm: ['HS256'] }, function (err, decodedPayload) {
             if (err) {
-                const error = new Error("Not authorized! Reason(Invalid token)");
-                console.log('Error: ' + error.message);
-
+                // FAIL CHECK
                 res.clearCookie('jwt');
-                return res.status(401).json({ error: error.message });
+                const error = new Error("Not authorized! Reason(Invalid token)");
+                error.status = 403;
+                console.log('Error: ' + error.message);
+                return next(error);
 
             } else {
+                // PASS CHECK
                 req.decodedToken = decodedPayload;
                 next();
             }
@@ -41,12 +42,14 @@ module.exports.checkIat = function checkIat(req, res, next) {
         .getUser(email)
         .then((result) => {
             const invalidation_iat = momentHelper.localeToIat(result.invalidationDate);
-
+            // COMPARE ISSUED JWT TOKEN AND DB INVALIDATION
             if (invalidation_iat && invalidation_iat >= issued_iat) {
+                // INVALIDATED
                 res.clearCookie('jwt');
                 const error = new Error("Token expired/invalidated! Reason(Invalidated token)");
                 error.status = 401;
-                throw error;
+                return next(error);
+
             }
             next();
         })

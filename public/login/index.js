@@ -25,15 +25,13 @@ window.addEventListener('DOMContentLoaded', () => {
                 error.status = response.status;
                 throw error;
             }
-            return response.json();
-
-        }).then((jsonData) => {
-            console.log(jsonData)
-            // redirect to medical form
+            // role check
+            // redirect to superadmin/pmt/mst form
+            // can redirect in app.js using res.redirect
 
         }).catch((error) => {
             console.log(error)
-            this.alert(error)
+            alert(error)
             // display error
         })
     }
@@ -44,7 +42,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const password = loginForm.querySelector('#login-password').value;
 
         if (!email || !password) {
-            this.alert("Please fill in empty fields")
+            alert("Please fill in empty fields")
         } else {
             login(email, password)
         }
