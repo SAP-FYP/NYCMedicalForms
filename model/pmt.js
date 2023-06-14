@@ -29,7 +29,7 @@ module.exports.retrieveSubmission = function retrieveSubmission(nameOfStudent) {
         return query(sql, [nameOfStudent])
             .then((result) => {
                 if (result.length === 0) {
-                    throw new Error(nameOfStudent + "submission not found");
+                    throw new Error(nameOfStudent + "'s submission not found");
                 }
                 return result;
             }

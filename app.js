@@ -116,7 +116,10 @@ app.get('/api/pmt/all', /*verifyUser,*/ async (req, res, next) => {
     return pmtModel
         .retrieveAllSubmissions()
         .then((result) => {
-            return res.json(result[0]);
+            if (result.length === 0) {
+                throw new Error("No submissions found");
+            }
+            return res.json( result[0] );
         })
         .catch((error) => {
             return res.status(error.status || 500).json({ error: error.message });
@@ -128,7 +131,11 @@ app.get('/api/pmt/:nameOfStudent', /*verifyUser,*/ async (req, res, next) => {
     return pmtModel
         .retrieveSubmission(nameOfStudent)
         .then((result) => {
-            return res.json(result[0]);
+            if (result.length === 0) {
+                throw new Error(nameOfStudent + "'s submission not found");
+            }
+            return res.json(result[0]
+                );
         })
         .catch((error) => {
             return res.status(error.status || 500).json({ error: error.message });
