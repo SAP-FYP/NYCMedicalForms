@@ -60,6 +60,7 @@ const CREATE_TABLE_SQL = `
     nameOfStudent VARCHAR(255) NOT NULL,
     class VARCHAR(255) NOT NULL,  
     school VARCHAR(255) NOT NULL,
+    dateOfBirth DATE NOT NULL,
     dateOfVaccination VARCHAR(255) NOT NULL,
     PRIMARY KEY (studentId)  
     );
@@ -68,6 +69,7 @@ const CREATE_TABLE_SQL = `
     studentId INT NOT NULL AUTO_INCREMENT,
     parentNRIC VARCHAR(9) NOT NULL,
     nameOfParent VARCHAR(255) NOT NULL,
+    parentEmail VARCHAR(255) NULL.
     parentSignature BLOB NOT NULL,
     dateOfAcknowledgement DATE NOT NULL,
     parentContactNo INT NOT NULL,
