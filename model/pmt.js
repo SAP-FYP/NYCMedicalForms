@@ -38,3 +38,18 @@ module.exports.retrieveSubmission = function retrieveSubmission(nameOfStudent) {
                 throw new Error(error);
             });
 };
+
+module.exports.updateSubmissionStatus = function updateSubmissionStatus(formStatus, studentId) {
+    const sql = `UPDATE form 
+                 SET formStatus = ?
+                 WHERE studentId = ?;`;
+       return query(sql, [formStatus, studentId])
+           .then((result) => {
+              
+               return result;
+           }
+           )
+           .catch((error) => {
+               throw new Error(error);
+           });
+};
