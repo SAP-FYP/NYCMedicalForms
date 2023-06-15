@@ -163,6 +163,12 @@
                     <div class="formModalContainer">
                       <!-- Template for #staticBackdrop/Form modal -->
                     </div>
+
+                      <!-- Modal Form Parent -->
+                      <div class="formModalContainer">
+                        <!-- Template for #staticBackdropRej/Rejected modal -->
+                    </div>
+
                     <!-- Modal Approve-->
                     <div class="apprModalContainer">
                         <!-- Template for #staticBackdropAppr/Approved modal -->
@@ -173,6 +179,8 @@
                     <div class="rejModalContainer">
                         <!-- Template for #staticBackdropRej/Rejected modal -->
                     </div>
+
+                  
                     
 
                 </div>
@@ -390,11 +398,186 @@
                                             Applicant's Registration Form,
                                             examined the Applicant & approve him/her to be (please tick):</label>
                                     </div>
-                                    <div class=" col-12 text-center mb-3 d-flex justify-content-center align-items-center mt-3">
-                                        <button type="button" class="btn btn-secondary approve-btn">Approve</button>
-                                        <div class="verticalLine mx-3"></div>
-                                        <button type="button" class="btn btn-secondary reject-btn">Reject</button>
+                                    <div class=" col-12 text-center mb-3 d-flex justify-content-center align-items-center mt-3" id="approveRejectBtn">
+                                       
                                     </div>
+
+                                </div>
+                                <div class="col-12 mb-3 text-end">
+                                    <button id="exportBtn" class="btn btn-primary btn-lg"
+                                        type="submit">Export</button>
+                                </div>
+                            </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    </template>
+    <!-- Template for #staticBackdropParent/Form modal -->
+    <template class="parent-form-modal-template">
+        <div class="modal fade" id="staticBackdropParent" data-bs-backdrop="static" data-bs-keyboard="false"
+        tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <div class="d-flex align-items-center">
+                        <svg id="formSVG" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 87.99 87.99">
+                            <g id="Layer_44">
+                                <g>
+                                    <rect id="formIconContainer" x="1.11" y="1.11" width="85.76"
+                                        height="85.76" rx="7.82" ry="7.82" />
+                                    <path id="formIcon"
+                                        d="M26.87,43.97c0-6.63,0-13.26,0-19.89,0-1.3,.57-1.88,1.85-1.88,7.89,0,15.79,0,23.68,0,.65,0,1.15,.21,1.6,.67,2.12,2.14,4.25,4.28,6.4,6.39,.49,.49,.72,1.02,.72,1.72-.01,10.97,0,21.95,0,32.92,0,1.32-.57,1.89-1.9,1.89-10.15,0-20.3,0-30.44,0-1.35,0-1.91-.56-1.91-1.93,0-6.63,0-13.26,0-19.89Zm17.17-1.53c-2.55,0-5.09,0-7.64,0-1.04,0-1.74,.62-1.75,1.54,0,.92,.7,1.57,1.73,1.57,5.07,0,10.15,0,15.22,0,1.03,0,1.73-.65,1.73-1.57,0-.92-.71-1.54-1.75-1.54-2.51,0-5.03,0-7.54,0Zm-1.58,7.78c-2.01,0-4.02,0-6.03,0-1.07,0-1.78,.63-1.77,1.57,0,.92,.72,1.54,1.75,1.54,4.02,0,8.04,0,12.06,0,1.04,0,1.74-.63,1.75-1.55,0-.93-.71-1.57-1.78-1.57-1.99,0-3.99,0-5.98,0Zm-1.58-15.57c-1.51,0-3.02,0-4.52,0-1,0-1.69,.64-1.7,1.54,0,.9,.69,1.57,1.68,1.57,3.03,0,6.06,0,9.09,0,.98,0,1.68-.66,1.68-1.57,0-.9-.71-1.54-1.7-1.54-1.51,0-3.02,0-4.52,0Z" />
+                                </g>
+                            </g>
+                        </svg>
+                        <h2 class="modal-title fs-5" id="staticBackdropLabel">Form Details</h2>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div id="pillForm" class="d-flex align-items-center">
+                            <svg id="eyeSVG" xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 264.73 157.58">
+                                <g id="Layer_44">
+                                    <g>
+                                        <path class="eyeIcon"
+                                            d="M264.73,80.86c-1.66,4.77-5.2,8.28-8.29,12.03-16.67,20.22-36.11,37.12-59.62,49.02-16.05,8.12-32.97,13.3-50.92,15-34.89,3.31-66.43-5.95-95.33-25.22-18.76-12.51-34.4-28.29-48.03-46.14-3.36-4.4-3.37-9.17-.02-13.55,15.73-20.59,34.11-38.3,56.57-51.49C77.65,9.61,97.55,2.68,119.08,.65c31.34-2.96,60.29,4.33,87.22,20.26,22.27,13.17,40.44,30.84,56.07,51.29,1.06,1.39,1.57,3.02,2.35,4.54v4.14Zm-131.79,53.53c31.16-.46,55.39-25.59,55.06-57.09-.31-29.66-26.02-54.53-55.94-54.1-31.48,.45-55.6,25.35-55.29,57.07,.28,29.78,26.02,54.57,56.17,54.12Z" />
+                                        <path class="eyeIcon"
+                                            d="M162.35,78.82c-.11,16.61-13.83,30.07-30.5,29.91-16.24-.15-29.5-13.74-29.41-30.15,.09-16.51,13.9-29.92,30.65-29.76,16.11,.15,29.37,13.75,29.26,30Z" />
+                                    </g>
+                                </g>
+                            </svg>
+                            <span class="ms-2">View Only</span>
+                        </div>
+
+                        <button type="button" class="btn-close closeBtn" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+
+                    </div>
+                </div>
+                <div class="modal-body ">   
+                    <!--FORM-->                                             
+                    <form style="height:100%; background-color: #C7D3EF;">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h4>Student Section:</h4>
+                                </div>
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <label for="applicantName" class="form-label">Name of
+                                            Applicant:</label>
+                                        <input type="text" class="form-control" id="applicantName" value="Jerry" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-xl-6 col-12">
+                                    <div class="mb-3">
+                                        <label for="schoolOrg"
+                                            class="form-label">Organization/School:</label>
+                                        <input type="text" class="form-control" id="schoolOrg" value="Singapore Secondary School" disabled>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="personalId" class="form-label">Personal
+                                            Identification Number:<br>(Birth
+                                            Cert/NRIC/FIN)</label>
+                                        <input type="text" class="form-control" id="personalId" value="T0889875G" disabled>
+                                    </div>
+
+                                </div>
+                                <div class="col-xl-6 col-12">
+                                    <div class="mb-3">
+                                        <label for="designation"
+                                            class="form-label">Designation/class:</label>
+                                        <input type="text" class="form-control" id="designation" value="4E3" disabled>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="courseDate" class="form-label mt-xl-4">Course
+                                            Date:</label>
+                                        <input type="date" class="form-control" id="courseDate" value="2023-11-02" disabled>
+                                    </div>
+
+                                </div>
+                                <div class="col-12">
+                                    <div class="row mt-xl-3 mb-3">
+                                        <div class="col-xl-6 col-12">
+                                            <label for="tetanusVaccine" class="form-label">Period of
+                                                Tetanus Vaccination:</label>
+                                        </div>
+                                        <div class="col-xl-6 col-12 ">
+                                            <input type="date" class="form-control" id="tetanusVaccine" value="2023-11-02" disabled>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <h4>Physician Section:</h4>
+                                </div>
+
+                              
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <div class="col-12 text-center mb-3">
+                                            <label for="medical_text">Subject to additional information
+                                                provided on the following:<br>condition(s)(any):
+                                            </label>
+                                        </div>
+                                        <textarea class="form-control mb-5" id="medicalText"
+                                            name="medical_text" rows="10" disabled></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <label for="physicianName" class="form-label">Name of
+                                            Physician:</label>
+                                        <input type="text" class="form-control" id="physicianName" disabled> 
+                                    </div>
+                                </div>
+                                <div class="col-xl-6 col-12">
+                                    <div class="mb-3">
+                                        <label for="mcrNo" class="form-label">Physician MCR No:</label>
+                                        <input type="text" class="form-control" id="mcrNo" disabled>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="clinicName" class="form-label">Name Of
+                                            Clinic</label>
+                                        <input type="text" class="form-control" id="clinicName" disabled>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="date" class="form-label">Exam Date:</label>
+                                        <input type="date" class="form-control" id="examDate" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-xl-6 col-12 mb-3">
+                                    <div class="mb-3">
+                                        <label for="contactNo" class="form-label">Contact No:</label>
+                                        <input type="text" class="form-control" id="contactNo" disabled>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="clinicAddress" class="form-label">Address Of
+                                            Clinic</label>
+                                        <input type="text" class="form-control" id="clinicAddress" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-12 text-center mb-3">
+                                    <h5>Signature</h5>
+                                </div>
+                                <div class="col-12 text-center">
+                                    <canvas id="signatureCanvas"
+                                        style="border: 1px solid #485EAB; background-color: white;"></canvas>
+                                    <input type="hidden" id="signatureData" name="signatureData">
+                                </div>
+                                <div class="col-12 text-center mb-5">
+                                    
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <h4>Partnership Management Team:</h4>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-12 text-center mb-4">
+                                        <label for="medical_check" class="text-center mx-auto w-75">I, the undersigned, have assessed the
+                                            Applicant's Registration Form,
+                                            examined the Applicant & approve him/her to be (please tick):</label>
+                                    </div>
+                                   
 
                                 </div>
                                 <div class="col-12 mb-3 text-end">
@@ -417,7 +600,7 @@
                                 <div class="modal-body text-center">
                                     <h3 class=" text-center">Form is approved!</h3>
                                     <h5>The Form has been approved.</h5>
-                                    <img src="../assets/Approved.png" alt="approved" class=" h-auto" id="errorIcon">
+                                    <img src="../../assets/images/Approved.png" alt="approved" class=" h-auto" id="errorIcon">
 
                                     <div class="d-flex justify-content-center align-items-center pt-2">
                                         <button type="button" class="btn btn-primary successBtn"
@@ -438,7 +621,7 @@
                                 <div class="modal-body text-center">
                                     <h3 class=" text-center">Form is rejected!</h3>
                                     <h5>The Form has been rejected.</h5>
-                                    <img src="../assets/Rejected.png" alt="rejected" class=" h-auto" id="errorIcon">
+                                    <img src="../../assets/images/Rejected.png" alt="rejected" class=" h-auto" id="errorIcon">
 
                                     <div class="d-flex justify-content-center align-items-center pt-2">
                                         <button type="button" class="btn btn-primary successBtn"
