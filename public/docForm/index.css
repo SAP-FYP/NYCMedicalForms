@@ -1,6 +1,16 @@
+body,
+html {
+    overflow: hidden;
+}
+
 #container {
     background-image: url('../assets/background.png');
     min-height: 100vh;
+}
+
+#formDiv {
+    overflow-y: auto;
+    height: 100vh;
 }
 
 #menuContainer {
@@ -33,4 +43,21 @@
 #signatureCanvas {
     border: 1px solid #485EAB;
     background-color: white;
+}
+
+/* scroll bar css */
+#formDiv::-webkit-scrollbar {
+    width: 5px;
+}
+
+#formDiv::-webkit-scrollbar-track {
+    background: #232323;
+}
+
+#formDiv::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+#formDiv::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }

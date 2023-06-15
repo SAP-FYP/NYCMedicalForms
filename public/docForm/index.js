@@ -1,4 +1,16 @@
+/*
+Author: CHA HAJIN
+Date: 2023-06-16
+File: docForm/index.js
+
+Description:
+This file includes validation of form values and send data to APIs to save data in our database
+*/ 
+
 document.addEventListener('DOMContentLoaded', function () {
+    const myModal = new bootstrap.Modal('#loadingModal', {
+        keyboard: false
+      })
     let canvas = document.getElementById('signatureCanvas');
     let signaturePad = new SignaturePad(canvas);
     let clearSignatureBtn = document.getElementById('clearSignatureBtn');
@@ -16,6 +28,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const studentClassInput = document.getElementById('studentClass');
     const courseDateInput = document.getElementById('courseDate');
     const dateOfVaccineInput = document.getElementById('dateOfVaccine');
+    const parentEmail = document.getElementById('parentEmail');
+    const parentContact = document.getElementById('parentContact');
 
     // physician sector
     const eligibilityRadios = document.getElementsByName('eligibility');
@@ -26,6 +40,28 @@ document.addEventListener('DOMContentLoaded', function () {
     const contactNoInput = document.getElementById('contactNo');
     const clinicAddressInput = document.getElementById('clinicAddress');
     const doctorMCRInput = document.getElementById('doctorMCR');
+
+    // ONLY FOR TESTING PLEASE DELETE LATER-----------------------------------------------
+    document.getElementById('studentName').value = 'John Doe';
+    document.getElementById('schoolName').value = 'Example School';
+    document.getElementById('studentDateOfBirth').value = '2005-01-01';
+    document.getElementById('studentNRIC').value = 'S1234567D';
+    document.getElementById('studentClass').value = '5A';
+    document.getElementById('courseDate').value = '2005-01-01';
+    document.getElementById('dateOfVaccine').value = '2005-01-01';
+    document.getElementById('parentEmail').value = 'parent@example.com';
+    document.getElementById('parentContact').value = '12345678';
+
+    document.getElementById('fit').checked = true;
+    commentsTextarea.disabled = true;
+
+    physicianNameInput.value = 'Dr. John Doe';
+    clinicNameInput.value = 'Clinic Name';
+    dateInput.value = '2023-06-16';
+    contactNoInput.value = '1234567890';
+    clinicAddressInput.value = 'Clinic Address';
+    doctorMCRInput.value = 'MCR Value';
+    // ONLY FOR TESTING -----------------------------------------------
     
     //date object
     let today = new Date();
@@ -50,17 +86,28 @@ document.addEventListener('DOMContentLoaded', function () {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(doctorEntry)
-        }).then(response => response.json());
+        });
     }
-    
     const postStudentInfo = (studentEntry) => {
         return fetch('/postStudentInfo', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(studentEntry)
-        }).then(response => response.json());
+        });
     }
 
+    // Disable comment section
+    for (let i = 0; i < eligibilityRadios.length; i++) {
+        eligibilityRadios[i].addEventListener('change', function() {
+            if (this.value === 'Fit') {
+                commentsTextarea.disabled = true;
+            } else {
+                commentsTextarea.disabled = false;
+            }
+        });
+    }
+
+    // clear signature
     clearSignatureBtn.addEventListener('click', function (event) {
         event.preventDefault();
         signaturePad.clear();
@@ -69,6 +116,22 @@ document.addEventListener('DOMContentLoaded', function () {
     //still need to handle autofill for signature
     availabilityBtn.addEventListener('click', function (event) {
         event.preventDefault();
+
+         // check if doctorMCR input is empty or not
+        if (!doctorMCRInput.value) {
+            doctorMCRInput.setCustomValidity('Please enter a value');
+            doctorMCRInput.reportValidity();
+            return; // return early from the event handler if doctorMCR is empty
+        } else {
+            doctorMCRInput.setCustomValidity('');
+        }
+
+        var template = document.getElementById('loadingTemplate');
+        var clone = document.importNode(template.content, true);
+        availabilityBtn.innerHTML = '';
+        availabilityBtn.className = 'btn btn-primary'
+        availabilityBtn.appendChild(clone);
+        
         // using POST method since doctorMCR is sensitive information so that it can be protected
         fetch('/checkDoctorMCR', {
             method: 'POST',
@@ -80,10 +143,9 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => {
                 if(response.status === 404) {
                     // Doctor was not found
-                    alert('No doctor found with the provided MCR.');
                     throw new Error('DoctorNotFound');
                 }
-                else if(response.status >= 500) {
+                else if(response.status === 500) {
                     // Server error
                     alert('An error occurred. Please try again later.');
                     throw new Error('ServerError');
@@ -129,21 +191,29 @@ document.addEventListener('DOMContentLoaded', function () {
                 currentDoctor = doctorMCR;
             })
             .catch(err => {
-                if(err.message !=='DoctorNotFound'){
-                    console.error(err);
-                    alert('Internal Server Error');
+                if(err.message =='DoctorNotFound'){
+                    // if doctor is new and available
+                    availabilityBtn.disabled = true;
+                    availabilityBtn.textContent = `MCR is available!`
+                    availabilityBtn.className = 'btn btn-success'
+                    isAvailabilityBtn = true;
                 }
                 else{
-                    isAvailabilityBtn = true;
-                    isDoctorNew = true;
+                    // internal server error
+                    alert("internal server error");
                 }
             });
     });
     
+    // handle form submission
     form.addEventListener('submit', function (event) {
         event.preventDefault();
-
+        let isValid = true;
+        // signature data handling...
         const signatureData = signaturePad.toDataURL();
+        const signatureMsg = document.getElementById('signatureMsg')
+
+        // All Entries handling...
         const studentEntry = {
             studentName: studentNameInput.value,
             schoolName: schoolNameInput.value,
@@ -151,6 +221,8 @@ document.addEventListener('DOMContentLoaded', function () {
             studentNRIC: studentNRICInput.value,
             studentClass: studentClassInput.value,
             dateOfVaccine: dateOfVaccineInput.value,
+            parentContact : parentContact.value,
+            parentEmail : parentEmail.value
         }
         const formEntry = {
             courseDate: courseDateInput.value,
@@ -160,53 +232,118 @@ document.addEventListener('DOMContentLoaded', function () {
         const doctorEntry = {
             doctorMCR: doctorMCRInput.value,
             physicianName: physicianNameInput.value,
-            signatureData : signatureData,
             clinicName: clinicNameInput.value,
             clinicAddress: clinicAddressInput.value,
             contactNo: contactNoInput.value
         }
-        if(isAvailabilityBtn === false){
-            // alert user to click the availability button first
-            alert("Please click availability button first before submitting")
-            }
-        else{
-            if(isDoctorNew === true){
-                const allEntry = {...studentEntry,...formEntry, ...doctorEntry};
-                for (let [key, value] of Object.entries(allEntry)) {
-                    if (!value) {  // Check if value is missing or falsy (like an empty string)
-                        alert(`Please fill out the ${key} field`);
-                        return;  // Exit the function early
-                    }
+        const allEntry = {...studentEntry,...formEntry, ...doctorEntry};
+
+        // Empty values check logic
+        // variable to check if all the values are Empty
+        for (let [key, value] of Object.entries(allEntry)) {
+            // since key names are same with input field ids
+            const inputElement = document.getElementById(key);
+
+            // If the element exists and it's an input element, set a custom validity message
+            if (inputElement && inputElement instanceof HTMLInputElement) {
+                if (!value) {  // Check if value is missing or falsy (like an empty string)
+                    inputElement.setCustomValidity(`Please fill out Before submit`);
+                    inputElement.reportValidity();
+                    isValid = false;
+                } else {
+                    // If the value exists, clear any previous custom validity message
+                    inputElement.setCustomValidity('');
                 }
 
-                const data = {
-                    signature: signatureData
-                };
+                // Add an input event listener to the input element
+                // This event listener will clear the custom validity message once the user starts typing
+                inputElement.addEventListener('input', function() {
+                    inputElement.setCustomValidity('');
+                });
+            }
+        }
 
-                fetch('/uploadSign',{
-                    method : 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    const year = today.getFullYear();
-                    const month = today.getMonth() + 1;
-                    const day = today.getDate();
-                    const hours = today.getHours();
-                    const minutes = today.getMinutes();
-                    const seconds = today.getSeconds();
-                    const fullDate = year + "/" + month + "/" + day + "/" + hours + ":" + minutes + ":" + seconds;
-                    const signatureCredentials = `${data.url};${fullDate};${physicianNameInput.value}`
-                    doctorEntry.signatureData = signatureCredentials;
+        // add back signatureData
+        doctorEntry.signatureData = signatureData;
+        // Proceed submission
+        if (isValid) {
+            // if doctor never pressed availability button
+            if(isAvailabilityBtn === false){
+                availabilityBtn.setCustomValidity('Please check availability');
+                availabilityBtn.reportValidity();
+            }
+            else{
+                if(isDoctorNew === true){
+                    if (signaturePad.isEmpty()) {
+                        signatureMsg.textContent = 'Please provide your signature'
+                        signatureMsg.className = 'text-danger'
+                        isValid = false;
+                    } 
+                    signaturePad.onBegin = function () {
+                        // clear the signature message
+                        signatureMsg.textContent = '';
+                        signatureMsg.className = '';
+                    };
+                    const data = {
+                        signature: signatureData
+                    };
+                    // show loading modal
+                    myModal.show();
+                    fetch('/uploadSign',{
+                        method : 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        const signatureCredentials = `${data.url};${today};${physicianNameInput.value}`
+                        doctorEntry.signatureData = signatureCredentials;
 
-                    Promise.all([postDoctorInfo(doctorEntry),postStudentInfo(studentEntry)])
-                    .then((responses) => Promise.all(responses.map(response => response.json())))
-                    .then(([doctorResponse, studentResponse]) => {
-                        formEntry.studentId = studentResponse[0].insertId;
-                        formEntry.doctorMCR = doctorMCRInput.value;
+                        Promise.all([postDoctorInfo(doctorEntry),postStudentInfo(studentEntry)])
+                        .then((responses) => Promise.all(responses.map(response => response.json())))
+                        .then(([doctorResponse, studentResponse]) => {
+                            formEntry.studentId = studentResponse[0].insertId;
+                            formEntry.doctorMCR = doctorMCRInput.value;
+                            formEntry.comments = commentsTextarea.value;
+                            return fetch('/postFormInfo',{
+                                method : 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(formEntry)
+                            })
+                            .then(response=> response.json())
+                            .then(data => {
+                                // hide loading modal
+                                myModal.hide();
+
+                                studentNameInput.value = '';
+                                schoolNameInput.value = '';
+                                dateOfBirth.value = '';
+                                studentNRICInput.value = '';
+                                studentClassInput.value = '';
+                                courseDateInput.value = '';
+                                dateOfVaccineInput.value = '';
+
+                                let scrollableDiv = document.getElementById("formDiv");
+                                scrollableDiv.scrollTop = 0;
+                            })
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                    })
+                }
+                else if(isDoctorNew === false){
+                    // show loading modal
+                    myModal.show();
+                    postStudentInfo(studentEntry)
+                    .then(response => response.json())
+                    .then(data => {
+                        formEntry.studentId = data[0].insertId;
+                        formEntry.doctorMCR = currentDoctor;
                         formEntry.comments = commentsTextarea.value;
                         return fetch('/postFormInfo',{
                             method : 'POST',
@@ -217,47 +354,26 @@ document.addEventListener('DOMContentLoaded', function () {
                         })
                         .then(response=> response.json())
                         .then(data => {
-                            alert(data)
+                            // hide loading modal
+                            myModal.hide();
+                            
+                            studentNameInput.value = '';
+                            schoolNameInput.value = '';
+                            dateOfBirth.value = '';
+                            studentNRICInput.value = '';
+                            studentClassInput.value = '';
+                            courseDateInput.value = '';
+                            dateOfVaccineInput.value = '';
+
+                            for(let i = 0; i < eligibilityRadios.length; i++){
+                                eligibilityRadios[i].checked = false;
+                            }
+                            commentsTextarea.value = '';
+                            let scrollableDiv = document.getElementById("formDiv");
+                            scrollableDiv.scrollTop = 0;
                         })
                     })
-                    .catch(error => {
-                        console.error('Error:', error);
-                    });
-                })
-            }
-            else if(isDoctorNew === false){
-                postStudentInfo(studentEntry)
-                .then(data => {
-                    console.log(data)
-                    formEntry.studentId = data[0].insertId;
-                    formEntry.doctorMCR = currentDoctor;
-                    formEntry.comments = commentsTextarea.value;
-                    return fetch('/postFormInfo',{
-                        method : 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(formEntry)
-                    })
-                    .then(response=> response.json())
-                    .then(data => {
-                        studentNameInput.value = '';
-                        schoolNameInput.value = '';
-                        dateOfBirth.value = '';
-                        studentNRICInput.value = '';
-                        studentClassInput.value = '';
-                        courseDateInput.value = '';
-                        dateOfVaccineInput.value = '';
-
-                        for(let i = 0; i < eligibilityRadios.length; i++){
-                            eligibilityRadios[i].checked = false;
-                        }
-                        commentsTextarea.value = '';
-
-                        let scrollableDiv = document.getElementById("doctorForm");
-                        scrollableDiv.scrollTop = 0;
-                    })
-                })
+                }
             }
         }
     });

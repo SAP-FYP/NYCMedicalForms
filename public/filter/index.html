@@ -11,35 +11,73 @@
 </head>
 
 <body>
-    <div id="searchDiv1">
-        <label for="search1">Search 1:</label>
-        <input type="search" id="search1">
+    <div class="container">
+        <div class="row custom-row">
+            <div class="col-auto">
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+            </div>
+            <div class="col-auto  dropdown">
+                <div class="custom-column  dropdown-toggle" id="dropdownMenuButton1" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    Class
+                </div>
+                <div class="dropdown-menu custom-menu dropdown-menu-stay" aria-labelledby="dropdownMenuButton1">
+                    <div style="margin: 10px;">
+                        <input type="search" class="searchBar" id="classSearch" placeholder="Search">
+                    </div>
+                </div>
+            </div>
+            <div class="col-auto dropdown">
+                <div class="custom-column  dropdown-toggle" id="dropdownMenuButton2" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    School
+                </div>
+                <div class="dropdown-menu custom-menu dropdown-menu-stay" aria-labelledby="dropdownMenuButton2">
+                    <div style="margin: 10px;">
+                        <input type="search" class="searchBar" id="schoolSearch" placeholder="Search">
+                    </div>
+                </div>
+            </div>
+            <div class="col-auto dropdown">
+                <div class="custom-column dropdown-toggle" id="dropdownMenuButton3" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    Eligibility
+                </div>
+                <div class="dropdown-menu custom-menu dropdown-menu-stay" aria-labelledby="dropdownMenuButton3">
+                    <div id="selectDiv" style="margin:10px">
+                        <label for="status">Status:</label><br>
+                        <input type="checkbox" id="fit" name="status" value="fit">
+                        <label for="fit">Fit</label><br>
+                        <input type="checkbox" id="unfit" name="status" value="unfit">
+                        <label for="unfit">Unfit</label><br>
+                        <input type="checkbox" id="review" name="status" value="review">
+                        <label for="review">Need Review</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-auto   dropdown">
+                <div class="custom-column dropdown-toggle" id="dropdownMenuButton4" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    Course Date
+                </div>
+                <div class="dropdown-menu custom-menu dropdown-menu-stay" aria-labelledby="dropdownMenuButton4">
+                    <div style="margin: 10px;">
+                        <input type="search" class="searchBar" id="courseDateSearch" placeholder="Search">
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div id="searchDiv2">
-        <label for="search2">Search 2:</label>
-        <input type="search" id="search2">
-    </div>
-
-    <div id="searchDiv3">
-        <label for="search3">Search 3:</label>
-        <input type="search" id="search3">
-    </div>
-
-    <div id="selectDiv">
-        <label for="status">Status:</label><br>
-        <input type="checkbox" id="fit" name="status" value="fit">
-        <label for="fit">Fit</label><br>
-        <input type="checkbox" id="unfit" name="status" value="unfit">
-        <label for="unfit">Unfit</label><br>
-        <input type="checkbox" id="review" name="status" value="review">
-        <label for="review">Need Review</label>
-    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
         crossorigin="anonymous"></script>
-    
+
     <script src="index.js"></script>
-    </body>
+</body>
 
 </html>
