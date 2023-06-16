@@ -256,7 +256,6 @@ document.addEventListener('DOMContentLoaded', function () {
         event.preventDefault();
         let isValid = true;
 
-        console.log('1')
         // signature data handling...
         const signatureData = signaturePad.toDataURL();
         const signatureMsg = document.getElementById('signatureMsg');
@@ -327,20 +326,21 @@ document.addEventListener('DOMContentLoaded', function () {
         doctorEntry.signatureData = signatureData;
         // Proceed submission
         if (isValid) {
-            // if doctor never pressed availability button
+            // Availability button validation
             if(isAvailabilityBtn === false){
                 availabilityBtn.setCustomValidity('Please check availability');
                 availabilityBtn.reportValidity();
             }
             else{
                 if(isDoctorNew === true){
+                    // signature validation
                     if (signaturePad.isEmpty()) {
                         signatureMsg.textContent = 'Please provide your signature'
                         signatureMsg.className = 'text-danger'
                         isValid = false;
                     } 
                     signaturePad.onBegin = function () {
-                        // clear the signature message
+                        // clear signature
                         signatureMsg.textContent = '';
                         signatureMsg.className = '';
                     };
@@ -356,7 +356,12 @@ document.addEventListener('DOMContentLoaded', function () {
                         },
                         body: JSON.stringify(data)
                     })
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Upload failed');
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         const signatureCredentials = `${data.url};${today};${physicianNameInput.value}`
                         doctorEntry.signatureData = signatureCredentials;
@@ -390,11 +395,24 @@ document.addEventListener('DOMContentLoaded', function () {
                                 let scrollableDiv = document.getElementById("formDiv");
                                 scrollableDiv.scrollTop = 0;
                             })
+                            .catch(error => {
+                                console.error('Error in postFormInfo:', error);
+                                alert('Internal Server Error');
+                              });
                         })
                         .catch(error => {
                             console.error('Error:', error);
+                            alert('Internal Server Error');
                         });
                     })
+                    .catch(error => {
+                        if (error.message === 'Upload failed') {
+                            alert('Signature Upload Failed');
+                        }
+                        else{
+                            alert("Internal Server Error")
+                        }
+                    });
                 }
                 else if(isDoctorNew === false){
                     // show loading modal
@@ -432,7 +450,15 @@ document.addEventListener('DOMContentLoaded', function () {
                             let scrollableDiv = document.getElementById("formDiv");
                             scrollableDiv.scrollTop = 0;
                         })
+                        .catch(error => {
+                            console.error('Error in postFormInfo:', error);
+                            alert('Internal Server Error');
+                        });
                     })
+                    .catch(error => {
+                        console.error('Error in postFormInfo:', error);
+                        alert('Internal Server Error');
+                    });
                 }
             }
         }
