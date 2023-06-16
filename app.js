@@ -262,8 +262,11 @@ app.post('/parent/login/', (req, res, next) => {
     return userModel
         .parentLogin(studentID)
         .then((result) => {
-            console.log(result);
-
+            // remove the dash from dateOfBirth
+            result.dateOfBirth = result.dateOfBirth.replace(/-/g, '');
+            // Change dateofbirth from YYYYMMDD to DDMMYYYY
+            result.dateOfBirth = result.dateOfBirth.substring(6, 8) + result.dateOfBirth.substring(4, 6) + result.dateOfBirth.substring(0, 4);
+            
             // Check if password entered is == to DOB + NRIC (password) in database
             if (password != result.dateOfBirth + result.studentNRIC) {
                 // !! Thrown error is not caught by catch block
