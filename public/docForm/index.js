@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
     //student section
     const studentNameInput = document.getElementById('studentName');
     const schoolNameInput = document.getElementById('schoolName');
-    const dateOfBirth = document.getElementById('studentDateOfBirth');
+    const dateOfBirth = document.getElementById('dateOfBirth');
     const studentNRICInput = document.getElementById('studentNRIC');
     const studentClassInput = document.getElementById('studentClass');
     const courseDateInput = document.getElementById('courseDate');
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // ONLY FOR TESTING PLEASE DELETE LATER-----------------------------------------------
     document.getElementById('studentName').value = 'John Doe';
     document.getElementById('schoolName').value = 'Example School';
-    //  document.getElementById('studentDateOfBirth').value = '2005-01-01';
+    document.getElementById('dateOfBirth').value = '2005-01-01';
     document.getElementById('studentNRIC').value = 'S1234567D';
     document.getElementById('studentClass').value = '5A';
     document.getElementById('courseDate').value = '2005-01-01';
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let yyyy = today.getFullYear();
 
     today = yyyy + '-' + mm + '-' + dd;
-    document.getElementById("studentDateOfBirth").setAttribute("max", today);
+    document.getElementById("dateOfBirth").setAttribute("max", today);
     document.getElementById("courseDate").setAttribute("max", today);
     document.getElementById("date").setAttribute("max", today);
 
@@ -299,14 +299,21 @@ document.addEventListener('DOMContentLoaded', function () {
                     // If the value exists, clear any previous custom validity message
                     inputElement.setCustomValidity('');
 
-                    // Check if the input is a contact number or an email and validate them
+                    // Contact Validation
                     if (['parentContact', 'contactNo'].includes(key)) {
                         isValid = validatePhone(inputElement, value) && isValid;
-                    } else if(['dateOfBirth','dateOfVaccine','courseDate','date'].includes(key)){
+                    }
+                    // Date Validation
+                    else if(['dateOfBirth','dateOfVaccine','courseDate','date'].includes(key)){
+                        console.log(key)
                         isValid = validateDate(inputElement, value) && isValid;
-                    }else if (key === 'parentEmail') {
+                    }
+                    // Email Validation
+                    else if (key === 'parentEmail') {
                         isValid = validateEmail(inputElement, value) && isValid;
-                    } else if(key === 'studentNRIC'){
+                    }
+                    // NRIC Validation
+                    else if(key === 'studentNRIC'){
                         isValid = validateNRIC(inputElement, value) && isValid;
                     }
                 }
