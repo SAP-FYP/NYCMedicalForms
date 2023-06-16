@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const nameOfStudentCell = clonedRowTemplate.querySelector('.studentName');
         nameOfStudentCell.textContent = formData[i].nameOfStudent;
         nameOfStudentCell.setAttribute("nameOfStudent", formData[i].nameOfStudent);
- 
+
         const classCell = clonedRowTemplate.querySelector('.studentClass');
         classCell.textContent = formData[i].class;
 
@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", function () {
         } else if (formData[i].formStatus === "Pending Parent") {
           formStatusDiv.classList.add("pillParent");
         }
-        
+
         getAllForms.appendChild(clonedRowTemplate);
 
         function handleFormClick(index) {
@@ -124,6 +124,7 @@ document.addEventListener("DOMContentLoaded", function () {
         modalBtns.forEach(function (modalBtn) {
           modalBtn.addEventListener("mousedown", function () {
             openModal(nameOfStudentCell.getAttribute("nameOfStudent"));
+            modalBtn.classList.add("changePill");
           });
         });
       }
@@ -156,11 +157,10 @@ function openModal(studentName) {
       const month2 = String(dateObj2.getMonth() + 1).padStart(2, "0");
       const day2 = String(dateObj2.getDate()).padStart(2, "0");
       const formattedExamDate = `${year2}-${month2}-${day2}`;
-      
-     
-      const formStatus = formData.formStatus;
 
-      
+
+
+
       openFormModal(formData, formattedCourseDate, formattedExamDate);
     })
     .catch(function (error) {
@@ -174,7 +174,7 @@ function openModal(studentName) {
 //FUNCTION TO OPEN FORM MODAL
 ////////////////////////////
 function openFormModal(formData, formattedCourseDate, formattedExamDate) {
-  
+
 
   const nameInput = document.querySelector('#applicantName');
   const schoolInput = document.querySelector('#schoolOrg');
@@ -190,11 +190,16 @@ function openFormModal(formData, formattedCourseDate, formattedExamDate) {
   const doctorContactInput = document.querySelector('#contactNo');
   const clinicAddressInput = document.querySelector('#clinicAddress');
   const doctorSignatureInput = document.querySelector('#signatureData');
+  const parentName = document.querySelector('#parent-name');
+  const parentNRIC = document.querySelector('#parent-nric');
+  const parentContact = document.querySelector('#parent-contact');
+  const parentDate = document.querySelector('#parent-date');
+  const parentSignature = document.querySelector('#parent-signature');
 
   // Set input field values
   nameInput.value = `${formData.nameOfStudent}`;
   schoolInput.value = `${formData.school}`;
-  nricInput.value = `${formData.studentNRIC}`;
+  nricInput.value = `****${formData.studentNRIC}`;
   classInput.value = `${formData.class}`;
   courseDateInput.value = `${formattedCourseDate}`;
   dateVacInput.value = `${formData.dateOfVaccination}`;
@@ -206,33 +211,138 @@ function openFormModal(formData, formattedCourseDate, formattedExamDate) {
   doctorContactInput.value = `${formData.contactNo}`;
   clinicAddressInput.value = `${formData.clinicAddress}`;
   doctorSignatureInput.value = `${formData.signature}`;
+  parentName.value = `${formData.nameOfParent}`;
+ 
+  parentNRIC.value = `****${formData.parentNRIC}`;
+  parentContact.value = `${formData.parentContactNo}`;
+  parentDate.value = `${formData.dateOfAcknowledgement}`;
+  parentSignature.value = `${formData.parentSignature}`;
 
-  if (formData.formStatus === "Pending Parent") {
+  // if (formData.formStatus === "Pending Parent") {
+  //   const apprRejContainer = document.querySelector('#apprRejContainer');
+  //   apprRejContainer.innerHTML = ''
+  //   const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
+  //   pmtHeadingForm.innerHTML = ''
+  // }
+  if (formData.formStatus === "Pending") {
+    const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
+    // Create the h4 element
+    const h4 = document.createElement('h4');
+    h4.textContent = 'Partnership Management Team:';
+    pmtHeadingForm.appendChild(h4);
+
+    const apprRejContainer = document.querySelector('#apprRejContainer');
+    // Create the label element
+    const label = document.createElement('label');
+    label.setAttribute('for', 'medical_check');
+    label.setAttribute('class', 'text-center mx-auto w-75');
+    label.textContent = "I, the undersigned, have assessed the Applicant's Registration Form, examined the Applicant & approve him/her to be (please tick):";
+
+    // Create the container div
+    const containerDiv = document.createElement('div');
+    containerDiv.setAttribute('class', 'col-12 text-center mb-4');
+    containerDiv.appendChild(label);
+
+    // Create the Approve button
+    const approveBtn = document.createElement('button');
+    approveBtn.setAttribute('type', 'button');
+    approveBtn.setAttribute('class', 'btn btn-secondary approve-btn');
+    approveBtn.setAttribute('id', 'approveBtn');
+    approveBtn.setAttribute("data-bs-toggle", "modal");
+    approveBtn.setAttribute("data-bs-target", "#staticBackdropAppr");
+    approveBtn.textContent = 'Approve';
+
+    // Create the vertical line
+    const verticalLine = document.createElement('div');
+    verticalLine.setAttribute('class', 'verticalLine mx-3');
+
+    // Create the Reject button
+    const rejectBtn = document.createElement('button');
+    rejectBtn.setAttribute('type', 'button');
+    rejectBtn.setAttribute('class', 'btn btn-secondary reject-btn');
+    rejectBtn.setAttribute('id', 'rejectBtn');
+    rejectBtn.setAttribute("data-bs-toggle", "modal");
+    rejectBtn.setAttribute("data-bs-target", "#staticBackdropRej");
+    rejectBtn.textContent = 'Reject';
+
+    // Create the container div for the buttons
+    const buttonContainerDiv = document.createElement('div');
+    buttonContainerDiv.setAttribute('class', 'col-12 text-center mb-3 d-flex justify-content-center align-items-center mt-3');
+    buttonContainerDiv.setAttribute('id', 'appr-rej-container');
+    buttonContainerDiv.appendChild(approveBtn);
+    buttonContainerDiv.appendChild(verticalLine);
+    buttonContainerDiv.appendChild(rejectBtn);
+
+
+
+    // Add the elements to the parent element
+    apprRejContainer.appendChild(containerDiv);
+    apprRejContainer.appendChild(buttonContainerDiv);
+
+  }
+
+  const closeBtn = document.querySelector('.closeBtn');
+  closeBtn.addEventListener('click', function () {
     const apprRejContainer = document.querySelector('#apprRejContainer');
     apprRejContainer.innerHTML = ''
     const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
     pmtHeadingForm.innerHTML = ''
-  }
+    });
+  
 
-  // const rejectBtn = document.querySelector('#rejectBtn');
-  // rejectBtn.addEventListener('click', function () {
-  //   // Update status to "rejected" in the database
-  //   updateStatus(formData)
-  //   if (formData.formStatus === 'Rejected') {
-  //     rejectBtn.setAttribute("data-bs-target", "#staticBackdropRej");
-  //   }
-  // });
+  const rejectBtn = document.querySelector('#rejectBtn');
+  rejectBtn.addEventListener('click', function () {
+    // Update status to "rejected" in the database
+    updateStatusReject(formData)
+    const pillPending = document.querySelector('.changePill');
+    pillPending.classList.add('pillRejected');
 
-  // const approveBtn = document.querySelector('#approveBtn');
-  // approveBtn.addEventListener('click', function () {
-  //   // Update status to "approved" in the database
-  //   updateStatus(formData)
-  //   if (formData.formStatus === 'Approved') {
-  //     approveBtn.setAttribute("data-bs-target", "#staticBackdropAppr");
-      
-  //     console.log("ewewew")
-  //   }
-  // });
+    pillPending.textContent = 'Rejected';
+
+    pillPending.setAttribute("data-bs-toggle", "modal");
+    pillPending.setAttribute("data-bs-target", "#staticBackdropRej");
+
+    const apprRejContainer = document.querySelector('#apprRejContainer');
+    apprRejContainer.innerHTML = ''
+    const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
+    pmtHeadingForm.innerHTML = ''
+
+    const apprAmt = document.querySelector('.rejAmt');
+    apprAmt.textContent = parseInt(apprAmt.textContent)+1
+
+    const pendingAmt = document.querySelector('.pendingAmt');
+    pendingAmt.textContent = parseInt(pendingAmt.textContent)-1
+    
+    pillPending.classList.remove('changePill');
+    
+  });
+
+  const approveBtn = document.querySelector('#approveBtn');
+  approveBtn.addEventListener('click', function () {
+    // Update status to "approved" in the database
+    updateStatusApprove(formData)
+    const pillPending = document.querySelector('.changePill');
+    pillPending.classList.add('pillApproved');
+
+    pillPending.textContent = 'Approved';
+    pillPending.setAttribute("data-bs-toggle", "modal");
+    pillPending.setAttribute("data-bs-target", "#staticBackdropAppr");
+
+    const apprRejContainer = document.querySelector('#apprRejContainer');
+    apprRejContainer.innerHTML = ''
+    const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
+    pmtHeadingForm.innerHTML = ''
+
+    const apprAmt = document.querySelector('.apprAmt');
+    apprAmt.textContent = parseInt(apprAmt.textContent)+1
+
+    const pendingAmt = document.querySelector('.pendingAmt');
+    pendingAmt.textContent = parseInt(pendingAmt.textContent)-1
+
+    pillPending.classList.remove('changePill');
+
+    
+  });
 
 
   //call exportToExcel function
@@ -249,27 +359,30 @@ function openFormModal(formData, formattedCourseDate, formattedExamDate) {
   });
 }
 
-function updateStatus(formData) {
+function updateStatusApprove(formData) {
   const studentId = formData.studentId;
-axios
-      .put(`${API_URL}/${studentId}`, { formStatus: 'Approved' })
-      .then(function (response) {
-        // Handle success
-        console.log('Status updated to approved:', response.data);
-        // Perform any additional actions or display a success message
-        // Clear the form modal container
-      
-      
+  axios
+    .put(`${API_URL}/${studentId}`, { formStatus: 'Approved' })
+    .then(function (response) {
+    })
+    .catch(function (error) {
+      // Handle error
+      console.log(error);
+      // Display an error message or handle the error as needed
+    });
+}
 
-       
-
-        
-      })
-      .catch(function (error) {
-        // Handle error
-        console.log(error);
-        // Display an error message or handle the error as needed
-      });
+function updateStatusReject(formData) {
+  const studentId = formData.studentId;
+  axios
+    .put(`${API_URL}/${studentId}`, { formStatus: 'Rejected' })
+    .then(function (response) {
+    })
+    .catch(function (error) {
+      // Handle error
+      console.log(error);
+      // Display an error message or handle the error as needed
+    });
 }
 
 
