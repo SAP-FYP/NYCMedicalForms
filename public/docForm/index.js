@@ -8,9 +8,9 @@ This file includes validation of form values and send data to APIs to save data 
 */ 
 
 document.addEventListener('DOMContentLoaded', function () {
-    const myModal = new bootstrap.Modal('#loadingModal', {
+    const loadingModal = new bootstrap.Modal('#loadingModal', {
         keyboard: false
-      })
+    })
     let canvas = document.getElementById('signatureCanvas');
     let signaturePad = new SignaturePad(canvas);
     let clearSignatureBtn = document.getElementById('clearSignatureBtn');
@@ -44,13 +44,13 @@ document.addEventListener('DOMContentLoaded', function () {
     // ONLY FOR TESTING PLEASE DELETE LATER-----------------------------------------------
     document.getElementById('studentName').value = 'John Doe';
     document.getElementById('schoolName').value = 'Example School';
-    document.getElementById('studentDateOfBirth').value = '2005-01-01';
+    //  document.getElementById('studentDateOfBirth').value = '2005-01-01';
     document.getElementById('studentNRIC').value = 'S1234567D';
     document.getElementById('studentClass').value = '5A';
     document.getElementById('courseDate').value = '2005-01-01';
     document.getElementById('dateOfVaccine').value = '2005-01-01';
     document.getElementById('parentEmail').value = 'parent@example.com';
-    document.getElementById('parentContact').value = '12345678';
+    document.getElementById('parentContact').value = '82345678';
 
     document.getElementById('fit').checked = true;
     commentsTextarea.disabled = true;
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
     physicianNameInput.value = 'Dr. John Doe';
     clinicNameInput.value = 'Clinic Name';
     dateInput.value = '2023-06-16';
-    contactNoInput.value = '1234567890';
+    contactNoInput.value = '82345677';
     clinicAddressInput.value = 'Clinic Address';
     doctorMCRInput.value = 'MCR Value';
     // ONLY FOR TESTING -----------------------------------------------
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById("courseDate").setAttribute("max", today);
     document.getElementById("date").setAttribute("max", today);
 
-    // functions to carry out fetch requests
+    // FUNCTIONS
     const postDoctorInfo = (doctorEntry) => {
         return fetch('/postDoctorInfo', {
             method: 'POST',
@@ -95,7 +95,53 @@ document.addEventListener('DOMContentLoaded', function () {
             body: JSON.stringify(studentEntry)
         });
     }
+    // validation functions
+    const validatePhone = (inputElement, value) => {
+        const phonePattern = /^[89]\d{7}$/;
+        if (!phonePattern.test(value)) {
+            inputElement.setCustomValidity('Please enter 8 digits starting with 8/9');
+            inputElement.reportValidity();
+            return false;
+        }
+        return true;
+    }
+    const validateEmail = (inputElement, value) => {
+        const emailRegEx = /\S+@\S+\.\S+/;
+        if (!emailRegEx.test(value)) {
+            inputElement.setCustomValidity(`Please enter a valid email address.`);
+            inputElement.reportValidity();
+            return false;
+        }
+        return true;
+    }
+    const validateNRIC = (inputElement, value) => {
+        const nricPattern = /^[STFG]\d{7}[A-Z]$/;
+        if (!nricPattern.test(value)) {
+            inputElement.setCustomValidity('Please enter a valid NRIC (e.g., S1234567D)');
+            inputElement.reportValidity();
+            return false;
+        }
+        inputElement.setCustomValidity('');
+        return true;
+    };
+    const validateDate = (inputElement, value) => {
+        const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+        if (!datePattern.test(value)) {
+            inputElement.setCustomValidity('Please enter a valid date (e.g., 2023-06-16)');
+            inputElement.reportValidity();
+            return false;
+        }
 
+        // Check if date is valid
+        const date = new Date(value);
+        if (isNaN(date.getTime())) {
+            inputElement.setCustomValidity('Please enter a valid date (e.g., 2023-06-16)');
+            return false;
+        }
+        
+        inputElement.setCustomValidity('');
+        return true;
+    };
     // Disable comment section
     for (let i = 0; i < eligibilityRadios.length; i++) {
         eligibilityRadios[i].addEventListener('change', function() {
@@ -209,9 +255,11 @@ document.addEventListener('DOMContentLoaded', function () {
     form.addEventListener('submit', function (event) {
         event.preventDefault();
         let isValid = true;
+
+        console.log('1')
         // signature data handling...
         const signatureData = signaturePad.toDataURL();
-        const signatureMsg = document.getElementById('signatureMsg')
+        const signatureMsg = document.getElementById('signatureMsg');
 
         // All Entries handling...
         const studentEntry = {
@@ -238,25 +286,30 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         const allEntry = {...studentEntry,...formEntry, ...doctorEntry};
 
-        // Empty values check logic
-        // variable to check if all the values are Empty
+        // Validation Logic
         for (let [key, value] of Object.entries(allEntry)) {
-            // since key names are same with input field ids
             const inputElement = document.getElementById(key);
-
-            // If the element exists and it's an input element, set a custom validity message
             if (inputElement && inputElement instanceof HTMLInputElement) {
-                if (!value) {  // Check if value is missing or falsy (like an empty string)
+                // check if any value is empty or not
+                if (!value) {
                     inputElement.setCustomValidity(`Please fill out Before submit`);
                     inputElement.reportValidity();
                     isValid = false;
                 } else {
                     // If the value exists, clear any previous custom validity message
                     inputElement.setCustomValidity('');
-                }
 
-                // Add an input event listener to the input element
-                // This event listener will clear the custom validity message once the user starts typing
+                    // Check if the input is a contact number or an email and validate them
+                    if (['parentContact', 'contactNo'].includes(key)) {
+                        isValid = validatePhone(inputElement, value) && isValid;
+                    } else if(['dateOfBirth','dateOfVaccine','courseDate','date'].includes(key)){
+                        isValid = validateDate(inputElement, value) && isValid;
+                    }else if (key === 'parentEmail') {
+                        isValid = validateEmail(inputElement, value) && isValid;
+                    } else if(key === 'studentNRIC'){
+                        isValid = validateNRIC(inputElement, value) && isValid;
+                    }
+                }
                 inputElement.addEventListener('input', function() {
                     inputElement.setCustomValidity('');
                 });
@@ -288,7 +341,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         signature: signatureData
                     };
                     // show loading modal
-                    myModal.show();
+                    loadingModal.show();
                     fetch('/uploadSign',{
                         method : 'POST',
                         headers: {
@@ -317,7 +370,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             .then(response=> response.json())
                             .then(data => {
                                 // hide loading modal
-                                myModal.hide();
+                                loadingModal.hide();
 
                                 studentNameInput.value = '';
                                 schoolNameInput.value = '';
@@ -338,7 +391,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 else if(isDoctorNew === false){
                     // show loading modal
-                    myModal.show();
+                    loadingModal.show();
                     postStudentInfo(studentEntry)
                     .then(response => response.json())
                     .then(data => {
@@ -355,7 +408,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         .then(response=> response.json())
                         .then(data => {
                             // hide loading modal
-                            myModal.hide();
+                            loadingModal.hide();
                             
                             studentNameInput.value = '';
                             schoolNameInput.value = '';
