@@ -349,8 +349,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     };
                     // show loading modal
                     loadingModal.show();
-                    fetch('/uploadSign',{
-                        method : 'POST',
+                    fetch('/uploadSign', {
+                        method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
@@ -363,62 +363,81 @@ document.addEventListener('DOMContentLoaded', function () {
                         return response.json();
                     })
                     .then(data => {
-                        const signatureCredentials = `${data.url};${today};${physicianNameInput.value}`
+                        const signatureCredentials = `${data.url};${today};${physicianNameInput.value}`;
                         doctorEntry.signatureData = signatureCredentials;
-
-                        Promise.all([postDoctorInfo(doctorEntry),postStudentInfo(studentEntry)])
-                        .then((responses) => Promise.all(responses.map(response => response.json())))
-                        .then(([doctorResponse, studentResponse]) => {
-                            formEntry.studentId = studentResponse[0].insertId;
-                            formEntry.doctorMCR = doctorMCRInput.value;
-                            formEntry.comments = commentsTextarea.value;
-                            return fetch('/postFormInfo',{
-                                method : 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify(formEntry)
-                            })
-                            .then(response=> response.json())
-                            .then(data => {
-                                // hide loading modal
-                                loadingModal.hide();
-
-                                studentNameInput.value = '';
-                                schoolNameInput.value = '';
-                                dateOfBirth.value = '';
-                                studentNRICInput.value = '';
-                                studentClassInput.value = '';
-                                courseDateInput.value = '';
-                                dateOfVaccineInput.value = '';
-
-                                let scrollableDiv = document.getElementById("formDiv");
-                                scrollableDiv.scrollTop = 0;
-                            })
-                            .catch(error => {
-                                console.error('Error in postFormInfo:', error);
-                                alert('Internal Server Error');
-                              });
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('Internal Server Error');
+                    
+                        return Promise.all([postDoctorInfo(doctorEntry), postStudentInfo(studentEntry)]);
+                    })
+                    .then((responses) => {
+                        for (let response of responses) {
+                            if (!response.ok) {
+                                return response.json().then(err => { throw err; });
+                            }
+                        }
+                        return Promise.all(responses.map(response => response.json()));
+                    })
+                    .then(([doctorResponse, studentResponse]) => {
+                        formEntry.studentId = studentResponse[0].insertId;
+                        formEntry.doctorMCR = doctorMCRInput.value;
+                        formEntry.comments = commentsTextarea.value;
+                        return fetch('/postFormInfo', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(formEntry)
                         });
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => { throw err; });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // hide loading modal
+                        loadingModal.hide();
+                    
+                        studentNameInput.value = '';
+                        schoolNameInput.value = '';
+                        dateOfBirth.value = '';
+                        studentNRICInput.value = '';
+                        studentClassInput.value = '';
+                        courseDateInput.value = '';
+                        dateOfVaccineInput.value = '';
+                    
+                        let scrollableDiv = document.getElementById("formDiv");
+                        scrollableDiv.scrollTop = 0;
                     })
                     .catch(error => {
                         if (error.message === 'Upload failed') {
                             alert('Signature Upload Failed');
-                        }
-                        else{
-                            alert("Internal Server Error")
+                        } else if (error.message === 'Doctor Duplicate entry') {
+                            alert('Doctor already exists');
+                        } else if (error.message === 'Student Duplicate entry') {
+                            alert('Student already exists');
+                        } else if (error.message === 'Form Duplicate entry') {
+                            alert('Form already exists');
+                        } else if (error.message === 'Internal server error') {
+                            alert('Server error');
+                        } else if (error.message === 'Encryption Error') {
+                            alert('Encryption Error');
+                        } else {
+                            console.error('Error:', error);
                         }
                     });
+                    
                 }
                 else if(isDoctorNew === false){
                     // show loading modal
                     loadingModal.show();
                     postStudentInfo(studentEntry)
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => {throw err;});
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         formEntry.studentId = data[0].insertId;
                         formEntry.doctorMCR = currentDoctor;
@@ -430,34 +449,43 @@ document.addEventListener('DOMContentLoaded', function () {
                             },
                             body: JSON.stringify(formEntry)
                         })
-                        .then(response=> response.json())
-                        .then(data => {
-                            // hide loading modal
-                            loadingModal.hide();
-                            
-                            studentNameInput.value = '';
-                            schoolNameInput.value = '';
-                            dateOfBirth.value = '';
-                            studentNRICInput.value = '';
-                            studentClassInput.value = '';
-                            courseDateInput.value = '';
-                            dateOfVaccineInput.value = '';
-
-                            for(let i = 0; i < eligibilityRadios.length; i++){
-                                eligibilityRadios[i].checked = false;
+                        
+                    })
+                    .then(response=> {
+                            if (!response.ok) {
+                                return response.json().then(err => {throw err;});
                             }
-                            commentsTextarea.value = '';
-                            let scrollableDiv = document.getElementById("formDiv");
-                            scrollableDiv.scrollTop = 0;
-                        })
-                        .catch(error => {
-                            console.error('Error in postFormInfo:', error);
-                            alert('Internal Server Error');
-                        });
+                            return response.json();
+                    })
+                    .then(data => {
+                        // hide loading modal
+                        loadingModal.hide();
+                        
+                        studentNameInput.value = '';
+                        schoolNameInput.value = '';
+                        dateOfBirth.value = '';
+                        studentNRICInput.value = '';
+                        studentClassInput.value = '';
+                        courseDateInput.value = '';
+                        dateOfVaccineInput.value = '';
+
+                        for(let i = 0; i < eligibilityRadios.length; i++){
+                            eligibilityRadios[i].checked = false;
+                        }
+                        commentsTextarea.value = '';
+                        let scrollableDiv = document.getElementById("formDiv");
+                        scrollableDiv.scrollTop = 0;
                     })
                     .catch(error => {
-                        console.error('Error in postFormInfo:', error);
-                        alert('Internal Server Error');
+                        if (error.message === 'Student Duplicate entry') {
+                            alert('Student already exists');
+                        } else if (error.message === 'Form Duplicate entry') {
+                            alert('Form already exists');
+                        } else if (error.message === 'Internal server error') {
+                            alert('Server error');
+                        } else {
+                            console.error('Error:', error);
+                        }
                     });
                 }
             }
