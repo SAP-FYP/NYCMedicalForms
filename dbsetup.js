@@ -19,7 +19,7 @@ const CREATE_TABLE_SQL = `
     PRIMARY KEY (email)
     );
 
-    CREATE TABLE IF NOT EXISTS roles (
+    CREATE TABLE IF NOT EXISTS role (
     roleId INT NOT NULL AUTO_INCREMENT,
     roleName VARCHAR(255) NOT NULL,
     PRIMARY KEY (roleId)
@@ -67,13 +67,13 @@ const CREATE_TABLE_SQL = `
 
     CREATE TABLE IF NOT EXISTS parentAcknowledgement (
     studentId INT NOT NULL AUTO_INCREMENT,
-    parentNRIC VARCHAR(9) NOT NULL,
-    nameOfParent VARCHAR(255) NOT NULL,
-    parentEmail VARCHAR(255) NULL.
-    parentSignature BLOB NOT NULL,
-    dateOfAcknowledgement DATE NOT NULL,
-    parentContactNo INT NOT NULL,
-    statusOfAcknowledgement VARCHAR(50) NOT NULL,
+    parentNRIC VARCHAR(9) NULL,
+    nameOfParent VARCHAR(255) NULL,
+    parentEmail VARCHAR(255) NOT NULL.
+    parentSignature BLOB NULL,
+    dateOfAcknowledgement DATE NULL,
+    parentContactNo INT NULL,
+    statusOfAcknowledgement VARCHAR(50) NOT NULL  DEFAULT 'Pending Parent',
     PRIMARY KEY (studentId)
     );
 
