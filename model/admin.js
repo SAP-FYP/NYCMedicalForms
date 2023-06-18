@@ -173,3 +173,41 @@ module.exports.editPermGroup = async function createPermGroup(permGroup) {
         throw error
     }
 }
+
+module.exports.deletePermissionGroup = async function getPermissions(groupId) {
+    const connection = await pool.getConnection();
+
+    try {
+        await connection.beginTransaction();
+
+        // Delete group permissions
+        const sql1 = 'DELETE FROM groupPerm WHERE groupId = ?';
+        const result1 = await connection.query(sql1, [groupId]);
+        const affectedRows1 = result1[0].affectedRows;
+
+        if (affectedRows1 == 0) {
+            const error = new Error("Unable to delete permission group");
+            error.status = 500;
+            throw error;
+        }
+
+        // Delete group
+        const sql2 = 'DELETE FROM `group` WHERE groupId = ?';
+        const result2 = await connection.query(sql2, [groupId]);
+        const affectedRows2 = result2[0].affectedRows;
+
+        if (affectedRows2 == 0) {
+            const error = new Error("Unable to delete permission group");
+            error.status = 500;
+            throw error;
+        }
+
+        await connection.commit();
+        return affectedRows2
+
+    } catch (error) {
+        await connection.rollback()
+        connection.release()
+        throw error
+    }
+}

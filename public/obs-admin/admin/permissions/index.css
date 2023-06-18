@@ -188,7 +188,8 @@ body {
 
 /* MODAL */
 
-#create-permission-modal {
+#create-permission-modal,
+#confirmation-modal {
     background-color: #C7D3EF;
     border: #485EAB 1px solid;
     border-radius: 25px;
@@ -201,10 +202,48 @@ body {
     margin-top: 10px;
 }
 
-#modal-footer {
+#create-permission-modal>#modal-footer,
+#confirmation-modal>.modal-footer {
     border-top: none;
     margin-top: 50px;
     margin-bottom: 10px;
+}
+
+#confirmation-modal>.modal-footer {
+    margin-top: 10px !important;
+}
+
+#confirmation-modal>#modal-header,
+#confirmation-modal>.modal-body,
+#confirmation-modal>.modal-footer {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    padding: 5px 0px;
+}
+
+#confirmation-modal>.modal-footer {
+    border-top: none;
+    margin-top: 60px;
+    margin-bottom: 10px;
+}
+
+#alert-icon {
+    margin-top: 10px;
+    width: 100px;
+}
+
+.confirmation-buttons {
+    background-color: #C7D3EF;
+    border: 2px solid #485EAB;
+    border-radius: 12px;
+    padding: 8px 20px;
+    margin: 0px 8px !important;
+}
+
+#confirmation-delete-button {
+    background-color: #E52323;
+    color: white;
 }
 
 #staticBackdropLabel {

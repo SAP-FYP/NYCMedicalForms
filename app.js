@@ -105,10 +105,17 @@ app.post('/login', (req, res, next) => {
                     sameSite: 'strict'
                 });
 
-                // actually no need return any json because wont be used
-                // can just redirect depending on role
-                // then in frontend js, just redirect again if response.redirect=true
-                return res.sendStatus(200);
+                if (payload.role == 1) {
+                    return res.redirect('/obs-admin/admin')
+                } else if (payload.role == 2 || payload.role == 3) {
+                    return res.redirect('/obs-admin/obs-management')
+                } else if (payload.role == 4) {
+                    return res.redirect('/obs-form')
+                } else {
+                    const error = new Error("Invalid user role");
+                    error.status = 500;
+                    throw error;
+                }
             })
         })
         .catch((error) => {
@@ -381,6 +388,37 @@ app.put('/obs-admin/permission/groups', authHelper.verifyToken, authHelper.check
             if (error.code == "ER_DUP_ENTRY") {
                 return res.status(422).json({ error: "Permission group already exists" });
             }
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+})
+
+// Delete Permission Group
+app.delete('/obs-admin/permission/groups/:groupId', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+
+    // AUTHORIZATION CHECK - ADMIN
+    if (req.decodedToken.role != 1) {
+        return res.redirect('/error?code=403')
+    }
+
+    const groupId = req.params.groupId
+    if (!groupId) {
+        const error = new Error("Empty groupId")
+        error.status = 400;
+        throw error;
+    }
+
+    return adminModel
+        .deletePermissionGroup(groupId)
+        .then((result) => {
+            if (!result) {
+                const error = new Error("Unable to delete permission group")
+                error.status = 500;
+                throw error;
+            }
+            return res.sendStatus(200);
+        })
+        .catch((error) => {
+            console.log(error)
             return res.status(error.status || 500).json({ error: error.message });
         })
 })

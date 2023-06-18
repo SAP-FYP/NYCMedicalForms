@@ -6,9 +6,6 @@ window.addEventListener('DOMContentLoaded', () => {
     const navbarLabels = document.getElementsByClassName("navbar-label");
 
     const collapseNav = document.getElementById("collapse-li");
-    const permissionNav = document.getElementById("permission-li");
-    const userNav = document.getElementById("user-li");
-    const formNav = document.getElementById("form-li");
     const logoutNav = document.getElementById("logout-li");
 
     const headerName = document.getElementById('profile-user-name');
@@ -33,19 +30,10 @@ window.addEventListener('DOMContentLoaded', () => {
             return response.json()
         })
         .then((jsonData) => {
-
             // SET HEADER DATA
             headerName.textContent = jsonData.user.name;
             if (!jsonData.user.picUrl) {
                 headerImg.src = '../../../assets/images/default-user-icon.png'
-            }
-
-            // DISABLE / ENABLE NAV BAR ICONS
-            // TODO CHECK ROLE / PERMISSIONS
-            if (jsonData.user.role == 1) {
-
-            } else if (jsonData.user.role == 2 || jsonData.user.role == 3) {
-
             }
 
         })
@@ -62,6 +50,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // === EVENT HANDLERS ===
 
     logoutNav.onclick = () => {
+
         return fetch('/logout')
             .then((response) => {
                 if (response.status != 200) {
@@ -69,7 +58,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     error.status = response.status;
                     throw error;
                 }
-                window.location.href = '/login';
+                window.location.href = '/obs-admin/login';
             })
             .catch((error) => {
                 document.cookie = "jwt=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";

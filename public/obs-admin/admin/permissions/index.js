@@ -93,7 +93,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     groupName: i.groupName,
                     permissions: i.permsId
                 }
-                deletePermGroup(groupInfo);
+                deleteButtonHandler(groupInfo);
             })
 
             const permissions = i.permsName ? i.permsName.replace(/,/g, ', ') : 'No permissions';
@@ -222,18 +222,19 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     // EDIT PERMISSION GROUPS BUTTON HANDLER
-    const editButtonHandler = (groupInfo) => {
+    const editButtonHandler = (permGroup) => {
         createForm.reset();
         editFormSumbitButton.style.display = 'inline';
-        editFormSumbitButton.value = groupInfo.groupId;
+        editFormSumbitButton.value = permGroup.groupId;
         createFormSumbitButton.style.display = 'none';
         document.getElementById('staticBackdropLabel').textContent = "Edit Permission Group";
-        document.getElementById('name-input').value = groupInfo.groupName;
+        document.getElementById('name-input').value = permGroup.groupName;
+        document.getElementById('create-permission-modal-icon').src = "../../../assets/images/edit-permission-icon.png"
         const checkboxes = document.getElementsByClassName('checkbox');
 
-        if (groupInfo.permissions) {
+        if (permGroup.permissions) {
             Array.from(checkboxes).forEach(i => {
-                if (groupInfo.permissions.includes(i.value)) {
+                if (permGroup.permissions.includes(i.value)) {
                     i.checked = true;
                 }
             });
@@ -286,11 +287,42 @@ window.addEventListener('DOMContentLoaded', () => {
         })
     }
 
-    // DELETE PERMISSION GROUPS TEMPLATE
-    const deletePermGroup = (permGroup) => {
-        // todo
-        // revisit edit cuz u tired asf
-        // edit already then make visual changes also
+    // DELETE PERMISSION GROUPS BUTTON HANDLER
+    const deleteButtonHandler = (permGroup) => {
+
+        // DELETE PERMISSION GROUPS
+        document.getElementById('confirmation-delete-button').onclick = () => {
+            return fetch(`/obs-admin/permission/groups/${permGroup.groupId}`, {
+                method: 'DELETE'
+            })
+                .then((response) => {
+                    if (response.redirected) {
+                        window.location.href = response.url
+                        throw new Error('redirected');
+                    }
+
+                    if (response.status == 400) {
+                        const error = new Error("Invalid permission data");
+                        error.status = response.status
+                        throw error;
+
+                    } else if (response.status != 200) {
+                        const error = new Error("Unknown error");
+                        error.status = response.status
+                        throw error;
+                    }
+
+                    alert('Successfully deleted!')
+                    location.reload();
+                })
+                .catch((error) => {
+                    if (error && error.message != 'redirected') {
+                        console.log(error);
+                        alert(error);
+                    }
+                    // display error
+                })
+        };
     }
 
     // === EVENT HANDLERS ===
@@ -301,6 +333,7 @@ window.addEventListener('DOMContentLoaded', () => {
         editFormSumbitButton.style.display = 'none';
         createFormSumbitButton.style.display = 'inline';
         document.getElementById('staticBackdropLabel').textContent = "Create New Permission Group";
+        document.getElementById('create-permission-modal-icon').src = "../../../assets/images/create-modal-icon.png"
     }
 
     // SUBMIT CREATE PERMISSION GROUPS BUTTON
@@ -361,7 +394,6 @@ window.addEventListener('DOMContentLoaded', () => {
                 permsId,
                 permsName
             }
-
             editPermGroup(permGroup);
         }
     }

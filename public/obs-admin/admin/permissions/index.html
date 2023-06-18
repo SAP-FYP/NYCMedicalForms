@@ -24,13 +24,13 @@
                             src="../../../assets/images/navbar-expand-icon.png"><a class="navbar-label">Collapse
                             menu</a>
                     </li>
-                    <li id="permission-li"><img id="navbar-icons-permission"
-                            src="../../../assets/images/permission-enabled-icon.png"><a
+                    <li id="permission-li" onclick="window.location.href='/obs-admin/admin/permissions';"><img
+                            id="navbar-icons-permission" src="../../../assets/images/permission-enabled-icon.png"><a
                             class="navbar-label">Permissions</a></li>
-                    <li id="user-li"><img id="navbar-icons-profile"
+                    <li id="user-li" onclick="window.location.href='/obs-admin/admin';"><img id="navbar-icons-profile"
                             src="../../../assets/images/profile-enabled-icon.png"><a class="navbar-label">Users</a></li>
-                    <li id="form-li"><img id="navbar-icons-forms" src="../../../assets/images/form-enabled-icon.png"><a
-                            class="navbar-label">Forms</a></li>
+                    <li id="form-li" style="cursor: default; opacity: 0.5;"><img id="navbar-icons-forms"
+                            src="../../../assets/images/form-enabled-icon.png"><a class="navbar-label">Forms</a></li>
                     <li id="logout-li"><img id="navbar-icons-logout" src="../../../assets/images/logout-icon.png"><a
                             class="navbar-label">Logout</a></li>
                 </ul>
@@ -66,7 +66,7 @@
                     </div>
                 </div>
 
-                <!-- MODAL -->
+                <!--  CREATE/ EDIT PERMISSIONS MODAL -->
                 <div class="col-12 d-flex justify-content-end">
                     <button style="border:none; cursor: default;" data-bs-toggle="modal"
                         data-bs-target="#createPermissionModal" id="open-modal-button"><img id="create-permission-icon"
@@ -116,6 +116,32 @@
                     </div>
                 </div>
 
+                <!-- CONFIRMATION MODAL -->
+                <div class="modal fade" id="confirmationModal" data-bs-backdrop="static" data-bs-keyboard="false"
+                    tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-md">
+                        <div class="modal-content" id="confirmation-modal">
+                            <div class="modal-header" id="modal-header">
+                                <h5 class="modal-title" id="staticBackdropLabel">Delete Permission Group?</h5>
+                            </div>
+                            <div class="modal-body">
+                                <div class="container-fluid">
+                                    <div class="row d-flex justify-content-center">
+                                        <label class="form-label col-12">Are you sure you want to delete this
+                                            permission group? You can't undo this action.</label>
+                                        <img id="alert-icon" src="../../../assets/images/alert-icon.png">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer" id="modal-footer">
+                                <button class="confirmation-buttons" id="confirmation-cancel-button" type="button"
+                                    data-bs-dismiss="modal">Cancel</button>
+                                <button class="confirmation-buttons" id="confirmation-delete-button"
+                                    type="button">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- DATA CONTAINER -->
                 <div id="data-container" class="col-12">
@@ -129,8 +155,8 @@
                         <!-- permission group template goes here -->
                     </div>
                 </div>
-            </div>
 
+            </div>
         </div>
     </div>
 
@@ -147,7 +173,8 @@
                 </button>
                 <ul class="dropdown-menu">
                     <li><a class="dropdown-item dropdown-edit" value="">Edit</a></li>
-                    <li><a class="dropdown-item dropdown-delete" value="">Delete</a></li>
+                    <li><a class="dropdown-item dropdown-delete" value="" data-bs-toggle="modal"
+                            data-bs-target="#confirmationModal">Delete</a></li>
                 </ul>
             </div>
         </div>
