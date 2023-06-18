@@ -415,6 +415,7 @@ fill: #485eab;
 .successBtn {
     background-color: #23e571 !important;
     border: 2px solid #485eab !important;
+    margin-left: 10px !important;
 }
 
 .verticalLine {

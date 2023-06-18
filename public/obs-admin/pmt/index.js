@@ -158,10 +158,23 @@ function openModal(studentName) {
       const day2 = String(dateObj2.getDate()).padStart(2, "0");
       const formattedExamDate = `${year2}-${month2}-${day2}`;
 
-
-
+      //call exportToExcel function
+      const exportBtns = document.querySelectorAll(".exportBtn");
+      exportBtns.forEach((exportBtn) => {
+        exportBtn.addEventListener("click", (e) => {
+          e.preventDefault(); // prevent the default form submission behavior
+          // Get the values of the input fields
+          const applicantName = formData.nameOfStudent;
+          const schoolOrg = formData.school;
+          const classNo = formData.class;
+          const courseDate = formattedExamDate;
+          exportToExcel(applicantName, schoolOrg, classNo, courseDate);
+          console.log(applicantName, schoolOrg, classNo, courseDate);
+        });
+      });
 
       openFormModal(formData, formattedCourseDate, formattedExamDate);
+      
     })
     .catch(function (error) {
       // Handle errors
@@ -212,7 +225,7 @@ function openFormModal(formData, formattedCourseDate, formattedExamDate) {
   clinicAddressInput.value = `${formData.clinicAddress}`;
   doctorSignatureInput.value = `${formData.signature}`;
   parentName.value = `${formData.nameOfParent}`;
- 
+
   parentNRIC.value = `****${formData.parentNRIC}`;
   parentContact.value = `${formData.parentContactNo}`;
   parentDate.value = `${formData.dateOfAcknowledgement}`;
@@ -287,8 +300,8 @@ function openFormModal(formData, formattedCourseDate, formattedExamDate) {
     apprRejContainer.innerHTML = ''
     const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
     pmtHeadingForm.innerHTML = ''
-    });
-  
+  });
+
 
   const rejectBtn = document.querySelector('#rejectBtn');
   rejectBtn.addEventListener('click', function () {
@@ -308,13 +321,13 @@ function openFormModal(formData, formattedCourseDate, formattedExamDate) {
     pmtHeadingForm.innerHTML = ''
 
     const apprAmt = document.querySelector('.rejAmt');
-    apprAmt.textContent = parseInt(apprAmt.textContent)+1
+    apprAmt.textContent = parseInt(apprAmt.textContent) + 1
 
     const pendingAmt = document.querySelector('.pendingAmt');
-    pendingAmt.textContent = parseInt(pendingAmt.textContent)-1
-    
+    pendingAmt.textContent = parseInt(pendingAmt.textContent) - 1
+
     pillPending.classList.remove('changePill');
-    
+
   });
 
   const approveBtn = document.querySelector('#approveBtn');
@@ -334,29 +347,18 @@ function openFormModal(formData, formattedCourseDate, formattedExamDate) {
     pmtHeadingForm.innerHTML = ''
 
     const apprAmt = document.querySelector('.apprAmt');
-    apprAmt.textContent = parseInt(apprAmt.textContent)+1
+    apprAmt.textContent = parseInt(apprAmt.textContent) + 1
 
     const pendingAmt = document.querySelector('.pendingAmt');
-    pendingAmt.textContent = parseInt(pendingAmt.textContent)-1
+    pendingAmt.textContent = parseInt(pendingAmt.textContent) - 1
 
     pillPending.classList.remove('changePill');
 
-    
+
   });
 
 
-  //call exportToExcel function
 
-  exportBtn.addEventListener("click", (e) => {
-    e.preventDefault(); // prevent the default form submission behavior
-    // Get the values of the input fields
-    const applicantName = nameInput.value
-    const schoolOrg = schoolInput.value
-    const classNo = classInput.value
-    const courseDate = courseDateInput.value
-    exportToExcel(applicantName, schoolOrg, classNo, courseDate);
-    console.log(applicantName, schoolOrg, classNo, courseDate);
-  });
 }
 
 function updateStatusApprove(formData) {
@@ -449,6 +451,6 @@ function exportToExcel(applicantName, schoolOrg, classNo, courseDate) {
   // add the worksheet to the workbook
   XLSX.utils.book_append_sheet(workbook, worksheet, "Student Data");
   // save the workbook as an Excel file
-  XLSX.writeFile(workbook, "StudentForm.xlsx");
+  XLSX.writeFile(workbook, applicantName+".xlsx");
 
 }
