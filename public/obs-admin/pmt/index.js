@@ -145,18 +145,62 @@ function openModal(studentName) {
       console.log(formData);
 
       //Format the courseDate
-      const dateObj = new Date(formData.courseDate);
-      const year = dateObj.getFullYear();
-      const month = String(dateObj.getMonth() + 1).padStart(2, "0");
-      const day = String(dateObj.getDate()).padStart(2, "0");
-      const formattedCourseDate = `${year}-${month}-${day}`;
+      // const dateObjCourseDate = new Date(formData.courseDate);
+      // const yearCourseDate = dateObjCourseDate.getFullYear();
+      // const monthCourseDate = String(dateObjCourseDate.getMonth() + 1).padStart(2, "0");
+      // const dayCourseDate = String(dateObjCourseDate.getDate()).padStart(2, "0");
+      // const formattedCourseDate = `${yearCourseDate}-${monthCourseDate}-${dayCourseDate}`;
+      const dateObjCourseDate = new Date(formData.courseDate);
+      const formatToLocal = dateObjCourseDate.toLocaleDateString("en-US", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+      const datePartsCourseDate = formatToLocal.split("/");
+      const formattedCourseDate = `${datePartsCourseDate[2]}-${datePartsCourseDate[0]}-${datePartsCourseDate[1]}`;
+    
+      //Format the dateOfVaccination
+      const dateObjVaccinationDate = new Date(formData.courseDate);
+      const formatToLocal2 = dateObjVaccinationDate.toLocaleDateString("en-US", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+      const datePartsVaccinationDate = formatToLocal2.split("/");
+      const formattedVaccinationDate = `${datePartsVaccinationDate[2]}-${datePartsVaccinationDate[0]}-${datePartsVaccinationDate[1]}`;
 
       //Format the examDate
-      const dateObj2 = new Date(formData.examinationDate);
-      const year2 = dateObj2.getFullYear();
-      const month2 = String(dateObj2.getMonth() + 1).padStart(2, "0");
-      const day2 = String(dateObj2.getDate()).padStart(2, "0");
-      const formattedExamDate = `${year2}-${month2}-${day2}`;
+      const dateObjExamDate = new Date(formData.courseDate);
+      const formatToLocal3 = dateObjExamDate.toLocaleDateString("en-US", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+      const datePartsExamDate = formatToLocal3.split("/");
+      const formattedExamDate = `${datePartsExamDate[2]}-${datePartsExamDate[0]}-${datePartsExamDate[1]}`;
+
+      //Format the dateOfBirth
+      const dateObjDob = new Date(formData.dateOfBirth);
+      const formatToLocal4 = dateObjDob.toLocaleDateString("en-US", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+      const datePartsDob= formatToLocal4.split("/");
+      const formattedDateOfBirth = `${datePartsDob[2]}-${datePartsDob[0]}-${datePartsDob[1]}`;
+
+      //Format the dateOfAcknowledgement
+      const dateObjAckDate = new Date(formData.dateOfAcknowledgement);
+      const formatToLocal5 = dateObjAckDate.toLocaleDateString("en-US", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+      const datePartsAckDate= formatToLocal5.split("/");
+      const formattedAckDate = `${datePartsAckDate[2]}-${datePartsAckDate[0]}-${datePartsAckDate[1]}`;
+
+
+      
 
       //call exportToExcel function
       const exportBtns = document.querySelectorAll(".exportBtn");
@@ -167,13 +211,13 @@ function openModal(studentName) {
           const applicantName = formData.nameOfStudent;
           const schoolOrg = formData.school;
           const classNo = formData.class;
-          const courseDate = formattedExamDate;
+          const courseDate = formattedCourseDate;
           exportToExcel(applicantName, schoolOrg, classNo, courseDate);
           console.log(applicantName, schoolOrg, classNo, courseDate);
         });
       });
 
-      openFormModal(formData, formattedCourseDate, formattedExamDate);
+      openFormModal(formData, formattedCourseDate, formattedVaccinationDate,formattedExamDate,formattedAckDate );
       
     })
     .catch(function (error) {
@@ -186,7 +230,7 @@ function openModal(studentName) {
 ////////////////////////////
 //FUNCTION TO OPEN FORM MODAL
 ////////////////////////////
-function openFormModal(formData, formattedCourseDate, formattedExamDate) {
+function openFormModal(formData, formattedCourseDate, formattedVaccinationDate,formattedExamDate,formattedAckDate ) {
 
 
   const nameInput = document.querySelector('#applicantName');
@@ -215,7 +259,7 @@ function openFormModal(formData, formattedCourseDate, formattedExamDate) {
   nricInput.value = `****${formData.studentNRIC}`;
   classInput.value = `${formData.class}`;
   courseDateInput.value = `${formattedCourseDate}`;
-  dateVacInput.value = `${formData.dateOfVaccination}`;
+  dateVacInput.value = `${formattedVaccinationDate}`;
   additonalInput.value = `${formData.review}`;
   doctorNameInput.value = `${formData.nameOfDoctor}`;
   doctoMCRInput.value = `${formData.doctorMCR}`;
@@ -228,7 +272,7 @@ function openFormModal(formData, formattedCourseDate, formattedExamDate) {
 
   parentNRIC.value = `****${formData.parentNRIC}`;
   parentContact.value = `${formData.parentContactNo}`;
-  parentDate.value = `${formData.dateOfAcknowledgement}`;
+  parentDate.value = `${formattedAckDate}`;
   parentSignature.value = `${formData.parentSignature}`;
 
   // if (formData.formStatus === "Pending Parent") {
