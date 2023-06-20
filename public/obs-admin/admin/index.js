@@ -12,9 +12,11 @@ window.addEventListener('DOMContentLoaded', () => {
 
     Promise.all([getRoles, getPermGroups])
         .then(async function (responses) {
-            // handle 404 here?
-            // since db throws 404
-            // no need to check at allJsonData
+
+            if (responses[0].redirected || responses[1].redirected) {
+                window.location.href = responses[0].url
+                throw new Error('redirected');
+            }
 
             if ((responses[0].status != 200 && responses[0].status != 404) ||
                 responses[1].status != 200 && responses[1].status != 404) {
@@ -58,9 +60,12 @@ window.addEventListener('DOMContentLoaded', () => {
             });
         })
         .catch((error) => {
-            console.log(error)
-            this.alert(error)
-            // display error
+            if (error && error.message != 'redirected') {
+                if (error != "TypeError: Failed to fetch") {
+                    console.log(error);
+                    alert(error);
+                }
+            }
         })
 
     // CREATE USER FUNCTION
@@ -73,6 +78,11 @@ window.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify(newuser)
 
         }).then((response) => {
+            if (response.redirected) {
+                window.location.href = response.url
+                throw new Error('redirected');
+            }
+
             if (response.status == 400) {
                 const error = new Error("Invalid user data");
                 error.status = response.status
@@ -93,9 +103,12 @@ window.addEventListener('DOMContentLoaded', () => {
             // do success
 
         }).catch((error) => {
-            console.log(error)
-            this.alert(error)
-            // display error
+            if (error && error.message != 'redirected') {
+                if (error != "TypeError: Failed to fetch") {
+                    console.log(error);
+                    alert(error);
+                }
+            }
         })
     }
 

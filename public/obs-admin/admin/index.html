@@ -133,6 +133,39 @@
 
                     <div id="insert-user-template">
                         <!-- user template goes here -->
+                        <div class="item-container col-6 col-xl-3" value="">
+                            <div class="item-border">
+                                <div class="user-header">
+                                    <input class="select-item-chkbox" type="checkbox" value="">
+                                    <img src="../../assets/images/default-user-icon.png">
+                                    <button class="more-button" data-bs-toggle="dropdown" value="">
+                                        <i class="material-icons more-button-icon"
+                                            style="font-size:28px;color:#485EAB;">more_horiz</i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item dropdown-disable" value="">Disable</a></li>
+                                        <li><a class="dropdown-item dropdown-delete" value="" data-bs-toggle="modal"
+                                                data-bs-target="#confirmationModal">Delete</a></li>
+                                        <li><a class="dropdown-item dropdown-edit" value="" data-bs-toggle="modal"
+                                                data-bs-target="#createModal">Edit</a></li>
+                                    </ul>
+                                </div>
+
+                                <div class="user-info col-12">
+                                    <h5 class="col-12 user-name" id="user-name">Isaac Peh</h5>
+                                    <h6 class="col-12 user-role" id="user-role">Partnership Management Team</h6>
+                                    <h6 class="col-12 user-email" id="user-name">isaacpeh123@gmail.com</h6>
+                                    <h6 class="col-12 user-number" id="user-name">9383 4934</h6>
+                                </div>
+                                <div class="user-profile-button col-12">
+                                    <button class="profile-button">
+                                        <i class="material-icons more-button-icon"
+                                            style="font-size:28px;color:#485EAB; margin-right: 5px;">person</i>
+                                        Profile
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -147,16 +180,9 @@
             <input class="select-item-chkbox" type="checkbox" value="">
             <h5 class="col-5 permission-group-name" id="permission-group-name"></h5>
             <h5 class="col-5 permission-group-type" id="permission-group-type"></h5>
-            <div class="dropstart" style="margin-left: auto;">
-                <button class="more-button" data-bs-toggle="dropdown" value="">
-                    <i class="material-icons more-button-icon" style="font-size:28px;color:#485EAB;">more_horiz</i>
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item dropdown-edit" value="">Edit</a></li>
-                    <li><a class="dropdown-item dropdown-delete" value="" data-bs-toggle="modal"
-                            data-bs-target="#confirmationModal">Delete</a></li>
-                </ul>
-            </div>
+            <button class="more-button" data-bs-toggle="dropdown" value="">
+                <i class="material-icons more-button-icon" style="font-size:24px;color:#485EAB;">more_horiz</i>
+            </button>
         </div>
     </template>
 
