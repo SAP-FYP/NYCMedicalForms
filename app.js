@@ -13,10 +13,11 @@ const elasticEmailClient = elasticEmail.createClient({
 const crypto = require('crypto');
 const key = Buffer.from(process.env.encryptKey, 'hex');
 const iv = Buffer.from(process.env.encryptIV, 'hex');
-const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
 
 const verifyUser = require('./auth/userAuth')
 const userModel = require('./model/user')
+const parentModel = require('./model/parent')
+const formModel = require('./model/form')
 const JWT_SECRET = process.env.SECRETKEY;
 
 const app = express();
@@ -241,6 +242,7 @@ app.post('obs-admin/newuser', (req, res, next) => {
  * User: Parents
  */
 
+// ! Make sure parents are unable to login if already acknowledged.
 app.post('/parent/login/', (req, res, next) => {        
     // Get encrypted studentID from body
     const encrypted = req.body.encrypted;
@@ -253,6 +255,7 @@ app.post('/parent/login/', (req, res, next) => {
     }
 
     // Decrypt studentID
+    const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
     const studentID = decipher.update(encrypted, 'hex', 'utf8') + decipher.final('utf8');
 
     if (!studentID || !password) {
@@ -262,11 +265,10 @@ app.post('/parent/login/', (req, res, next) => {
     return userModel
         .parentLogin(studentID)
         .then((result) => {
-            // remove the dash from dateOfBirth
-            result.dateOfBirth = result.dateOfBirth.replace(/-/g, '');
-            // Change dateofbirth from YYYYMMDD to DDMMYYYY
-            result.dateOfBirth = result.dateOfBirth.substring(6, 8) + result.dateOfBirth.substring(4, 6) + result.dateOfBirth.substring(0, 4);
-            
+            // Convert dateofbirth to DD/MM/YYYY (Singapore format)
+            result.dateOfBirth = new Date(result.dateOfBirth).toLocaleDateString('en-SG');
+            // Remove / from dateofbirth
+            result.dateOfBirth = result.dateOfBirth.replace(/\//g, '');
             // Check if password entered is == to DOB + NRIC (password) in database
             if (password != result.dateOfBirth + result.studentNRIC) {
                 // !! Thrown error is not caught by catch block
@@ -279,4 +281,54 @@ app.post('/parent/login/', (req, res, next) => {
             
         })
     })
+
+    // Update parent's acknowledgement
+    app.put('/parent/acknowledge', (req, res, next) => {
+
+        // Decrypt studentID
+        const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+        const studentID = decipher.update(req.body.encrypted, 'hex', 'utf8') + decipher.final('utf8');
+
+        const data = {
+            studentID: studentID,
+            parentNRIC: req.body.parentNRIC,
+            nameOfParent: req.body.nameOfParent,
+            parentSignature: req.body.parentSignature,
+            dateOfAcknowledgement: req.body.dateOfAcknowledgement,
+        };
+        // TODO ERROR HANDLING
+        return parentModel.updateAcknowledgement(data)
+            .then((result) => {
+                return res.json({ user: result });
+            }
+        ).catch((error) => {
+            console.log(error)
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+    })
+
+/**
+ * Form Routes
+ */
+
+// Retrieve form details for parent acknowledgement- Used by Barry (for identification for merging)
+app.get('/form/:encrypted', (req, res, next) => {
+    const encrypted = req.params.encrypted;
+
+    // Decrypt studentID
+    const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+    const studentID = decipher.update(encrypted, 'hex', 'utf8') + decipher.final('utf8');
+
+    return formModel
+        .getFormDetails(studentID)
+        .then((result) => {
+            return res.json({ form: result });
+        })
+        .catch((error) => {
+            // TODO ERROR HANDLING
+            console.log(error)
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+});
+
 module.exports = app;
