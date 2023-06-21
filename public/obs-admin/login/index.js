@@ -17,24 +17,25 @@ window.addEventListener('DOMContentLoaded', () => {
         }).then((response) => {
             if (response.status === 400 || response.status === 401) {
                 const error = new Error("Invalid email or password");
-                error.code = response.status;
-                throw error;
-
-            } else if (response.status !== 200) {
-                const error = new Error("Unknown Error");
-                error.code = response.status;
+                error.status = response.status;
                 throw error;
             }
-            return response.json();
 
-        }).then((jsonData) => {
-            console.log(jsonData)
-            // redirect to superadmin/pmt/mst form
+            if (response.redirected) {
+                window.location.href = response.url
+                throw new Error('redirected');
+
+            } else {
+                const error = new Error("Unknown Error");
+                error.status = response.status;
+                throw error;
+            }
 
         }).catch((error) => {
-            console.log(error)
-            this.alert(error)
-            // display error
+            if (error && error.message != 'redirected') {
+                console.log(error);
+                alert(error);
+            }
         })
     }
 
@@ -44,7 +45,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const password = loginForm.querySelector('#login-password').value;
 
         if (!email || !password) {
-            this.alert("Please fill in empty fields")
+            alert("Please fill in empty fields")
         } else {
             login(email, password)
         }

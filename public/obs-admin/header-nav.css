@@ -1,0 +1,123 @@
+/* NAV BAR */
+#nav-bar {
+    height: calc(100vh - 52px);
+    width: 70px;
+    margin: 26px 26px;
+    background-color: #485EAB;
+    border-radius: 20px;
+    position: fixed;
+    transition: ease-in-out 300ms;
+    min-height: 700px;
+    z-index: 99;
+}
+
+.navbar-nav {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.navbar-nav li {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+#logout-li {
+    margin-top: auto;
+}
+
+.navbar-nav img {
+    margin: 15px 0px;
+    margin-left: 4px;
+}
+
+#navbar-icons-arrow,
+#navbar-icons-logout {
+    height: 40px;
+    width: 40px;
+    transition: ease-in-out 200ms;
+}
+
+#navbar-icons-permission {
+    height: 40px;
+    width: 40px;
+    padding: 6px;
+}
+
+#navbar-icons-profile,
+#navbar-icons-forms {
+    height: 40px;
+    width: 40px;
+    min-width: 40px !important;
+    padding: 6px 8px;
+}
+
+.navbar-label {
+    white-space: nowrap;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 400;
+    margin: 0px 20px;
+    opacity: 0;
+    text-decoration: none;
+    transition: ease-in-out 300ms;
+    visibility: hidden;
+}
+
+/* HEADER */
+#row-container {
+    margin-left: 190px;
+    margin-right: 100px;
+}
+
+#row-col {
+    height: 100vh;
+    min-width: 800px;
+    display: flex;
+    flex-flow: column;
+}
+
+#header-bar {
+    margin: 26px 0px;
+    display: flex;
+    align-items: center;
+    height: auto;
+}
+
+#header-bar img {
+    height: 60px;
+    border-radius: 60px;
+    object-fit: fill;
+    margin-right: 4px;
+}
+
+#profile-container {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 300px;
+    transition: ease-in-out 150ms;
+}
+
+#profile-user-name {
+    white-space: nowrap;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #485EAB;
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+}
+
+#profile-user-image {
+    margin-left: 20px !important;
+    height: 45px !important;
+    width: 45px !important;
+}
+
+#profile-container:hover {
+    background-color: #dfdfdf;
+}

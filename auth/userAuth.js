@@ -1,69 +1,60 @@
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.SECRETKEY;
 
-function verifyToken(req, res, next) {
-    // next(); --->  To skip verification during testing. 
-    //               Remember to disable when not in use
-    // return;
+const userModel = require('../model/user')
+const momentHelper = require('../helper/epochConverter')
 
-    console.log(req.headers);
+module.exports.verifyToken = function verifyToken(req, res, next) {
+    const token = req.cookies.jwt;
+    if (!token) {
 
-    // retreive authorization header's content in Postman
-    // "authorization: Bearer <token>"
-    var authHeader = req.headers["authorization"];
+        // NO TOKEN
+        const error = new Error("No token found! Reason(Empty token)");
+        error.status = 401;
+        console.log('Error: ' + error.message);
+        return next(error);
 
-    // "Bearer <token>"
-    console.log(authHeader);
-
-    // process the token
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        let errData = {
-            auth: "false",
-            message:
-                "Not authorized! Reason(No token found / Token has invalid syntax)",
-        };
-
-        return res.status(401).type("JSON").end(JSON.stringify(errData));
-
-    }
-    else {
-        let token = authHeader.replace("Bearer ", "");
-        console.log(token);
-
-        // verify token
-
-        let tokenConfig = {
-            algorithm: ["HS256"]
-        };
-
-        jwt.verify(token, JWT_SECRET, tokenConfig, function (err, decoded) {
-            // PS: the variable decoded is the payload
-
+    } else {
+        // CHECK TOKEN
+        jwt.verify(token, JWT_SECRET, { algorithm: ['HS256'] }, function (err, decodedPayload) {
             if (err) {
-                let errData = {
-                    auth: "false",
-                    message: "Not authorized! Reason(Invalid token)",
-                };
-                return res.status(401).type("JSON").end(JSON.stringify(errData));
+                // FAIL CHECK
+                res.clearCookie('jwt');
+                const error = new Error("Not authorized! Reason(Invalid token)");
+                error.status = 403;
+                console.log('Error: ' + error.message);
+                return next(error);
+
             } else {
-                // store the payload in the req object
-
-                // Individual Payload
-                // req.userid = decoded.id;
-                // req.role = decoded.role;
-
-                // Entire Payload
-                console.log(decoded);
-                req.decodedToken = decoded;
-
-                // pass control to the next MF in the pipeline
+                // PASS CHECK
+                req.decodedToken = decodedPayload;
                 next();
             }
         });
     }
 }
 
-//-----------------------------------------
-// exports
-//-----------------------------------------
-module.exports = verifyToken;
+module.exports.checkIat = function checkIat(req, res, next) {
+    const issued_iat = req.decodedToken.iat;
+    const email = req.decodedToken.email;
+
+    return userModel
+        .getUser(email)
+        .then((result) => {
+            const invalidation_iat = momentHelper.localeToIat(result.invalidationDate);
+            // COMPARE ISSUED JWT TOKEN AND DB INVALIDATION
+            if (invalidation_iat && invalidation_iat >= issued_iat) {
+                // INVALIDATED
+                res.clearCookie('jwt');
+                const error = new Error("Token expired/invalidated! Reason(Invalidated token)");
+                error.status = 401;
+                return next(error);
+
+            }
+            next();
+        })
+        .catch((error) => {
+            console.log(error)
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+}
