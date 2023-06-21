@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Filters</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <link type="text/css" rel="stylesheet" href="index.css" />
+</head>
+
+<body>
+    <div class="container">
+        <div class="row custom-row">
+            <div class="col-auto">
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+            </div>
+
+            <div class="dropdown col-auto" id="classDropDown">
+                <div class="custom-column dropdown-toggle" id="classMenuButton" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    Class
+                </div>
+                <div class="dropdown-menu custom-menu dropdown-menu-stay" id="classDropDownMenu">
+                    <div class="searchBarDiv">
+                        <input type="search" class="searchBar m-2" id="classSearch" placeholder="Search">
+                        <div class="listContainer" id="classesDiv">
+                            <div class="loadingMsg m-3">
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                Loading...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-auto dropdown" id="schoolDropDown">
+                <div class="custom-column dropdown-toggle" id="schoolMenuButton" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    School
+                </div>
+                <div class="dropdown-menu custom-menu dropdown-menu-stay" id="schoolDropDownMenu">
+                    <div class="searchBarDiv">
+                        <input type="search" class="searchBar m-2" id="schoolSearch" placeholder="Search">
+                        <div class="listContainer mb-4" id="schoolsDiv">
+                            <div class="loadingMsg m-3">
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                Loading...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-auto dropdown" id="eligibilityDropDownMenu">
+                <div class="custom-column dropdown-toggle" id="eligibilityMenuButton" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    Eligibility
+                </div>
+                <div class="dropdown-menu custom-menu dropdown-menu-stay">
+                    <div id="selectDiv" style="margin:10px">
+                        <label for="status">Status:</label><br>
+                        <input type="checkbox" id="fit" name="status" value="fit">
+                        <label for="fit">Fit</label><br>
+                        <input type="checkbox" id="unfit" name="status" value="unfit">
+                        <label for="unfit">Unfit</label><br>
+                        <input type="checkbox" id="review" name="status" value="review">
+                        <label for="review">Need Review</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-auto dropdown" id="courseDateDropDown">
+                <div class="custom-column dropdown-toggle" id="courseDateMenuButton" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    Course Date
+                </div>
+                <div class="dropdown-menu custom-menu dropdown-menu-stay" id="courseDateDropDownMenu">
+                    <div class="searchBarDiv">
+                        <input type="search" class="searchBar m-2" id="courseDateSearch" placeholder="Search">
+                        <div class="listContainer" id="courseDatesDiv">
+                            <div class="loadingMsg m-3">
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                Loading...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <template id="loadingMsgTemp">
+        <div class="loadingMsg m-3">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Loading...
+        </div>
+    </template>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="index.js"></script>
+</body>
+
+</html>
