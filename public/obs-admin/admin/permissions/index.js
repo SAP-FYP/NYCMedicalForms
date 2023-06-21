@@ -20,25 +20,24 @@ window.addEventListener('DOMContentLoaded', () => {
     Promise.all([getPermGroups, getPerms])
         .then(async function (responses) {
 
-            if (responses[0].redirected || responses[1].redirected) {
-                window.location.href = responses[0].url
+            if (responses.some(response => response.redirected)) {
+                window.location.href = responses[0].url;
                 throw new Error('redirected');
             }
 
-            if ((responses[0].status != 200 && responses[0].status != 404) ||
-                responses[1].status != 200 && responses[1].status != 404) {
+            if (responses.some(response => response.status != 200 && response.status != 404)) {
                 const error = new Error('Unknown error')
                 error.status = 500;
                 throw error;
             }
 
-            const permGroup = await responses[0].json();
-            const perms = await responses[1].json();
+            const [permGroup, perms] = await Promise.all(responses.map(response => response.json()));
+
             return [permGroup.result, perms.result];
         })
         .then((allJsonData) => {
-            const permGroup = allJsonData[0];
-            const perms = allJsonData[1];
+
+            const [permGroup, perms] = allJsonData;
 
             if (!permGroup) {
                 // handle no perms group
@@ -200,6 +199,8 @@ window.addEventListener('DOMContentLoaded', () => {
                 const permGroup = jsonData.result;
 
                 if (!permGroup) {
+                    alert('No groups found')
+                    return
                     // handle empty
                 }
 
