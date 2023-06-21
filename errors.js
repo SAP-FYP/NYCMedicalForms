@@ -9,6 +9,12 @@ module.exports.UserNotFoundError = class UserNotFoundError extends Error {
         this.name = "UserNotFoundError";
     }
 }
+module.exports.ClassNotFoundError = class ClassNotFoundError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = "ClassNotFoundError";
+    }
+}
 module.exports.EMPTY_RESULT_ERROR = class EMPTY_RESULT_ERROR extends Error {};
 module.exports.DUPLICATE_ENTRY_ERROR = class DUPLICATE_ENTRY_ERROR extends Error {};
 module.exports.MYSQL_ERROR_CODE = {

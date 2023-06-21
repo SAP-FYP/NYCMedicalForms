@@ -47,17 +47,5 @@ html {
 
 /* scroll bar css */
 #formDiv::-webkit-scrollbar {
-    width: 5px;
-}
-
-#formDiv::-webkit-scrollbar-track {
-    background: #232323;
-}
-
-#formDiv::-webkit-scrollbar-thumb {
-    background: #888;
-}
-
-#formDiv::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    width: 0px;
 }

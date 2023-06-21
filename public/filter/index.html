@@ -20,34 +20,49 @@
                         d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
             </div>
-            <div class="col-auto  dropdown">
-                <div class="custom-column  dropdown-toggle" id="dropdownMenuButton1" data-bs-toggle="dropdown"
+
+            <div class="dropdown col-auto" id="classDropDown">
+                <div class="custom-column dropdown-toggle" id="classMenuButton" data-bs-toggle="dropdown"
                     aria-expanded="false">
                     Class
                 </div>
-                <div class="dropdown-menu custom-menu dropdown-menu-stay" aria-labelledby="dropdownMenuButton1">
-                    <div style="margin: 10px;">
-                        <input type="search" class="searchBar" id="classSearch" placeholder="Search">
+                <div class="dropdown-menu custom-menu dropdown-menu-stay" id="classDropDownMenu">
+                    <div class="searchBarDiv">
+                        <input type="search" class="searchBar m-2" id="classSearch" placeholder="Search">
+                        <div class="listContainer" id="classesDiv">
+                            <div class="loadingMsg m-3">
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                Loading...
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-auto dropdown">
-                <div class="custom-column  dropdown-toggle" id="dropdownMenuButton2" data-bs-toggle="dropdown"
+
+            <div class="col-auto dropdown" id="schoolDropDown">
+                <div class="custom-column dropdown-toggle" id="schoolMenuButton" data-bs-toggle="dropdown"
                     aria-expanded="false">
                     School
                 </div>
-                <div class="dropdown-menu custom-menu dropdown-menu-stay" aria-labelledby="dropdownMenuButton2">
-                    <div style="margin: 10px;">
-                        <input type="search" class="searchBar" id="schoolSearch" placeholder="Search">
+                <div class="dropdown-menu custom-menu dropdown-menu-stay" id="schoolDropDownMenu">
+                    <div class="searchBarDiv">
+                        <input type="search" class="searchBar m-2" id="schoolSearch" placeholder="Search">
+                        <div class="listContainer mb-4" id="schoolsDiv">
+                            <div class="loadingMsg m-3">
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                Loading...
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-auto dropdown">
-                <div class="custom-column dropdown-toggle" id="dropdownMenuButton3" data-bs-toggle="dropdown"
+
+            <div class="col-auto dropdown" id="eligibilityDropDownMenu">
+                <div class="custom-column dropdown-toggle" id="eligibilityMenuButton" data-bs-toggle="dropdown"
                     aria-expanded="false">
                     Eligibility
                 </div>
-                <div class="dropdown-menu custom-menu dropdown-menu-stay" aria-labelledby="dropdownMenuButton3">
+                <div class="dropdown-menu custom-menu dropdown-menu-stay">
                     <div id="selectDiv" style="margin:10px">
                         <label for="status">Status:</label><br>
                         <input type="checkbox" id="fit" name="status" value="fit">
@@ -59,24 +74,36 @@
                     </div>
                 </div>
             </div>
-            <div class="col-auto   dropdown">
-                <div class="custom-column dropdown-toggle" id="dropdownMenuButton4" data-bs-toggle="dropdown"
+
+            <div class="col-auto dropdown" id="courseDateDropDown">
+                <div class="custom-column dropdown-toggle" id="courseDateMenuButton" data-bs-toggle="dropdown"
                     aria-expanded="false">
                     Course Date
                 </div>
-                <div class="dropdown-menu custom-menu dropdown-menu-stay" aria-labelledby="dropdownMenuButton4">
-                    <div style="margin: 10px;">
-                        <input type="search" class="searchBar" id="courseDateSearch" placeholder="Search">
+                <div class="dropdown-menu custom-menu dropdown-menu-stay" id="courseDateDropDownMenu">
+                    <div class="searchBarDiv">
+                        <input type="search" class="searchBar m-2" id="courseDateSearch" placeholder="Search">
+                        <div class="listContainer" id="courseDatesDiv">
+                            <div class="loadingMsg m-3">
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                Loading...
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
-        crossorigin="anonymous"></script>
+    <template id="loadingMsgTemp">
+        <div class="loadingMsg m-3">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Loading...
+        </div>
+    </template>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="index.js"></script>
 </body>
 

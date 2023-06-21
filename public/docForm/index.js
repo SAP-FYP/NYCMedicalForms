@@ -43,9 +43,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ONLY FOR TESTING PLEASE DELETE LATER-----------------------------------------------
     document.getElementById('studentName').value = 'John Doe';
-    document.getElementById('schoolName').value = 'Example School';
+    document.getElementById('schoolName').value = 'Example School2';
     document.getElementById('dateOfBirth').value = '2005-01-01';
-    document.getElementById('studentNRIC').value = 'S1234567D';
+    document.getElementById('studentNRIC').value = 'G1234567D';
     document.getElementById('studentClass').value = '5A';
     document.getElementById('courseDate').value = '2005-01-01';
     document.getElementById('dateOfVaccine').value = '2005-01-01';
@@ -172,8 +172,8 @@ document.addEventListener('DOMContentLoaded', function () {
             doctorMCRInput.setCustomValidity('');
         }
 
-        var template = document.getElementById('loadingTemplate');
-        var clone = document.importNode(template.content, true);
+        const template = document.getElementById('loadingTemplate');
+        const clone = template.content.cloneNode(true);
         availabilityBtn.innerHTML = '';
         availabilityBtn.className = 'btn btn-primary'
         availabilityBtn.appendChild(clone);
