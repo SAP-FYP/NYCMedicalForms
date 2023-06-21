@@ -27,9 +27,9 @@ body {
     body{
         position: relative;
     }
-    .wrapper {
+    /* .wrapper {
       flex-direction: column !important;
-    }
+    } */
     ul {
       display: flex;
       align-items: center;
@@ -40,64 +40,77 @@ body {
 
 
 
-/*Side Menu*/
-
-li {
-    list-style: none;
-}
-.sideMenuBar.expanded {
-    width: 300px !important; /* Expanded width of the side menu */
-    z-index: 2;
-    font-size: 22px;
-    color: white;
-  }
-  .disabledText {
-    color: #c7d3ef;
-  }
-.sideMenuBar {
-    cursor: pointer;
-    width: 4.5rem !important;
-    background-color: #485eab;
+/* NAV BAR */
+#nav-bar {
+    height: calc(100vh - 52px);
+    width: 70px;
+    margin: 26px 26px;
+    background-color: #485EAB;
     border-radius: 20px;
-    margin: 20px; /* adds 20px gap from all sides */
-    padding: 1rem;
     position: fixed;
-    height: 95%;
-    transition: width 0.3s ease; 
-  }
-  .signOutContainer {
-    position: absolute;
-    bottom: 15px;
-  }
-  .signOutText {
-    text-decoration: none;
-    
-  }
-  #openMenuContainer, #signOutSVG {
-    width: 40px;
-  }
- 
-  #openMenuIcon, .signOutIcon {
-    fill: #c7d3ef;
-    stroke: #020202;
-    stroke-miterlimit: 10;
-    stroke-width: 2px;
-  }
-.navIconContainer {
-    padding: 0 8px 8px 8px;
+    transition: ease-in-out 300ms;
+    min-height: 95%;
 }
-.navIcon {
-    fill: #f2f2f2;
-}
-.disabledIcon {
-    fill: #c7d3ef;
-}
-  
 
-.navSVG{
-    padding-top: 30px;
-    width: 25px;
+.navbar-nav {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
+
+.navbar-nav li {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+#logout-li {
+    margin-top: auto;
+}
+
+.navbar-nav img {
+    margin: 15px 0px;
+    margin-left: 15px;
+}
+
+#navbar-icons-arrow,
+#navbar-icons-logout {
+    height: 40px;
+    width: 40px;
+    transition: ease-in-out 200ms;
+}
+
+#navbar-icons-permission {
+    height: 40px;
+    width: 40px;
+    padding: 6px;
+}
+
+#navbar-icons-profile {
+    height: 40px;
+    width: 40px;
+    min-width: 40px;
+    padding: 6px 8px;
+}
+
+#navbar-icons-form {
+    height: 40px;
+    width: 40px;
+    min-width: 40px;
+    padding: 6px 8px;
+}
+
+.navbar-label {
+    white-space: nowrap;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 400;
+    margin: 0px 20px;
+    opacity: 0;
+    text-decoration: none;
+    transition: ease-in-out 300ms;
+}
+
 
 
 
@@ -118,21 +131,32 @@ li {
 
 /*PROFILE*/
 #profileIconContainer {
-    width: 50px;
+    margin-left: 20px !important;
+    height: 50px !important;
+    width: 50px !important;
 }
 .profileText {
-    
+    text-decoration: none;
+    color: #485eab;
     font-size: 26px;
+    white-space: nowrap;
+    font-weight: 500;
+    padding-left: 8px;
 }
-#profileCircle{
-    fill: #c7d3ef;
-    stroke: #485eab;
-    stroke-miterlimit: 10;
-    stroke-width: 1.36px;
+
+
+#profile-container {
+    margin-left: auto;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 300px;
+    transition: ease-in-out 150ms;
 }
-#profileIcon {
-    fill: #485eab;
+
+#profile-container:hover {
+    background-color: #dfdfdf;
 }
+
 /*Status*/
   .rectanglePending, .rectangleApproved, .rectangleRejected {
     margin: 10px;
@@ -152,55 +176,78 @@ li {
 
 /*Search*/
 #searchInputContainer {
-  max-width: 920px;
+  max-width: 1020px;
 }
   
-#searchInput {
-  /* flex: 1; */
-  height: 50px;
-  border: 2px solid #485eab;
-  border-right: none !important;
-  font-size: 16px;
+#spacer {
+    z-index: 99;
+    position: absolute;
+    bottom: 25%;
+    left: 88.95%;
+    width: 1px !important;
+    background-color: #C7D3EF;
+    height: 50%;
 }
 
-.searchIconContainer{
-    border: 2px solid #485eab !important;
-    border-left: none !important;
+#searchInput {
+    padding: 12px 20px;
+    border: #485EAB 2px solid;
+    border-radius: 12px;
+    border-bottom-right-radius: 0px;
+    border-top-right-radius: 0px;
+    border-right: none;
+    max-width: 80% !important;
+    box-shadow: 0 0 0 30px rgb(255, 255, 255) inset !important;
 }
-.searchIcon {
-    width: 20px;
-    color: #485eab;
-}
-  
+
 #searchInput::placeholder {
     color: #c7d3ef;
     color: #485eab;
     font-size: 16px;
 }
 
+.input-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.input-group button {
+    border-radius: 12px;
+    background-color: white;
+    border: #485EAB 2px solid;
+    border-left: none;
+    display: flex;
+    align-items: center;
+}
+
+#clear-button {
+    border-right: none;
+}
+
+.input-group button:hover {
+    background-color: white;
+}
+
+.input-group button:active {
+    background-color: white !important;
+}
+
+
 /*Filter*/
-#filterContainer {
-    width: 40px;
-}
-
-#filterIconContainer {
-    fill: #c7d3ef;
-    stroke: #485eab;
-    stroke-miterlimit: 10;
-    stroke-width: 2px;
-}
-
-#filterIcon {
-    fill: #6f7eaa;
+#filter-icon {
+    height: 60px;
+    width: 60px;
+   
 }
 
 /*Table*/
 .tableContainer {
     margin: 5px 40px 40px 20px;
     border: 2px solid #485eab !important;
-    border-radius: 10px !important;
+    border-radius: 18px !important;
     /* max-height: calc(100vh - 480px);  */
-    max-height: 70vh;
+    min-height: 386px;
 }
 table {
     border-collapse:separate !important;
@@ -316,23 +363,19 @@ td:first-child {
 }
 
 #checkBoxTop {
-    transform: translateX(13px);
+    transform: translateY(4px);
+    margin-left: 12px;
     width: 20px;
-    fill: #ffffff;
-    stroke:#485eab;
-    stroke-miterlimit:12;
+    height: 20px;
 }
 #checkBox {
-    transform: translateX(13px);
+    transform: translateY(4px);
+    margin-left: 12px;
     width: 20px;
-    fill:#ffffff;
-    stroke:#485eab;
-    stroke-miterlimit:10;
+    height: 20px;
 }
 
 /*MODALS*/
-
-
 .modal-content {
     background-color: #c7d3ef !important;
     border: 2px solid #485eab !important;
@@ -372,6 +415,7 @@ fill: #485eab;
 .successBtn {
     background-color: #23e571 !important;
     border: 2px solid #485eab !important;
+    margin-left: 10px !important;
 }
 
 .verticalLine {
@@ -396,6 +440,12 @@ fill: #485eab;
     color: #485eab !important;
 }
 
+/*FORM*/
+form {
+    height: 100%;
+    background-color: #C7D3EF;
+   
+}
   
 /* for custom scrollbar for webkit browser*/
 
