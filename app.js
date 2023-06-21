@@ -1,28 +1,29 @@
 const express = require("express");
 const cookieParser = require('cookie-parser');
+const moment = require('moment');
 const bodyParser = require('body-parser');
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
-const moment = require('moment');
 const elasticEmail = require('elasticemail');
-const elasticEmailClient = elasticEmail.createClient({
-    apiKey: process.env.elasticAPIKey
-});
 
-// Crypto
 const crypto = require('crypto');
 const key = Buffer.from(process.env.encryptKey, 'hex');
 const iv = Buffer.from(process.env.encryptIV, 'hex');
 
-const verifyUser = require('./auth/userAuth')
+const authHelper = require('./auth/userAuth')
 const userModel = require('./model/user')
 const parentModel = require('./model/parent')
 const formModel = require('./model/form')
-const JWT_SECRET = process.env.SECRETKEY;
+const adminModel = require('./model/admin')
+const pmtModel = require('./model/pmt')
+
 
 const app = express();
 const port = process.env.PORT || 3000;
-const pool = require('./database'); //Import from db.js
+const JWT_SECRET = process.env.SECRETKEY;
+const elasticEmailClient = elasticEmail.createClient({
+    apiKey: process.env.elasticAPIKey
+});
 
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
@@ -37,23 +38,6 @@ app.use(express.static("public"));
 app.get('/', (req, res) => {
     res.send(`Server running on port ${port}`)
 
-});
-
-//////////////////////////////////////////////////////
-// POST GET METHODS
-// http://localhost:3000/api/
-// Use Postman to test
-//////////////////////////////////////////////////////
-app.get('/api', async (req, res, next) => {
-    console.log(req.query);
-
-    res.json(req.query);
-});
-
-app.post('/api', async (req, res, next) => {
-    console.log(req.body);
-
-    res.json(req.body);
 });
 
 /**
@@ -74,9 +58,8 @@ app.post('/login', (req, res, next) => {
     }
 
     return userModel
-        .loginUser(credentials)
+        .loginUser(credentials.email)
         .then((result) => {
-            console.log(result);
 
             // CHECK HASH
             if (!bcrypt.compareSync(credentials.password, result.password)) {
@@ -88,20 +71,23 @@ app.post('/login', (req, res, next) => {
             // SET JWT
             let payload = {
                 'email': result.email,
-                'permissionGroup': result.groupID
+                'name': result.nameOfUser,
+                'permissionGroup': result.groupId,
+                'role': result.roleId,
+                'permissions': result.permissions,
+                'picUrl': result.picUrl,
+                'contact': result.contactNo
             }
 
             let tokenConfig = {
                 expiresIn: 28800,
-                algorithm: "HS256"
+                algorithm: 'HS256'
             };
 
             // SIGN JWT
-            jwt.sign(payload, JWT_SECRET, tokenConfig, (error, token) => {
+            jwt.sign(payload, JWT_SECRET, tokenConfig, (err, token) => {
 
-                if (error) {
-                    console.log(error)
-
+                if (err) {
                     const error = new Error("Failed to sign JWT");
                     error.status = 500;
                     throw error;
@@ -113,8 +99,17 @@ app.post('/login', (req, res, next) => {
                     sameSite: 'strict'
                 });
 
-                delete result.password;
-                return res.json({ user: result });
+                if (payload.role == 1) {
+                    return res.redirect('/obs-admin/admin')
+                } else if (payload.role == 2 || payload.role == 3) {
+                    return res.redirect('/obs-admin/obs-management')
+                } else if (payload.role == 4) {
+                    return res.redirect('/obs-form')
+                } else {
+                    const error = new Error("Invalid user role");
+                    error.status = 500;
+                    throw error;
+                }
             })
         })
         .catch((error) => {
@@ -123,11 +118,42 @@ app.post('/login', (req, res, next) => {
         });
 });
 
+// Get User Info
+app.get('/user', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+
+    const user = req.decodedToken;
+
+    if (!user) {
+        const error = new Error("Empty user");
+        error.status = 404;
+        throw error;
+    }
+
+    delete user.iat;
+    delete user.exp;
+    delete user.permissionGroup;
+
+    return res.send({ user });
+})
+
+// Logout
+app.get('/logout', (req, res, next) => {
+    try {
+        res.clearCookie('jwt');
+        return res.status(200).send({ 'message': 'Logout successful' });
+
+    } catch (err) {
+        const error = new Error("Cleanup error");
+        error.status = 500;
+        throw error;
+    }
+})
+
 // Email test
 app.post('/send-email', (req, res) => {
     const { email } = req.body;
-      // Compose the email parameters
-      const emailParams = {
+    // Compose the email parameters
+    const emailParams = {
         to: email,
         subject: "Require Parent's Acknowledgement: New Changes in Your Child's Medical Condition",
         from: 'leebarry008@gmail.com',
@@ -140,32 +166,79 @@ app.post('/send-email', (req, res) => {
         Thank you for your attention to this matter and for entrusting us with the care of your precious child. Together, we can make a positive impact on their health and future. <br>
         Warm regards, <br>
         National Youth Council in affiliation with Outward Bound Singapore</p>`,
-      };
-  
-      // Send the email using Elastic Email SDK
-      elasticEmailClient.mailer.send(emailParams, (err, result) => {
-        if (err) {
-          console.error('Failed to send email:', err);
-          res.status(500).send('Failed to send email');
-        } else {
-          console.log('Email sent successfully:', result);
-          res.status(200).send('Email sent successfully');
-        }
-      });
-    });
-  
+    };
 
-app.get('/jwt', (req, res, next) => {
-    const jwt = req.cookies.jwt;
-    return res.send(jwt);
-})
+    // Send the email using Elastic Email SDK
+    elasticEmailClient.mailer.send(emailParams, (err, result) => {
+        if (err) {
+            console.error('Failed to send email:', err);
+            res.status(500).send('Failed to send email');
+        } else {
+            console.log('Email sent successfully:', result);
+            res.status(200).send('Email sent successfully');
+        }
+    });
+});
 
 /**
  * User: Super Admin
  */
 
 // Create Account
-app.post('obs-admin/newuser', (req, res, next) => {
+app.post('/obs-admin/newuser', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+
+    // AUTHORIZATION CHECK - ADMIN
+    if (req.decodedToken.role != 1) {
+        return res.redirect('/error?code=403')
+    }
+
+    const newuser = {
+        name: req.body.name,
+        email: req.body.email,
+        contact: req.body.contact,
+        password: req.body.password,
+        permissionGroup: req.body.permissionGroup,
+        role: req.body.role
+    }
+
+    if (!newuser.name || !newuser.email || !newuser.contact || !newuser.password
+        || !newuser.permissionGroup || (newuser.permissionGroup == -1 && newuser.role != 1) || newuser.role == -1) {
+        const error = new Error("Empty or invalid user information");
+        error.status = 400;
+        throw error;
+    }
+
+    if (newuser.role == 1) {
+        newuser.permissionGroup = 0
+    }
+
+    // HASHING PASSWORD
+    bcrypt.hash(newuser.password, 10, async function (err, hash) {
+        if (err) {
+            return res.status(500).json({ error: 'Error hashing password' });
+        }
+
+        newuser.password = hash;
+        newuser.created_at = moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss')
+        newuser.passwordUpdated = moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss')
+
+        return adminModel
+            .createUser(newuser)
+            .then((result) => {
+                if (!result) {
+                    const error = new Error("Unable to create account")
+                    error.status = 500;
+                    throw error;
+                }
+                return res.sendStatus(201);
+            })
+            .catch((error) => {
+                if (error.code == "ER_DUP_ENTRY") {
+                    return res.status(422).json({ error: "Email or contact already exists" });
+                }
+                return res.status(error.status || 500).json({ error: error.message });
+            })
+    })
 
 });
 
@@ -384,7 +457,6 @@ app.put('/obs-admin/update-account-status', (req, res, next) => {
         })
 });
 
-
 // Delete Account
 app.put('/obs-admin/delete-user', (req, res, next) => {
     const { email } = req.body;
@@ -411,7 +483,7 @@ app.get('/api/pmt/all', /*verifyUser,*/ async (req, res, next) => {
             if (result.length === 0) {
                 throw new Error("No submissions found");
             }
-            return res.json( result[0] );
+            return res.json(result[0]);
         })
         .catch((error) => {
             return res.status(error.status || 500).json({ error: error.message });
@@ -451,18 +523,17 @@ app.put('/api/pmt/:studentId', /*verifyUser,*/ async (req, res, next) => {
             if (isNaN(studentId)) {
                 return res.status(400).json({ error: "Invalid student ID" });
             }
-           
+
             return res.status(error.status || 500).json({ error: error.message });
         });
 });
-
 
 /**
  * User: Parents
  */
 
 // ! Make sure parents are unable to login if already acknowledged.
-app.post('/parent/login/', (req, res, next) => {        
+app.post('/parent/login/', (req, res, next) => {
     // Get encrypted studentID from body
     const encrypted = req.body.encrypted;
     // Get password from body
@@ -495,36 +566,36 @@ app.post('/parent/login/', (req, res, next) => {
                 error.status = 401;
                 throw error;
             }
-            
+
             return res.json({ user: result });
-            
+
         })
-    })
+})
 
-    // Update parent's acknowledgement
-    app.put('/parent/acknowledge', (req, res, next) => {
+// Update parent's acknowledgement
+app.put('/parent/acknowledge', (req, res, next) => {
 
-        // Decrypt studentID
-        const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
-        const studentID = decipher.update(req.body.encrypted, 'hex', 'utf8') + decipher.final('utf8');
+    // Decrypt studentID
+    const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+    const studentID = decipher.update(req.body.encrypted, 'hex', 'utf8') + decipher.final('utf8');
 
-        const data = {
-            studentID: studentID,
-            parentNRIC: req.body.parentNRIC,
-            nameOfParent: req.body.nameOfParent,
-            parentSignature: req.body.parentSignature,
-            dateOfAcknowledgement: req.body.dateOfAcknowledgement,
-        };
-        // TODO ERROR HANDLING
-        return parentModel.updateAcknowledgement(data)
-            .then((result) => {
-                return res.json({ user: result });
-            }
+    const data = {
+        studentID: studentID,
+        parentNRIC: req.body.parentNRIC,
+        nameOfParent: req.body.nameOfParent,
+        parentSignature: req.body.parentSignature,
+        dateOfAcknowledgement: req.body.dateOfAcknowledgement,
+    };
+    // TODO ERROR HANDLING
+    return parentModel.updateAcknowledgement(data)
+        .then((result) => {
+            return res.json({ user: result });
+        }
         ).catch((error) => {
             console.log(error)
             return res.status(error.status || 500).json({ error: error.message });
         })
-    })
+})
 
 /**
  * Form Routes
@@ -563,4 +634,5 @@ app.use((error, req, res, next) => {
 app.get('*', (req, res) => {
     return res.redirect('/error?code=404')
 })
+
 module.exports = app;
