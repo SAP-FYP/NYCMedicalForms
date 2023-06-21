@@ -1,0 +1,46 @@
+body {
+    overflow: hidden;
+}
+
+#container {
+    background-image: url('../../assets/background.png');
+}
+
+#menu-container {
+    height: 150px;
+    border: 3px solid #485EAB;
+    background-color: #C7D3EF;
+}
+
+#section-one-container {
+    height: 72px;
+    font-size: 20px;
+    gap: 10px;
+}
+
+#section-two-container {
+    font-size: 20px;
+    height: 72px;
+    gap: 10px;
+}
+
+#doctor-form {
+    border: 3px solid #485EAB;
+    background-color: #C7D3EF;
+    height: 100vh;
+    overflow-y: scroll;
+    
+}
+
+
+#doctor-signature-canvas {
+    border: 1px solid #485EAB;
+    background-color: rgb(208, 208, 208);
+    width: 100%;
+}
+
+#parent-signature-canvas {
+    border: 1px solid #485EAB;
+    background-color: white;
+    width: 100%;
+}
