@@ -37,8 +37,14 @@ document.addEventListener("DOMContentLoaded", function () {
       pendingAmtElement.textContent = `${formCounts.pending}`;
       apprAmtElement.textContent = `${formCounts.approved}`;
       rejAmtElement.textContent = `${formCounts.rejected}`;
-
+      const data = [];
       // Loop through the data and add it to the page
+      // Create the export button element
+const exportBtnBulkContainer = document.querySelector('#export-btn-bulk');
+ const exportIcon = document.createElement('img');
+ exportIcon.src = '../../assets/images/export-to-excel-icon.png';
+ exportIcon.id = 'export-btn';
+ exportIcon.alt = 'export-icon';
       for (i = 0; i < formData.length; i++) {
         const dateObj = new Date(formData[i].courseDate);
         const formattedDate = dateObj.toLocaleDateString("en-US", {
@@ -49,6 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Get references to the status container and template
         const getAllForms = document.querySelector('#getAllForms');
         const rowTemplate = document.querySelector('.row-table-template');
+        const checkBoxTop = document.getElementById('checkBoxTop');
 
         //clear html content in getAllForms once
         if (i === 0) {
@@ -57,6 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Clone the template and append it to the status container
         const templateContent = rowTemplate.content;
         const clonedRowTemplate = document.importNode(templateContent, true);
+        
 
         const studentNRICCell = clonedRowTemplate.querySelector('.studentNRIC');
         studentNRICCell.textContent = `***${formData[i].studentNRIC}`;
@@ -76,6 +84,51 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const formattedDateCell = clonedRowTemplate.querySelector('.courseDate');
         formattedDateCell.textContent = formattedDate;
+
+        // Get all checkboxes inside clonedRowTemplate
+        const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
+
+        checkBoxTop.addEventListener('change', function () {
+          const isChecked = checkBoxTop.checked;
+        
+          // Loop through each checkbox in the array and set the "checked" and "disabled" properties
+          checkBoxes.forEach(function (checkbox) {
+            checkbox.checked = isChecked;
+            checkbox.disabled = isChecked; // Disable the checkboxes if "checkBoxTop" is checked
+        
+            if (isChecked) {
+              const applicantName = nameOfStudentCell.textContent;
+              const schoolOrg = schoolCell.textContent;
+              const classNo = classCell.textContent;
+              const courseDate = formattedDateCell.textContent;
+              
+              // Add the data for the checked checkbox
+              data.push({  "Name of Applicant": applicantName,
+              "Organization/School": schoolOrg,
+              "Designation/Class": classNo,
+              "Course Date": courseDate });
+
+            } else {
+              // Remove the data for the unchecked checkbox
+              for (let i = 0; i < data.length; i++) {
+                if (data[i].applicantName === nameOfStudentCell.textContent) {
+                  data.splice(i, 1);
+                }
+              }
+            }
+          });
+          if (isChecked && !exportIcon.parentNode) {
+            // Append the export button to the exportBtnContainer if it's not already a child
+            exportBtnBulkContainer.appendChild(exportIcon);
+          } else if (!isChecked && exportIcon.parentNode === exportBtnBulkContainer) {
+            // Remove the export button from the exportBtnContainer if it's a child
+            exportBtnBulkContainer.removeChild(exportIcon);
+          }
+        
+
+        });
+        
+
 
         //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
         const modalBtn1 = clonedRowTemplate.querySelector('.modalBtn1');
@@ -138,6 +191,13 @@ document.addEventListener("DOMContentLoaded", function () {
           });
         });
       }
+      //Outside of for loop 
+      //Export to Excel Bulk Once
+      const exportBtnBulk = document.querySelector('#export-btn-bulk');
+      exportBtnBulk.addEventListener('click', function() {
+        console.log(data);
+        exportToExcelBulk(data);
+      });
     })
     .catch(function (error) {
       if (error && error.message !== "redirected") {
@@ -146,6 +206,8 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log(error);
     });
 });
+
+
 
 const searchInput = document.querySelector("#searchInput");
 const searchBtn = document.querySelector('#search-button');
@@ -166,7 +228,7 @@ function searchForms() {
         const formData = response.data;
         if (formData.length === 0) {
           showAlert("Error: Search does not exist.");
-            location.reload();
+          location.reload();
 
         }
         const formCounts = formData.reduce(
@@ -697,3 +759,24 @@ function exportToExcel(applicantName, schoolOrg, classNo, courseDate) {
   XLSX.writeFile(workbook, applicantName + ".xlsx");
 
 }
+
+function exportToExcelBulk(data) {
+
+  // Create a new worksheet with the formatted data
+  const worksheet = XLSX.utils.json_to_sheet(data, {
+    header: [
+      "Name of Applicant",
+      "Organization/School",
+      "Designation/Class",
+      "Course Date",
+    ],
+  });
+
+  // Create a new workbook and add the worksheet to it
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Bulk Data");
+
+  // Save the workbook as an Excel file
+  XLSX.writeFile(workbook, "exportedBulk.xlsx");
+}
+
