@@ -156,7 +156,12 @@ app.get('/logout', (req, res, next) => {
 
 // Email test
 app.post('/send-email', (req, res) => {
-    const { email } = req.body;
+    const { email, studentId } = req.body;
+    // Encrypt studentId
+    const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+    let encryptedStudentId = cipher.update(studentId, 'utf8', 'hex');
+    encryptedStudentId += cipher.final('hex');
+
     // Compose the email parameters
     const emailParams = {
         to: email,
@@ -164,10 +169,10 @@ app.post('/send-email', (req, res) => {
         from: 'leebarry008@gmail.com',
         body: `<p>Dear Parents,
         We hope this email finds you and your family in good health and high spirits. As part of our ongoing commitment to provide the best care for your children, we would like to inform you about some important updates regarding their medical conditions. <br> <br>
-        At our recent healthcare evaluation, we have made significant progress in understanding and managing your child's medical condition. To ensure that our records are up to date, we kindly request your cooperation in acknowledging the new changes in your child's medical condition by clicking on the following link: [Insert URL] <br> <br>
+        At our recent healthcare evaluation, we have made significant progress in understanding and managing your child's medical condition. To ensure that our records are up to date, we kindly request your cooperation in acknowledging the new changes in your child's medical condition by clicking on the following link: spmeet.onrender.com/acknowledge/?encrypted=${encryptedStudentId}<br> <br>
         By clicking on the link, you will confirm that you have received and reviewed the updates related to your child's health. Your acknowledgment will help us ensure that our information is accurate and that we can continue to provide the highest quality of care. <br> <br>
         Rest assured that all the information you provide will remain strictly confidential and will only be used for healthcare purposes. We adhere to the highest standards of privacy and data protection, in compliance with applicable laws and regulations. <br> <br>
-        If you have any questions or require further assistance, please do not hesitate to reach out to our dedicated support team at [Insert contact details]. We are here to address any concerns you may have and guide you through the process. <br> <br>
+        If you have any questions or require further assistance, please do not hesitate to reach out to our dedicated support team at nyc_enquiries@nyc.gov.sg. We are here to address any concerns you may have and guide you through the process. <br> <br>
         Thank you for your attention to this matter and for entrusting us with the care of your precious child. Together, we can make a positive impact on their health and future. <br>
         Warm regards, <br>
         National Youth Council in affiliation with Outward Bound Singapore</p>`,
