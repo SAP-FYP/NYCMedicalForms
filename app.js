@@ -438,4 +438,61 @@ app.get('*', (req, res) => {
     return res.redirect('/error?code=404')
 })
 
+//////////////////////////////////////////////////////
+// Feature: PMT Retrieve All Submissions
+// http://localhost:3000/api/pmt/all
+// Method: GET
+//////////////////////////////////////////////////////
+app.get('/api/pmt/all', /*verifyUser,*/ async (req, res, next) => {
+    return pmtModel
+        .retrieveAllSubmissions()
+        .then((result) => {
+            if (result.length === 0) {
+                throw new Error("No submissions found");
+            }
+            return res.json( result[0] );
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        });
+});
+
+app.get('/api/pmt/:nameOfStudent', /*verifyUser,*/ async (req, res, next) => {
+    const nameOfStudent = req.params.nameOfStudent;
+    return pmtModel
+        .retrieveSubmission(nameOfStudent)
+        .then((result) => {
+            if (result.length === 0) {
+                throw new Error(nameOfStudent + "'s submission not found");
+            }
+            return res.json(result[0]);
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        });
+});
+
+app.put('/api/pmt/:studentId', /*verifyUser,*/ async (req, res, next) => {
+    const studentId = req.params.studentId;
+    const formStatus = req.body.formStatus;
+    return pmtModel
+        .updateSubmissionStatus(formStatus, studentId)
+        .then((result) => {
+            if (!studentId || !formStatus) {
+                return res.status(400).json({ error: "Status cannot be empty" });
+            }
+            if (result.affectedRows === 0) {
+                throw new Error("Submission not found");
+            }
+            return res.json(result);
+        })
+        .catch((error) => {
+            if (isNaN(studentId)) {
+                return res.status(400).json({ error: "Invalid student ID" });
+            }
+           
+            return res.status(error.status || 500).json({ error: error.message });
+        });
+});
+
 module.exports = app;
