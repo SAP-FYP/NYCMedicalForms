@@ -40,15 +40,21 @@ window.addEventListener('DOMContentLoaded', () => {
             const [permGroup, perms] = allJsonData;
 
             if (!permGroup) {
+                alert('no permission groups found')
                 // handle no perms group
+            } else {
+                buildPermGroups(permGroup);
             }
 
             if (!perms) {
+                alert('no permissions found')
                 // handle no permissions
+            } else {
+                buildPerms(perms);
             }
 
-            buildPermGroups(permGroup);
-            buildPerms(perms);
+
+
 
         })
         .catch((error) => {

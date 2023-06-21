@@ -73,6 +73,12 @@ app.post('/login', (req, res, next) => {
                 throw error;
             }
 
+            if (result.isDisabled) {
+                const error = new Error("Account is disabled. Please dontact admin for more information");
+                error.status = 403;
+                throw error;
+            }
+
             // SET JWT
             let payload = {
                 'email': result.email,
@@ -248,15 +254,20 @@ app.post('/obs-admin/newuser', authHelper.verifyToken, authHelper.checkIat, (req
 });
 
 // Get All Users
-app.get('/obs-admin/users', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+app.get('/obs-admin/users/:search', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
         return res.redirect('/error?code=403')
     }
 
+    let searchInput = ""
+    if (req.params.search != -1) {
+        searchInput = req.params.search
+    }
+
     return adminModel
-        .getAllUsers(req.decodedToken.email)
+        .getAllUsers(req.decodedToken.email, searchInput)
         .then((result) => {
             if (!result) {
                 const error = new Error("No users found")
@@ -448,6 +459,87 @@ app.delete('/obs-admin/permission/groups/:groupId', authHelper.verifyToken, auth
         .then((result) => {
             if (!result) {
                 const error = new Error("Unable to delete permission group")
+                error.status = 500;
+                throw error;
+            }
+            return res.sendStatus(200);
+        })
+        .catch((error) => {
+            console.log(error)
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+})
+
+// Update User - isaac
+app.put('/obs-admin/user', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+
+    // AUTHORIZATION CHECK - ADMIN
+    if (req.decodedToken.role != 1) {
+        return res.redirect('/error?code=403')
+    }
+
+    const user = {
+        email: req.body.email,
+        name: req.body.name,
+        role: req.body.role,
+        group: req.body.group,
+        contact: req.body.contact,
+        invalidationDate: moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss')
+    }
+
+    if (!user.name || !user.email || !user.contact || !user.group || (user.group == -1 && user.role != 1) || user.role == -1) {
+        const error = new Error("Empty or invalid user information");
+        error.status = 400;
+        throw error;
+    }
+
+    if (user.role == 1) {
+        user.group = 0
+    }
+
+    return adminModel
+        .editUser(user)
+        .then((result) => {
+            if (!result) {
+                const error = new Error("Unable to update user")
+                error.status = 500;
+                throw error;
+            }
+            return res.sendStatus(200);
+        })
+        .catch((error) => {
+            console.log(error)
+            if (error.code == "ER_DUP_ENTRY") {
+                return res.status(422).json({ error: "User email already exists" });
+            }
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+})
+
+// Delete User - isaac
+app.put('/obs-admin/delete/user/:email', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+
+    // AUTHORIZATION CHECK - ADMIN
+    if (req.decodedToken.role != 1) {
+        return res.redirect('/error?code=403')
+    }
+
+    const user = {
+        email: req.params.email,
+        invalidationDate: moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss')
+    }
+
+    if (!user.email) {
+        const error = new Error("Empty user email")
+        error.status = 400;
+        throw error;
+    }
+
+    return adminModel
+        .deleteUser(user)
+        .then((result) => {
+            if (!result) {
+                const error = new Error("Unable to delete user")
                 error.status = 500;
                 throw error;
             }

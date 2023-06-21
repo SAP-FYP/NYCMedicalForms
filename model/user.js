@@ -6,7 +6,7 @@ module.exports.loginUser = async function loginUser(email) {
 
     try {
         await connection.beginTransaction();
-        const sql1 = `SELECT * FROM user WHERE email = ?`;
+        const sql1 = `SELECT * FROM user WHERE email = ? AND isDeleted = 0`;
         const result1 = await connection.query(sql1, [email]);
 
         const userData = result1[0];
