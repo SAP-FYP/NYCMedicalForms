@@ -555,6 +555,32 @@ app.get('/obs-admin/pmt/all',  authHelper.verifyToken, authHelper.checkIat, asyn
         });
 });
 
+//PMT Retrieve Submission By Student Name Search 
+app.get('/obs-admin/pmt/search/:search', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    const searchInput = req.params.search;
+    // AUTHORIZATION CHECK - PMT 
+    if (req.decodedToken.role != 2) {
+        return res.redirect('/error?code=403')
+    }
+
+    // let searchInput = ""
+    // if (req.params.search != -1) {
+    //     searchInput = req.params.search
+    // }
+
+    return pmtModel
+        .retrieveSubmissionBySearch(searchInput)
+        .then((result) => {
+            if (result.length === 0) {
+                throw new Error("No submission found");
+            }
+            return res.json(result[0]);
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+});
+
 //PMT Retrieve Submission By Student Name
 app.get('/obs-admin/pmt/:nameOfStudent', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
     const nameOfStudent = req.params.nameOfStudent;
