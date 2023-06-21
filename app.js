@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const moment = require('moment-timezone');
 
-const verifyUser = require('./auth/userAuth')
+const authHelper = require('./auth/userAuth')
 const userModel = require('./model/user')
 const adminModel = require('./model/admin')
 const JWT_SECRET = process.env.SECRETKEY;
@@ -36,7 +36,6 @@ app.get('/', (req, res) => {
 //////////////////////////////////////////////////////
 app.get('/api', async (req, res, next) => {
     console.log(req.query);
-
     res.json(req.query);
 });
 
@@ -45,6 +44,7 @@ app.post('/api', async (req, res, next) => {
 
     res.json(req.body);
 });
+
 
 /**
  * User: General
@@ -64,9 +64,8 @@ app.post('/login', (req, res, next) => {
     }
 
     return userModel
-        .loginUser(credentials)
+        .loginUser(credentials.email)
         .then((result) => {
-            console.log(result);
 
             // CHECK HASH
             if (!bcrypt.compareSync(credentials.password, result.password)) {
@@ -78,20 +77,23 @@ app.post('/login', (req, res, next) => {
             // SET JWT
             let payload = {
                 'email': result.email,
-                'permissionGroup': result.groupID
+                'name': result.nameOfUser,
+                'permissionGroup': result.groupId,
+                'role': result.roleId,
+                'permissions': result.permissions,
+                'picUrl': result.picUrl,
+                'contact': result.contactNo
             }
 
             let tokenConfig = {
                 expiresIn: 28800,
-                algorithm: "HS256"
+                algorithm: 'HS256'
             };
 
             // SIGN JWT
-            jwt.sign(payload, JWT_SECRET, tokenConfig, (error, token) => {
+            jwt.sign(payload, JWT_SECRET, tokenConfig, (err, token) => {
 
-                if (error) {
-                    console.log(error)
-
+                if (err) {
                     const error = new Error("Failed to sign JWT");
                     error.status = 500;
                     throw error;
@@ -103,8 +105,17 @@ app.post('/login', (req, res, next) => {
                     sameSite: 'strict'
                 });
 
-                delete result.password;
-                return res.json({ user: result });
+                if (payload.role == 1) {
+                    return res.redirect('/obs-admin/admin')
+                } else if (payload.role == 2 || payload.role == 3) {
+                    return res.redirect('/obs-admin/obs-management')
+                } else if (payload.role == 4) {
+                    return res.redirect('/obs-form')
+                } else {
+                    const error = new Error("Invalid user role");
+                    error.status = 500;
+                    throw error;
+                }
             })
         })
         .catch((error) => {
@@ -113,9 +124,52 @@ app.post('/login', (req, res, next) => {
         });
 });
 
-app.get('/jwt', (req, res, next) => {
-    const jwt = req.cookies.jwt;
-    return res.send(jwt);
+// Get User Info
+app.get('/user', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+
+    const user = req.decodedToken;
+
+    if (!user) {
+        const error = new Error("Empty user");
+        error.status = 404;
+        throw error;
+    }
+
+    delete user.iat;
+    delete user.exp;
+    delete user.permissionGroup;
+
+    return res.send({ user });
+})
+
+// Logout
+app.get('/logout', (req, res, next) => {
+    try {
+        res.clearCookie('jwt');
+        return res.status(200).send({ 'message': 'Logout successful' });
+
+    } catch (err) {
+        const error = new Error("Cleanup error");
+        error.status = 500;
+        throw error;
+    }
+})
+
+// JWT testing
+app.get('/jwt', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    if (req.decodedToken.role != 99) {
+        res.send('?')
+    }
+
+    const token = req.cookies.jwt;
+
+    // do using middleware
+    jwt.verify(token, JWT_SECRET, { algorithm: ['HSA256'] }, (error, decoded) => {
+        if (error) {
+            console.log(error)
+        }
+        return res.send(decoded);
+    })
 })
 
 /**
@@ -123,7 +177,13 @@ app.get('/jwt', (req, res, next) => {
  */
 
 // Create Account
-app.post('/obs-admin/newuser', (req, res, next) => {
+app.post('/obs-admin/newuser', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+
+    // AUTHORIZATION CHECK - ADMIN
+    if (req.decodedToken.role != 1) {
+        return res.redirect('/error?code=403')
+    }
+
     const newuser = {
         name: req.body.name,
         email: req.body.email,
@@ -134,10 +194,14 @@ app.post('/obs-admin/newuser', (req, res, next) => {
     }
 
     if (!newuser.name || !newuser.email || !newuser.contact || !newuser.password
-        || !newuser.permissionGroup || newuser.permissionGroup == -1 || newuser.role == -1) {
+        || !newuser.permissionGroup || (newuser.permissionGroup == -1 && newuser.role != 1) || newuser.role == -1) {
         const error = new Error("Empty or invalid user information");
         error.status = 400;
         throw error;
+    }
+
+    if (newuser.role == 1) {
+        newuser.permissionGroup = 0
     }
 
     // HASHING PASSWORD
@@ -147,8 +211,8 @@ app.post('/obs-admin/newuser', (req, res, next) => {
         }
 
         newuser.password = hash;
-        newuser.created_at = moment.tz('Asia/Singapore').format('YYYY-MM-DD hh:mm:ss')
-        newuser.passwordUpdated = moment.tz('Asia/Singapore').format('YYYY-MM-DD hh:mm:ss')
+        newuser.created_at = moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss')
+        newuser.passwordUpdated = moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss')
 
         return adminModel
             .createUser(newuser)
@@ -170,10 +234,21 @@ app.post('/obs-admin/newuser', (req, res, next) => {
 
 });
 
-// Get Permission Groups
-app.get('/obs-admin/permission/groups', (req, res, next) => {
+// Get All Permission Groups or by Search
+app.get('/obs-admin/permission/groups/:search', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+
+    // AUTHORIZATION CHECK - ADMIN
+    if (req.decodedToken.role != 1) {
+        return res.redirect('/error?code=403')
+    }
+
+    let searchInput = ""
+    if (req.params.search != -1) {
+        searchInput = req.params.search
+    }
+
     return adminModel
-        .getPermissionGroups()
+        .getPermissionGroups(searchInput)
         .then((result) => {
             if (!result) {
                 const error = new Error("No permission groups found")
@@ -187,8 +262,37 @@ app.get('/obs-admin/permission/groups', (req, res, next) => {
         })
 });
 
-// Get User Roles
-app.get('/obs-admin/roles', (req, res, next) => {
+// Get All Permissions
+app.get('/obs-admin/permission', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+
+    // AUTHORIZATION CHECK - ADMIN
+    if (req.decodedToken.role != 1) {
+        return res.redirect('/error?code=403')
+    }
+
+    return adminModel
+        .getPermissions()
+        .then((result) => {
+            if (!result) {
+                const error = new Error("No permissions found")
+                error.status = 404;
+                throw error
+            }
+            return res.json({ result })
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+})
+
+// Get All User Roles
+app.get('/obs-admin/roles', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+
+    // AUTHORIZATION CHECK - ADMIN
+    if (req.decodedToken.role != 1) {
+        return res.redirect('/error?code=403')
+    }
+
     return adminModel
         .getUserRoles()
         .then((result) => {
@@ -203,5 +307,134 @@ app.get('/obs-admin/roles', (req, res, next) => {
             return res.status(error.status || 500).json({ error: error.message });
         })
 });
+
+// Create Permission Group
+app.post('/obs-admin/permission/groups', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+
+    // AUTHORIZATION CHECK - ADMIN
+    if (req.decodedToken.role != 1) {
+        return res.redirect('/error?code=403')
+    }
+
+    const newPermGroup = {
+        permGroupName: req.body.groupName,
+        permissions: req.body.permsId
+    }
+
+    if (!newPermGroup.permissions.includes('1')) {
+        newPermGroup.permissions.push('1')
+    }
+
+    if (!newPermGroup.permGroupName || newPermGroup.permissions.length == 0) {
+        const error = new Error("Empty or invalid information");
+        error.status = 400;
+        throw error;
+    }
+
+    return adminModel
+        .createPermGroup(newPermGroup)
+        .then((result) => {
+            if (!result) {
+                const error = new Error("Unable to create permission group")
+                error.status = 500;
+                throw error;
+            }
+            return res.status(201).json(result);
+        })
+        .catch((error) => {
+            if (error.code == "ER_DUP_ENTRY") {
+                return res.status(422).json({ error: "Permission group already exists" });
+            }
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+})
+
+// Edit Permission Group
+app.put('/obs-admin/permission/groups', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+
+    // AUTHORIZATION CHECK - ADMIN
+    if (req.decodedToken.role != 1) {
+        return res.redirect('/error?code=403')
+    }
+
+    const permGroup = {
+        permGroupId: req.body.groupId,
+        permGroupName: req.body.groupName,
+        permissions: req.body.permsId
+    }
+
+    if (!permGroup.permissions.includes('1')) {
+        permGroup.permissions.push('1')
+    }
+
+    if (!permGroup.permGroupName || permGroup.permissions.length == 0) {
+        const error = new Error("Empty or invalid information");
+        error.status = 400;
+        throw error;
+    }
+
+    return adminModel
+        .editPermGroup(permGroup)
+        .then((result) => {
+            if (!result) {
+                const error = new Error("Unable to update permission group")
+                error.status = 500;
+                throw error;
+            }
+            return res.sendStatus(200);
+        })
+        .catch((error) => {
+            console.log(error)
+            if (error.code == "ER_DUP_ENTRY") {
+                return res.status(422).json({ error: "Permission group already exists" });
+            }
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+})
+
+// Delete Permission Group
+app.delete('/obs-admin/permission/groups/:groupId', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+
+    // AUTHORIZATION CHECK - ADMIN
+    if (req.decodedToken.role != 1) {
+        return res.redirect('/error?code=403')
+    }
+
+    const groupId = req.params.groupId
+    if (!groupId) {
+        const error = new Error("Empty groupId")
+        error.status = 400;
+        throw error;
+    }
+
+    return adminModel
+        .deletePermissionGroup(groupId)
+        .then((result) => {
+            if (!result) {
+                const error = new Error("Unable to delete permission group")
+                error.status = 500;
+                throw error;
+            }
+            return res.sendStatus(200);
+        })
+        .catch((error) => {
+            console.log(error)
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+})
+
+/**
+ * Error handling
+ */
+
+app.use((error, req, res, next) => {
+    if (error) {
+        return res.redirect(`/error?code=${error.status || 500}`)
+    }
+});
+
+app.get('*', (req, res) => {
+    return res.redirect('/error?code=404')
+})
 
 module.exports = app;
