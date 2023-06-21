@@ -1,4 +1,4 @@
-window.addEventListener('DOMContentLoaded', function () {
+window.addEventListener('DOMContentLoaded', () => {
 
     const loginForm = this.document.querySelector("#login-form");
 
@@ -17,23 +17,21 @@ window.addEventListener('DOMContentLoaded', function () {
         }).then((response) => {
             if (response.status === 400 || response.status === 401) {
                 const error = new Error("Invalid email or password");
-                error.code = response.status;
+                error.status = response.status;
                 throw error;
 
             } else if (response.status !== 200) {
                 const error = new Error("Unknown Error");
-                error.code = response.status;
+                error.status = response.status;
                 throw error;
             }
-            return response.json();
-
-        }).then((jsonData) => {
-            console.log(jsonData)
-            // redirect to medical form
+            // role check
+            // redirect to superadmin/pmt/mst form
+            // can redirect in app.js using res.redirect
 
         }).catch((error) => {
             console.log(error)
-            this.alert(error)
+            alert(error)
             // display error
         })
     }
@@ -44,7 +42,7 @@ window.addEventListener('DOMContentLoaded', function () {
         const password = loginForm.querySelector('#login-password').value;
 
         if (!email || !password) {
-            this.alert("Please fill in empty fields")
+            alert("Please fill in empty fields")
         } else {
             login(email, password)
         }

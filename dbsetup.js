@@ -9,30 +9,37 @@ const CREATE_TABLE_SQL = `
     nameOfUser VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     contactNo INT NOT NULL,
-    groupId VARCHAR(255) NOT NULL,
+    groupId INT NOT NULL,
     created_at DATETIME NOT NULL,
     isDisabled BOOLEAN NOT NULL DEFAULT FALSE,
     isDeleted BOOLEAN NOT NULL DEFAULT FALSE,
     invalidationDate DATETIME,
     passwordUpdated DATETIME,
+    roleId INT NOT NULL,
     PRIMARY KEY (email)
     );
 
+    CREATE TABLE IF NOT EXISTS role (
+    roleId INT NOT NULL AUTO_INCREMENT,
+    roleName VARCHAR(255) NOT NULL,
+    PRIMARY KEY (roleId)
+    );
+
     CREATE TABLE IF NOT EXISTS \`group\` (
-    groupId INT NOT NULL,
-    groupName VARCHAR(255) NOT NULL,
+    groupId INT NOT NULL AUTO_INCREMENT,
+    groupName VARCHAR(255) NOT NULL UNIQUE,
     PRIMARY KEY (groupId)
     );
 
     CREATE TABLE IF NOT EXISTS groupPerm (
-    groupId INT NOT NULL,
+    groupId INT NOT NULL ,
     permsId INT NOT NULL,
     PRIMARY KEY (groupId, permsId)
     );
 
     CREATE TABLE IF NOT EXISTS permission (
-    permsId INT NOT NULL,
-    permsName VARCHAR(255) NOT NULL,
+    permsId INT NOT NULL AUTO_INCREMENT,
+    permsName VARCHAR(255) NOT NULL UNIQUE,
     permsDescription VARCHAR(255) NOT NULL,
     PRIMARY KEY (permsId)
     );
@@ -53,18 +60,20 @@ const CREATE_TABLE_SQL = `
     nameOfStudent VARCHAR(255) NOT NULL,
     class VARCHAR(255) NOT NULL,  
     school VARCHAR(255) NOT NULL,
+    dateOfBirth DATE NOT NULL,
     dateOfVaccination VARCHAR(255) NOT NULL,
     PRIMARY KEY (studentId)  
     );
 
     CREATE TABLE IF NOT EXISTS parentAcknowledgement (
     studentId INT NOT NULL AUTO_INCREMENT,
-    parentNRIC VARCHAR(9) NOT NULL,
-    nameOfParent VARCHAR(255) NOT NULL,
-    parentSignature BLOB NOT NULL,
-    dateOfAcknowledgement DATE NOT NULL,
-    parentContactNo INT NOT NULL,
-    statusOfAcknowledgement VARCHAR(50) NOT NULL,
+    parentNRIC VARCHAR(9) NULL,
+    nameOfParent VARCHAR(255) NULL,
+    parentEmail VARCHAR(255) NOT NULL,
+    parentSignature BLOB NULL,
+    dateOfAcknowledgement DATE NULL,
+    parentContactNo INT NULL,
+    statusOfAcknowledgement VARCHAR(50) NOT NULL  DEFAULT 'Pending Parent',
     PRIMARY KEY (studentId)
     );
 
