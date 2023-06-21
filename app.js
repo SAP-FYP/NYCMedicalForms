@@ -5,6 +5,8 @@ const bodyParser = require('body-parser');
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const elasticEmail = require('elasticemail');
+const multer = require('multer');
+const cloudinary = require("cloudinary").v2;
 
 const crypto = require('crypto');
 const key = Buffer.from(process.env.encryptKey, 'hex');
@@ -12,6 +14,7 @@ const iv = Buffer.from(process.env.encryptIV, 'hex');
 
 const authHelper = require('./auth/userAuth')
 const userModel = require('./model/user')
+const doctorFormModel = require('./model/doctorForm');
 const parentModel = require('./model/parent')
 const formModel = require('./model/form')
 const adminModel = require('./model/admin')
@@ -613,6 +616,17 @@ cloudinary.config({
   api_key: "189815745826899",
   api_secret: "eAKSNgdEoKxTWu8kh__hUi3U7J0",
 });
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/')
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname)
+  }
+});
+
+const upload = multer({ storage });
 
 //upload image to cloudinary
 app.post('/uploadSign', upload.single('signature'), (req, res) => {
