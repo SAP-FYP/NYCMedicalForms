@@ -7,7 +7,9 @@ const bcrypt = require('bcrypt');
 const elasticEmail = require('elasticemail');
 const multer = require('multer');
 const cloudinary = require("cloudinary").v2;
-
+const {
+    UserNotFoundError
+  } = require("./errors");
 const crypto = require('crypto');
 const key = Buffer.from(process.env.encryptKey, 'hex');
 const iv = Buffer.from(process.env.encryptIV, 'hex');
@@ -617,19 +619,8 @@ cloudinary.config({
   api_secret: "eAKSNgdEoKxTWu8kh__hUi3U7J0",
 });
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/')
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.originalname)
-  }
-});
-
-const upload = multer({ storage });
-
 //upload image to cloudinary
-app.post('/uploadSign', upload.single('signature'), (req, res) => {
+app.post('/uploadSign', (req, res) => {
   const file = req.body.signature;
   //console.log(file)
   cloudinary.uploader.upload(file, { resource_type: 'image', format: 'png' }, (err, result) => {
@@ -740,7 +731,7 @@ app.post('/checkDoctorMCR', (req, res, next) => {
       console.error(err);
       if (err instanceof UserNotFoundError) {
         // user is not found
-        res.status(404).json({ message: err.message });
+        res.status(404).json({ message: 'DoctorNotFound'});
       } else {
         // unknown internal error(system failure)
         res.status(500).json({ message: 'Unknown error occurred.' });
