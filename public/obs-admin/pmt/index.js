@@ -1,4 +1,4 @@
-API_URL = `http://localhost:3000/api/pmt`;
+API_URL = `http://localhost:3000/obs-admin/pmt`;
 document.addEventListener("DOMContentLoaded", function () {
 
   axios.get(`${API_URL}/all`)

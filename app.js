@@ -1,43 +1,33 @@
 const express = require("express");
 const cookieParser = require('cookie-parser');
+const moment = require('moment');
 const bodyParser = require('body-parser');
 const jwt = require("jsonwebtoken");
-const multer = require('multer');
-const cloudinary = require("cloudinary").v2;
-const crypto = require('crypto');
-
-const verifyUser = require('./auth/userAuth')
-const userModel = require('./model/user')
-const doctorFormModel = require('./model/doctorForm');
 const bcrypt = require('bcrypt');
-const moment = require('moment');
 const elasticEmail = require('elasticemail');
-const elasticEmailClient = elasticEmail.createClient({
-    apiKey: process.env.elasticAPIKey
-});
 
-// Crypto
 const crypto = require('crypto');
 const key = Buffer.from(process.env.encryptKey, 'hex');
 const iv = Buffer.from(process.env.encryptIV, 'hex');
 
-const verifyUser = require('./auth/userAuth')
+const authHelper = require('./auth/userAuth')
 const userModel = require('./model/user')
 const parentModel = require('./model/parent')
 const formModel = require('./model/form')
-const JWT_SECRET = process.env.SECRETKEY;
+const adminModel = require('./model/admin')
+const pmtModel = require('./model/pmt')
+
 
 const app = express();
 const port = process.env.PORT || 3000;
-const pool = require('./database'); //Import from db.js
-
-const {
-  UserNotFoundError
-} = require("./errors");
+const JWT_SECRET = process.env.SECRETKEY;
+const elasticEmailClient = elasticEmail.createClient({
+    apiKey: process.env.elasticAPIKey
+});
 
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  next();
+    res.header("Access-Control-Allow-Origin", "*");
+    next();
 });
 
 app.use(cookieParser());
@@ -46,25 +36,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 app.get('/', (req, res) => {
-  res.send(`Server running on port ${port}`)
+    res.send(`Server running on port ${port}`)
 
-});
-
-//////////////////////////////////////////////////////
-// POST GET METHODS
-// http://localhost:3000/api/
-// Use Postman to test
-//////////////////////////////////////////////////////
-app.get('/api', async (req, res, next) => {
-  console.log(req.query);
-
-  res.json(req.query);
-});
-
-app.post('/api', async (req, res, next) => {
-  console.log(req.body);
-
-  res.json(req.body);
 });
 
 /**
@@ -73,270 +46,114 @@ app.post('/api', async (req, res, next) => {
 
 // Login
 app.post('/login', (req, res, next) => {
-  const credentials = {
-    email: req.body.email,
-    password: req.body.password,
-  };
+    const credentials = {
+        email: req.body.email,
+        password: req.body.password,
+    };
 
-  if (!credentials.email || !credentials.password) {
-    return res.status(400).json({ error: 'Invalid email or password' });
-  }
+    if (!credentials.email || !credentials.password) {
+        const error = new Error("Empty email or password");
+        error.status = 400;
+        throw error;
+    }
 
-  return userModel
-    .loginUser(credentials)
-    .then((result) => {
-      console.log(result);
+    return userModel
+        .loginUser(credentials.email)
+        .then((result) => {
 
-      let payload = {
-        'email': result.email,
-        'permissionGroup': result.groupID
-      }
+            // CHECK HASH
+            if (!bcrypt.compareSync(credentials.password, result.password)) {
+                const error = new Error("Invalid email or password");
+                error.status = 401;
+                throw error;
+            }
 
-      let tokenConfig = {
-        expiresIn: 28800,
-        algorithm: "HS256"
-      };
+            // SET JWT
+            let payload = {
+                'email': result.email,
+                'name': result.nameOfUser,
+                'permissionGroup': result.groupId,
+                'role': result.roleId,
+                'permissions': result.permissions,
+                'picUrl': result.picUrl,
+                'contact': result.contactNo
+            }
 
-      jwt.sign(payload, JWT_SECRET, tokenConfig, (error, token) => {
+            let tokenConfig = {
+                expiresIn: 28800,
+                algorithm: 'HS256'
+            };
 
-        if (error) {
-          console.log(error)
-          throw "Failed to sign JWT"
-        };
+            // SIGN JWT
+            jwt.sign(payload, JWT_SECRET, tokenConfig, (err, token) => {
 
-        res.cookie('jwt', token, {
-          httpOnly: true,
-          secure: false,
-          sameSite: 'strict'
+                if (err) {
+                    const error = new Error("Failed to sign JWT");
+                    error.status = 500;
+                    throw error;
+                };
+
+                res.cookie('jwt', token, {
+                    httpOnly: true,
+                    secure: false,
+                    sameSite: 'strict'
+                });
+
+                if (payload.role == 1) {
+                    return res.redirect('/obs-admin/admin')
+                } else if (payload.role == 2 || payload.role == 3) {
+                    return res.redirect('/obs-admin/obs-management')
+                } else if (payload.role == 4) {
+                    return res.redirect('/obs-form')
+                } else {
+                    const error = new Error("Invalid user role");
+                    error.status = 500;
+                    throw error;
+                }
+            })
+        })
+        .catch((error) => {
+            console.log(error)
+            return res.status(error.status || 500).json({ error: error.message });
         });
-
-        return res.json({ user: result });
-      })
-    })
-    .catch((error) => {
-      console.log(error)
-
-      if (error == "Invalid email or password") {
-        return res.status(400).json({ error: error.message });
-      } else if (error == "JWT Sign Error") {
-        return res.status(401).json({ error: error.message });
-      }
-      return res.status(error.status || 500).json({ error: error.message });
-    })
 });
 
-/**
- * HAJIN
- * 
- */
+// Get User Info
+app.get('/user', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
 
-cloudinary.config({
-  cloud_name: "sp-esde-2100030",
-  api_key: "189815745826899",
-  api_secret: "eAKSNgdEoKxTWu8kh__hUi3U7J0",
-});
+    const user = req.decodedToken;
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/')
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.originalname)
-  }
-});
-
-const upload = multer({ storage });
-
-//upload image to cloudinary
-app.post('/uploadSign', upload.single('signature'), (req, res) => {
-  const file = req.body.signature;
-  //console.log(file)
-  cloudinary.uploader.upload(file, { resource_type: 'image', format: 'png' }, (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ message: "Upload failed" });
+    if (!user) {
+        const error = new Error("Empty user");
+        error.status = 404;
+        throw error;
     }
-    return res.json({ url: result.secure_url });
-  });
-});
 
-// upload doctor informtaion
-app.post('/postDoctorInfo',(req,res,next) => {
-  const{doctorMCR, physicianName,signatureData,clinicName,clinicAddress,contactNo} = req.body;
-  try {
-    // encryption part
-    const algorithm = 'aes-256-cbc'; // encryption algorithm
-    const key = Buffer.from('qW3eRt5yUiOpAsDfqW3eRt5yUiOpAsDf'); //must be 32 characters
-    const iv = Buffer.from('qW3eRt5yUiOpAsDf'); // the initialization vector(), recommended to create randombytes and store safely crypto.randomBytes(16)
+    delete user.iat;
+    delete user.exp;
+    delete user.permissionGroup;
 
-    const cipher = crypto.createCipheriv(algorithm, key, iv);//create cipher iv first,
-    let encryptedsignatureInfo = cipher.update(signatureData, 'utf8', 'hex'); //and encrypt the data with it
-    encryptedsignatureInfo += cipher.final('hex'); //this is to signal the end of encryption, and to notice the type of data the encryption
-    //you cannot cipher.update or cipher.final once you finished encryption using cipher.final. it will throw error
+    return res.send({ user });
+})
 
-    return doctorFormModel
-    .postDoctorInfo(doctorMCR, physicianName,encryptedsignatureInfo,clinicName,clinicAddress,contactNo)
-    .then(data => {
-      console.log(data)
-      res.json(data);
-    })
-    .catch(error => {
-      if (error instanceof DUPLICATE_ENTRY_ERROR) {
-        res.status(409).json({ message: error.message });
-      } else {
-        res.status(500).json({ message: 'Internal server error' });
-      }
-    })
-  }catch (error) {
-    // Encryption Error
-    console.error('Encryption Error:', error);
-    res.status(500).json({ message: 'Encryption Error' });
-  }
-});
+// Logout
+app.get('/logout', (req, res, next) => {
+    try {
+        res.clearCookie('jwt');
+        return res.status(200).send({ 'message': 'Logout successful' });
 
-//upload student information
-app.post('/postStudentInfo',(req,res,next) => {
-  const{studentName, schoolName,dateOfBirth,studentNRIC,studentClass,dateOfVaccine} = req.body;
-  return doctorFormModel
-  .postStudentInfo(studentNRIC,studentName,dateOfBirth,studentClass,schoolName,dateOfVaccine)
-  .then(data => {
-    console.log(data)
-    res.json(data);
-  })
-  .catch(error => {
-    if (error instanceof DUPLICATE_ENTRY_ERROR) {
-      res.status(409).json({ message: error.message });
-    } else {
-      res.status(500).json({ message: 'Internal server error' });
+    } catch (err) {
+        const error = new Error("Cleanup error");
+        error.status = 500;
+        throw error;
     }
-  });
-});
-
-//upload form information
-app.post('/postFormInfo',(req,res,next) => {
-  const{studentId, courseDate,doctorMCR,eligibility,comments,date} = req.body;
-  return doctorFormModel
-  .postFormInfo(studentId, courseDate,doctorMCR,eligibility,comments,date)
-  .then(data => {
-    console.log(data)
-    res.json(data);
-  })
-  .catch(error => {
-    if (error instanceof DUPLICATE_ENTRY_ERROR) {
-      res.status(409).json({ message: error.message });
-    } else {
-      res.status(500).json({ message: 'Internal server error' });
-    }
-  });
-});
-
-// check doctor mcr
-app.post('/checkDoctorMCR', (req, res, next) => {
-  //retrieve doctorMCR here...
-  const { doctorMCR } = req.body;
-  //continue to database...
-  return doctorFormModel
-    .matchDoctorInfo(doctorMCR)
-    .then(data => {
-      const encryptedSignInfo = data[0].signature
-      const key = Buffer.from('qW3eRt5yUiOpAsDfqW3eRt5yUiOpAsDf'); //must be 32 characters
-      const iv = Buffer.from('qW3eRt5yUiOpAsDf'); //must be 16 characters
-      try {
-        // Create the decipher object
-        const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
-        let decrypted = decipher.update(encryptedSignInfo, 'hex', 'utf8');
-        decrypted += decipher.final('utf8');
-
-        data[0].signature = decrypted;
-        res.json(data);
-      } catch (error) {
-        // Decrypt Error
-        console.error('Decryption Error:', error);
-        res.status(500).json({ message: 'Decryption Error' });
-      }
-    })
-    .catch(err => {
-      console.error(err);
-      if (err instanceof UserNotFoundError) {
-        // user is not found
-        res.status(404).json({ message: err.message });
-      } else {
-        // unknown internal error(system failure)
-        res.status(500).json({ message: 'Unknown error occurred.' });
-      }
-    });
-});
-
-// get classes
-app.get('/getClasses', (req, res, next) => {
-  const limit = parseInt(req.query.limit);
-  const offset = parseInt(req.query.offset);
-  const search =req.query.search || '';
-  console.log(search)
-  return doctorFormModel
-    .getClasses(limit,offset,search)
-    .then(data => {
-      const classLists = data[0];
-      console.log(classLists)
-      res.json(classLists);
-    })
-    .catch(err => {
-      if (error instanceof EMPTY_RESULT_ERROR) {
-        res.status(404).json({ message: error.message });
-      } else {
-        res.status(500).json({ message: 'Internal server error' });
-      }
-    });
-});
-
-// get schools
-app.get('/getSchools', (req, res, next) => {
-  const limit = parseInt(req.query.limit);
-  const offset = parseInt(req.query.offset);
-  const search =req.query.search || '';
-  
-  return doctorFormModel
-    .getSchools(limit,offset,search)
-    .then(data => {
-      const schoolLists = data[0];
-      console.log(schoolLists)
-      res.json(schoolLists);
-    })
-    .catch(err => {
-      if (error instanceof EMPTY_RESULT_ERROR) {
-        res.status(404).json({ message: error.message });
-      } else {
-        res.status(500).json({ message: 'Internal server error' });
-      }
-    });
-});
-
-// get course dates
-app.get('/getCourseDates', (req, res, next) => {
-  const limit = parseInt(req.query.limit);
-  const offset = parseInt(req.query.offset);
-  const search =req.query.search || '';
-
-  return doctorFormModel
-    .getCourseDates(limit,offset,search)
-    .then(data => {
-      const courseDateLists = data[0];
-      res.json(courseDateLists)
-    })
-    .catch(err => {
-      if (error instanceof EMPTY_RESULT_ERROR) {
-        res.status(404).json({ message: error.message });
-      } else {
-        res.status(500).json({ message: 'Internal server error' });
-      }
-    });
-});
+})
 
 // Email test
 app.post('/send-email', (req, res) => {
     const { email } = req.body;
-      // Compose the email parameters
-      const emailParams = {
+    // Compose the email parameters
+    const emailParams = {
         to: email,
         subject: "Require Parent's Acknowledgement: New Changes in Your Child's Medical Condition",
         from: 'leebarry008@gmail.com',
@@ -349,32 +166,79 @@ app.post('/send-email', (req, res) => {
         Thank you for your attention to this matter and for entrusting us with the care of your precious child. Together, we can make a positive impact on their health and future. <br>
         Warm regards, <br>
         National Youth Council in affiliation with Outward Bound Singapore</p>`,
-      };
-  
-      // Send the email using Elastic Email SDK
-      elasticEmailClient.mailer.send(emailParams, (err, result) => {
-        if (err) {
-          console.error('Failed to send email:', err);
-          res.status(500).send('Failed to send email');
-        } else {
-          console.log('Email sent successfully:', result);
-          res.status(200).send('Email sent successfully');
-        }
-      });
-    });
-  
+    };
 
-app.get('/jwt', (req, res, next) => {
-  const jwt = req.cookies.jwt;
-  return res.send(jwt);
-})
+    // Send the email using Elastic Email SDK
+    elasticEmailClient.mailer.send(emailParams, (err, result) => {
+        if (err) {
+            console.error('Failed to send email:', err);
+            res.status(500).send('Failed to send email');
+        } else {
+            console.log('Email sent successfully:', result);
+            res.status(200).send('Email sent successfully');
+        }
+    });
+});
 
 /**
  * User: Super Admin
  */
 
 // Create Account
-app.post('obs-admin/newuser', (req, res, next) => {
+app.post('/obs-admin/newuser', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+
+    // AUTHORIZATION CHECK - ADMIN
+    if (req.decodedToken.role != 1) {
+        return res.redirect('/error?code=403')
+    }
+
+    const newuser = {
+        name: req.body.name,
+        email: req.body.email,
+        contact: req.body.contact,
+        password: req.body.password,
+        permissionGroup: req.body.permissionGroup,
+        role: req.body.role
+    }
+
+    if (!newuser.name || !newuser.email || !newuser.contact || !newuser.password
+        || !newuser.permissionGroup || (newuser.permissionGroup == -1 && newuser.role != 1) || newuser.role == -1) {
+        const error = new Error("Empty or invalid user information");
+        error.status = 400;
+        throw error;
+    }
+
+    if (newuser.role == 1) {
+        newuser.permissionGroup = 0
+    }
+
+    // HASHING PASSWORD
+    bcrypt.hash(newuser.password, 10, async function (err, hash) {
+        if (err) {
+            return res.status(500).json({ error: 'Error hashing password' });
+        }
+
+        newuser.password = hash;
+        newuser.created_at = moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss')
+        newuser.passwordUpdated = moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss')
+
+        return adminModel
+            .createUser(newuser)
+            .then((result) => {
+                if (!result) {
+                    const error = new Error("Unable to create account")
+                    error.status = 500;
+                    throw error;
+                }
+                return res.sendStatus(201);
+            })
+            .catch((error) => {
+                if (error.code == "ER_DUP_ENTRY") {
+                    return res.status(422).json({ error: "Email or contact already exists" });
+                }
+                return res.status(error.status || 500).json({ error: error.message });
+            })
+    })
 
 });
 
@@ -593,7 +457,6 @@ app.put('/obs-admin/update-account-status', (req, res, next) => {
         })
 });
 
-
 // Delete Account
 app.put('/obs-admin/delete-user', (req, res, next) => {
     const { email } = req.body;
@@ -608,26 +471,28 @@ app.put('/obs-admin/delete-user', (req, res, next) => {
 });
 
 
-//////////////////////////////////////////////////////
-// Feature: PMT Retrieve All Submissions
-// http://localhost:3000/api/pmt/all
-// Method: GET
-//////////////////////////////////////////////////////
-app.get('/api/pmt/all', /*verifyUser,*/ async (req, res, next) => {
+
+/**
+ * Admin: Partnership Management Team (PMT)
+ */
+
+//PMT Retrieve All Submissions
+app.get('/obs-admin/pmt/all', /*verifyUser,*/ async (req, res, next) => {
     return pmtModel
         .retrieveAllSubmissions()
         .then((result) => {
             if (result.length === 0) {
                 throw new Error("No submissions found");
             }
-            return res.json( result[0] );
+            return res.json(result[0]);
         })
         .catch((error) => {
             return res.status(error.status || 500).json({ error: error.message });
         });
 });
 
-app.get('/api/pmt/:nameOfStudent', /*verifyUser,*/ async (req, res, next) => {
+//PMT Retrieve Submission By Student Name
+app.get('/obs-admin/pmt/:nameOfStudent', /*verifyUser,*/ async (req, res, next) => {
     const nameOfStudent = req.params.nameOfStudent;
     return pmtModel
         .retrieveSubmission(nameOfStudent)
@@ -642,7 +507,8 @@ app.get('/api/pmt/:nameOfStudent', /*verifyUser,*/ async (req, res, next) => {
         });
 });
 
-app.put('/api/pmt/:studentId', /*verifyUser,*/ async (req, res, next) => {
+//PMT Update Submission By Student ID
+app.put('/obs-admin/pmt/:studentId', /*verifyUser,*/ async (req, res, next) => {
     const studentId = req.params.studentId;
     const formStatus = req.body.formStatus;
     return pmtModel
@@ -660,18 +526,17 @@ app.put('/api/pmt/:studentId', /*verifyUser,*/ async (req, res, next) => {
             if (isNaN(studentId)) {
                 return res.status(400).json({ error: "Invalid student ID" });
             }
-           
+
             return res.status(error.status || 500).json({ error: error.message });
         });
 });
-
 
 /**
  * User: Parents
  */
 
 // ! Make sure parents are unable to login if already acknowledged.
-app.post('/parent/login/', (req, res, next) => {        
+app.post('/parent/login/', (req, res, next) => {
     // Get encrypted studentID from body
     const encrypted = req.body.encrypted;
     // Get password from body
@@ -704,40 +569,235 @@ app.post('/parent/login/', (req, res, next) => {
                 error.status = 401;
                 throw error;
             }
-            
+
             return res.json({ user: result });
-            
+
         })
-    })
+})
 
-    // Update parent's acknowledgement
-    app.put('/parent/acknowledge', (req, res, next) => {
+// Update parent's acknowledgement
+app.put('/parent/acknowledge', (req, res, next) => {
 
-        // Decrypt studentID
-        const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
-        const studentID = decipher.update(req.body.encrypted, 'hex', 'utf8') + decipher.final('utf8');
+    // Decrypt studentID
+    const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+    const studentID = decipher.update(req.body.encrypted, 'hex', 'utf8') + decipher.final('utf8');
 
-        const data = {
-            studentID: studentID,
-            parentNRIC: req.body.parentNRIC,
-            nameOfParent: req.body.nameOfParent,
-            parentSignature: req.body.parentSignature,
-            dateOfAcknowledgement: req.body.dateOfAcknowledgement,
-        };
-        // TODO ERROR HANDLING
-        return parentModel.updateAcknowledgement(data)
-            .then((result) => {
-                return res.json({ user: result });
-            }
+    const data = {
+        studentID: studentID,
+        parentNRIC: req.body.parentNRIC,
+        nameOfParent: req.body.nameOfParent,
+        parentSignature: req.body.parentSignature,
+        dateOfAcknowledgement: req.body.dateOfAcknowledgement,
+    };
+    // TODO ERROR HANDLING
+    return parentModel.updateAcknowledgement(data)
+        .then((result) => {
+            return res.json({ user: result });
+        }
         ).catch((error) => {
             console.log(error)
             return res.status(error.status || 500).json({ error: error.message });
         })
-    })
+})
 
 /**
  * Form Routes
  */
+
+/**
+ * HAJIN 
+ */
+
+cloudinary.config({
+  cloud_name: "sp-esde-2100030",
+  api_key: "189815745826899",
+  api_secret: "eAKSNgdEoKxTWu8kh__hUi3U7J0",
+});
+
+//upload image to cloudinary
+app.post('/uploadSign', upload.single('signature'), (req, res) => {
+  const file = req.body.signature;
+  //console.log(file)
+  cloudinary.uploader.upload(file, { resource_type: 'image', format: 'png' }, (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: "Upload failed" });
+    }
+    return res.json({ url: result.secure_url });
+  });
+});
+
+// upload doctor informtaion
+app.post('/postDoctorInfo',(req,res,next) => {
+  const{doctorMCR, physicianName,signatureData,clinicName,clinicAddress,contactNo} = req.body;
+  try {
+    // encryption part
+    const algorithm = 'aes-256-cbc'; // encryption algorithm
+    const key = Buffer.from('qW3eRt5yUiOpAsDfqW3eRt5yUiOpAsDf'); //must be 32 characters
+    const iv = Buffer.from('qW3eRt5yUiOpAsDf'); // the initialization vector(), recommended to create randombytes and store safely crypto.randomBytes(16)
+
+    const cipher = crypto.createCipheriv(algorithm, key, iv);//create cipher iv first,
+    let encryptedsignatureInfo = cipher.update(signatureData, 'utf8', 'hex'); //and encrypt the data with it
+    encryptedsignatureInfo += cipher.final('hex'); //this is to signal the end of encryption, and to notice the type of data the encryption
+    //you cannot cipher.update or cipher.final once you finished encryption using cipher.final. it will throw error
+
+    return doctorFormModel
+    .postDoctorInfo(doctorMCR, physicianName,encryptedsignatureInfo,clinicName,clinicAddress,contactNo)
+    .then(data => {
+      console.log(data)
+      res.json(data);
+    })
+    .catch(error => {
+      if (error instanceof DUPLICATE_ENTRY_ERROR) {
+        res.status(409).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: 'Internal server error' });
+      }
+    })
+  }catch (error) {
+    // Encryption Error
+    console.error('Encryption Error:', error);
+    res.status(500).json({ message: 'Encryption Error' });
+  }
+});
+
+//upload student information
+app.post('/postStudentInfo',(req,res,next) => {
+  const{studentName, schoolName,dateOfBirth,studentNRIC,studentClass,dateOfVaccine} = req.body;
+  return doctorFormModel
+  .postStudentInfo(studentNRIC,studentName,dateOfBirth,studentClass,schoolName,dateOfVaccine)
+  .then(data => {
+    console.log(data)
+    res.json(data);
+  })
+  .catch(error => {
+    if (error instanceof DUPLICATE_ENTRY_ERROR) {
+      res.status(409).json({ message: error.message });
+    } else {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+});
+
+//upload form information
+app.post('/postFormInfo',(req,res,next) => {
+  const{studentId, courseDate,doctorMCR,eligibility,comments,date} = req.body;
+  return doctorFormModel
+  .postFormInfo(studentId, courseDate,doctorMCR,eligibility,comments,date)
+  .then(data => {
+    console.log(data)
+    res.json(data);
+  })
+  .catch(error => {
+    if (error instanceof DUPLICATE_ENTRY_ERROR) {
+      res.status(409).json({ message: error.message });
+    } else {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+});
+
+// check doctor mcr
+app.post('/checkDoctorMCR', (req, res, next) => {
+  //retrieve doctorMCR here...
+  const { doctorMCR } = req.body;
+  //continue to database...
+  return doctorFormModel
+    .matchDoctorInfo(doctorMCR)
+    .then(data => {
+      const encryptedSignInfo = data[0].signature
+      const key = Buffer.from('qW3eRt5yUiOpAsDfqW3eRt5yUiOpAsDf'); //must be 32 characters
+      const iv = Buffer.from('qW3eRt5yUiOpAsDf'); //must be 16 characters
+      try {
+        // Create the decipher object
+        const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+        let decrypted = decipher.update(encryptedSignInfo, 'hex', 'utf8');
+        decrypted += decipher.final('utf8');
+
+        data[0].signature = decrypted;
+        res.json(data);
+      } catch (error) {
+        // Decrypt Error
+        console.error('Decryption Error:', error);
+        res.status(500).json({ message: 'Decryption Error' });
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      if (err instanceof UserNotFoundError) {
+        // user is not found
+        res.status(404).json({ message: err.message });
+      } else {
+        // unknown internal error(system failure)
+        res.status(500).json({ message: 'Unknown error occurred.' });
+      }
+    });
+});
+
+// get classes
+app.get('/getClasses', (req, res, next) => {
+  const limit = parseInt(req.query.limit);
+  const offset = parseInt(req.query.offset);
+  const search =req.query.search || '';
+  console.log(search)
+  return doctorFormModel
+    .getClasses(limit,offset,search)
+    .then(data => {
+      const classLists = data[0];
+      console.log(classLists)
+      res.json(classLists);
+    })
+    .catch(err => {
+      if (error instanceof EMPTY_RESULT_ERROR) {
+        res.status(404).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: 'Internal server error' });
+      }
+    });
+});
+
+// get schools
+app.get('/getSchools', (req, res, next) => {
+  const limit = parseInt(req.query.limit);
+  const offset = parseInt(req.query.offset);
+  const search =req.query.search || '';
+  
+  return doctorFormModel
+    .getSchools(limit,offset,search)
+    .then(data => {
+      const schoolLists = data[0];
+      console.log(schoolLists)
+      res.json(schoolLists);
+    })
+    .catch(err => {
+      if (error instanceof EMPTY_RESULT_ERROR) {
+        res.status(404).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: 'Internal server error' });
+      }
+    });
+});
+
+// get course dates
+app.get('/getCourseDates', (req, res, next) => {
+  const limit = parseInt(req.query.limit);
+  const offset = parseInt(req.query.offset);
+  const search =req.query.search || '';
+
+  return doctorFormModel
+    .getCourseDates(limit,offset,search)
+    .then(data => {
+      const courseDateLists = data[0];
+      res.json(courseDateLists)
+    })
+    .catch(err => {
+      if (error instanceof EMPTY_RESULT_ERROR) {
+        res.status(404).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: 'Internal server error' });
+      }
+    });
+});
 
 // Retrieve form details for parent acknowledgement- Used by Barry (for identification for merging)
 app.get('/form/:encrypted', (req, res, next) => {
@@ -772,4 +832,5 @@ app.use((error, req, res, next) => {
 app.get('*', (req, res) => {
     return res.redirect('/error?code=404')
 })
+
 module.exports = app;
