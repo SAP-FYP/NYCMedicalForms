@@ -529,18 +529,18 @@ app.get('/obs-admin/pmt/export', (req, res) => {
   
 
 //PMT Retrieve All Submissions
-app.get('/obs-admin/pmt/all',  async (req, res, next) => {
+app.get('/obs-admin/pmt/all',  authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
 
-    // console.log(req.decodedToken)
-    // // IF NO PERMISSIONS
-    // if (!req.decodedToken.permissions.includes(1)) {
-    //     return res.redirect('/error?code=403')
-    // }
+    console.log(req.decodedToken)
+    // IF NO PERMISSIONS
+    if (!req.decodedToken.permissions.includes(1)) {
+        return res.redirect('/error?code=403')
+    }
 
-    // // AUTHORIZATION CHECK - PMT 
-    // if (req.decodedToken.role != 2) {
-    //     return res.redirect('/error?code=403')
-    // }
+    // AUTHORIZATION CHECK - PMT 
+    if (req.decodedToken.role != 2) {
+        return res.redirect('/error?code=403')
+    }
 
     return pmtModel
         .retrieveAllSubmissions()
@@ -556,17 +556,17 @@ app.get('/obs-admin/pmt/all',  async (req, res, next) => {
 });
 
 //PMT Retrieve Submission By Student Name
-app.get('/obs-admin/pmt/:nameOfStudent',  async (req, res, next) => {
+app.get('/obs-admin/pmt/:nameOfStudent', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
     const nameOfStudent = req.params.nameOfStudent;
-    // // IF NO PERMISSIONS
-    // if (!req.decodedToken.permissions.includes(1)) {
-    //     return res.redirect('/error?code=403')
-    // }
+    // IF NO PERMISSIONS
+    if (!req.decodedToken.permissions.includes(1)) {
+        return res.redirect('/error?code=403')
+    }
 
-    // // AUTHORIZATION CHECK - PMT 
-    // if (req.decodedToken.role != 2) {
-    //     return res.redirect('/error?code=403')
-    // }
+    // AUTHORIZATION CHECK - PMT 
+    if (req.decodedToken.role != 2) {
+        return res.redirect('/error?code=403')
+    }
 
     return pmtModel
         .retrieveSubmission(nameOfStudent)
@@ -582,7 +582,7 @@ app.get('/obs-admin/pmt/:nameOfStudent',  async (req, res, next) => {
 });
 
 //PMT Update Submission By Student ID
-app.put('/obs-admin/pmt/:studentId',  async (req, res, next) => {
+app.put('/obs-admin/pmt/:studentId',  authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
     const studentId = req.params.studentId;
     const formStatus = req.body.formStatus;
     // IF NO PERMISSIONS

@@ -1,29 +1,39 @@
 API_URL = `http://localhost:3000/obs-admin/pmt`;
 document.addEventListener("DOMContentLoaded", function () {
-
   axios.get(`${API_URL}/all`)
     .then(function (response) {
+      const configURL = response.config.url;
+      const requestURL = response.request.responseURL;
+      if (configURL !== requestURL) {
+        window.location.href = "/error?code=403";
+        throw new Error("redirected");
+      }
       const formData = response.data;
+      console.log(response);
       const formCounts = formData.reduce(
         (counts, form) => {
-          if (form.formStatus === "Pending") {
+          if (form.formStatus === "Pending" ) {
             counts.pending++;
           } else if (form.formStatus === "Approved") {
             counts.approved++;
           } else if (form.formStatus === "Rejected") {
             counts.rejected++;
+          } else if (form.formStatus === "Pending Parent") {
+            counts.pendingParent++;
           }
           return counts;
         },
-        { pending: 0, approved: 0, rejected: 0 }
+        { pendingParent: 0, pending: 0, approved: 0, rejected: 0 }
       );
       console.log(formCounts);
       console.log(formCounts.pending);
 
+      const pendingParentAmtElement = document.querySelector('.pendingParentAmt');
       const pendingAmtElement = document.querySelector('.pendingAmt');
       const apprAmtElement = document.querySelector('.apprAmt');
       const rejAmtElement = document.querySelector('.rejAmt');
 
+      pendingParentAmtElement.textContent = `${formCounts.pendingParent}`;
       pendingAmtElement.textContent = `${formCounts.pending}`;
       apprAmtElement.textContent = `${formCounts.approved}`;
       rejAmtElement.textContent = `${formCounts.rejected}`;
@@ -130,6 +140,9 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     })
     .catch(function (error) {
+      if (error && error.message !=="redirected") {
+      console.log(error);
+      }
       console.log(error);
     });
 });
@@ -205,17 +218,25 @@ function openModal(studentName) {
       //call exportToExcel function
       const exportBtns = document.querySelectorAll(".exportBtn");
       exportBtns.forEach((exportBtn) => {
-        exportBtn.addEventListener("click", (e) => {
-          e.preventDefault(); // prevent the default form submission behavior
-          // Get the values of the input fields
-          const applicantName = formData.nameOfStudent;
-          const schoolOrg = formData.school;
-          const classNo = formData.class;
-          const courseDate = formattedCourseDate;
-          exportToExcel(applicantName, schoolOrg, classNo, courseDate);
-          console.log(applicantName, schoolOrg, classNo, courseDate);
-        });
+        exportBtn.addEventListener("click", handleExportClick);
       });
+
+      function handleExportClick(e) {
+        e.preventDefault(); // prevent the default form submission behavior
+        // Get the values of the input fields
+        const applicantName = String(formData.nameOfStudent);
+        const schoolOrg = String(formData.school);
+        const classNo = String(formData.class);
+        const courseDate = String(formattedCourseDate);
+
+        exportToExcel(applicantName, schoolOrg, classNo, courseDate);
+        console.log(applicantName, schoolOrg, classNo, courseDate);
+
+        // Remove the event listener to avoid repeated downloads
+        exportBtns.forEach((exportBtn) => {
+          exportBtn.removeEventListener("click", handleExportClick);
+        });
+      }
 
       openFormModal(formData, formattedCourseDate, formattedVaccinationDate,formattedExamDate,formattedAckDate );
       
@@ -467,9 +488,6 @@ expandButton.addEventListener("click", function () {
   }
 });
 
-////////////////////////////
-//FUNCTION TO EXPORT TO EXCEL
-////////////////////////////
 function exportToExcel(applicantName, schoolOrg, classNo, courseDate) {
   // create a new workbook
   const workbook = XLSX.utils.book_new();
