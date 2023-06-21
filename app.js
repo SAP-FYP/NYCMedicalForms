@@ -471,12 +471,13 @@ app.put('/obs-admin/delete-user', (req, res, next) => {
 });
 
 
-//////////////////////////////////////////////////////
-// Feature: PMT Retrieve All Submissions
-// http://localhost:3000/api/pmt/all
-// Method: GET
-//////////////////////////////////////////////////////
-app.get('/api/pmt/all', /*verifyUser,*/ async (req, res, next) => {
+
+/**
+ * Admin: Partnership Management Team (PMT)
+ */
+
+//PMT Retrieve All Submissions
+app.get('/obs-admin/pmt/all', /*verifyUser,*/ async (req, res, next) => {
     return pmtModel
         .retrieveAllSubmissions()
         .then((result) => {
@@ -490,7 +491,8 @@ app.get('/api/pmt/all', /*verifyUser,*/ async (req, res, next) => {
         });
 });
 
-app.get('/api/pmt/:nameOfStudent', /*verifyUser,*/ async (req, res, next) => {
+//PMT Retrieve Submission By Student Name
+app.get('/obs-admin/pmt/:nameOfStudent', /*verifyUser,*/ async (req, res, next) => {
     const nameOfStudent = req.params.nameOfStudent;
     return pmtModel
         .retrieveSubmission(nameOfStudent)
@@ -505,7 +507,8 @@ app.get('/api/pmt/:nameOfStudent', /*verifyUser,*/ async (req, res, next) => {
         });
 });
 
-app.put('/api/pmt/:studentId', /*verifyUser,*/ async (req, res, next) => {
+//PMT Update Submission By Student ID
+app.put('/obs-admin/pmt/:studentId', /*verifyUser,*/ async (req, res, next) => {
     const studentId = req.params.studentId;
     const formStatus = req.body.formStatus;
     return pmtModel
