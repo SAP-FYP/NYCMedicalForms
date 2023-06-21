@@ -86,14 +86,56 @@ document.addEventListener('DOMContentLoaded', function () {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(doctorEntry)
-        });
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { throw err; });
+            }
+            return response.json();
+        })
     }
     const postStudentInfo = (studentEntry) => {
         return fetch('/postStudentInfo', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(studentEntry)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { throw err; });
+            }
+            return response.json();
+        })
+    }
+    const postFormInfo = (formEntry) => {
+        return fetch('/postFormInfo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formEntry)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { throw err; });
+            }
+            return response.json();
         });
+    }
+    const sendEmail = (emailEntry) => {
+        return fetch('/send-email', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(emailEntry)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { throw err; });
+            }
+            return response.json();
+        })
     }
     // validation functions
     const validatePhone = (inputElement, value) => {
@@ -366,7 +408,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     const data = {
                         signature: signatureData
                     };
-                    let signatureCredentials;
+                    let signatureCredentials,studentId;
+                    
                     // show loading modal
                     loadingModal.show();
                     fetch('/uploadSign', {
@@ -388,34 +431,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
                             return Promise.all([postDoctorInfo(doctorEntry), postStudentInfo(studentEntry)]);
                         })
-                        .then((responses) => {
-                            for (let response of responses) {
-                                if (!response.ok) {
-                                    return response.json().then(err => { throw err; });
-                                }
-                            }
-                            return Promise.all(responses.map(response => response.json()));
-                        })
                         .then(([doctorResponse, studentResponse]) => {
-                            formEntry.studentId = studentResponse[0].insertId;
+                            studentId = studentResponse[0].insertId;
+                            formEntry.studentId = studentId;
                             formEntry.doctorMCR = doctorMCRInput.value;
                             formEntry.comments = commentsTextarea.value;
-                            return fetch('/postFormInfo', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify(formEntry)
-                            });
+                            return postFormInfo(formEntry);
                         })
-                        .then(response => {
-                            if (!response.ok) {
-                                return response.json().then(err => { throw err; });
-                            }
-                            return response.json();
-                        })
+                        // .then(data => {
+                        //     // if checkbox, send email
+                        //     const emailEntry ={
+                        //         studentId : studentId,
+                        //         parentEmail : parentEmail
+                        //     }
+                        //     return sendEmail(emailEntry);
+                        // })
                         .then(data => {
-                            // hide loading modal
                             loadingModal.hide();
 
                             studentNameInput.value = '';
@@ -465,14 +496,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             formEntry.studentId = data[0].insertId;
                             formEntry.doctorMCR = currentDoctor;
                             formEntry.comments = commentsTextarea.value;
-                            return fetch('/postFormInfo', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify(formEntry)
-                            })
-
+                            return postFormInfo(formEntry);
                         })
                         .then(response => {
                             if (!response.ok) {
