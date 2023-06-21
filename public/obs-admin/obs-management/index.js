@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log(response);
       const formCounts = formData.reduce(
         (counts, form) => {
-          if (form.formStatus === "Pending" ) {
+          if (form.formStatus === "Pending") {
             counts.pending++;
           } else if (form.formStatus === "Approved") {
             counts.approved++;
@@ -140,8 +140,8 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     })
     .catch(function (error) {
-      if (error && error.message !=="redirected") {
-      console.log(error);
+      if (error && error.message !== "redirected") {
+        console.log(error);
       }
       console.log(error);
     });
@@ -155,154 +155,162 @@ function searchForms() {
   if (searchInput.value.trim() === '') {
     location.reload();
   } else {
-axios.get(`${API_URL}/search/${searchInput.value}`)
-  .then(function (response) {
-const configURL = response.config.url;
-      const requestURL = response.request.responseURL;
-      if (configURL !== requestURL) {
-        window.location.href = "/error?code=403";
-        throw new Error("redirected");
-      }
-      const formData = response.data;
-      console.log(response);
-      const formCounts = formData.reduce(
-        (counts, form) => {
-          if (form.formStatus === "Pending" ) {
-            counts.pending++;
-          } else if (form.formStatus === "Approved") {
-            counts.approved++;
-          } else if (form.formStatus === "Rejected") {
-            counts.rejected++;
-          } else if (form.formStatus === "Pending Parent") {
-            counts.pendingParent++;
-          }
-          return counts;
-        },
-        { pendingParent: 0, pending: 0, approved: 0, rejected: 0 }
-      );
-      console.log(formCounts);
-      console.log(formCounts.pending);
-
-      const pendingParentAmtElement = document.querySelector('.pendingParentAmt');
-      const pendingAmtElement = document.querySelector('.pendingAmt');
-      const apprAmtElement = document.querySelector('.apprAmt');
-      const rejAmtElement = document.querySelector('.rejAmt');
-
-      pendingParentAmtElement.textContent = `${formCounts.pendingParent}`;
-      pendingAmtElement.textContent = `${formCounts.pending}`;
-      apprAmtElement.textContent = `${formCounts.approved}`;
-      rejAmtElement.textContent = `${formCounts.rejected}`;
-
-      // Loop through the data and add it to the page
-      for (i = 0; i < formData.length; i++) {
-        const dateObj = new Date(formData[i].courseDate);
-        const formattedDate = dateObj.toLocaleDateString("en-US", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        });
-        // Get references to the status container and template
-        const getAllForms = document.querySelector('#getAllForms');
-        const rowTemplate = document.querySelector('.row-table-template');
-
-        //clear html content in getAllForms once
-        if (i === 0) {
-          getAllForms.innerHTML = "";
+    axios.get(`${API_URL}/search/${searchInput.value}`)
+      .then(function (response) {
+        const configURL = response.config.url;
+        const requestURL = response.request.responseURL;
+        if (configURL !== requestURL) {
+          window.location.href = "/error?code=403";
+          throw new Error("redirected");
         }
-        // Clone the template and append it to the status container
-        const templateContent = rowTemplate.content;
-        const clonedRowTemplate = document.importNode(templateContent, true);
+        const formData = response.data;
+        if (formData.length === 0) {
+          showAlert("Error: Search does not exist.");
+            location.reload();
 
-        const studentNRICCell = clonedRowTemplate.querySelector('.studentNRIC');
-        studentNRICCell.textContent = `***${formData[i].studentNRIC}`;
-
-        const nameOfStudentCell = clonedRowTemplate.querySelector('.studentName');
-        nameOfStudentCell.textContent = formData[i].nameOfStudent;
-        nameOfStudentCell.setAttribute("nameOfStudent", formData[i].nameOfStudent);
-
-        const classCell = clonedRowTemplate.querySelector('.studentClass');
-        classCell.textContent = formData[i].class;
-
-        const schoolCell = clonedRowTemplate.querySelector('.studentSch');
-        schoolCell.textContent = formData[i].school;
-
-        const eligibilityCell = clonedRowTemplate.querySelector('.studentEligibility');
-        eligibilityCell.textContent = formData[i].eligibility;
-
-        const formattedDateCell = clonedRowTemplate.querySelector('.courseDate');
-        formattedDateCell.textContent = formattedDate;
-
-        //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
-        const modalBtn1 = clonedRowTemplate.querySelector('.modalBtn1');
-        const modalBtn2 = clonedRowTemplate.querySelector('.modalBtn2');
-        const modalBtn3 = clonedRowTemplate.querySelector('.modalBtn3');
-        const modalBtn4 = clonedRowTemplate.querySelector('.modalBtn4');
-        const modalBtn5 = clonedRowTemplate.querySelector('.modalBtn5');
-        const modalBtn6 = clonedRowTemplate.querySelector('.modalBtn6');
-        const modalBtn7 = clonedRowTemplate.querySelector('.modalBtn7');
-        const modalBtns = [modalBtn1, modalBtn2, modalBtn3, modalBtn4, modalBtn5, modalBtn6, modalBtn7];
-
-        modalBtns.forEach(function (modalBtn) {
-          modalBtn.setAttribute("data-bs-toggle", "modal");
-        });
-
-        const formStatusDiv = clonedRowTemplate.querySelector('.pillPending');
-        formStatusDiv.textContent = formData[i].formStatus;
-
-        //To change the color of the pill
-        if (formData[i].formStatus === "Pending") {
-          formStatusDiv.classList.add("pillPending");
-        } else if (formData[i].formStatus === "Rejected") {
-          formStatusDiv.classList.add("pillRejected");
-        } else if (formData[i].formStatus === "Approved") {
-          formStatusDiv.classList.add("pillApproved");
-        } else if (formData[i].formStatus === "Pending Parent") {
-          formStatusDiv.classList.add("pillParent");
         }
+        const formCounts = formData.reduce(
+          (counts, form) => {
+            if (form.formStatus === "Pending") {
+              counts.pending++;
+            } else if (form.formStatus === "Approved") {
+              counts.approved++;
+            } else if (form.formStatus === "Rejected") {
+              counts.rejected++;
+            } else if (form.formStatus === "Pending Parent") {
+              counts.pendingParent++;
+            }
+            return counts;
+          },
+          { pendingParent: 0, pending: 0, approved: 0, rejected: 0 }
+        );
+        console.log(formCounts);
+        console.log(formCounts.pending);
 
-        getAllForms.appendChild(clonedRowTemplate);
+        const pendingParentAmtElement = document.querySelector('.pendingParentAmt');
+        const pendingAmtElement = document.querySelector('.pendingAmt');
+        const apprAmtElement = document.querySelector('.apprAmt');
+        const rejAmtElement = document.querySelector('.rejAmt');
 
-        function handleFormClick(index) {
-          //index = i;
-          // Check if the index is within the valid range of the formData array
-          if (index >= 0 && index < formData.length) {
-            // Retrieve the formStatus of the clicked form at the given index
-            const formStatus = formData[index].formStatus;
-            //loop to add attribute to all .modalBtn
-            // Set the appropriate data-bs-target attribute based on the formStatus
-            modalBtns.forEach(function (modalBtn) {
-              if (formStatus === "Pending") {
-                modalBtn.setAttribute("data-bs-target", "#staticBackdrop");
-              } else if (formStatus === "Approved") {
-                modalBtn.setAttribute("data-bs-target", "#staticBackdropAppr");
-              } else if (formStatus === "Rejected") {
-                modalBtn.setAttribute("data-bs-target", "#staticBackdropRej");
-              } else if (formStatus === "Pending Parent") {
-                modalBtn.setAttribute("data-bs-target", "#staticBackdrop");
-              }
-            });
-          }
-        }
-        // Call the handleFormClick function with the current value of i
-        handleFormClick(i);
+        pendingParentAmtElement.textContent = `${formCounts.pendingParent}`;
+        pendingAmtElement.textContent = `${formCounts.pending}`;
+        apprAmtElement.textContent = `${formCounts.approved}`;
+        rejAmtElement.textContent = `${formCounts.rejected}`;
 
-        modalBtns.forEach(function (modalBtn) {
-          modalBtn.addEventListener("mousedown", function () {
-            openModal(nameOfStudentCell.getAttribute("nameOfStudent"));
-            modalBtn.classList.add("changePill");
+        // Loop through the data and add it to the page
+        for (i = 0; i < formData.length; i++) {
+          const dateObj = new Date(formData[i].courseDate);
+          const formattedDate = dateObj.toLocaleDateString("en-US", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
           });
-        });
-      }
-    })
-    .catch(function (error) {
-      if (error && error.message !=="redirected") {
-      console.log(error);
-      }
-      console.log(error);
-    });
+          // Get references to the status container and template
+          const getAllForms = document.querySelector('#getAllForms');
+          const rowTemplate = document.querySelector('.row-table-template');
+
+          //clear html content in getAllForms once
+          if (i === 0) {
+            getAllForms.innerHTML = "";
+          }
+          // Clone the template and append it to the status container
+          const templateContent = rowTemplate.content;
+          const clonedRowTemplate = document.importNode(templateContent, true);
+
+          const studentNRICCell = clonedRowTemplate.querySelector('.studentNRIC');
+          studentNRICCell.textContent = `***${formData[i].studentNRIC}`;
+
+          const nameOfStudentCell = clonedRowTemplate.querySelector('.studentName');
+          nameOfStudentCell.textContent = formData[i].nameOfStudent;
+          nameOfStudentCell.setAttribute("nameOfStudent", formData[i].nameOfStudent);
+
+          const classCell = clonedRowTemplate.querySelector('.studentClass');
+          classCell.textContent = formData[i].class;
+
+          const schoolCell = clonedRowTemplate.querySelector('.studentSch');
+          schoolCell.textContent = formData[i].school;
+
+          const eligibilityCell = clonedRowTemplate.querySelector('.studentEligibility');
+          eligibilityCell.textContent = formData[i].eligibility;
+
+          const formattedDateCell = clonedRowTemplate.querySelector('.courseDate');
+          formattedDateCell.textContent = formattedDate;
+
+          //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
+          const modalBtn1 = clonedRowTemplate.querySelector('.modalBtn1');
+          const modalBtn2 = clonedRowTemplate.querySelector('.modalBtn2');
+          const modalBtn3 = clonedRowTemplate.querySelector('.modalBtn3');
+          const modalBtn4 = clonedRowTemplate.querySelector('.modalBtn4');
+          const modalBtn5 = clonedRowTemplate.querySelector('.modalBtn5');
+          const modalBtn6 = clonedRowTemplate.querySelector('.modalBtn6');
+          const modalBtn7 = clonedRowTemplate.querySelector('.modalBtn7');
+          const modalBtns = [modalBtn1, modalBtn2, modalBtn3, modalBtn4, modalBtn5, modalBtn6, modalBtn7];
+
+          modalBtns.forEach(function (modalBtn) {
+            modalBtn.setAttribute("data-bs-toggle", "modal");
+          });
+
+          const formStatusDiv = clonedRowTemplate.querySelector('.pillPending');
+          formStatusDiv.textContent = formData[i].formStatus;
+
+          //To change the color of the pill
+          if (formData[i].formStatus === "Pending") {
+            formStatusDiv.classList.add("pillPending");
+          } else if (formData[i].formStatus === "Rejected") {
+            formStatusDiv.classList.add("pillRejected");
+          } else if (formData[i].formStatus === "Approved") {
+            formStatusDiv.classList.add("pillApproved");
+          } else if (formData[i].formStatus === "Pending Parent") {
+            formStatusDiv.classList.add("pillParent");
+          }
+
+          getAllForms.appendChild(clonedRowTemplate);
+
+          function handleFormClick(index) {
+            //index = i;
+            // Check if the index is within the valid range of the formData array
+            if (index >= 0 && index < formData.length) {
+              // Retrieve the formStatus of the clicked form at the given index
+              const formStatus = formData[index].formStatus;
+              //loop to add attribute to all .modalBtn
+              // Set the appropriate data-bs-target attribute based on the formStatus
+              modalBtns.forEach(function (modalBtn) {
+                if (formStatus === "Pending") {
+                  modalBtn.setAttribute("data-bs-target", "#staticBackdrop");
+                } else if (formStatus === "Approved") {
+                  modalBtn.setAttribute("data-bs-target", "#staticBackdropAppr");
+                } else if (formStatus === "Rejected") {
+                  modalBtn.setAttribute("data-bs-target", "#staticBackdropRej");
+                } else if (formStatus === "Pending Parent") {
+                  modalBtn.setAttribute("data-bs-target", "#staticBackdrop");
+                }
+              });
+            }
+          }
+          // Call the handleFormClick function with the current value of i
+          handleFormClick(i);
+
+          modalBtns.forEach(function (modalBtn) {
+            modalBtn.addEventListener("mousedown", function () {
+              openModal(nameOfStudentCell.getAttribute("nameOfStudent"));
+              modalBtn.classList.add("changePill");
+            });
+          });
+        }
+      })
+      .catch(function (error) {
+        if (error && error.message !== "redirected") {
+          console.log(error);
+        }
+        console.log(error);
+      });
   }
 
 }
+function showAlert(message) {
+  alert(message);
+}
+
 searchBtn.addEventListener('click', () => {
   searchForms();
 });
@@ -344,7 +352,7 @@ function openModal(studentName) {
       });
       const datePartsCourseDate = formatToLocal.split("/");
       const formattedCourseDate = `${datePartsCourseDate[2]}-${datePartsCourseDate[0]}-${datePartsCourseDate[1]}`;
-    
+
       //Format the dateOfVaccination
       const dateObjVaccinationDate = new Date(formData.courseDate);
       const formatToLocal2 = dateObjVaccinationDate.toLocaleDateString("en-US", {
@@ -372,7 +380,7 @@ function openModal(studentName) {
         month: "2-digit",
         year: "numeric",
       });
-      const datePartsDob= formatToLocal4.split("/");
+      const datePartsDob = formatToLocal4.split("/");
       const formattedDateOfBirth = `${datePartsDob[2]}-${datePartsDob[0]}-${datePartsDob[1]}`;
 
       //Format the dateOfAcknowledgement
@@ -382,11 +390,11 @@ function openModal(studentName) {
         month: "2-digit",
         year: "numeric",
       });
-      const datePartsAckDate= formatToLocal5.split("/");
+      const datePartsAckDate = formatToLocal5.split("/");
       const formattedAckDate = `${datePartsAckDate[2]}-${datePartsAckDate[0]}-${datePartsAckDate[1]}`;
 
 
-      
+
 
       //call exportToExcel function
       const exportBtns = document.querySelectorAll(".exportBtn");
@@ -411,8 +419,8 @@ function openModal(studentName) {
         });
       }
 
-      openFormModal(formData, formattedCourseDate, formattedVaccinationDate,formattedExamDate,formattedAckDate );
-      
+      openFormModal(formData, formattedCourseDate, formattedVaccinationDate, formattedExamDate, formattedAckDate);
+
     })
     .catch(function (error) {
       // Handle errors
@@ -424,7 +432,7 @@ function openModal(studentName) {
 ////////////////////////////
 //FUNCTION TO OPEN FORM MODAL
 ////////////////////////////
-function openFormModal(formData, formattedCourseDate, formattedVaccinationDate,formattedExamDate,formattedAckDate ) {
+function openFormModal(formData, formattedCourseDate, formattedVaccinationDate, formattedExamDate, formattedAckDate) {
 
 
   const nameInput = document.querySelector('#applicantName');
@@ -686,6 +694,6 @@ function exportToExcel(applicantName, schoolOrg, classNo, courseDate) {
   // add the worksheet to the workbook
   XLSX.utils.book_append_sheet(workbook, worksheet, "Student Data");
   // save the workbook as an Excel file
-  XLSX.writeFile(workbook, applicantName+".xlsx");
+  XLSX.writeFile(workbook, applicantName + ".xlsx");
 
 }
