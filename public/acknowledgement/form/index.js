@@ -104,6 +104,7 @@ window.addEventListener("DOMContentLoaded", function () {
   const parentName = document.getElementById("parent-name");
   const parentNRIC = document.getElementById("parent-nric");
 
+//   Change to UTC
   const date = new Date().toLocaleDateString("en-SG").split("/").join("-");
 
   // On submit

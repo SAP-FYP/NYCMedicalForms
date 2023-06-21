@@ -2,7 +2,7 @@ window.addEventListener("DOMContentLoaded", function () {
   // Retrieve encrypted StudentID from the unique URL
   const urlParams = new URLSearchParams(window.location.search);
   const encrypted = urlParams.get("encrypted");
-  console.log(encrypted);
+  
   // ! BUG, DATE IS SET ONE DAY BEFORE. NEED TO FIX
   // Get password from field
   const password = document.getElementById("login-password");
@@ -10,7 +10,7 @@ window.addEventListener("DOMContentLoaded", function () {
   // Get login button
   const loginBtn = document.getElementById("login-button");
 
-  // TODO Add error message
+  // TODO ERROR HANDLING
   // Get error message
   // ! const errorMessage = document.getElementById('error-message');
 
@@ -31,7 +31,7 @@ window.addEventListener("DOMContentLoaded", function () {
         // Set local storage
         localStorage.setItem("user", JSON.stringify(response.data.user));
         window.location.href = "/acknowledgement/form?encrypted=" + encrypted;
-        // TODO Add error message
+        // TODO ERROR HANDLING
         // If unsuccessful, display error message
       })
       .catch((error) => {
