@@ -156,6 +156,23 @@ document.addEventListener('DOMContentLoaded', function () {
             return response.json();
         })
     }
+
+    const postParentInfo = (parentEntry) => {
+        return fetch('/post-acknowledge', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(parentEntry)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { throw err; });
+            }
+            return response.json();
+        })
+    }
+    
     // validation functions
     const validatePhone = (inputElement, value) => {
         const phonePattern = /^[89]\d{7}$/;
