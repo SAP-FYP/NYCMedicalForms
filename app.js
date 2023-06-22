@@ -186,6 +186,31 @@ app.post('/post-acknowledge', (req, res) => {
 
 })
     
+// Twilio SMS
+app.post('/send-sms', (req, res) => {
+    const { contact } = req.body;
+
+    // Compose the sms parameters
+    const smsParams = {
+        to: contact,
+        body: `"📩 Important: Check your email! 📩 <br><br><br><br>
+        Dear Parents,<br><br>
+        Your child's health update requires your attention. Please check your email for important information regarding new medical conditions. Kindly acknowledge upon reading.<br><br>
+        Thank you,<br><br>
+        National Youth Council in affiliation with Outward Bound Singapore"`
+    }
+
+    // Send sms
+    client.messages.create(smsParams)
+        .then((message) => {
+            console.log(message.sid)
+            return res.status(200).send({ 'message': 'SMS sent successfully' });
+        })
+        .catch((error) => {
+            console.log(error)
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+})
 
 // Email test
 app.post('/send-email', (req, res) => {
@@ -201,7 +226,7 @@ app.post('/send-email', (req, res) => {
     const emailParams = {
         to: email,
         subject: "Require Parent's Acknowledgement: New Changes in Your Child's Medical Condition",
-        from: 'leebarry008@gmail.com',
+        from: 'sg.outwardbound@gmail.com',
         body: `<p>Dear Parents,
         We hope this email finds you and your family in good health and high spirits. As part of our ongoing commitment to provide the best care for your children, we would like to inform you about some important updates regarding their medical conditions. <br> <br>
         At our recent healthcare evaluation, we have made significant progress in understanding and managing your child's medical condition. To ensure that our records are up to date, we kindly request your cooperation in acknowledging the new changes in your child's medical condition by clicking on the following link: spmeet.onrender.com/acknowledge/?encrypted=${encryptedStudentId}<br> <br>
