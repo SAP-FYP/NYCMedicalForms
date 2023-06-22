@@ -76,6 +76,12 @@
                         <!-- Status -->
                         <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePending">
                             <div>
+                                <h2 class="text-center m-auto p-0">Pending Parent</h2>
+                                <h1 class="text-center m-auto p-0 pendingParentAmt">Loading...</h1>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePending">
+                            <div>
                                 <h2 class="text-center m-auto p-0">Pending</h2>
                                 <h1 class="text-center m-auto p-0 pendingAmt">Loading...</h1>
                             </div>
@@ -110,10 +116,17 @@
                     </div>
 
                     <!--Filter Icon-->
-                    <div>
-                        <img src="../../assets/images/filter-icon.png" id="filter-icon" alt="filter-icon">
-                    </div>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                          <img src="../../assets/images/filter-icon.png" id="filter-icon" alt="filter-icon">
+                        </div>
+                      
+                        <div class="exportBtnContainer">
+                          <a id="export-btn-bulk">
 
+                          </a>
+                        </div>
+                      </div>
                 </div>
                 <div class="bg-white rounded overflow-auto tableContainer">
                     <table>
@@ -387,8 +400,10 @@
 
                                             </div>
                                             <div class="col-12 mb-3 text-end">
+                                                <a>
                                                 <button class="btn btn-primary btn-lg exportBtn"
                                                     type="submit">Export</button>
+                                                </a>
                                             </div>
                                         </div>
                                     </form>
@@ -413,9 +428,10 @@
                                     <div class="d-flex justify-content-center align-items-center pt-2">
                                         <button type="button" class="btn btn-primary successBtn"
                                             data-bs-dismiss="modal">Confirm</button>
+                                            <a href="#" class="exportExcel" download="">
                                             <button class="btn btn-primary ms-2 exportBtn"
                                     type="submit">Export</button>
-                                           
+                                           </a>
                                     </div>
                                   
                                 </div>
@@ -439,8 +455,10 @@
                                     <div class="d-flex justify-content-center align-items-center pt-2">
                                         <button type="button" class="btn btn-primary successBtn"
                                             data-bs-dismiss="modal">Confirm</button>
+                                            <a href="#" class="exportExcel" download="">
                                             <button class="btn btn-primary ms-2 exportBtn"
                                             type="submit">Export</button>
+                                            </a>
                                     </div>
                                 </div>
 
@@ -457,6 +475,12 @@
     </section>
     <!-- Template for status -->
     <template class="status-template">
+        <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePending">
+            <div>
+                <h2 class="text-center m-auto p-0">Pending Parent</h2>
+                <h1 class="text-center m-auto p-0 pendingParentAmt">2</h1>
+            </div>
+        </div>
         <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePending">
             <div>
                 <h2 class="text-center m-auto p-0">Pending</h2>
