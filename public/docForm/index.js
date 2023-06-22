@@ -10,7 +10,7 @@ This file includes validation of form values and send data to APIs to save data 
 document.addEventListener('DOMContentLoaded', function () {
     const loadingModal = new bootstrap.Modal('#loadingModal', {
         keyboard: false
-    })
+    });
     let canvas = document.getElementById('signatureCanvas');
     let signaturePad = new SignaturePad(canvas);
     let clearSignatureBtn = document.getElementById('clearSignatureBtn');
@@ -223,12 +223,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const date = new Date(value);
         if (isNaN(date.getTime())) {
             inputElement.setCustomValidity('Please enter a valid date (e.g., 2023-06-16)');
+            inputElement.reportValidity();
             return false;
         }
 
         inputElement.setCustomValidity('');
         return true;
     };
+
     // doctorForm autoFill format
     const doctorAutoFill = (doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo) => {
         //signature info extract
@@ -455,123 +457,111 @@ document.addEventListener('DOMContentLoaded', function () {
                         },
                         body: JSON.stringify(data)
                     })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Upload failed');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            signatureCredentials = `${data.url};${today};${physicianNameInput.value}`;
-                            doctorEntry.signatureData = signatureCredentials;
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Upload failed');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        signatureCredentials = `${data.url};${today};${physicianNameInput.value}`;
+                        doctorEntry.signatureData = signatureCredentials;
 
-                            return Promise.all([postDoctorInfo(doctorEntry), postStudentInfo(studentEntry)]);
-                        })
-                        .then(([doctorResponse, studentResponse]) => {
-                            studentId = studentResponse[0].insertId;
-                            formEntry.studentId = studentId;
-                            formEntry.doctorMCR = doctorMCRInput.value;
-                            formEntry.comments = commentsTextarea.value;
-                            return postFormInfo(formEntry);
-                        })
-                        // .then(data => {
-                        //     // if checkbox, send email
-                        //     const emailEntry ={
-                        //         studentId : studentId,
-                        //         parentEmail : parentEmail
-                        //     }
-                        //     return sendEmail(emailEntry);
-                        // })
-                        .then(data => {
-                            loadingModal.hide();
+                        return Promise.all([postDoctorInfo(doctorEntry), postStudentInfo(studentEntry)]);
+                    })
+                    .then(([doctorResponse, studentResponse]) => {
+                        studentId = studentResponse[0].insertId;
+                        formEntry.studentId = studentId;
+                        formEntry.doctorMCR = doctorMCRInput.value;
+                        formEntry.comments = commentsTextarea.value;
+                        return postFormInfo(formEntry);
+                    })
+                    // .then(data => {
+                    //     // if checkbox, send email
+                    //     const emailEntry ={
+                    //         studentId : studentId,
+                    //         parentEmail : parentEmail
+                    //     }
+                    //     return sendEmail(emailEntry);
+                    // })
+                    .then(data => {
+                        loadingModal.hide();
 
-                            studentNameInput.value = '';
-                            schoolNameInput.value = '';
-                            dateOfBirth.value = '';
-                            studentNRICInput.value = '';
-                            studentClassInput.value = '';
-                            courseDateInput.value = '';
-                            dateOfVaccineInput.value = '';
-                            parentContact.value = '';
-                            parentEmail.value = '';
+                        studentNameInput.value = '';
+                        schoolNameInput.value = '';
+                        dateOfBirth.value = '';
+                        studentNRICInput.value = '';
+                        studentClassInput.value = '';
+                        courseDateInput.value = '';
+                        dateOfVaccineInput.value = '';
+                        parentContact.value = '';
+                        parentEmail.value = '';
 
-                            let scrollableDiv = document.getElementById("formDiv");
-                            scrollableDiv.scrollTop = 0;
-                            doctorAutoFill(doctorMCRInput.value, physicianNameInput.value, signatureCredentials, clinicNameInput.value, clinicAddressInput.value, contactNoInput.value);
-                        })
-                        .catch(error => {
-                            if (error.message === 'Upload failed') {
-                                alert('Signature Upload Failed');
-                            } else if (error.message === 'Doctor Duplicate entry') {
-                                alert('Doctor already exists');
-                            } else if (error.message === 'Student Duplicate entry') {
-                                alert('Student already exists');
-                            } else if (error.message === 'Form Duplicate entry') {
-                                alert('Form already exists');
-                            } else if (error.message === 'Internal server error') {
-                                alert('Server error');
-                            } else if (error.message === 'Encryption Error') {
-                                alert('Encryption Error');
-                            } else {
-                                console.error('Error:', error);
-                            }
-                        });
+                        let scrollableDiv = document.getElementById("formDiv");
+                        scrollableDiv.scrollTop = 0;
+                        doctorAutoFill(doctorMCRInput.value, physicianNameInput.value, signatureCredentials, clinicNameInput.value, clinicAddressInput.value, contactNoInput.value);
+                    })
+                    .catch(error => {
+                        if (error.message === 'Upload failed') {
+                            alert('Signature Upload Failed');
+                        } else if (error.message === 'Doctor Duplicate entry') {
+                            alert('Doctor already exists');
+                        } else if (error.message === 'Student Duplicate entry') {
+                            alert('Student already exists');
+                        } else if (error.message === 'Form Duplicate entry') {
+                            alert('Form already exists');
+                        } else if (error.message === 'Internal server error') {
+                            alert('Server error');
+                        } else if (error.message === 'Encryption Error') {
+                            alert('Encryption Error');
+                        } else {
+                            console.error('Error:', error);
+                        }
+                    });
 
                 }
                 else if (isDoctorNew === false) {
                     // show loading modal
                     loadingModal.show();
                     postStudentInfo(studentEntry)
-                        .then(response => {
-                            if (!response.ok) {
-                                return response.json().then(err => { throw err; });
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            formEntry.studentId = data[0].insertId;
-                            formEntry.doctorMCR = currentDoctor;
-                            formEntry.comments = commentsTextarea.value;
-                            return postFormInfo(formEntry);
-                        })
-                        .then(response => {
-                            if (!response.ok) {
-                                return response.json().then(err => { throw err; });
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            // hide loading modal
-                            loadingModal.hide();
+                    .then(data => {
+                        formEntry.studentId = data[0].insertId;
+                        formEntry.doctorMCR = currentDoctor;
+                        formEntry.comments = commentsTextarea.value;
+                        return postFormInfo(formEntry);
+                    })
+                    .then(data => {
+                        // hide loading modal
+                        loadingModal.hide();
 
-                            studentNameInput.value = '';
-                            schoolNameInput.value = '';
-                            dateOfBirth.value = '';
-                            studentNRICInput.value = '';
-                            studentClassInput.value = '';
-                            courseDateInput.value = '';
-                            dateOfVaccineInput.value = '';
-                            parentContact.value = '';
-                            parentEmail.value = '';
-                            for (let i = 0; i < eligibilityRadios.length; i++) {
-                                eligibilityRadios[i].checked = false;
-                            }
-                            commentsTextarea.value = '';
-                            
-                            let scrollableDiv = document.getElementById("formDiv");
-                            scrollableDiv.scrollTop = 0;
-                        })
-                        .catch(error => {
-                            if (error.message === 'Student Duplicate entry') {
-                                alert('Student already exists');
-                            } else if (error.message === 'Form Duplicate entry') {
-                                alert('Form already exists');
-                            } else if (error.message === 'Internal server error') {
-                                alert('Server error');
-                            } else {
-                                console.error('Error:', error);
-                            }
-                        });
+                        studentNameInput.value = '';
+                        schoolNameInput.value = '';
+                        dateOfBirth.value = '';
+                        studentNRICInput.value = '';
+                        studentClassInput.value = '';
+                        courseDateInput.value = '';
+                        dateOfVaccineInput.value = '';
+                        parentContact.value = '';
+                        parentEmail.value = '';
+                        for (let i = 0; i < eligibilityRadios.length; i++) {
+                            eligibilityRadios[i].checked = false;
+                        }
+                        commentsTextarea.value = '';
+                        
+                        let scrollableDiv = document.getElementById("formDiv");
+                        scrollableDiv.scrollTop = 0;
+                    })
+                    .catch(error => {
+                        if (error.message === 'Student Duplicate entry') {
+                            alert('Student already exists');
+                        } else if (error.message === 'Form Duplicate entry') {
+                            alert('Form already exists');
+                        } else if (error.message === 'Internal server error') {
+                            alert('Server error');
+                        } else {
+                            console.error('Error:', error);
+                        }
+                    });
                 }
             }
         }

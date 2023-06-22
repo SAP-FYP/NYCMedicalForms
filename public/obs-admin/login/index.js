@@ -15,8 +15,15 @@ window.addEventListener('DOMContentLoaded', () => {
             })
 
         }).then((response) => {
-            if (response.status === 400 || response.status === 401) {
+
+            if (response.status === 400 || response.status === 401 || response.status === 404) {
                 const error = new Error("Invalid email or password");
+                error.status = response.status;
+                throw error;
+            }
+
+            if (response.status === 403) {
+                const error = new Error("Account is disabled. Please contact admin for more information");
                 error.status = response.status;
                 throw error;
             }

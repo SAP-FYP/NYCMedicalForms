@@ -6,7 +6,7 @@ body {
 
 /* TITLE AND SEARCH BAR */
 #title-search-bar {
-    margin: 26px 0px 46px 0px;
+    margin: 2vh 0px 3.4vh 0px;
     display: flex;
     height: auto;
     flex-wrap: wrap;
@@ -15,7 +15,8 @@ body {
 
 #title-search-bar h2 {
     color: #485EAB;
-    margin-bottom: 50px;
+    margin-bottom: 4vh;
+    font-size: 1.8rem;
 }
 
 #search-input {
@@ -98,7 +99,7 @@ body {
     overflow: auto;
     border: 2px solid #485EAB;
     margin: 26px 0px;
-    min-height: 396px;
+    min-height: 275px;
     border-radius: 18px;
     padding-top: 20px;
     padding-left: 10px;
@@ -134,7 +135,10 @@ input[type=number] {
     -moz-appearance: textfield;
 }
 
-#create-user-modal {
+/* MODAL */
+
+#create-user-modal,
+#confirmation-modal {
     background-color: #C7D3EF;
     border: #485EAB 1px solid;
     border-radius: 25px;
@@ -146,10 +150,54 @@ input[type=number] {
     margin-top: 10px;
 }
 
-#modal-footer {
+#create-permission-modal>#modal-footer,
+#confirmation-modal>.modal-footer {
     border-top: none;
     margin-top: 50px;
     margin-bottom: 10px;
+}
+
+#confirmation-modal>.modal-footer {
+    margin-top: 10px !important;
+}
+
+#confirmation-modal>#modal-header,
+#confirmation-modal>.modal-body,
+#confirmation-modal>.modal-footer {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    padding: 5px 0px;
+}
+
+#confirmation-modal>.modal-footer {
+    border-top: none;
+    margin-top: 60px;
+    margin-bottom: 10px;
+}
+
+#alert-icon {
+    margin-top: 10px;
+    width: 100px;
+}
+
+.confirmation-buttons {
+    background-color: #C7D3EF;
+    border: 2px solid #485EAB;
+    border-radius: 12px;
+    padding: 8px 20px;
+    margin: 0px 8px !important;
+}
+
+#confirmation-delete-button,
+#confirmation-disable-button {
+    background-color: #E52323;
+    color: white;
+}
+
+#confirmation-enable-button {
+    background-color: #26e523;
+    color: rgb(0, 0, 0);
 }
 
 #staticBackdropLabel {
@@ -165,10 +213,16 @@ input[type=number] {
     margin-left: 10px;
 }
 
-#confirm-user-icon {
+#confirm-user-icon,
+#edit-user-icon {
     width: 50px;
     height: 50px;
     margin-right: 16px;
+    padding: 9px 10px;
+    border-radius: 10px;
+    border: 2px solid #485EAB;
+    background-color: #C7D3EF;
+    cursor: pointer;
 }
 
 .form-label {
@@ -202,31 +256,24 @@ input[type=number] {
 }
 
 .item-border {
+    display: flex;
+    flex-wrap: wrap;
     border: 1px solid #485EAB;
     border-radius: 18px;
     height: 100%;
     padding: 20px;
-    text-align: center;
     color: #485EAB;
+    text-align: center;
 }
 
 .user-header {
     display: flex;
-    justify-content: space-between;
+    width: 100%;
 }
 
 .item-border h6 {
     font-weight: 400;
-    color: #C7D3EF;
-}
-
-.item-border img {
-    height: 130px;
-    width: 130px;
-    min-width: 80px;
-    min-height: 80px;
-    object-fit: contain;
-    margin-bottom: auto;
+    color: #93aeec;
 }
 
 .select-item-chkbox {
@@ -234,27 +281,40 @@ input[type=number] {
     min-height: 20px !important;
     min-width: 20px !important;
     cursor: pointer;
+    margin-right: auto;
 }
 
 .more-button {
-    padding: 0px !important;
-    border: none;
     margin-bottom: auto;
+    padding: 0px !important;
+    padding-right: 25px !important;
+    max-width: 20px !important;
+    max-height: 20px !important;
+    border: none;
+    margin-left: auto;
+}
+
+.item-border img {
+    height: 10vh;
+    width: auto;
+    min-width: 80px;
+    min-height: 80px;
+    object-fit: contain;
+    border-radius: 999px;
 }
 
 .user-info {
     margin-top: 20px;
-    display: flex;
-    flex-wrap: wrap;
 }
 
 .user-profile-button {
     display: flex;
     justify-content: center;
-    margin-top: 10px;
+    margin-top: 1vh
 }
 
 .profile-button {
+    width: 130px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -263,4 +323,9 @@ input[type=number] {
     color: #485EAB;
     background-color: #C7D3EF;
     border: none;
+}
+
+.profile-button-disabled {
+    color: #5a5a5a;
+    background-color: #858585;
 }

@@ -31,9 +31,7 @@ window.addEventListener('DOMContentLoaded', () => {
         .then((jsonData) => {
             // SET HEADER DATA
             headerName.textContent = jsonData.user.name;
-            if (!jsonData.user.picUrl) {
-                headerImg.src = '../../../assets/images/default-user-icon.png'
-            }
+            headerImg.src = jsonData.user.picUrl || '../../../assets/images/default-user-icon.png';
 
         })
         .catch((error) => {
