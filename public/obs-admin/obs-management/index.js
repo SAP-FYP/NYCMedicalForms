@@ -88,6 +88,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const formattedDateCell = clonedRowTemplate.querySelector('.courseDate');
         formattedDateCell.textContent = formattedDate;
 
+        const formStatusValue = formData[i].formStatus;
+        console.log(formStatusValue)
         // Get all checkboxes inside clonedRowTemplate
         const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
         const checkBoxTop = document.querySelector('#checkBoxTop');
@@ -104,14 +106,18 @@ document.addEventListener("DOMContentLoaded", function () {
               const schoolOrg = schoolCell.textContent;
               const classNo = classCell.textContent;
               const courseDate = formattedDateCell.textContent;
+              const formStatus = formStatusValue
 
               // Add the data for the checked checkbox
               dataAll.push({
                 "Name of Applicant": applicantName,
                 "Organization/School": schoolOrg,
                 "Designation/Class": classNo,
-                "Course Date": courseDate
+                "Course Date": courseDate,
+                "Form Status": formStatus
+
               });
+              console.log(dataAll)
             } else {
               // Remove the data for the unchecked checkbox
               for (let i = 0; i < dataAll.length; i++) {
@@ -206,10 +212,11 @@ document.addEventListener("DOMContentLoaded", function () {
       searchInput.addEventListener('keypress', event => {
         if (event.key === "Enter") {
 
-              exportBtnBulkContainer.removeChild(exportIcon);
+          exportBtnBulkContainer.removeChild(exportIcon);
 
-            checkBoxTop.checked = false;
-          
+          checkBoxTop.checked = false;
+
+
         }
       });
     })
@@ -226,12 +233,12 @@ document.addEventListener("DOMContentLoaded", function () {
 const searchInput = document.querySelector("#searchInput");
 const searchBtn = document.querySelector('#search-button');
 const searchClearBtn = document.querySelector('#clear-button');
-  // Create the export button element
-  const exportBtnBulkContainer = document.querySelector('#export-btn-bulk');
-  const exportIcon = document.createElement('img');
-  exportIcon.src = '../../assets/images/export-to-excel-icon.png';
-  exportIcon.id = 'export-btn';
-  exportIcon.alt = 'export-icon';
+// Create the export button element
+const exportBtnBulkContainer = document.querySelector('#export-btn-bulk');
+const exportIcon = document.createElement('img');
+exportIcon.src = '../../assets/images/export-to-excel-icon.png';
+exportIcon.id = 'export-btn';
+exportIcon.alt = 'export-icon';
 
 function searchForms() {
   if (searchInput.value.trim() === '') {
@@ -312,6 +319,8 @@ function searchForms() {
           const schoolCell = clonedRowTemplate.querySelector('.studentSch');
           schoolCell.textContent = formData[i].school;
 
+          const formStatusValue = formData[i].formStatus;
+
           const eligibilityCell = clonedRowTemplate.querySelector('.studentEligibility');
           eligibilityCell.textContent = formData[i].eligibility;
 
@@ -335,13 +344,15 @@ function searchForms() {
                 const schoolOrg = schoolCell.textContent;
                 const classNo = classCell.textContent;
                 const courseDate = formattedDateCell.textContent;
+                const formStatus = formStatusValue;
 
                 // Add the data for the checked checkbox
                 dataSearch.push({
                   "Name of Applicant": applicantName,
                   "Organization/School": schoolOrg,
                   "Designation/Class": classNo,
-                  "Course Date": courseDate
+                  "Course Date": courseDate,
+                  "Form Status": formStatus
                 });
                 console.log(dataSearch)
               } else {
@@ -352,9 +363,9 @@ function searchForms() {
                   }
                 }
               }
-              
+
             });
-            
+
 
 
           });
@@ -421,14 +432,14 @@ function searchForms() {
           });
         }
         //Outside of for loop 
-      //Export to Excel Bulk Once
-      const exportBtnBulk = document.querySelector('#export-btn-bulk');
+        //Export to Excel Bulk Once
+        const exportBtnBulk = document.querySelector('#export-btn-bulk');
       exportBtnBulk.addEventListener('click', function() {
         console.log(dataSearch);
         exportToExcelBulk(dataSearch);
 
       });
-           })
+      })
       .catch(function (error) {
         if (error && error.message !== "redirected") {
           console.log(error);
@@ -450,7 +461,7 @@ searchInput.addEventListener('keypress', event => {
   if (event.key === "Enter") {
     event.preventDefault();
     searchForms();
-  
+
   }
 });
 
@@ -541,9 +552,10 @@ function openModal(studentName) {
         const schoolOrg = String(formData.school);
         const classNo = String(formData.class);
         const courseDate = String(formattedCourseDate);
+        const formStatus = String(formData.formStatus);
 
-        exportToExcel(applicantName, schoolOrg, classNo, courseDate);
-        console.log(applicantName, schoolOrg, classNo, courseDate);
+        exportToExcel(applicantName, schoolOrg, classNo, courseDate, formStatus);
+        console.log(applicantName, schoolOrg, classNo, courseDate, formStatus);
 
         // Remove the event listener to avoid repeated downloads
         exportBtns.forEach((exportBtn) => {
@@ -801,7 +813,7 @@ expandButton.addEventListener("click", function () {
   }
 });
 
-function exportToExcel(applicantName, schoolOrg, classNo, courseDate) {
+function exportToExcel(applicantName, schoolOrg, classNo, courseDate, formStatus) {
   // create a new workbook
   const workbook = XLSX.utils.book_new();
   // create a new worksheet with the form data
@@ -812,6 +824,7 @@ function exportToExcel(applicantName, schoolOrg, classNo, courseDate) {
         "Organization/School": schoolOrg,
         "Designation/Class": classNo,
         "Course Date": courseDate,
+        "Form Status": formStatus,
       },
     ],
     {
@@ -820,6 +833,7 @@ function exportToExcel(applicantName, schoolOrg, classNo, courseDate) {
         "Organization/School",
         "Designation/Class",
         "Course Date",
+        "Form Status",
       ],
     }
   );
@@ -832,6 +846,7 @@ function exportToExcel(applicantName, schoolOrg, classNo, courseDate) {
 
 function exportToExcelBulk(data) {
 
+
   // Create a new worksheet with the formatted data
   const worksheet = XLSX.utils.json_to_sheet(data, {
     header: [
@@ -839,6 +854,7 @@ function exportToExcelBulk(data) {
       "Organization/School",
       "Designation/Class",
       "Course Date",
+      "Form Status",
     ],
   });
 
@@ -849,4 +865,6 @@ function exportToExcelBulk(data) {
   // Save the workbook as an Excel file
   XLSX.writeFile(workbook, "exportedBulk.xlsx");
 }
+
+
 
