@@ -10,7 +10,7 @@ This file includes validation of form values and send data to APIs to save data 
 document.addEventListener('DOMContentLoaded', function () {
     const loadingModal = new bootstrap.Modal('#loadingModal', {
         keyboard: false
-    })
+    });
     let canvas = document.getElementById('signatureCanvas');
     let signaturePad = new SignaturePad(canvas);
     let clearSignatureBtn = document.getElementById('clearSignatureBtn');
@@ -187,12 +187,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const date = new Date(value);
         if (isNaN(date.getTime())) {
             inputElement.setCustomValidity('Please enter a valid date (e.g., 2023-06-16)');
+            inputElement.reportValidity();
             return false;
         }
 
         inputElement.setCustomValidity('');
         return true;
     };
+
     // doctorForm autoFill format
     const doctorAutoFill = (doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo) => {
         //signature info extract
