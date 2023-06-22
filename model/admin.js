@@ -212,14 +212,23 @@ module.exports.deletePermissionGroup = async function getPermissions(groupId) {
     }
 }
 
-module.exports.getAllUsers = function getAllUsers(email) {
+module.exports.getAllUsers = function getAllUsers(email, searchInput) {
+    // const sql = `SELECT u.email, u.nameOfUser, u.contactNo, u.groupId, u.roleId, u.picUrl, u.isDisabled, r.roleName
+    // FROM user u
+    // LEFT JOIN role r ON u.roleId = r.roleId
+    // WHERE u.isDeleted = 0 AND
+    // u.email != ? AND
+    // (u.nameOfUser LIKE ? OR
+    // u.email LIKE ?)`;
+
     const sql = `SELECT u.email, u.nameOfUser, u.contactNo, u.groupId, u.roleId, u.picUrl, u.isDisabled, r.roleName
     FROM user u
     LEFT JOIN role r ON u.roleId = r.roleId
     WHERE u.isDeleted = 0 AND
-    u.email != ?`;
+    u.email != ? AND
+    u.nameOfUser LIKE ?;`;
 
-    return query(sql, [email])
+    return query(sql, [email, `%${searchInput}%`])
         .then((result) => {
             const rows = result[0];
             if (rows.length === 0) {
@@ -230,6 +239,60 @@ module.exports.getAllUsers = function getAllUsers(email) {
             return rows;
         })
         .catch((error) => {
+            throw error;
+        })
+}
+
+module.exports.editUser = function editUser(user) {
+    const sql = 'UPDATE user SET nameOfUser = ?, contactNo = ?, groupId = ?, invalidationDate = ?, roleId = ? WHERE email = ?';
+    return query(sql, [user.name, user.contact, user.group, user.invalidationDate, user.role, user.email])
+        .then((result) => {
+            const affectedRows = result[0].affectedRows;
+
+            if (affectedRows == 0) {
+                const error = new Error("Unable to update account");
+                error.status = 500;
+                throw error;
+            }
+            return affectedRows;
+        }).catch((error) => {
+            console.log(error)
+            throw error;
+        })
+}
+
+module.exports.deleteUser = function deleteUser(user) {
+    const sql = 'UPDATE user SET isDeleted = 1, invalidationDate = ? WHERE email = ?';
+    return query(sql, [user.invalidationDate, user.email])
+        .then((result) => {
+            const affectedRows = result[0].affectedRows;
+
+            if (affectedRows == 0) {
+                const error = new Error("Unable to delete account");
+                error.status = 500;
+                throw error;
+            }
+            return affectedRows;
+        }).catch((error) => {
+            console.log(error)
+            throw error;
+        })
+}
+
+module.exports.disableUser = function disableUser(user) {
+    const sql = 'UPDATE user SET isDisabled = ?, invalidationDate = ? WHERE email = ?';
+    return query(sql, [user.status, user.invalidationDate, user.email])
+        .then((result) => {
+            const affectedRows = result[0].affectedRows;
+
+            if (affectedRows == 0) {
+                const error = new Error("Unable to disable/enable account");
+                error.status = 500;
+                throw error;
+            }
+            return affectedRows;
+        }).catch((error) => {
+            console.log(error)
             throw error;
         })
 }
