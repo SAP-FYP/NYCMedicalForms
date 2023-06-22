@@ -7,7 +7,9 @@ const bcrypt = require('bcrypt');
 const elasticEmail = require('elasticemail');
 const multer = require('multer');
 const cloudinary = require("cloudinary").v2;
-
+const {
+    UserNotFoundError
+} = require("./errors");
 const crypto = require('crypto');
 const key = Buffer.from(process.env.encryptKey, 'hex');
 const iv = Buffer.from(process.env.encryptIV, 'hex');
@@ -68,6 +70,12 @@ app.post('/login', (req, res, next) => {
             if (!bcrypt.compareSync(credentials.password, result.password)) {
                 const error = new Error("Invalid email or password");
                 error.status = 401;
+                throw error;
+            }
+
+            if (result.isDisabled) {
+                const error = new Error("Account is disabled. Please dontact admin for more information");
+                error.status = 403;
                 throw error;
             }
 
@@ -152,9 +160,41 @@ app.get('/logout', (req, res, next) => {
     }
 })
 
+// Setting parent's acknowledgement
+app.post('/post-acknowledge', (req, res) => {
+    const parentEmail = req.body.parentEntry.parentEmail;
+    const studentId = req.body.parentEntry.studentId;
+    const parentContact = req.body.parentEntry.parentContact;
+
+    const data = {
+        parentEmail: parentEmail,
+        studentId: studentId,
+        parentContact: parentContact
+    }
+
+    return parentModel
+        .setParentsAcknowledgement(data)
+        .then((result) => {
+            return res.status(200).send({ 'message': 'Parent Acknowledgement Successful' });
+        }
+        )
+        .catch((error) => {
+            console.log(error)
+            return res.status(error.status || 500).json({ error: error.message });
+        }
+        )
+
+})
+    
+
 // Email test
 app.post('/send-email', (req, res) => {
-    const { email } = req.body;
+    const { email, studentId } = req.body;
+    // Encrypt studentId
+    const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+    let encryptedStudentId = cipher.update(studentId, 'utf8', 'hex');
+    encryptedStudentId += cipher.final('hex');
+
     // Compose the email parameters
     const emailParams = {
         to: email,
@@ -162,10 +202,10 @@ app.post('/send-email', (req, res) => {
         from: 'leebarry008@gmail.com',
         body: `<p>Dear Parents,
         We hope this email finds you and your family in good health and high spirits. As part of our ongoing commitment to provide the best care for your children, we would like to inform you about some important updates regarding their medical conditions. <br> <br>
-        At our recent healthcare evaluation, we have made significant progress in understanding and managing your child's medical condition. To ensure that our records are up to date, we kindly request your cooperation in acknowledging the new changes in your child's medical condition by clicking on the following link: [Insert URL] <br> <br>
+        At our recent healthcare evaluation, we have made significant progress in understanding and managing your child's medical condition. To ensure that our records are up to date, we kindly request your cooperation in acknowledging the new changes in your child's medical condition by clicking on the following link: spmeet.onrender.com/acknowledge/?encrypted=${encryptedStudentId}<br> <br>
         By clicking on the link, you will confirm that you have received and reviewed the updates related to your child's health. Your acknowledgment will help us ensure that our information is accurate and that we can continue to provide the highest quality of care. <br> <br>
         Rest assured that all the information you provide will remain strictly confidential and will only be used for healthcare purposes. We adhere to the highest standards of privacy and data protection, in compliance with applicable laws and regulations. <br> <br>
-        If you have any questions or require further assistance, please do not hesitate to reach out to our dedicated support team at [Insert contact details]. We are here to address any concerns you may have and guide you through the process. <br> <br>
+        If you have any questions or require further assistance, please do not hesitate to reach out to our dedicated support team at nyc_enquiries@nyc.gov.sg. We are here to address any concerns you may have and guide you through the process. <br> <br>
         Thank you for your attention to this matter and for entrusting us with the care of your precious child. Together, we can make a positive impact on their health and future. <br>
         Warm regards, <br>
         National Youth Council in affiliation with Outward Bound Singapore</p>`,
@@ -243,6 +283,34 @@ app.post('/obs-admin/newuser', authHelper.verifyToken, authHelper.checkIat, (req
             })
     })
 
+});
+
+// Get All Users
+app.get('/obs-admin/users/:search', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+
+    // AUTHORIZATION CHECK - ADMIN
+    if (req.decodedToken.role != 1) {
+        return res.redirect('/error?code=403')
+    }
+
+    let searchInput = ""
+    if (req.params.search != -1) {
+        searchInput = req.params.search
+    }
+
+    return adminModel
+        .getAllUsers(req.decodedToken.email, searchInput)
+        .then((result) => {
+            if (!result) {
+                const error = new Error("No users found")
+                error.status = 404;
+                throw error
+            }
+            return res.json({ result })
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        })
 });
 
 // Get All Permission Groups or by Search
@@ -434,114 +502,130 @@ app.delete('/obs-admin/permission/groups/:groupId', authHelper.verifyToken, auth
         })
 })
 
-// Update User Permission Group
-app.put('/obs-admin/update-user-group', (req, res, next) => {
-    const { email, groupId } = req.body;
-    // TODO: Error handling and validation
-    return userModel.updateUserPermission(email, groupId)
+// Update User
+app.put('/obs-admin/user', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+
+    // AUTHORIZATION CHECK - ADMIN
+    if (req.decodedToken.role != 1) {
+        return res.redirect('/error?code=403')
+    }
+
+    const user = {
+        email: req.body.email,
+        name: req.body.name,
+        role: req.body.role,
+        group: req.body.group,
+        contact: req.body.contact,
+        invalidationDate: moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss')
+    }
+
+    if (!user.name || !user.email || !user.contact || !user.group || (user.group == -1 && user.role != 1) || user.role == -1) {
+        const error = new Error("Empty or invalid user information");
+        error.status = 400;
+        throw error;
+    }
+
+    if (user.role == 1) {
+        user.group = 0
+    }
+
+    return adminModel
+        .editUser(user)
         .then((result) => {
-            return res.json(result);
+            if (!result) {
+                const error = new Error("Unable to update user")
+                error.status = 500;
+                throw error;
+            }
+            return res.sendStatus(200);
         })
         .catch((error) => {
+            console.log(error)
+            if (error.code == "ER_DUP_ENTRY") {
+                return res.status(422).json({ error: "User email already exists" });
+            }
             return res.status(error.status || 500).json({ error: error.message });
         })
-});
+})
+
+// Delete User
+app.put('/obs-admin/delete/user/:email', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+
+    // AUTHORIZATION CHECK - ADMIN
+    if (req.decodedToken.role != 1) {
+        return res.redirect('/error?code=403')
+    }
+
+    const user = {
+        email: req.params.email,
+        invalidationDate: moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss')
+    }
+
+    if (!user.email) {
+        const error = new Error("Empty user email")
+        error.status = 400;
+        throw error;
+    }
+
+    return adminModel
+        .deleteUser(user)
+        .then((result) => {
+            if (!result) {
+                const error = new Error("Unable to delete user")
+                error.status = 500;
+                throw error;
+            }
+            return res.sendStatus(200);
+        })
+        .catch((error) => {
+            console.log(error)
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+})
 
 // Disable Account
-app.put('/obs-admin/update-account-status', (req, res, next) => {
-    const { email, status } = req.body;
-    // TODO: Error handling and validation
-    return userModel.updateAccountStatus(email, status)
+app.put('/obs-admin/disable/user/:email/:status', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+
+    // AUTHORIZATION CHECK - ADMIN
+    if (req.decodedToken.role != 1) {
+        return res.redirect('/error?code=403')
+    }
+
+    const user = {
+        email: req.params.email,
+        status: req.params.status,
+        invalidationDate: moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss')
+    }
+
+    if (!user.email || !user.status) {
+        const error = new Error("Empty user email")
+        error.status = 400;
+        throw error;
+    }
+
+    return adminModel
+        .disableUser(user)
         .then((result) => {
-            return res.json(result);
+            if (!result) {
+                const error = new Error("Unable to disable/enable user")
+                error.status = 500;
+                throw error;
+            }
+            return res.sendStatus(200);
         })
         .catch((error) => {
+            console.log(error)
             return res.status(error.status || 500).json({ error: error.message });
         })
 });
-
-// Delete Account
-app.put('/obs-admin/delete-user', (req, res, next) => {
-    const { email } = req.body;
-    // TODO: Error handling and validation
-    return userModel.deleteUser(email)
-        .then((result) => {
-            return res.json(result);
-        })
-        .catch((error) => {
-            return res.status(error.status || 500).json({ error: error.message });
-        })
-});
-
 
 
 /**
  * Admin: Partnership Management Team (PMT)
  */
-//Export Excel 
-const XLSX = require('xlsx');
-const fs = require('fs');
-const path = require('path');
-
-app.get('/obs-admin/pmt/export', (req, res) => {
-    const applicantName = req.query.applicantName;
-    const schoolOrg = req.query.schoolOrg;
-    const classNo = req.query.classNo;
-    const courseDate = req.query.courseDate;
-  
-    const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.json_to_sheet([
-      {
-        "Name of Applicant": applicantName,
-        "Organization/School": schoolOrg,
-        "Designation/Class": classNo,
-        "Course Date": courseDate,
-      }
-    ], {
-      header: [
-        "Name of Applicant",
-        "Organization/School",
-        "Designation/Class",
-        "Course Date",
-      ],
-    });
-  
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Student Data");
-  
-    const fileName = `${applicantName}.xlsx`;
-    const directoryPath = path.join(__dirname, 'exports');
-    const filePath = path.join(directoryPath, fileName);
-  
-    if (!fs.existsSync(directoryPath)) {
-      fs.mkdirSync(directoryPath);
-    }
-  
-    XLSX.writeFile(workbook, filePath)
-
-        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
-        res.sendFile(filePath, fileName, (err) => { 
-            if (err) console.log(err); 
-        })
-        return res.json({ message: 'File downloaded successfully' });
-      
-  });
-  
 
 //PMT Retrieve All Submissions
-app.get('/obs-admin/pmt/all',  authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
-
-    console.log(req.decodedToken)
-    // IF NO PERMISSIONS
-    if (!req.decodedToken.permissions.includes(1)) {
-        return res.redirect('/error?code=403')
-    }
-
-    // AUTHORIZATION CHECK - PMT 
-    if (req.decodedToken.role != 2) {
-        return res.redirect('/error?code=403')
-    }
-
+app.get('/obs-admin/pmt/all', /*verifyUser,*/ async (req, res, next) => {
     return pmtModel
         .retrieveAllSubmissions()
         .then((result) => {
@@ -555,45 +639,9 @@ app.get('/obs-admin/pmt/all',  authHelper.verifyToken, authHelper.checkIat, asyn
         });
 });
 
-//PMT Retrieve Submission By Student Name Search 
-app.get('/obs-admin/pmt/search/:search', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
-    const searchInput = req.params.search;
-    // AUTHORIZATION CHECK - PMT 
-    if (req.decodedToken.role != 2) {
-        return res.redirect('/error?code=403')
-    }
-
-    // let searchInput = ""
-    // if (req.params.search != -1) {
-    //     searchInput = req.params.search
-    // }
-
-    return pmtModel
-        .retrieveSubmissionBySearch(searchInput)
-        .then((result) => {
-            if (result.length === 0) {
-                throw new Error("No submission found");
-            }
-            return res.json(result[0]);
-        })
-        .catch((error) => {
-            return res.status(error.status || 500).json({ error: error.message });
-        })
-});
-
 //PMT Retrieve Submission By Student Name
-app.get('/obs-admin/pmt/:nameOfStudent', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
+app.get('/obs-admin/pmt/:nameOfStudent', /*verifyUser,*/ async (req, res, next) => {
     const nameOfStudent = req.params.nameOfStudent;
-    // IF NO PERMISSIONS
-    if (!req.decodedToken.permissions.includes(1)) {
-        return res.redirect('/error?code=403')
-    }
-
-    // AUTHORIZATION CHECK - PMT 
-    if (req.decodedToken.role != 2) {
-        return res.redirect('/error?code=403')
-    }
-
     return pmtModel
         .retrieveSubmission(nameOfStudent)
         .then((result) => {
@@ -608,18 +656,9 @@ app.get('/obs-admin/pmt/:nameOfStudent', authHelper.verifyToken, authHelper.chec
 });
 
 //PMT Update Submission By Student ID
-app.put('/obs-admin/pmt/:studentId',  authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
+app.put('/obs-admin/pmt/:studentId', /*verifyUser,*/ async (req, res, next) => {
     const studentId = req.params.studentId;
     const formStatus = req.body.formStatus;
-    // IF NO PERMISSIONS
-    if (!req.decodedToken.permissions.includes(2) || !req.decodedToken.permissions.includes(3)) {
-        return res.redirect('/error?code=403')
-    }
-
-    // AUTHORIZATION CHECK - PMT 
-    if (req.decodedToken.role != 2) {
-        return res.redirect('/error?code=403')
-    }
     return pmtModel
         .updateSubmissionStatus(formStatus, studentId)
         .then((result) => {
@@ -639,8 +678,6 @@ app.put('/obs-admin/pmt/:studentId',  authHelper.verifyToken, authHelper.checkIa
             return res.status(error.status || 500).json({ error: error.message });
         });
 });
-
-
 
 /**
  * User: Parents
@@ -725,19 +762,8 @@ cloudinary.config({
     api_secret: "eAKSNgdEoKxTWu8kh__hUi3U7J0",
 });
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/')
-    },
-    filename: (req, file, cb) => {
-        cb(null, file.originalname)
-    }
-});
-
-const upload = multer({ storage });
-
 //upload image to cloudinary
-app.post('/uploadSign', upload.single('signature'), (req, res) => {
+app.post('/uploadSign', (req, res) => {
     const file = req.body.signature;
     //console.log(file)
     cloudinary.uploader.upload(file, { resource_type: 'image', format: 'png' }, (err, result) => {
@@ -848,7 +874,7 @@ app.post('/checkDoctorMCR', (req, res, next) => {
             console.error(err);
             if (err instanceof UserNotFoundError) {
                 // user is not found
-                res.status(404).json({ message: err.message });
+                res.status(404).json({ message: 'DoctorNotFound' });
             } else {
                 // unknown internal error(system failure)
                 res.status(500).json({ message: 'Unknown error occurred.' });

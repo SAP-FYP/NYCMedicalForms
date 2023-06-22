@@ -6,7 +6,7 @@ module.exports.loginUser = async function loginUser(email) {
 
     try {
         await connection.beginTransaction();
-        const sql1 = `SELECT * FROM user WHERE email = ?`;
+        const sql1 = `SELECT * FROM user WHERE email = ? AND isDeleted = 0`;
         const result1 = await connection.query(sql1, [email]);
 
         const userData = result1[0];
@@ -60,17 +60,6 @@ module.exports.getUser = function getUser(email) {
         })
 }
 
-module.exports.updateUserPermission = function updateUserPermission(email, groupId) {
-    const sql = `UPDATE user SET groupID = ? WHERE email = ?`;
-    return query(sql, [groupId, email])
-        .then((result) => {
-            return result;
-        })
-        .catch((error) => {
-            throw error;
-        })
-}
-
 module.exports.parentLogin = function parentLogin(studentID) {
     const sql = `SELECT s.dateOfBirth, s.studentNRIC from form f INNER JOIN student s on f.studentId = s.studentId INNER JOIN parentAcknowledgement p on s.studentId = p.studentId WHERE f.studentID = ?`;
     return query(sql, [studentID])
@@ -86,28 +75,6 @@ module.exports.parentLogin = function parentLogin(studentID) {
         .catch((error) => {
             // TODO Error handling if studentID doesn't need parents acknowledgement
             throw new Error(error);
-        })
-}
-
-module.exports.updateAccountStatus = function disableUser(email, status) {
-    const sql = `UPDATE user SET isDisabled = ? WHERE email = ?`;
-    return query(sql, [status, email])
-        .then((result) => {
-            return result;
-        })
-        .catch((error) => {
-            throw error;
-        })
-}
-
-module.exports.deleteUser = function deleteUser(email) {
-    const sql = `Update user SET isDeleted = 1 WHERE email = ?`;
-    return query(sql, [email])
-        .then((result) => {
-            return result;
-        })
-        .catch((error) => {
-            throw error;
         })
 }
 
