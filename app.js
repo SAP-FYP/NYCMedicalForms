@@ -154,6 +154,33 @@ app.get('/logout', (req, res, next) => {
     }
 })
 
+// Setting parent's acknowledgement
+app.post('/post-acknowledge', (req, res) => {
+    const parentEmail = req.body.parentEntry.parentEmail;
+    const studentId = req.body.parentEntry.studentId;
+    const parentContact = req.body.parentEntry.parentContact;
+
+    const data = {
+        parentEmail: parentEmail,
+        studentId: studentId,
+        parentContact: parentContact
+    }
+
+    return parentModel
+        .setParentsAcknowledgement(data)
+        .then((result) => {
+            return res.status(200).send({ 'message': 'Parent Acknowledgement Successful' });
+        }
+        )
+        .catch((error) => {
+            console.log(error)
+            return res.status(error.status || 500).json({ error: error.message });
+        }
+        )
+
+})
+    
+
 // Email test
 app.post('/send-email', (req, res) => {
     const { email, studentId } = req.body;
