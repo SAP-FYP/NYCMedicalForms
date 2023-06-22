@@ -4,34 +4,38 @@ window.addEventListener('DOMContentLoaded', () => {
     const roleInput = document.getElementById("role-input");
     const permissionInput = document.getElementById("permission-input");
 
+    // === FETCHES ===
+
     // GET ROLES 
     const getRoles = fetch('/obs-admin/roles');
 
     // GET GROUPS
     const getPermGroups = fetch('/obs-admin/permission/groups/-1');
 
-    Promise.all([getRoles, getPermGroups])
+    // GET ALL USERS
+    const getUsers = fetch('/obs-admin/users');
+
+    Promise.all([getRoles, getPermGroups, getUsers])
         .then(async function (responses) {
 
-            if (responses[0].redirected || responses[1].redirected) {
-                window.location.href = responses[0].url
+            if (responses.some(response => response.redirected)) {
+                window.location.href = responses[0].url;
                 throw new Error('redirected');
             }
 
-            if ((responses[0].status != 200 && responses[0].status != 404) ||
-                responses[1].status != 200 && responses[1].status != 404) {
+            if (responses.some(response => response.status != 200 && response.status != 404)) {
                 const error = new Error('Unknown error')
                 error.status = 500;
                 throw error;
             }
 
-            const userRoles = await responses[0].json();
-            const permGroups = await responses[1].json();
-            return [userRoles.result, permGroups.result];
+            const [userRoles, permGroups, users] = await Promise.all(responses.map(response => response.json()));
+
+            return [userRoles.result, permGroups.result, users.result];
         })
         .then((allJsonData) => {
-            const userRole = allJsonData[0];
-            const permGroups = allJsonData[1];
+
+            const [userRole, permGroups, users] = allJsonData;
 
             // Validate responses
             if (!userRole) {
@@ -40,6 +44,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
             if (!permGroups) {
                 // handle no perms group
+            }
+
+            if (!users) {
+                // handle no users
             }
 
             // Handle data
@@ -58,6 +66,9 @@ window.addEventListener('DOMContentLoaded', () => {
                 option.text = item.groupName;
                 permissionSelect.appendChild(option);
             });
+
+            buildUsers(users);
+
         })
         .catch((error) => {
             if (error && error.message != 'redirected') {
@@ -67,6 +78,8 @@ window.addEventListener('DOMContentLoaded', () => {
                 }
             }
         })
+
+    // === FUNCTIONS ===
 
     // CREATE USER FUNCTION
     const createUser = (newuser) => {
@@ -111,6 +124,35 @@ window.addEventListener('DOMContentLoaded', () => {
             }
         })
     }
+
+    // BUILD USERS TEMPLATE
+    const buildUsers = (users) => {
+        const template = document.getElementById("user-template");
+        const templateContainer = document.getElementById("insert-user-template");
+
+        users.forEach(i => {
+            const content = template.content.cloneNode(true);
+            templateContainer.setAttribute('value', i.email);
+
+            content.querySelector(".profile-button").setAttribute('value', i.email);
+            content.querySelector("#user-name").textContent = i.nameOfUser;
+            content.querySelector("#user-role").textContent = i.roleName;
+            content.querySelector("#user-email").textContent = i.email;
+            content.querySelector("#user-number").textContent = i.contactNo;
+
+            let imgUrl;
+            if (!i.picUrl) {
+                imgUrl = '../../../assets/images/default-user-icon.png'
+            } else {
+                imgUrl = picUrl
+            }
+
+            content.querySelector("#user-number").src = imgUrl
+            templateContainer.append(content);
+        })
+    }
+
+    // === EVENT HANDLERS ===
 
     // FORM SUBMIT
     createForm.onsubmit = (e) => {

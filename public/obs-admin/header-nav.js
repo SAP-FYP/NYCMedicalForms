@@ -16,7 +16,6 @@ window.addEventListener('DOMContentLoaded', () => {
     // GET USER DATA - AUTHORIZATION
     const getUser = fetch('/user')
         .then((response) => {
-
             if (response.redirected) {
                 window.location.href = response.url;
                 throw new Error('redirected');

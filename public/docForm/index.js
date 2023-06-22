@@ -41,6 +41,25 @@ document.addEventListener('DOMContentLoaded', function () {
     const clinicAddressInput = document.getElementById('clinicAddress');
     const doctorMCRInput = document.getElementById('doctorMCR');
 
+    // parent section
+    const parentSection = document.getElementById('parent-section');
+    const parentYesInput = document.getElementById('parent-yes');
+    const parentNoInput = document.getElementById('parent-no');
+    const parentRadio = document.querySelectorAll('.parent-acknowledgement');
+   
+    // event listener for radio buttons
+    parentRadio.forEach((element) => {
+        element.addEventListener('change', function () {
+            if (parentYesInput.checked) {
+                let temp = document.getElementById("parent-template")
+                let clone = temp.content.cloneNode(true);
+                parentSection.appendChild(clone);
+            } else {
+                parentSection.innerHTML = "";
+            }
+        });
+    });
+
     // ONLY FOR TESTING PLEASE DELETE LATER-----------------------------------------------
     // document.getElementById('studentName').value = 'John Doe';
     // document.getElementById('schoolName').value = 'Example School2';
@@ -137,6 +156,23 @@ document.addEventListener('DOMContentLoaded', function () {
             return response.json();
         })
     }
+
+    const postParentInfo = (parentEntry) => {
+        return fetch('/post-acknowledge', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(parentEntry)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { throw err; });
+            }
+            return response.json();
+        })
+    }
+    
     // validation functions
     const validatePhone = (inputElement, value) => {
         const phonePattern = /^[89]\d{7}$/;

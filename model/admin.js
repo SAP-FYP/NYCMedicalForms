@@ -211,3 +211,25 @@ module.exports.deletePermissionGroup = async function getPermissions(groupId) {
         throw error
     }
 }
+
+module.exports.getAllUsers = function getAllUsers(email) {
+    const sql = `SELECT u.email, u.nameOfUser, u.contactNo, u.groupId, u.roleId, u.picUrl, u.isDisabled, r.roleName
+    FROM user u
+    LEFT JOIN role r ON u.roleId = r.roleId
+    WHERE u.isDeleted = 0 AND
+    u.email != ?`;
+
+    return query(sql, [email])
+        .then((result) => {
+            const rows = result[0];
+            if (rows.length === 0) {
+                const error = new Error("No users found");
+                error.status = 404;
+                throw error;
+            }
+            return rows;
+        })
+        .catch((error) => {
+            throw error;
+        })
+}

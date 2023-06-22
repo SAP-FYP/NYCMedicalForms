@@ -22,3 +22,15 @@ module.exports.updateAcknowledgement = function updateAcknowledgement(data) {
         }
         )
 };
+
+module.exports.setParentsAcknowledgement = function setParentsAcknowledgement(data) {
+    const sql = "INSERT INTO parentAcknowledgement (studentId, parentContactNo, parentEmail) VALUES (?, ?, ?)";
+    return query(sql, [data.studentId, data.parentContact, data.parentEmail])
+        .then((result) => {
+            return result;
+        })
+        .catch((error) => {
+            throw error;
+        }
+        )
+}
