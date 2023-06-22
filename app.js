@@ -184,9 +184,11 @@ app.post('/post-acknowledge', (req, res) => {
 // Email test
 app.post('/send-email', (req, res) => {
     const { email, studentId } = req.body;
+    // Make studentId into a string
+    const parsedStudentId = studentId.toString();
     // Encrypt studentId
     const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
-    let encryptedStudentId = cipher.update(studentId, 'utf8', 'hex');
+    let encryptedStudentId = cipher.update(parsedStudentId, 'utf8', 'hex');
     encryptedStudentId += cipher.final('hex');
 
     // Compose the email parameters
