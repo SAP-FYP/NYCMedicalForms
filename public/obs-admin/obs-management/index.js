@@ -1,4 +1,6 @@
 API_URL = `http://localhost:3000/obs-admin/pmt`;
+const dataAll = []; // Declare the data array for "all" data
+const dataSearch = []; // Declare the data array for search results
 document.addEventListener("DOMContentLoaded", function () {
   axios.get(`${API_URL}/all`)
     .then(function (response) {
@@ -37,14 +39,14 @@ document.addEventListener("DOMContentLoaded", function () {
       pendingAmtElement.textContent = `${formCounts.pending}`;
       apprAmtElement.textContent = `${formCounts.approved}`;
       rejAmtElement.textContent = `${formCounts.rejected}`;
-      const data = [];
-      // Loop through the data and add it to the page
+
       // Create the export button element
-const exportBtnBulkContainer = document.querySelector('#export-btn-bulk');
- const exportIcon = document.createElement('img');
- exportIcon.src = '../../assets/images/export-to-excel-icon.png';
- exportIcon.id = 'export-btn';
- exportIcon.alt = 'export-icon';
+      const exportBtnBulkContainer = document.querySelector('#export-btn-bulk');
+      const exportIcon = document.createElement('img');
+      exportIcon.src = '../../assets/images/export-to-excel-icon.png';
+      exportIcon.id = 'export-btn';
+      exportIcon.alt = 'export-icon';
+      // Loop through the data and add it to the page
       for (i = 0; i < formData.length; i++) {
         const dateObj = new Date(formData[i].courseDate);
         const formattedDate = dateObj.toLocaleDateString("en-US", {
@@ -55,7 +57,6 @@ const exportBtnBulkContainer = document.querySelector('#export-btn-bulk');
         // Get references to the status container and template
         const getAllForms = document.querySelector('#getAllForms');
         const rowTemplate = document.querySelector('.row-table-template');
-        const checkBoxTop = document.getElementById('checkBoxTop');
 
         //clear html content in getAllForms once
         if (i === 0) {
@@ -64,7 +65,7 @@ const exportBtnBulkContainer = document.querySelector('#export-btn-bulk');
         // Clone the template and append it to the status container
         const templateContent = rowTemplate.content;
         const clonedRowTemplate = document.importNode(templateContent, true);
-        
+
 
         const studentNRICCell = clonedRowTemplate.querySelector('.studentNRIC');
         studentNRICCell.textContent = `***${formData[i].studentNRIC}`;
@@ -87,32 +88,33 @@ const exportBtnBulkContainer = document.querySelector('#export-btn-bulk');
 
         // Get all checkboxes inside clonedRowTemplate
         const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
-
+        const checkBoxTop = document.querySelector('#checkBoxTop');
         checkBoxTop.addEventListener('change', function () {
           const isChecked = checkBoxTop.checked;
-        
+
           // Loop through each checkbox in the array and set the "checked" and "disabled" properties
           checkBoxes.forEach(function (checkbox) {
             checkbox.checked = isChecked;
             checkbox.disabled = isChecked; // Disable the checkboxes if "checkBoxTop" is checked
-        
+
             if (isChecked) {
               const applicantName = nameOfStudentCell.textContent;
               const schoolOrg = schoolCell.textContent;
               const classNo = classCell.textContent;
               const courseDate = formattedDateCell.textContent;
-              
-              // Add the data for the checked checkbox
-              data.push({  "Name of Applicant": applicantName,
-              "Organization/School": schoolOrg,
-              "Designation/Class": classNo,
-              "Course Date": courseDate });
 
+              // Add the data for the checked checkbox
+              dataAll.push({
+                "Name of Applicant": applicantName,
+                "Organization/School": schoolOrg,
+                "Designation/Class": classNo,
+                "Course Date": courseDate
+              });
             } else {
               // Remove the data for the unchecked checkbox
-              for (let i = 0; i < data.length; i++) {
-                if (data[i].applicantName === nameOfStudentCell.textContent) {
-                  data.splice(i, 1);
+              for (let i = 0; i < dataAll.length; i++) {
+                if (dataAll[i]["Name of Applicant"] === nameOfStudentCell.textContent) {
+                  dataAll.splice(i, 1);
                 }
               }
             }
@@ -124,10 +126,10 @@ const exportBtnBulkContainer = document.querySelector('#export-btn-bulk');
             // Remove the export button from the exportBtnContainer if it's a child
             exportBtnBulkContainer.removeChild(exportIcon);
           }
-        
+
 
         });
-        
+
 
 
         //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
@@ -194,9 +196,19 @@ const exportBtnBulkContainer = document.querySelector('#export-btn-bulk');
       //Outside of for loop 
       //Export to Excel Bulk Once
       const exportBtnBulk = document.querySelector('#export-btn-bulk');
-      exportBtnBulk.addEventListener('click', function() {
-        console.log(data);
-        exportToExcelBulk(data);
+      exportBtnBulk.addEventListener('click', function () {
+        console.log(dataAll);
+        exportToExcelBulk(dataAll);
+      });
+      //remove export icon when search is used
+      searchInput.addEventListener('keypress', event => {
+        if (event.key === "Enter") {
+
+              exportBtnBulkContainer.removeChild(exportIcon);
+
+            checkBoxTop.checked = false;
+          
+        }
       });
     })
     .catch(function (error) {
@@ -212,6 +224,12 @@ const exportBtnBulkContainer = document.querySelector('#export-btn-bulk');
 const searchInput = document.querySelector("#searchInput");
 const searchBtn = document.querySelector('#search-button');
 const searchClearBtn = document.querySelector('#clear-button');
+  // Create the export button element
+  const exportBtnBulkContainer = document.querySelector('#export-btn-bulk');
+  const exportIcon = document.createElement('img');
+  exportIcon.src = '../../assets/images/export-to-excel-icon.png';
+  exportIcon.id = 'export-btn';
+  exportIcon.alt = 'export-icon';
 
 function searchForms() {
   if (searchInput.value.trim() === '') {
@@ -258,9 +276,9 @@ function searchForms() {
         pendingAmtElement.textContent = `${formCounts.pending}`;
         apprAmtElement.textContent = `${formCounts.approved}`;
         rejAmtElement.textContent = `${formCounts.rejected}`;
-
         // Loop through the data and add it to the page
         for (i = 0; i < formData.length; i++) {
+
           const dateObj = new Date(formData[i].courseDate);
           const formattedDate = dateObj.toLocaleDateString("en-US", {
             day: "2-digit",
@@ -297,6 +315,47 @@ function searchForms() {
 
           const formattedDateCell = clonedRowTemplate.querySelector('.courseDate');
           formattedDateCell.textContent = formattedDate;
+
+          // Get all checkboxes inside clonedRowTemplate
+          const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
+          const checkBoxTop = document.querySelector('#checkBoxTop');
+          checkBoxTop.addEventListener('change', function () {
+            // Get the "checked" property of the "checkBoxTop" checkbox
+            const isChecked = checkBoxTop.checked;
+
+            // Loop through each checkbox in the array and set the "checked" and "disabled" properties
+            checkBoxes.forEach(function (checkbox) {
+              checkbox.checked = isChecked;
+              checkbox.disabled = isChecked; // Disable the checkboxes if "checkBoxTop" is checked
+
+              if (isChecked) {
+                const applicantName = nameOfStudentCell.textContent;
+                const schoolOrg = schoolCell.textContent;
+                const classNo = classCell.textContent;
+                const courseDate = formattedDateCell.textContent;
+
+                // Add the data for the checked checkbox
+                dataSearch.push({
+                  "Name of Applicant": applicantName,
+                  "Organization/School": schoolOrg,
+                  "Designation/Class": classNo,
+                  "Course Date": courseDate
+                });
+                console.log(dataSearch)
+              } else {
+                // Remove the data for the unchecked checkbox
+                for (let i = 0; i < dataSearch.length; i++) {
+                  if (dataSearch[i]["Name of Applicant"] === nameOfStudentCell.textContent) {
+                    dataSearch.splice(i, 1);
+                  }
+                }
+              }
+              
+            });
+            
+
+
+          });
 
           //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
           const modalBtn1 = clonedRowTemplate.querySelector('.modalBtn1');
@@ -359,7 +418,15 @@ function searchForms() {
             });
           });
         }
-      })
+        //Outside of for loop 
+      //Export to Excel Bulk Once
+      const exportBtnBulk = document.querySelector('#export-btn-bulk');
+      exportBtnBulk.addEventListener('click', function() {
+        console.log(dataSearch);
+        exportToExcelBulk(dataSearch);
+
+      });
+           })
       .catch(function (error) {
         if (error && error.message !== "redirected") {
           console.log(error);
@@ -381,6 +448,7 @@ searchInput.addEventListener('keypress', event => {
   if (event.key === "Enter") {
     event.preventDefault();
     searchForms();
+  
   }
 });
 
