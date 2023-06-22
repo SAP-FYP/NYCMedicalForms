@@ -8,6 +8,10 @@ window.addEventListener('DOMContentLoaded', () => {
     const editFormSumbitButton = document.getElementById('edit-user-icon');
     const createFormSumbitButton = document.getElementById('confirm-user-icon')
     const myModalEl = document.getElementById('createUserModal');
+    const myModalEnable = document.getElementById('confirmationEnableModal');
+    const myModalDisable = document.getElementById('confirmationDisableModal');
+    const enableModal = new bootstrap.Modal(myModalEnable);
+    const disableModal = new bootstrap.Modal(myModalDisable);
     const modal = new bootstrap.Modal(myModalEl);
 
     // === FETCHES ===
@@ -142,6 +146,8 @@ window.addEventListener('DOMContentLoaded', () => {
             const content = template.content.cloneNode(true);
             templateContainer.setAttribute('value', i.email);
 
+            content.querySelector(".item-border").setAttribute('id', `item-${i.email}`)
+            content.querySelector(".profile-button").setAttribute('id', `profile-button-${i.email}`);
             content.querySelector(".profile-button").setAttribute('value', i.email);
             content.querySelector("#user-name").textContent = i.nameOfUser;
             content.querySelector("#user-role").textContent = i.roleName;
@@ -149,12 +155,27 @@ window.addEventListener('DOMContentLoaded', () => {
             content.querySelector("#user-number").textContent = i.contactNo;
             content.querySelector("#user-image").src = i.picUrl || '../../../assets/images/default-user-icon.png';
 
+            if (i.isDisabled) {
+                content.querySelector(".dropdown-disable").setAttribute('data-bs-target', '#confirmationEnableModal');
+                content.querySelector(".dropdown-disable").textContent = 'Enable';
+
+                content.querySelector(".profile-button").classList.add('profile-button-disabled')
+                content.querySelector(".profile-button").innerHTML = `<i class="material-icons profile-button-icon"
+                        style="font-size:28px;color:#5a5a5a; margin-right: 5px;">person</i>
+                        Disabled`
+            }
+
             content.querySelector(".dropdown-disable").addEventListener('click', (e) => {
                 e.preventDefault;
                 let user = {
                     email: i.email
                 }
-                disableButtonHandler(user);
+
+                if (i.isDisabled) {
+                    enableButtonHandler(user, 0);
+                } else {
+                    disableButtonHandler(user, 1);
+                }
             })
 
             content.querySelector(".dropdown-delete").addEventListener('click', (e) => {
@@ -327,6 +348,104 @@ window.addEventListener('DOMContentLoaded', () => {
 
                     alert('Successfully deleted!')
                     location.reload();
+                })
+                .catch((error) => {
+                    if (error && error.message != 'redirected') {
+                        console.log(error);
+                        alert(error);
+                    }
+                    // display error
+                })
+        };
+    }
+
+    // DISABLE USER BUTTON HANDLER
+    const disableButtonHandler = (user, status) => {
+
+        // DISABLE USER
+        document.getElementById('confirmation-disable-button').onclick = () => {
+
+            return fetch(`/obs-admin/disable/user/${user.email}/${status}`, {
+                method: 'PUT'
+            })
+                .then((response) => {
+                    if (response.redirected) {
+                        window.location.href = response.url
+                        throw new Error('redirected');
+                    }
+
+                    if (response.status == 400) {
+                        const error = new Error("Invalid user data");
+                        error.status = response.status
+                        throw error;
+
+                    } else if (response.status != 200) {
+                        const error = new Error("Unknown error");
+                        error.status = response.status
+                        throw error;
+                    }
+
+                    alert('Successfully disabled!')
+                    disableModal.hide();
+                    document.getElementById(`profile-button-${user.email}`).classList.add('profile-button-disabled')
+                    document.getElementById(`profile-button-${user.email}`).innerHTML = `<i class="material-icons profile-button-icon"
+                    style="font-size:28px;color:#5a5a5a; margin-right: 5px;">person</i>
+                    Disabled`
+                    document.getElementById(`item-${user.email}`).getElementsByClassName('dropdown-disable')[0].textContent = 'Enable'
+                    document.getElementById(`item-${user.email}`).getElementsByClassName('dropdown-disable')[0].setAttribute('data-bs-target', '#confirmationEnableModal');
+                    document.getElementById(`item-${user.email}`).getElementsByClassName('dropdown-disable')[0].addEventListener('click', (e) => {
+                        e.preventDefault;
+                        enableButtonHandler(user, 0);
+                    });
+                })
+                .catch((error) => {
+                    if (error && error.message != 'redirected') {
+                        console.log(error);
+                        alert(error);
+                    }
+                    // display error
+                })
+        };
+    }
+
+    // ENABLE USER BUTTON HANDLER
+    const enableButtonHandler = (user, status) => {
+
+        // ENABLE USER
+        document.getElementById('confirmation-enable-button').onclick = () => {
+
+            return fetch(`/obs-admin/disable/user/${user.email}/${status}`, {
+                method: 'PUT'
+            })
+                .then((response) => {
+                    if (response.redirected) {
+                        window.location.href = response.url
+                        throw new Error('redirected');
+                    }
+
+                    if (response.status == 400) {
+                        const error = new Error("Invalid user data");
+                        error.status = response.status
+                        throw error;
+
+                    } else if (response.status != 200) {
+                        const error = new Error("Unknown error");
+                        error.status = response.status
+                        throw error;
+                    }
+
+                    enableModal.hide();
+                    alert('Successfully enabled!')
+                    document.getElementById(`profile-button-${user.email}`).classList.remove('profile-button-disabled')
+                    document.getElementById(`profile-button-${user.email}`).innerHTML = `<i class="material-icons profile-button-icon"
+                    style="font-size:28px;color:#485EAB; margin-right: 5px;">person</i>
+                    Profile`
+                    document.getElementById(`item-${user.email}`).getElementsByClassName('dropdown-disable')[0].textContent = 'Disable'
+                    document.getElementById(`item-${user.email}`).getElementsByClassName('dropdown-disable')[0].setAttribute('data-bs-target', '#confirmationDisableModal');
+                    document.getElementById(`item-${user.email}`).getElementsByClassName('dropdown-disable')[0].addEventListener('click', (e) => {
+                        e.preventDefault;
+                        disableButtonHandler(user, 1);
+                    });
                 })
                 .catch((error) => {
                     if (error && error.message != 'redirected') {

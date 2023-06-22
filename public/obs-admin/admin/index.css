@@ -189,9 +189,15 @@ input[type=number] {
     margin: 0px 8px !important;
 }
 
-#confirmation-delete-button {
+#confirmation-delete-button,
+#confirmation-disable-button {
     background-color: #E52323;
     color: white;
+}
+
+#confirmation-enable-button {
+    background-color: #26e523;
+    color: rgb(0, 0, 0);
 }
 
 #staticBackdropLabel {
@@ -308,6 +314,7 @@ input[type=number] {
 }
 
 .profile-button {
+    width: 130px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -316,4 +323,9 @@ input[type=number] {
     color: #485EAB;
     background-color: #C7D3EF;
     border: none;
+}
+
+.profile-button-disabled {
+    color: #5a5a5a;
+    background-color: #858585;
 }

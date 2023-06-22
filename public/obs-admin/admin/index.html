@@ -132,7 +132,7 @@
                     </div>
                 </div>
 
-                <!-- CONFIRMATION MODAL -->
+                <!-- DELETE CONFIRMATION MODAL -->
                 <div class="modal fade" id="confirmationModal" data-bs-backdrop="static" data-bs-keyboard="false"
                     tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-md">
@@ -154,6 +154,60 @@
                                     data-bs-dismiss="modal">Cancel</button>
                                 <button class="confirmation-buttons" id="confirmation-delete-button"
                                     type="button">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DISABLE CONFIRMATION MODAL -->
+                <div class="modal fade" id="confirmationDisableModal" data-bs-backdrop="static" data-bs-keyboard="false"
+                    tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-md">
+                        <div class="modal-content" id="confirmation-modal">
+                            <div class="modal-header" id="modal-header">
+                                <h5 class="modal-title" id="staticBackdropLabel">Disable User?</h5>
+                            </div>
+                            <div class="modal-body">
+                                <div class="container-fluid">
+                                    <div class="row d-flex justify-content-center">
+                                        <label class="form-label col-12">Are you sure you want to disable this
+                                            user?</label>
+                                        <img id="alert-icon" src="../../../assets/images/alert-icon.png">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer" id="modal-footer">
+                                <button class="confirmation-buttons" id="confirmation-cancel-button" type="button"
+                                    data-bs-dismiss="modal">Cancel</button>
+                                <button class="confirmation-buttons" id="confirmation-disable-button"
+                                    type="button">Disable</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ENABLE CONFIRMATION MODAL -->
+                <div class="modal fade" id="confirmationEnableModal" data-bs-backdrop="static" data-bs-keyboard="false"
+                    tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-md">
+                        <div class="modal-content" id="confirmation-modal">
+                            <div class="modal-header" id="modal-header">
+                                <h5 class="modal-title" id="staticBackdropLabel">Enable User?</h5>
+                            </div>
+                            <div class="modal-body">
+                                <div class="container-fluid">
+                                    <div class="row d-flex justify-content-center">
+                                        <label class="form-label col-12">Are you sure you want to enable this
+                                            user?</label>
+                                        <img id="alert-icon" src="../../../assets/images/alert-icon.png">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer" id="modal-footer">
+                                <button class="confirmation-buttons" id="confirmation-cancel-button" type="button"
+                                    data-bs-dismiss="modal">Cancel</button>
+                                <button class="confirmation-buttons" id="confirmation-enable-button"
+                                    type="button">Enable</button>
                             </div>
                         </div>
                     </div>
@@ -183,7 +237,8 @@
                         <i class="material-icons more-button-icon" style="font-size:28px;color:#485EAB;">more_horiz</i>
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item dropdown-disable" value="">Disable</a></li>
+                        <li><a class="dropdown-item dropdown-disable" value="" data-bs-toggle="modal"
+                                data-bs-target="#confirmationDisableModal">Disable</a></li>
                         <li><a class="dropdown-item dropdown-delete" value="" data-bs-toggle="modal"
                                 data-bs-target="#confirmationModal">Delete</a></li>
                         <li><a class="dropdown-item dropdown-edit" value="" data-bs-toggle="modal"
@@ -199,7 +254,7 @@
                 </div>
                 <div class="user-profile-button col-12">
                     <button class="profile-button">
-                        <i class="material-icons more-button-icon"
+                        <i class="material-icons profile-button-icon"
                             style="font-size:28px;color:#485EAB; margin-right: 5px;">person</i>
                         Profile
                     </button>

@@ -278,3 +278,21 @@ module.exports.deleteUser = function deleteUser(user) {
             throw error;
         })
 }
+
+module.exports.disableUser = function disableUser(user) {
+    const sql = 'UPDATE user SET isDisabled = ?, invalidationDate = ? WHERE email = ?';
+    return query(sql, [user.status, user.invalidationDate, user.email])
+        .then((result) => {
+            const affectedRows = result[0].affectedRows;
+
+            if (affectedRows == 0) {
+                const error = new Error("Unable to disable/enable account");
+                error.status = 500;
+                throw error;
+            }
+            return affectedRows;
+        }).catch((error) => {
+            console.log(error)
+            throw error;
+        })
+}

@@ -470,7 +470,7 @@ app.delete('/obs-admin/permission/groups/:groupId', authHelper.verifyToken, auth
         })
 })
 
-// Update User - isaac
+// Update User
 app.put('/obs-admin/user', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
 
     // AUTHORIZATION CHECK - ADMIN
@@ -516,7 +516,7 @@ app.put('/obs-admin/user', authHelper.verifyToken, authHelper.checkIat, (req, re
         })
 })
 
-// Delete User - isaac
+// Delete User
 app.put('/obs-admin/delete/user/:email', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
 
     // AUTHORIZATION CHECK - ADMIN
@@ -551,41 +551,38 @@ app.put('/obs-admin/delete/user/:email', authHelper.verifyToken, authHelper.chec
         })
 })
 
-// Update User Permission Group
-app.put('/obs-admin/update-user-group', (req, res, next) => {
-    const { email, groupId } = req.body;
-    // TODO: Error handling and validation
-    return userModel.updateUserPermission(email, groupId)
-        .then((result) => {
-            return res.json(result);
-        })
-        .catch((error) => {
-            return res.status(error.status || 500).json({ error: error.message });
-        })
-});
-
 // Disable Account
-app.put('/obs-admin/update-account-status', (req, res, next) => {
-    const { email, status } = req.body;
-    // TODO: Error handling and validation
-    return userModel.updateAccountStatus(email, status)
-        .then((result) => {
-            return res.json(result);
-        })
-        .catch((error) => {
-            return res.status(error.status || 500).json({ error: error.message });
-        })
-});
+app.put('/obs-admin/disable/user/:email/:status', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
 
-// Delete Account
-app.put('/obs-admin/delete-user', (req, res, next) => {
-    const { email } = req.body;
-    // TODO: Error handling and validation
-    return userModel.deleteUser(email)
+    // AUTHORIZATION CHECK - ADMIN
+    if (req.decodedToken.role != 1) {
+        return res.redirect('/error?code=403')
+    }
+
+    const user = {
+        email: req.params.email,
+        status: req.params.status,
+        invalidationDate: moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss')
+    }
+
+    if (!user.email || !user.status) {
+        const error = new Error("Empty user email")
+        error.status = 400;
+        throw error;
+    }
+
+    return adminModel
+        .disableUser(user)
         .then((result) => {
-            return res.json(result);
+            if (!result) {
+                const error = new Error("Unable to disable/enable user")
+                error.status = 500;
+                throw error;
+            }
+            return res.sendStatus(200);
         })
         .catch((error) => {
+            console.log(error)
             return res.status(error.status || 500).json({ error: error.message });
         })
 });
