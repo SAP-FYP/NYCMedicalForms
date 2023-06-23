@@ -1,4 +1,9 @@
 window.addEventListener('DOMContentLoaded', () => {
+    // lazy load will affect number of checkboxes appearing at once, so on every lazy load, re calculate number of check boxes
+    let itemCheckboxes = document.querySelectorAll('.select-item-chkbox');
+    const allCheckbox = document.getElementById('select-all-chkbox');
+    const bulkDeleteBtn = document.getElementById('bulk-delete-button');
+
     const searchInput = document.getElementById('search-input');
     const searchBtn = document.getElementById('search-button');
     const searchClearBtn = document.getElementById('clear-button');
@@ -69,11 +74,11 @@ window.addEventListener('DOMContentLoaded', () => {
     // === FUNCTIONS ===
 
     // BUILD PERMISSION GROUPS TEMPLATE
-    const buildPermGroups = (permgroups) => {
+    const buildPermGroups = async (permgroups) => {
         const template = document.getElementById("permission-group-template");
         const templateContainer = document.getElementById("insert-permission-group-template");
 
-        permgroups.forEach(i => {
+        await permgroups.forEach(i => {
             const content = template.content.cloneNode(true);
             templateContainer.setAttribute('value', i.groupId);
             content.querySelector(".item-container").setAttribute('value', i.groupId);
@@ -106,6 +111,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
             templateContainer.append(content);
         });
+        updateCheckboxes();
     }
 
     // BUILD PERMISSION CHECKBOX TEMPLATE
@@ -296,9 +302,16 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // DELETE PERMISSION GROUPS BUTTON HANDLER
     const deleteButtonHandler = (permGroup) => {
+        if (document.getElementById('confirmation-delete-bulk-button')) {
+            document.getElementById('confirmation-delete-bulk-button').id = 'confirmation-delete-button';
+
+            const formLabel = document.querySelector('#confirmation-delete-button').closest('.modal-content').querySelector('.modal-body .form-label');
+            formLabel.textContent = `Are you sure you want to delete this permission group? You can't undo this action.`;
+        }
 
         // DELETE PERMISSION GROUPS
         document.getElementById('confirmation-delete-button').onclick = () => {
+            console.log('singled')
             return fetch(`/obs-admin/permission/groups/${permGroup.groupId}`, {
                 method: 'DELETE'
             })
@@ -330,6 +343,80 @@ window.addEventListener('DOMContentLoaded', () => {
                     // display error
                 })
         };
+    }
+
+    // BULK DELETE PERMISSION GROUPS
+    const bulkDelete = (groups) => {
+        if (document.getElementById('confirmation-delete-button')) {
+            document.getElementById('confirmation-delete-button').id = 'confirmation-delete-bulk-button';
+
+            const formLabel = document.querySelector('#confirmation-delete-bulk-button').closest('.modal-content').querySelector('.modal-body .form-label');
+            formLabel.textContent = `Are you sure you want to delete selected permission groups? You can't undo this action.`;
+        }
+
+        // BULK DELETE PERMISSION GROUPS
+        document.getElementById('confirmation-delete-bulk-button').onclick = () => {
+            console.log('bulked')
+            return fetch(`/obs-admin/permission/groups`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(groups)
+            })
+                .then((response) => {
+                    if (response.redirected) {
+                        window.location.href = response.url
+                        throw new Error('redirected');
+                    }
+
+                    if (response.status == 400) {
+                        const error = new Error("Invalid permission data");
+                        error.status = response.status
+                        throw error;
+
+                    } else if (response.status != 200) {
+                        const error = new Error("Unknown error");
+                        error.status = response.status
+                        throw error;
+                    }
+
+                    alert('Successfully deleted!')
+                    location.reload();
+                })
+                .catch((error) => {
+                    if (error && error.message != 'redirected') {
+                        console.log(error);
+                        alert(error);
+                    }
+                    // display error
+                })
+        }
+    }
+
+    // GET NUMBER OF CHECKBOXES 
+    const updateCheckboxes = () => {
+        itemCheckboxes = document.querySelectorAll('.select-item-chkbox');
+        itemCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateCheckedCount);
+        });
+    }
+
+    // CHECKBOXES 
+    const updateCheckedCount = () => {
+        const checkedCount = document.querySelectorAll('.select-item-chkbox:checked').length;
+
+        if (checkedCount == 1) {
+            document.getElementById('bulk-action').style.visibility = 'visible';
+            document.getElementById('bulk-delete-selected').textContent = `${checkedCount} Group Selected`
+        } else if (checkedCount > 1) {
+            document.getElementById('bulk-action').style.visibility = 'visible';
+            document.getElementById('bulk-delete-selected').textContent = `${checkedCount} Groups Selected`
+        } else if (checkedCount < 1) {
+            document.getElementById('bulk-action').style.visibility = 'hidden';
+        }
+
+        checkedCount == itemCheckboxes.length ? allCheckbox.checked = true : allCheckbox.checked = false;
     }
 
     // === EVENT HANDLERS ===
@@ -421,4 +508,27 @@ window.addEventListener('DOMContentLoaded', () => {
     // SEARCH BAR SUBMIT BUTTON
     searchBtn.onclick = searchGroups;
 
+    // ALL CHECKBOX BUTTON
+    allCheckbox.onchange = () => {
+        const checked = allCheckbox.checked;
+
+        itemCheckboxes.forEach(checkbox => {
+            checkbox.checked = checked;
+        });
+        updateCheckedCount();
+    }
+
+    // BULK DELETE
+    bulkDeleteBtn.onclick = () => {
+        let checkedItems = []
+        document.querySelectorAll('.select-item-chkbox:checked').forEach(i => {
+            checkedItems.push(i.value)
+        });
+
+        if (checkedItems.length < 1) {
+            alert('Please select 1 permission group or more');
+        } else {
+            bulkDelete({ groupIds: checkedItems });
+        }
+    }
 })

@@ -66,13 +66,25 @@
                     </div>
                 </div>
 
-                <!--  CREATE/ EDIT PERMISSIONS MODAL -->
-                <div class="col-12 d-flex justify-content-end">
-                    <button style="border:none; cursor: default;" data-bs-toggle="modal"
-                        data-bs-target="#createPermissionModal" id="open-modal-button"><img id="create-permission-icon"
-                            src="../../../assets/images/create-permission-icon.png"></button>
+                <div class="col-12 d-flex">
+
+                    <div class="col-11 d-flex justify-content-start align-items-center" id="bulk-action">
+                        <button style="border:none; cursor: default;" id="bulk-delete-button" data-bs-toggle="modal"
+                            data-bs-target="#confirmationModal"><i class="material-icons"
+                                style="font-size:28px;color:#485EAB;" id="bulk-delete-icon">delete</i>Delete
+                            selected</button>
+                        <label id="bulk-delete-selected">1 Group(s) Selected</label>
+                    </div>
+
+                    <div class=" col-1 d-flex justify-content-end">
+                        <button style="border:none; cursor: default;" data-bs-toggle="modal"
+                            data-bs-target="#createPermissionModal" id="open-modal-button"><img
+                                id="create-permission-icon"
+                                src="../../../assets/images/create-permission-icon.png"></button>
+                    </div>
                 </div>
 
+                <!--  CREATE/ EDIT PERMISSIONS MODAL -->
                 <div class="modal fade" id="createPermissionModal" data-bs-backdrop="static" data-bs-keyboard="false"
                     tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-lg">

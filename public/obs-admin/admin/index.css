@@ -150,8 +150,7 @@ input[type=number] {
     margin-top: 10px;
 }
 
-#create-permission-modal>#modal-footer,
-#confirmation-modal>.modal-footer {
+#modal-footer {
     border-top: none;
     margin-top: 50px;
     margin-bottom: 10px;

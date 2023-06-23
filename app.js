@@ -185,7 +185,7 @@ app.post('/post-acknowledge', (req, res) => {
         )
 
 })
-    
+
 
 // Email test
 app.post('/send-email', (req, res) => {
@@ -265,7 +265,6 @@ app.post('/obs-admin/newuser', authHelper.verifyToken, authHelper.checkIat, (req
 
         newuser.password = hash;
         newuser.created_at = moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss')
-        newuser.passwordUpdated = moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss')
 
         return adminModel
             .createUser(newuser)
@@ -493,6 +492,38 @@ app.delete('/obs-admin/permission/groups/:groupId', authHelper.verifyToken, auth
         .then((result) => {
             if (!result) {
                 const error = new Error("Unable to delete permission group")
+                error.status = 500;
+                throw error;
+            }
+            return res.sendStatus(200);
+        })
+        .catch((error) => {
+            console.log(error)
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+})
+
+// Bulk Delete Permission Groups
+app.delete('/obs-admin/permission/groups', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+
+    // AUTHORIZATION CHECK - ADMIN
+    if (req.decodedToken.role != 1) {
+        return res.redirect('/error?code=403')
+    }
+
+    const { groupIds } = req.body;
+
+    if (!groupIds) {
+        const error = new Error("Empty groupIds")
+        error.status = 400;
+        throw error;
+    }
+
+    return adminModel
+        .bulkDeletePermissionGroup(groupIds)
+        .then((result) => {
+            if (!result) {
+                const error = new Error("Unable to delete permission groups")
                 error.status = 500;
                 throw error;
             }

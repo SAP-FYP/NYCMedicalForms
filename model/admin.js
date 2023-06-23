@@ -2,8 +2,8 @@ const conn = require('../database');
 const { query, pool } = conn;
 
 module.exports.createUser = function createUser(newuser) {
-    const sql = `INSERT INTO user (Email, nameOfUser, password, contactNo, groupId, created_at, isDisabled, isDeleted, passwordUpdated, roleId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-    return query(sql, [newuser.email, newuser.name, newuser.password, newuser.contact, newuser.permissionGroup, newuser.created_at, 0, 0, newuser.passwordUpdated, newuser.role])
+    const sql = `INSERT INTO user (Email, nameOfUser, password, contactNo, groupId, created_at, isDisabled, isDeleted, roleId) VALUES (?, ?, ?, ?, ?, ?, ?, ?,nodemo ?)`;
+    return query(sql, [newuser.email, newuser.name, newuser.password, newuser.contact, newuser.permissionGroup, newuser.created_at, 0, 0, newuser.role])
         .then((result) => {
             const affectedRows = result[0].affectedRows;
 
@@ -197,6 +197,43 @@ module.exports.deletePermissionGroup = async function getPermissions(groupId) {
         const affectedRows2 = result2[0].affectedRows;
 
         if (affectedRows2 == 0) {
+            const error = new Error("Unable to delete permission group");
+            error.status = 500;
+            throw error;
+        }
+
+        await connection.commit();
+        return affectedRows2
+
+    } catch (error) {
+        await connection.rollback()
+        connection.release()
+        throw error
+    }
+}
+
+module.exports.bulkDeletePermissionGroup = async function bulkDeletePermissionGroup(groupIds) {
+    const connection = await pool.getConnection();
+
+    try {
+        await connection.beginTransaction();
+
+        // Delete group permissions
+        const sql1 = 'DELETE FROM groupPerm WHERE groupId IN (?)';
+        const result1 = await connection.query(sql1, [groupIds]);
+        const affectedRows1 = result1[0].affectedRows;
+
+        if (affectedRows1 < groupIds.length) { // at least 1 permission deleted from each group aka Read permissions
+            const error = new Error("Unable to delete permission group");
+            error.status = 500;
+            throw error;
+        }
+
+        const sql2 = 'DELETE FROM `group` WHERE groupId IN (?)';
+        const result2 = await connection.query(sql2, [groupIds]);
+        const affectedRows2 = result2[0].affectedRows;
+
+        if (affectedRows2 != groupIds.length) { // if deleted groups # not same as given groups #
             const error = new Error("Unable to delete permission group");
             error.status = 500;
             throw error;
