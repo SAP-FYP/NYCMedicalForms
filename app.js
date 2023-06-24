@@ -315,7 +315,7 @@ app.get('/obs-admin/users/:search', authHelper.verifyToken, authHelper.checkIat,
 });
 
 // Get All Permission Groups or by Search
-app.get('/obs-admin/permission/groups/:search', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+app.get('/obs-admin/permission/groups/:search/:limit/:offset', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
@@ -327,8 +327,11 @@ app.get('/obs-admin/permission/groups/:search', authHelper.verifyToken, authHelp
         searchInput = req.params.search
     }
 
+    const offset = parseInt(req.params.offset);
+    const limit = parseInt(req.params.limit);
+
     return adminModel
-        .getPermissionGroups(searchInput)
+        .getPermissionGroups(searchInput, limit, offset)
         .then((result) => {
             if (!result) {
                 const error = new Error("No permission groups found")

@@ -1,9 +1,7 @@
 window.addEventListener('DOMContentLoaded', () => {
-    // lazy load will affect number of checkboxes appearing at once, so on every lazy load, re calculate number of check boxes
     let itemCheckboxes = document.querySelectorAll('.select-item-chkbox');
     const allCheckbox = document.getElementById('select-all-chkbox');
     const bulkDeleteBtn = document.getElementById('bulk-delete-button');
-
     const searchInput = document.getElementById('search-input');
     const searchBtn = document.getElementById('search-button');
     const searchClearBtn = document.getElementById('clear-button');
@@ -13,63 +11,94 @@ window.addEventListener('DOMContentLoaded', () => {
     const createFormSumbitButton = document.getElementById('confirm-permission-icon');
     const myModalEl = document.getElementById('createPermissionModal');
     const modal = new bootstrap.Modal(myModalEl);
+    const container = document.getElementById('data-container');
 
+    // === FLAGS ===
+    let isLoading = false;
+    let eof = false;
+    let offset = 0;
+    let searchFilter;
     // === FETCHES ===
 
     // GET PERMISSIONS GROUPS
-    const getPermGroups = fetch('/obs-admin/permission/groups/-1')
+    const getPermGroups = (filter) => {
+        !filter ? filter = -1 : filter;
+
+        fetch(`/obs-admin/permission/groups/${filter}/20/${offset}`)
+            .then((response) => {
+                if (response.redirected) {
+                    window.location.href = response.url;
+                    throw new Error('redirected');
+                }
+
+                if (response.status != 200 && response.status != 404) {
+                    const error = new Error('Unknown error')
+                    error.status = 500;
+                    throw error;
+                }
+
+                return response.json();
+            })
+            .then((jsonData) => {
+                const permGroup = jsonData.result;
+                if (!permGroup) {
+                    eof = true;
+                    alert('no permission groups found')
+                    // handle no perms group
+                } else {
+                    buildPermGroups(permGroup);
+                }
+                offset += 20;
+                isLoading = false;
+                filter == -1 ? container.addEventListener('scroll', defaultScroll) : container.addEventListener('scroll', filterScroll)
+            })
+            .catch((error) => {
+                if (error && error.message != 'redirected') {
+                    if (error != "TypeError: Failed to fetch") {
+                        console.log(error);
+                        alert(error);
+                    }
+                }
+            })
+    }
 
     // GET PERMISSIONS
-    const getPerms = fetch('/obs-admin/permission')
-
-    Promise.all([getPermGroups, getPerms])
-        .then(async function (responses) {
-
-            if (responses.some(response => response.redirected)) {
-                window.location.href = responses[0].url;
-                throw new Error('redirected');
-            }
-
-            if (responses.some(response => response.status != 200 && response.status != 404)) {
-                const error = new Error('Unknown error')
-                error.status = 500;
-                throw error;
-            }
-
-            const [permGroup, perms] = await Promise.all(responses.map(response => response.json()));
-
-            return [permGroup.result, perms.result];
-        })
-        .then((allJsonData) => {
-
-            const [permGroup, perms] = allJsonData;
-
-            if (!permGroup) {
-                alert('no permission groups found')
-                // handle no perms group
-            } else {
-                buildPermGroups(permGroup);
-            }
-
-            if (!perms) {
-                alert('no permissions found')
-                // handle no permissions
-            } else {
-                buildPerms(perms);
-            }
-
-
-
-
-        })
-        .catch((error) => {
-            if (error && error.message != 'redirected') {
-                if (error != "TypeError: Failed to fetch") {
-                    console.log(error);
-                    alert(error);
+    const getPerms = () => {
+        fetch('/obs-admin/permission')
+            .then((response) => {
+                if (response.redirected) {
+                    window.location.href = response.url;
+                    throw new Error('redirected');
                 }
-            }
-        })
+
+                if (response.status != 200 && response.status != 404) {
+                    const error = new Error('Unknown error')
+                    error.status = 500;
+                    throw error;
+                }
+                return response.json();
+            })
+            .then((jsonData) => {
+                const perms = jsonData.result;
+                if (!perms) {
+                    alert('no permissions found')
+                    // handle no perms
+                } else {
+                    buildPerms(perms);
+                }
+            })
+            .catch((error) => {
+                if (error && error.message != 'redirected') {
+                    if (error != "TypeError: Failed to fetch") {
+                        console.log(error);
+                        alert(error);
+                    }
+                }
+            })
+    }
+
+    getPermGroups();
+    getPerms();
 
     // === FUNCTIONS ===
 
@@ -185,52 +214,6 @@ window.addEventListener('DOMContentLoaded', () => {
                     alert(error);
                 }
                 // display error
-            })
-    }
-
-    // GET PERMISSION GROUPS
-    const searchGroups = () => {
-        let filter = searchInput.value.trim() || -1;
-
-        return fetch(`/obs-admin/permission/groups/${filter}`)
-            .then((response) => {
-                if (response.redirected) {
-                    window.location.href = response.url
-                    throw new Error('redirected');
-                }
-
-                if (response.status != 200 && response.status != 404) {
-                    const error = new Error('Unknown error')
-                    error.status = 500;
-                    throw error;
-                }
-
-                return response.json()
-            })
-            .then((jsonData) => {
-                const permGroup = jsonData.result;
-
-                if (!permGroup) {
-                    alert('No groups found')
-                    return
-                    // handle empty
-                }
-
-                const templateContainer = document.getElementById("insert-permission-group-template");
-                while (templateContainer.firstChild) {
-                    templateContainer.removeChild(templateContainer.firstChild);
-                }
-
-                buildPermGroups(permGroup);
-
-            })
-            .catch((error) => {
-                if (error && error.message != 'redirected') {
-                    if (error != "TypeError: Failed to fetch") {
-                        console.log(error);
-                        alert(error);
-                    }
-                }
             })
     }
 
@@ -494,19 +477,54 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // SEARCH BAR CLEAR BUTTON
     searchClearBtn.onclick = () => {
+        eof = false;
+        offset = 0;
+        container.removeEventListener('scroll', defaultScroll)
+        container.removeEventListener('scroll', filterScroll)
         searchInput.value = "";
-        searchGroups();
+
+        const templateContainer = document.getElementById("insert-permission-group-template");
+        while (templateContainer.firstChild) {
+            templateContainer.removeChild(templateContainer.firstChild);
+        }
+
+        getPermGroups();
     }
 
-    // SEARCH BAR CLEAR 'ENTER' KEY
+    // SEARCH BAR 'ENTER' KEY
     searchInput.addEventListener('keydown', event => {
         if (event.key === 'Enter') {
-            searchGroups();
+            searchFilter = searchInput.value.trim();
+            eof = false;
+            offset = 0;
+            container.removeEventListener('scroll', defaultScroll)
+            container.removeEventListener('scroll', filterScroll)
+
+            const templateContainer = document.getElementById("insert-permission-group-template");
+            while (templateContainer.firstChild) {
+                templateContainer.removeChild(templateContainer.firstChild);
+            }
+
+            getPermGroups(searchFilter);
         }
     });
 
     // SEARCH BAR SUBMIT BUTTON
-    searchBtn.onclick = searchGroups;
+    searchBtn.onclick = () => {
+        searchFilter = searchInput.value.trim();
+
+        eof = false;
+        offset = 0;
+        container.removeEventListener('scroll', defaultScroll)
+        container.removeEventListener('scroll', filterScroll)
+
+        const templateContainer = document.getElementById("insert-permission-group-template");
+        while (templateContainer.firstChild) {
+            templateContainer.removeChild(templateContainer.firstChild);
+        }
+
+        getPermGroups(searchFilter);
+    }
 
     // ALL CHECKBOX BUTTON
     allCheckbox.onchange = () => {
@@ -531,4 +549,32 @@ window.addEventListener('DOMContentLoaded', () => {
             bulkDelete({ groupIds: checkedItems });
         }
     }
+
+    // LAZY LOADING DEFAULT SCROLL
+    const defaultScroll = () => {
+        const scrollTop = container.scrollTop;
+        const scrollHeight = container.scrollHeight;
+        const clientHeight = container.clientHeight;
+
+        if ((scrollHeight - (scrollTop + clientHeight) <= 200) && !isLoading && !eof) {
+            isLoading = true;
+            getPermGroups();
+        }
+    }
+
+    // LAZY LOADING SEARCHED SCROLL
+    const filterScroll = () => {
+        const scrollTop = container.scrollTop;
+        const scrollHeight = container.scrollHeight;
+        const clientHeight = container.clientHeight;
+
+        if ((scrollHeight - (scrollTop + clientHeight) <= 200) && !isLoading && !eof) {
+            isLoading = true;
+            getPermGroups(searchFilter);
+        }
+    }
+
+    // LAZY LOADING
+    container.addEventListener('scroll', defaultScroll)
+
 })

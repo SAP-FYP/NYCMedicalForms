@@ -20,16 +20,17 @@ module.exports.createUser = function createUser(newuser) {
         })
 }
 
-module.exports.getPermissionGroups = async function getPermissionGroups(searchInput) {
+module.exports.getPermissionGroups = async function getPermissionGroups(searchInput, limit, offset) {
 
     const sql = `SELECT g.groupId, g.groupName, GROUP_CONCAT(gp.permsId) AS permsId, GROUP_CONCAT(p.permsName) AS permsName
     FROM \`group\` AS g
     LEFT JOIN groupPerm AS gp ON g.groupId = gp.groupId
     LEFT JOIN permission AS p ON gp.permsId = p.permsId
     WHERE g.groupName LIKE ?
-    GROUP BY g.groupId`
+    GROUP BY g.groupId 
+    LIMIT ? OFFSET ?`
 
-    return query(sql, `%${searchInput}%`)
+    return query(sql, [`%${searchInput}%`, limit, offset])
         .then((result) => {
             const rows = result[0];
             if (rows.length === 0) {
