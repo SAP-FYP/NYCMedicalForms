@@ -118,15 +118,20 @@
                     <!--Filter Icon-->
                     <div class="d-flex justify-content-between">
                         <div>
-                          <img src="../../assets/images/filter-icon.png" id="filter-icon" alt="filter-icon">
+                            <img src="../../assets/images/filter-icon.png" id="filter-icon" alt="filter-icon">
                         </div>
-                      
-                        <div class="exportBtnContainer">
-                          <a id="export-btn-bulk">
+                       
 
-                          </a>
+
+                        <div class="exportBtnContainer justify-content-end">
+                            <a id="export-btn-all">
+
+                            </a>
+                            <a id="export-btn-search">
+
+                            </a>
                         </div>
-                      </div>
+                    </div>
                 </div>
                 <div class="bg-white rounded overflow-auto tableContainer">
                     <table>
@@ -386,11 +391,12 @@
                                                     <label for="parents-signature" class="form-label">Signature:</label>
                                                     <canvas id="signatureCanvas"
                                                         style="border: 1px solid #485EAB; background-color: white;"></canvas>
-                                                    <input type="hidden" id="parent-signature" name="signatureData" >
+                                                    <input type="hidden" id="parent-signature" name="signatureData">
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="parents-contact" class="form-label">Contact No:</label>
-                                                    <input type="text" class="form-control" id="parent-contact" disabled>
+                                                    <input type="text" class="form-control" id="parent-contact"
+                                                        disabled>
                                                 </div>
                                             </div>
                                             <div class="col-12 mb-3" id="pmtHeadingForm">
@@ -401,8 +407,8 @@
                                             </div>
                                             <div class="col-12 mb-3 text-end">
                                                 <a>
-                                                <button class="btn btn-primary btn-lg exportBtn"
-                                                    type="submit">Export</button>
+                                                    <button class="btn btn-primary btn-lg exportBtn"
+                                                        type="submit">Export</button>
                                                 </a>
                                             </div>
                                         </div>
@@ -428,12 +434,11 @@
                                     <div class="d-flex justify-content-center align-items-center pt-2">
                                         <button type="button" class="btn btn-primary successBtn"
                                             data-bs-dismiss="modal">Confirm</button>
-                                            <a href="#" class="exportExcel" download="">
-                                            <button class="btn btn-primary ms-2 exportBtn"
-                                    type="submit">Export</button>
-                                           </a>
+                                        <a href="#" class="exportExcel" download="">
+                                            <button class="btn btn-primary ms-2 exportBtn" type="submit">Export</button>
+                                        </a>
                                     </div>
-                                  
+
                                 </div>
 
                             </div>
@@ -453,12 +458,11 @@
                                         id="errorIcon">
 
                                     <div class="d-flex justify-content-center align-items-center pt-2">
-                                        <button type="button" class="btn btn-primary successBtn"
+                                        <button type="button" class="btn btn-primary rejectBtn"
                                             data-bs-dismiss="modal">Confirm</button>
-                                            <a href="#" class="exportExcel" download="">
-                                            <button class="btn btn-primary ms-2 exportBtn"
-                                            type="submit">Export</button>
-                                            </a>
+                                        <a href="#" class="exportExcel" download="">
+                                            <button class="btn btn-primary ms-2 exportBtn" type="submit">Export</button>
+                                        </a>
                                     </div>
                                 </div>
 
@@ -511,9 +515,9 @@
             <td class="studentEligibility modalBtn5">Fit</td>
             <td class="courseDate modalBtn6">04/05/2023</td>
             <td>
-            
 
-                    <div class="modalBtn7 pillPending">Pending</div>
+
+                <div class="modalBtn7 pillPending">Pending</div>
 
             </td>
             <td><svg class="tripleDot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30.24 8.29">
@@ -527,6 +531,12 @@
         </tr>
     </template>
 
+    <template id="loadingMsgTemp">
+        <div class="loadingMsg m-3">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Loading...
+        </div>
+    </template>
 
 
 

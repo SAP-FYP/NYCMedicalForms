@@ -237,10 +237,12 @@ body {
 
 /*Filter*/
 #filter-icon {
-    height: 60px;
-    width: 60px;
-   
+    height: 50px;
+    width: 50px;
 }
+
+
+
 
 /*Table*/
 .tableContainer {
@@ -414,6 +416,12 @@ fill: #485eab;
     border-radius: 20px; /* make it pill-shaped */
 }
 .successBtn {
+    background-color: #23e571 !important;
+    border: 2px solid #485eab !important;
+    margin-left: 10px !important;
+}
+
+.rejectBtn {
     background-color: #23e571 !important;
     border: 2px solid #485eab !important;
     margin-left: 10px !important;
