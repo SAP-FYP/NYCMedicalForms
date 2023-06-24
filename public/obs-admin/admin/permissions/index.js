@@ -481,6 +481,7 @@ window.addEventListener('DOMContentLoaded', () => {
         offset = 0;
         container.removeEventListener('scroll', defaultScroll)
         container.removeEventListener('scroll', filterScroll)
+        document.getElementById('bulk-action').style.visibility = 'hidden';
         searchInput.value = "";
 
         const templateContainer = document.getElementById("insert-permission-group-template");
@@ -497,6 +498,7 @@ window.addEventListener('DOMContentLoaded', () => {
             searchFilter = searchInput.value.trim();
             eof = false;
             offset = 0;
+            document.getElementById('bulk-action').style.visibility = 'hidden';
             container.removeEventListener('scroll', defaultScroll)
             container.removeEventListener('scroll', filterScroll)
 
@@ -517,6 +519,7 @@ window.addEventListener('DOMContentLoaded', () => {
         offset = 0;
         container.removeEventListener('scroll', defaultScroll)
         container.removeEventListener('scroll', filterScroll)
+        document.getElementById('bulk-action').style.visibility = 'hidden';
 
         const templateContainer = document.getElementById("insert-permission-group-template");
         while (templateContainer.firstChild) {
