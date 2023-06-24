@@ -14,13 +14,17 @@ window.addEventListener('DOMContentLoaded', () => {
     const disableModal = new bootstrap.Modal(myModalDisable);
     const modal = new bootstrap.Modal(myModalEl);
 
+    // === FLAGS ===
+
+
+
     // === FETCHES ===
 
     // GET ROLES 
     const getRoles = fetch('/obs-admin/roles');
 
     // GET GROUPS
-    const getPermGroups = fetch('/obs-admin/permission/groups/-1');
+    const getPermGroups = fetch('/obs-admin/permission/groups/-1/20/0');
 
     // GET ALL USERS
     const getUsers = fetch('/obs-admin/users/-1');

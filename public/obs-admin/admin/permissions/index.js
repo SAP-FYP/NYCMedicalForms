@@ -18,6 +18,7 @@ window.addEventListener('DOMContentLoaded', () => {
     let eof = false;
     let offset = 0;
     let searchFilter;
+
     // === FETCHES ===
 
     // GET PERMISSIONS GROUPS
@@ -107,38 +108,45 @@ window.addEventListener('DOMContentLoaded', () => {
         const template = document.getElementById("permission-group-template");
         const templateContainer = document.getElementById("insert-permission-group-template");
 
+        let checkboxes = []
+        document.querySelectorAll('.select-item-chkbox').forEach(i => {
+            checkboxes.push(i.value)
+        });
+
         await permgroups.forEach(i => {
-            const content = template.content.cloneNode(true);
-            templateContainer.setAttribute('value', i.groupId);
-            content.querySelector(".item-container").setAttribute('value', i.groupId);
-            content.querySelector(".select-item-chkbox").setAttribute('value', i.groupId);
-            content.querySelector(".permission-group-name").textContent = i.groupName;
-            content.querySelector(".more-button").setAttribute('value', i.groupId);
+            if (!checkboxes.includes((i.groupId).toString())) {
+                const content = template.content.cloneNode(true);
+                templateContainer.setAttribute('value', i.groupId);
+                content.querySelector(".item-container").setAttribute('value', i.groupId);
+                content.querySelector(".select-item-chkbox").setAttribute('value', i.groupId);
+                content.querySelector(".permission-group-name").textContent = i.groupName;
+                content.querySelector(".more-button").setAttribute('value', i.groupId);
 
-            content.querySelector(".dropdown-edit").addEventListener('click', (e) => {
-                e.preventDefault;
-                let groupInfo = {
-                    groupId: i.groupId,
-                    groupName: i.groupName,
-                    permissions: i.permsId
-                }
-                editButtonHandler(groupInfo);
-            })
+                content.querySelector(".dropdown-edit").addEventListener('click', (e) => {
+                    e.preventDefault;
+                    let groupInfo = {
+                        groupId: i.groupId,
+                        groupName: i.groupName,
+                        permissions: i.permsId
+                    }
+                    editButtonHandler(groupInfo);
+                })
 
-            content.querySelector(".dropdown-delete").addEventListener('click', (e) => {
-                e.preventDefault;
-                let groupInfo = {
-                    groupId: i.groupId,
-                    groupName: i.groupName,
-                    permissions: i.permsId
-                }
-                deleteButtonHandler(groupInfo);
-            })
+                content.querySelector(".dropdown-delete").addEventListener('click', (e) => {
+                    e.preventDefault;
+                    let groupInfo = {
+                        groupId: i.groupId,
+                        groupName: i.groupName,
+                        permissions: i.permsId
+                    }
+                    deleteButtonHandler(groupInfo);
+                })
 
-            const permissions = i.permsName ? i.permsName.replace(/,/g, ', ') : 'No permissions';
-            content.querySelector(".permission-group-type").textContent = permissions;
+                const permissions = i.permsName ? i.permsName.replace(/,/g, ', ') : 'No permissions';
+                content.querySelector(".permission-group-type").textContent = permissions;
 
-            templateContainer.append(content);
+                templateContainer.append(content);
+            }
         });
         updateCheckboxes();
     }
