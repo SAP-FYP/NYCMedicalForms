@@ -754,6 +754,93 @@ app.get('/obs-admin/pmt/search/:search', authHelper.verifyToken, authHelper.chec
         })
 });
 
+//PMT Retrieve Submission By Filtering by school
+app.get('/obs-admin/pmt/filter/school/:filter', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    const filter = req.params.filter;
+    // AUTHORIZATION CHECK - PMT 
+    if (req.decodedToken.role != 2) {
+        return res.redirect('/error?code=403')
+    }
+
+    return pmtModel
+        .retrieveSubmissionBySchoolName(filter)
+        .then((result) => {
+            if (result.length === 0) {
+                throw new Error("No submission found");
+            }
+            return res.json(result[0]);
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+});
+
+//PMT Retrieve Submission By Filtering by class
+app.get('/obs-admin/pmt/filter/class/:filter', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    const filter = req.params.filter;
+    // AUTHORIZATION CHECK - PMT 
+    if (req.decodedToken.role != 2) {
+        return res.redirect('/error?code=403')
+    }
+
+    return pmtModel
+        .retrieveSubmissionByClassName(filter)
+        .then((result) => {
+            if (result.length === 0) {
+                throw new Error("No submission found");
+            }
+            return res.json(result[0]);
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+});
+
+//PMT Retrieve Submission By Filtering by class
+app.get('/obs-admin/pmt/filter/courseDate/:filter', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    const filter = req.params.filter;
+    // AUTHORIZATION CHECK - PMT 
+    if (req.decodedToken.role != 2) {
+        return res.redirect('/error?code=403')
+    }
+
+    return pmtModel
+        .retrieveSubmissionByCourseDate(filter)
+        .then((result) => {
+            if (result.length === 0) {
+                throw new Error("No submission found");
+            }
+            return res.json(result[0]);
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+});
+
+//PMT Retrieve Submission By Filtering by class
+app.get('/obs-admin/pmt/filter/eligibility/:filter', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    const filter = req.params.filter;
+    
+    // AUTHORIZATION CHECK - PMT
+    if (req.decodedToken.role !== 2) {
+      return res.redirect('/error?code=403');
+    }
+    
+    const [eligibility1, eligibility2] = filter.split(',');
+  
+    return pmtModel
+      .retrieveSubmissionByEligibility(eligibility1, eligibility2)
+      .then((result) => {
+        if (result.length === 0) {
+          throw new Error("No submission found");
+        }
+        return res.json(result[0]);
+      })
+      .catch((error) => {
+        return res.status(error.status || 500).json({ error: error.message });
+      });
+  });
+  
 /**
  * User: Parents
  */
@@ -1022,6 +1109,25 @@ app.get('/getCourseDates', (req, res, next) => {
         });
 });
 
+// get eligibility
+app.get('/getEligibility', (req, res, next) => {
+    const limit = parseInt(req.query.limit);
+    const offset = parseInt(req.query.offset);
+
+    return doctorFormModel
+        .getEligibility(limit, offset)
+        .then(data => {
+            const eligibilityLists = data[0];
+            res.json(eligibilityLists)
+        })
+        .catch(err => {
+            if (error instanceof EMPTY_RESULT_ERROR) {
+                res.status(404).json({ message: error.message });
+            } else {
+                res.status(500).json({ message: 'Internal server error' });
+            }
+        });
+});
 // Retrieve form details for parent acknowledgement- Used by Barry (for identification for merging)
 app.get('/form/:encrypted', (req, res, next) => {
     const encrypted = req.params.encrypted;
