@@ -1,4 +1,7 @@
 window.addEventListener('DOMContentLoaded', () => {
+    let itemCheckboxes = document.querySelectorAll('.select-item-chkbox');
+    const bulkDeleteBtn = document.getElementById('bulk-delete-button');
+    const bulkDisableBtn = document.getElementById('bulk-disable-button');
     const searchInput = document.getElementById('search-input');
     const searchBtn = document.getElementById('search-button');
     const searchClearBtn = document.getElementById('clear-button');
@@ -153,6 +156,7 @@ window.addEventListener('DOMContentLoaded', () => {
             content.querySelector(".item-border").setAttribute('id', `item-${i.email}`)
             content.querySelector(".profile-button").setAttribute('id', `profile-button-${i.email}`);
             content.querySelector(".profile-button").setAttribute('value', i.email);
+            content.querySelector(".select-item-chkbox").setAttribute('value', i.email);
             content.querySelector("#user-name").textContent = i.nameOfUser;
             content.querySelector("#user-role").textContent = i.roleName;
             content.querySelector("#user-email").textContent = i.email;
@@ -201,8 +205,8 @@ window.addEventListener('DOMContentLoaded', () => {
                 }
                 editButtonHandler(user);
             })
-
             templateContainer.append(content);
+            updateCheckboxes();
         })
     }
 
@@ -327,6 +331,12 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // DELETE USER BUTTON HANDLER
     const deleteButtonHandler = (user) => {
+        if (document.getElementById('confirmation-delete-bulk-button')) {
+            document.getElementById('confirmation-delete-bulk-button').id = 'confirmation-delete-button';
+
+            const formLabel = document.querySelector('#confirmation-delete-button').closest('.modal-content').querySelector('.modal-body .form-label');
+            formLabel.textContent = `Are you sure you want to delete this user? You can't undo this action.`;
+        }
 
         // DELETE USER
         document.getElementById('confirmation-delete-button').onclick = () => {
@@ -363,12 +373,65 @@ window.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    // BULK DELETE USERS
+    const bulkDelete = (users) => {
+        if (document.getElementById('confirmation-delete-button')) {
+            document.getElementById('confirmation-delete-button').id = 'confirmation-delete-bulk-button';
+
+            const formLabel = document.querySelector('#confirmation-delete-bulk-button').closest('.modal-content').querySelector('.modal-body .form-label');
+            formLabel.textContent = `Are you sure you want to delete selected users? You can't undo this action.`;
+        }
+
+        // BULK DELETE PERMISSION GROUPS
+        document.getElementById('confirmation-delete-bulk-button').onclick = () => {
+            return fetch(`/obs-admin/delete/user`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(users)
+            })
+                .then((response) => {
+                    if (response.redirected) {
+                        window.location.href = response.url
+                        throw new Error('redirected');
+                    }
+
+                    if (response.status == 400) {
+                        const error = new Error("Invalid permission data");
+                        error.status = response.status
+                        throw error;
+
+                    } else if (response.status != 200) {
+                        const error = new Error("Unknown error");
+                        error.status = response.status
+                        throw error;
+                    }
+
+                    alert('Successfully deleted!')
+                    location.reload();
+                })
+                .catch((error) => {
+                    if (error && error.message != 'redirected') {
+                        console.log(error);
+                        alert(error);
+                    }
+                    // display error
+                })
+        }
+    }
+
     // DISABLE USER BUTTON HANDLER
     const disableButtonHandler = (user, status) => {
+        if (document.getElementById('confirmation-disable-bulk-button')) {
+            document.getElementById('confirmation-disable-bulk-button').id = 'confirmation-disable-button';
+
+            const formLabel = document.querySelector('#confirmation-disable-button').closest('.modal-content').querySelector('.modal-body .form-label');
+            formLabel.textContent = `Are you sure you want to disable this users`;
+        }
 
         // DISABLE USER
         document.getElementById('confirmation-disable-button').onclick = () => {
-
             return fetch(`/obs-admin/disable/user/${user.email}/${status}`, {
                 method: 'PUT'
             })
@@ -401,6 +464,7 @@ window.addEventListener('DOMContentLoaded', () => {
                         e.preventDefault;
                         enableButtonHandler(user, 0);
                     });
+                    updateCheckedCount();
                 })
                 .catch((error) => {
                     if (error && error.message != 'redirected') {
@@ -412,9 +476,72 @@ window.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    // BULK DELETE USERS
+    const bulkDisable = (users) => {
+        if (document.getElementById('confirmation-disable-button')) {
+            document.getElementById('confirmation-disable-button').id = 'confirmation-disable-bulk-button';
+
+            const formLabel = document.querySelector('#confirmation-disable-bulk-button').closest('.modal-content').querySelector('.modal-body .form-label');
+            formLabel.textContent = `Are you sure you want to disable selected users?`;
+        }
+
+        // BULK DELETE PERMISSION GROUPS
+        document.getElementById('confirmation-disable-bulk-button').onclick = () => {
+            return fetch(`/obs-admin/disable/user`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(users)
+            })
+                .then((response) => {
+                    if (response.redirected) {
+                        window.location.href = response.url
+                        throw new Error('redirected');
+                    }
+
+                    if (response.status == 400) {
+                        const error = new Error("Invalid permission data");
+                        error.status = response.status
+                        throw error;
+
+                    } else if (response.status != 200) {
+                        const error = new Error("Unknown error");
+                        error.status = response.status
+                        throw error;
+                    }
+
+                    alert('Successfully disabled!')
+                    disableModal.hide();
+
+                    users.users.forEach(user => {
+                        document.getElementById(`profile-button-${user}`).classList.add('profile-button-disabled')
+                        document.getElementById(`profile-button-${user}`).innerHTML = `<i class="material-icons profile-button-icon"
+                    style="font-size:28px;color:#5a5a5a; margin-right: 5px;">person</i>
+                    Disabled`
+                        document.getElementById(`item-${user}`).getElementsByClassName('dropdown-disable')[0].textContent = 'Enable'
+                        document.getElementById(`item-${user}`).getElementsByClassName('dropdown-disable')[0].setAttribute('data-bs-target', '#confirmationEnableModal');
+                        document.getElementById(`item-${user}`).getElementsByClassName('dropdown-disable')[0].addEventListener('click', (e) => {
+                            e.preventDefault;
+                            enableButtonHandler({ email: user }, 0);
+
+                        });
+                        updateCheckedCount();
+                    });
+
+                })
+                .catch((error) => {
+                    if (error && error.message != 'redirected') {
+                        console.log(error);
+                        alert(error);
+                    }
+                    // display error
+                })
+        }
+    }
+
     // ENABLE USER BUTTON HANDLER
     const enableButtonHandler = (user, status) => {
-
         // ENABLE USER
         document.getElementById('confirmation-enable-button').onclick = () => {
 
@@ -450,6 +577,7 @@ window.addEventListener('DOMContentLoaded', () => {
                         e.preventDefault;
                         disableButtonHandler(user, 1);
                     });
+                    updateCheckedCount();
                 })
                 .catch((error) => {
                     if (error && error.message != 'redirected') {
@@ -459,6 +587,43 @@ window.addEventListener('DOMContentLoaded', () => {
                     // display error
                 })
         };
+    }
+
+    // GET NUMBER OF CHECKBOXES 
+    const updateCheckboxes = () => {
+        itemCheckboxes = document.querySelectorAll('.select-item-chkbox');
+        itemCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateCheckedCount);
+        });
+    }
+
+    // CHECKBOXES 
+    const updateCheckedCount = () => {
+        const checkedBoxes = document.querySelectorAll('.select-item-chkbox:checked');
+        const checkedCount = checkedBoxes.length;
+
+        const values = Array.from(checkedBoxes).map(checkbox => checkbox.value);
+
+        let enable = values.some(i => document.getElementById(`item-${i}`).getElementsByClassName('dropdown-disable')[0].textContent === 'Enable');
+
+        if (enable) {
+            // disable the disable button
+            document.getElementById('bulk-disable-button').classList.add('disabled')
+        } else {
+            // enable the disable button
+            document.getElementById('bulk-disable-button').classList.remove('disabled')
+        }
+
+        if (checkedCount == 1) {
+            document.getElementById('bulk-action').style.visibility = 'visible';
+            document.getElementById('bulk-delete-selected').textContent = `${checkedCount} User Selected`
+        } else if (checkedCount > 1) {
+            document.getElementById('bulk-action').style.visibility = 'visible';
+            document.getElementById('bulk-delete-selected').textContent = `${checkedCount} Users Selected`
+        } else if (checkedCount < 1) {
+            document.getElementById('bulk-action').style.visibility = 'hidden';
+        }
+
     }
 
     // === EVENT HANDLERS ===
@@ -539,5 +704,33 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // SEARCH BAR SUBMIT BUTTON
     searchBtn.onclick = searchUsers;
+
+    // BULK DELETE
+    bulkDeleteBtn.onclick = () => {
+        let checkedItems = []
+        document.querySelectorAll('.select-item-chkbox:checked').forEach(i => {
+            checkedItems.push(i.value)
+        });
+
+        if (checkedItems.length < 1) {
+            alert('Please select 1 user or more');
+        } else {
+            bulkDelete({ users: checkedItems });
+        }
+    }
+
+    // BULK DISABLE
+    bulkDisableBtn.onclick = () => {
+        let checkedItems = []
+        document.querySelectorAll('.select-item-chkbox:checked').forEach(i => {
+            checkedItems.push(i.value)
+        });
+
+        if (checkedItems.length < 1) {
+            alert('Please select 1 user or more');
+        } else {
+            bulkDisable({ users: checkedItems });
+        }
+    }
 })
 

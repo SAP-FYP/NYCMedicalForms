@@ -93,6 +93,25 @@ body {
     box-shadow: #858585 2px 3px 8px 0px;
 }
 
+#bulk-action {
+    visibility: hidden;
+}
+
+.bulk-dropdown {
+    margin-right: 20px;
+    color: #485EAB;
+    background-color: #C7D3EF;
+    height: 40px;
+    border-radius: 10px;
+    border: 2px solid #485EAB;
+    padding: 0px 10px;
+}
+
+#bulk-delete-selected {
+    color: #485EAB;
+    font-weight: 600;
+}
+
 /* DATA CONTAINER */
 #data-container {
     flex: 1 1 auto;
@@ -189,7 +208,9 @@ input[type=number] {
 }
 
 #confirmation-delete-button,
-#confirmation-disable-button {
+#confirmation-disable-button,
+#confirmation-delete-bulk-button,
+#confirmation-disable-bulk-button {
     background-color: #E52323;
     color: white;
 }

@@ -347,7 +347,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
         // BULK DELETE PERMISSION GROUPS
         document.getElementById('confirmation-delete-bulk-button').onclick = () => {
-            console.log('bulked')
             return fetch(`/obs-admin/permission/groups`, {
                 method: 'DELETE',
                 headers: {

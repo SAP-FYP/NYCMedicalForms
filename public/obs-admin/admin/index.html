@@ -67,13 +67,30 @@
                     </div>
                 </div>
 
-                <!-- CREATE / EDIT USER MODAL -->
-                <div class="col-12 d-flex justify-content-end">
-                    <button style="border:none; cursor: default;" data-bs-toggle="modal"
-                        data-bs-target="#createUserModal" id="open-modal-button"><img id="create-user-icon"
-                            src="../../assets/images/create-user-icon.png"></button>
+                <div class="col-12 d-flex">
+                    <div class="col-11 d-flex justify-content-start align-items-center" id="bulk-action">
+                        <button class="bulk-dropdown dropdown-toggle" data-bs-toggle="dropdown">
+                            Bulk Actions
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item dropdown-disable" value="" data-bs-toggle="modal"
+                                    data-bs-target="#confirmationDisableModal" id="bulk-disable-button">Disable selected
+                                    users</a></li>
+                            <li><a class="dropdown-item dropdown-delete" value="" data-bs-toggle="modal"
+                                    data-bs-target="#confirmationModal" id="bulk-delete-button">Delete selected
+                                    users</a></li>
+                        </ul>
+                        <label id="bulk-delete-selected">1 User Selected</label>
+                    </div>
+
+                    <div class="col-1 d-flex justify-content-end">
+                        <button style="border:none; cursor: default;" data-bs-toggle="modal"
+                            data-bs-target="#createUserModal" id="open-modal-button"><img id="create-user-icon"
+                                src="../../assets/images/create-user-icon.png"></button>
+                    </div>
                 </div>
 
+                <!-- CREATE / EDIT USER MODAL -->
                 <div class="modal fade" id="createUserModal" data-bs-backdrop="static" data-bs-keyboard="false"
                     tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-lg">

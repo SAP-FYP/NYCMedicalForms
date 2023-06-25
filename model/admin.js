@@ -2,7 +2,7 @@ const conn = require('../database');
 const { query, pool } = conn;
 
 module.exports.createUser = function createUser(newuser) {
-    const sql = `INSERT INTO user (Email, nameOfUser, password, contactNo, groupId, created_at, isDisabled, isDeleted, roleId) VALUES (?, ?, ?, ?, ?, ?, ?, ?,nodemo ?)`;
+    const sql = `INSERT INTO user (Email, nameOfUser, password, contactNo, groupId, created_at, isDisabled, isDeleted, roleId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     return query(sql, [newuser.email, newuser.name, newuser.password, newuser.contact, newuser.permissionGroup, newuser.created_at, 0, 0, newuser.role])
         .then((result) => {
             const affectedRows = result[0].affectedRows;
@@ -317,6 +317,30 @@ module.exports.deleteUser = function deleteUser(user) {
         })
 }
 
+module.exports.bulkDeleteUser = async function bulkDeleteUser(users, invalidationDate) {
+    const connection = await pool.getConnection();
+
+    try {
+        await connection.beginTransaction();
+        const sql = 'UPDATE user SET isDeleted = 1, invalidationDate = ? WHERE email IN (?)';
+        const result = await connection.query(sql, [invalidationDate, users]);
+        const affectedRows = result[0].affectedRows;
+        if (affectedRows < users.length) {
+            const error = new Error("Unable to delete accounts");
+            error.status = 500;
+            throw error;
+        }
+
+        await connection.commit();
+        return affectedRows;
+
+    } catch (error) {
+        await connection.rollback()
+        connection.release()
+        throw error
+    }
+}
+
 module.exports.disableUser = function disableUser(user) {
     const sql = 'UPDATE user SET isDisabled = ?, invalidationDate = ? WHERE email = ?';
     return query(sql, [user.status, user.invalidationDate, user.email])
@@ -333,4 +357,30 @@ module.exports.disableUser = function disableUser(user) {
             console.log(error)
             throw error;
         })
+}
+
+module.exports.bulkDisableUser = async function bulkDisableUser(users, status, invalidationDate) {
+    const connection = await pool.getConnection();
+
+    try {
+        await connection.beginTransaction();
+
+        const sql = 'UPDATE user SET isDisabled = ?, invalidationDate = ? WHERE email IN (?)';
+        const result = await connection.query(sql, [status, invalidationDate, users]);
+        const affectedRows = result[0].affectedRows;
+
+        if (affectedRows < users.length) {
+            const error = new Error("Unable to disable/enable accounts");
+            error.status = 500;
+            throw error;
+        }
+
+        await connection.commit();
+        return affectedRows;
+
+    } catch (error) {
+        await connection.rollback()
+        connection.release()
+        throw error
+    }
 }

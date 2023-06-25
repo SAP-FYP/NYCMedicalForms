@@ -619,6 +619,39 @@ app.put('/obs-admin/delete/user/:email', authHelper.verifyToken, authHelper.chec
         })
 })
 
+// Bulk Delete User
+app.put('/obs-admin/delete/user', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+
+    // AUTHORIZATION CHECK - ADMIN
+    if (req.decodedToken.role != 1) {
+        return res.redirect('/error?code=403')
+    }
+
+    const { users } = req.body;
+    const invalidationDate = moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss');
+
+    if (!users) {
+        const error = new Error("Empty users")
+        error.status = 400;
+        throw error;
+    }
+
+    return adminModel
+        .bulkDeleteUser(users, invalidationDate)
+        .then((result) => {
+            if (!result) {
+                const error = new Error("Unable to delete users")
+                error.status = 500;
+                throw error;
+            }
+            return res.sendStatus(200);
+        })
+        .catch((error) => {
+            console.log(error)
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+});
+
 // Disable Account
 app.put('/obs-admin/disable/user/:email/:status', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
 
@@ -655,6 +688,38 @@ app.put('/obs-admin/disable/user/:email/:status', authHelper.verifyToken, authHe
         })
 });
 
+// Bulk Disable User
+app.put('/obs-admin/disable/user', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+
+    // AUTHORIZATION CHECK - ADMIN
+    if (req.decodedToken.role != 1) {
+        return res.redirect('/error?code=403')
+    }
+
+    const { users } = req.body;
+    const invalidationDate = moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss');
+
+    if (!users) {
+        const error = new Error("Empty users")
+        error.status = 400;
+        throw error;
+    }
+
+    return adminModel
+        .bulkDisableUser(users, 1, invalidationDate)
+        .then((result) => {
+            if (!result) {
+                const error = new Error("Unable to disable users")
+                error.status = 500;
+                throw error;
+            }
+            return res.sendStatus(200);
+        })
+        .catch((error) => {
+            console.log(error)
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+});
 
 /**
  * Admin: Partnership Management Team (PMT)
