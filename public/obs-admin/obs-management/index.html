@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../header-nav.css" rel="stylesheet">
     <link rel="stylesheet" href="./index.css">
+    
     <link href="https://fonts.cdnfonts.com/css/myriad-pro" rel="stylesheet">
     <!-- Font Awsome CDN -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
@@ -23,15 +25,15 @@
 
                 <div id="nav-bar">
                     <ul class="navbar-nav">
-                        <li><img id="navbar-icons-arrow" src="../../assets/images/navbar-expand-icon.png"><a
+                        <li id="collapse-li"><img id="navbar-icons-arrow" src="../../assets/images/navbar-expand-icon.png"><a
                                 class="navbar-label">Collapse
                                 menu</a>
                         </li>
-                        <li><img id="navbar-icons-permission" src="../../assets/images/permission-disabled-icon.png"><a
+                        <li id="permission-li"><img id="navbar-icons-permission" src="../../assets/images/permission-disabled-icon.png"><a
                                 class="navbar-label">Permissions</a></li>
-                        <li><img id="navbar-icons-profile" src="../../assets/images/profile-disabled-icon.png"><a
+                        <li id="user-li"><img id="navbar-icons-profile" src="../../assets/images/profile-disabled-icon.png"><a
                                 class="navbar-label">Users</a></li>
-                        <li><img id="navbar-icons-form" src="../../assets/images/form-enabled-icon.png"><a
+                        <li id="form-li"><img id="navbar-icons-form" src="../../assets/images/form-enabled-icon.png"><a
                                 class="navbar-label">Forms</a></li>
                         <li id="logout-li"><img id="navbar-icons-logout" src="../../assets/images/logout-icon.png"><a
                                 class="navbar-label">Logout</a></li>
@@ -49,24 +51,11 @@
                         </div>
                         <!-- Profile -->
                         <div class="d-flex align-items-center" id="profile-container">
-                            <a class="profileText d-flex align-items-center">Tim Tam Man</a>
-                            <img class="ms-3 h-auto" id="profileIconContainer"
+                            <a id="profile-user-name" class="profileText d-flex align-items-center"></a>
+                            <img class="ms-3 h-auto" id="profile-user-image"
                                 src="../../assets/images/default-user-icon.png">
                         </div>
 
-                        <!-- <div class="d-flex align-items-center">
-                            <h2 class="profileText my-2">Tim Tam Man</h2>
-                            <svg class="ms-3 h-auto" id="profileIconContainer" xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 69.4 69.4">
-                                <g id="Layer_44">
-                                    <circle id="profileCircle" cx="34.7" cy="34.7" r="34.02" />
-                                    <path id="profileIcon"
-                                        d="M35.87,38.86h-.44c-9.42,0-17.06,7.27-17.06,16.24h0s34.56,0,34.56,0h0c0-8.97-7.64-16.24-17.06-16.24Z" />
-                                    <path id="profileIcon"
-                                        d="M35.21,14.3c-6.16,0-11.16,4.75-11.16,10.62s4.99,10.62,11.16,10.62,11.16-4.75,11.16-10.62-4.99-10.62-11.16-10.62Z" />
-                                </g>
-                            </svg>
-                        </div> -->
                     </div>
                     <!-- Title of page -->
                     <h2 class="overviewText">Overview</h2>
@@ -77,25 +66,31 @@
                         <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePending">
                             <div>
                                 <h2 class="text-center m-auto p-0">Pending Parent</h2>
-                                <h1 class="text-center m-auto p-0 pendingParentAmt">Loading...</h1>
+                                <h1 class="text-center m-auto p-0 pendingParentAmt"><span
+                                        class="spinner-border spinner-border-lg" role="status"
+                                        aria-hidden="true"></span>
+                                </h1>
                             </div>
                         </div>
                         <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePending">
                             <div>
                                 <h2 class="text-center m-auto p-0">Pending</h2>
-                                <h1 class="text-center m-auto p-0 pendingAmt">Loading...</h1>
+                                <h1 class="text-center m-auto p-0 pendingAmt"><span
+                                        class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></h1>
                             </div>
                         </div>
                         <div class="d-flex flex-wrap align-items-center justify-content-center rectangleApproved">
                             <div>
                                 <h2 class="text-center m-auto p-0">Approved</h2>
-                                <h1 class="text-center m-auto p-0 apprAmt">Loading...</h1>
+                                <h1 class="text-center m-auto p-0 apprAmt"><span
+                                        class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></h1>
                             </div>
                         </div>
                         <div class="d-flex flex-wrap align-items-center justify-content-center rectangleRejected">
                             <div>
                                 <h2 class="text-center m-auto p-0">Rejected</h2>
-                                <h1 class="text-center m-auto p-0 rejAmt">Loading...</h1>
+                                <h1 class="text-center m-auto p-0 rejAmt"><span class="spinner-border spinner-border-lg"
+                                        role="status" aria-hidden="true"></h1>
                             </div>
                         </div>
                     </div>
@@ -117,10 +112,105 @@
 
                     <!--Filter Icon-->
                     <div class="d-flex justify-content-between">
-                        <div>
-                            <img src="../../assets/images/filter-icon.png" id="filter-icon" alt="filter-icon">
+                        <div class="d-flex">
+                            <div>
+                                <img src="../../assets/images/filter-icon.png" id="filter-icon" alt="filter-icon">
+                            </div>
+                            <div class="displayFilters ">
+                                <div class="row custom-row">
+                                    <div class="dropdown col-auto" id="classDropDown">
+                                        <div class="custom-column dropdown-toggle" id="classMenuButton"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                            Class
+                                        </div>
+                                        <div class="dropdown-menu custom-menu dropdown-menu-stay"
+                                            id="classDropDownMenu">
+                                            <div class="searchBarDiv">
+                                                <input type="search" class="searchBarFilter m-2" id="classSearch"
+                                                    placeholder="Search">
+                                                <div class="listContainer" id="classesDiv">
+                                                    <div class="loadingMsg m-3">
+                                                        <span class="spinner-border spinner-border-sm" role="status"
+                                                            aria-hidden="true"></span>
+                                                        Loading...
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-auto dropdown" id="schoolDropDown">
+                                        <div class="custom-column dropdown-toggle" id="schoolMenuButton"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                            School
+                                        </div>
+                                        <div class="dropdown-menu custom-menu dropdown-menu-stay"
+                                            id="schoolDropDownMenu">
+                                            <div class="searchBarDiv">
+                                                <input type="search" class="searchBarFilter m-2" id="schoolSearch"
+                                                    placeholder="Search">
+                                                <div class="listContainer mb-4" id="schoolsDiv">
+                                                    <div class="loadingMsg m-3">
+                                                        <span class="spinner-border spinner-border-sm" role="status"
+                                                            aria-hidden="true"></span>
+                                                        Loading...
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-auto dropdown" id="eligibilityDropDown">
+                                        <div class="custom-column dropdown-toggle" id="eligibilityMenuButton"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                            Eligibility
+                                        </div>
+                                     
+                                        <div class="dropdown-menu custom-menu dropdown-menu-stay"
+                                            id="eligibilityDropDownMenu">
+                                          <!-- <label for="status">Status:</label><br>
+                                                <input type="checkbox" id="fit" name="status" value="fit">
+                                                <label for="fit">Fit</label><br>
+                                                <input type="checkbox" id="unfit" name="status" value="unfit">
+                                                <label for="unfit">Unfit</label><br>
+                                                <input type="checkbox" id="review" name="status" value="review">
+                                                <label for="review">Need Review</label> -->
+                                     
+                                                <div class="listContainer" id="eligibilityDiv" style="margin:10px">
+                                                    <div class="loadingMsg m-3">
+                                                        <span class="spinner-border spinner-border-sm" role="status"
+                                                            aria-hidden="true"></span>
+                                                        Loading...
+                                                    </div>
+                                           
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-auto dropdown" id="courseDateDropDown">
+                                        <div class="custom-column dropdown-toggle" id="courseDateMenuButton"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                            Course Date
+                                        </div>
+                                        <div class="dropdown-menu custom-menu dropdown-menu-stay"
+                                            id="courseDateDropDownMenu">
+                                            <div class="searchBarDiv">
+                                                <input type="search" class="searchBarFilter m-2" id="courseDateSearch"
+                                                    placeholder="Search">
+                                                <div class="listContainer" id="courseDatesDiv">
+                                                    <div class="loadingMsg m-3">
+                                                        <span class="spinner-border spinner-border-sm" role="status"
+                                                            aria-hidden="true"></span>
+                                                        Loading...
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
                         </div>
-                       
 
 
                         <div class="exportBtnContainer justify-content-end">
@@ -128,6 +218,18 @@
 
                             </a>
                             <a id="export-btn-search">
+
+                            </a>
+                            <a id="export-btn-filter">
+
+                            </a>
+                            <a id="export-btn-filter-school">
+
+                            </a>
+                            <a id="export-btn-filter-course-date">
+
+                            </a>
+                            <a id="export-btn-filter-eligibility">
 
                             </a>
                         </div>
@@ -153,27 +255,34 @@
                             <tr>
                                 <td><input type="checkbox" id="checkBox"></td>
                                 <td class="studentNRIC">
-                                    <div class="modalBtn">Loading...</div>
+                                    <div class="modalBtn"><span class="spinner-border spinner-border-sm" role="status"
+                                            aria-hidden="true"></span>Loading...</div>
                                 </td>
                                 <td nameOfStudent="" class="studentName">
-                                    <div class="modalBtn">Loading...</div>
+                                    <div class="modalBtn"><span class="spinner-border spinner-border-sm" role="status"
+                                            aria-hidden="true"></span>Loading...</div>
                                 </td>
                                 <td class="studentClass">
-                                    <div class="modalBtn">Loading...</div>
+                                    <div class="modalBtn"><span class="spinner-border spinner-border-sm" role="status"
+                                            aria-hidden="true"></span>Loading...</div>
                                 </td>
                                 <td class="studentSch">
-                                    <div class="modalBtn">Loading...</div>
+                                    <div class="modalBtn"><span class="spinner-border spinner-border-sm" role="status"
+                                            aria-hidden="true"></span>Loading...</div>
                                 </td>
                                 <td class="studentEligibility">
-                                    <div class="modalBtn">Loading...</div>
+                                    <div class="modalBtn"><span class="spinner-border spinner-border-sm" role="status"
+                                            aria-hidden="true"></span>Loading...</div>
                                 </td>
                                 <td class="courseDate">
-                                    <div class="modalBtn">Loading...</div>
+                                    <div class="modalBtn"><span class="spinner-border spinner-border-sm" role="status"
+                                            aria-hidden="true"></span>Loading...</div>
                                 </td>
                                 <td>
                                     <div class="modalBtn">
 
-                                        <div class="pillPending">Loading...</div>
+                                        <div class="pillPending"><span class="spinner-border spinner-border-sm"
+                                                role="status" aria-hidden="true"></span></div>
 
                                     </div>
                                 </td>
@@ -556,6 +665,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"
     integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13"
     crossorigin="anonymous"></script>
+   <script src="../header-nav.js" type="text/javascript"></script>
 <script src="./index.js" type="text/javascript"></script>
 
 </html>

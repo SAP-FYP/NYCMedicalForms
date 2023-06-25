@@ -39,7 +39,7 @@ module.exports.retrieveSubmission = function retrieveSubmission(nameOfStudent) {
             });
 };
 
-module.exports.retrieveSubmissionBySearch = function retrieveSubmissionByStudentId(searchInput) {
+module.exports.retrieveSubmissionBySearch = function retrieveSubmissionBySearch(searchInput) {
     const sql = `SELECT *
     FROM form F
     JOIN student S ON F.studentId = S.studentId
@@ -58,7 +58,7 @@ module.exports.retrieveSubmissionBySearch = function retrieveSubmissionByStudent
         })
 }
 
-module.exports.retrieveSubmissionBySchoolName= function retrieveSubmissionByStudentId(schoolName) {
+module.exports.retrieveSubmissionBySchoolName= function retrieveSubmissionBySchoolName(schoolName) {
     const sql = `SELECT *
     FROM form F
     JOIN student S ON F.studentId = S.studentId
@@ -77,7 +77,7 @@ module.exports.retrieveSubmissionBySchoolName= function retrieveSubmissionByStud
         })
 }
 
-module.exports.retrieveSubmissionByClassName= function retrieveSubmissionByStudentId(className) {
+module.exports.retrieveSubmissionByClassName= function retrieveSubmissionByClassName(className) {
     const sql = `SELECT *
     FROM form F
     JOIN student S ON F.studentId = S.studentId
