@@ -98,9 +98,6 @@ window.addEventListener('DOMContentLoaded', () => {
             })
     }
 
-    getPermGroups();
-    getPerms();
-
     // === FUNCTIONS ===
 
     // BUILD PERMISSION GROUPS TEMPLATE
@@ -587,4 +584,6 @@ window.addEventListener('DOMContentLoaded', () => {
     // LAZY LOADING
     container.addEventListener('scroll', defaultScroll)
 
+    getPermGroups();
+    getPerms();
 })

@@ -18,8 +18,10 @@ window.addEventListener('DOMContentLoaded', () => {
     const modal = new bootstrap.Modal(myModalEl);
 
     // === FLAGS ===
-
-
+    let isLoading = false;
+    let eof = false;
+    let offset = 0;
+    let searchFilter;
 
     // === FETCHES ===
 
@@ -32,69 +34,69 @@ window.addEventListener('DOMContentLoaded', () => {
     // GET ALL USERS
     const getUsers = fetch('/obs-admin/users/-1');
 
-    Promise.all([getRoles, getPermGroups, getUsers])
-        .then(async function (responses) {
+    // Promise.all([getRoles, getPermGroups, getUsers])
+    //     .then(async function (responses) {
 
-            if (responses.some(response => response.redirected)) {
-                window.location.href = responses[0].url;
-                throw new Error('redirected');
-            }
+    //         if (responses.some(response => response.redirected)) {
+    //             window.location.href = responses[0].url;
+    //             throw new Error('redirected');
+    //         }
 
-            if (responses.some(response => response.status != 200 && response.status != 404)) {
-                const error = new Error('Unknown error')
-                error.status = 500;
-                throw error;
-            }
+    //         if (responses.some(response => response.status != 200 && response.status != 404)) {
+    //             const error = new Error('Unknown error')
+    //             error.status = 500;
+    //             throw error;
+    //         }
 
-            const [userRoles, permGroups, users] = await Promise.all(responses.map(response => response.json()));
+    //         const [userRoles, permGroups, users] = await Promise.all(responses.map(response => response.json()));
 
-            return [userRoles.result, permGroups.result, users.result];
-        })
-        .then((allJsonData) => {
+    //         return [userRoles.result, permGroups.result, users.result];
+    //     })
+    //     .then((allJsonData) => {
 
-            const [userRole, permGroups, users] = allJsonData;
+    //         const [userRole, permGroups, users] = allJsonData;
 
-            // Validate responses
-            if (!userRole) {
-                // handle no roles
-            }
+    //         // Validate responses
+    //         if (!userRole) {
+    //             // handle no roles
+    //         }
 
-            if (!permGroups) {
-                // handle no perms group
-            }
+    //         if (!permGroups) {
+    //             // handle no perms group
+    //         }
 
-            if (!users) {
-                // handle no users
-            }
+    //         if (!users) {
+    //             // handle no users
+    //         }
 
-            // Handle data
-            const roleSelect = createForm.querySelector('#role-input');
-            userRole.forEach(item => {
-                const option = document.createElement('option');
-                option.value = item.roleId;
-                option.text = item.roleName;
-                roleSelect.appendChild(option);
-            });
+    //         // Handle data
+    //         const roleSelect = createForm.querySelector('#role-input');
+    //         userRole.forEach(item => {
+    //             const option = document.createElement('option');
+    //             option.value = item.roleId;
+    //             option.text = item.roleName;
+    //             roleSelect.appendChild(option);
+    //         });
 
-            const permissionSelect = createForm.querySelector('#permission-input');
-            permGroups.forEach(item => {
-                const option = document.createElement('option');
-                option.value = item.groupId;
-                option.text = item.groupName;
-                permissionSelect.appendChild(option);
-            });
+    //         const permissionSelect = createForm.querySelector('#permission-input');
+    //         permGroups.forEach(item => {
+    //             const option = document.createElement('option');
+    //             option.value = item.groupId;
+    //             option.text = item.groupName;
+    //             permissionSelect.appendChild(option);
+    //         });
 
-            buildUsers(users);
+    //         buildUsers(users);
 
-        })
-        .catch((error) => {
-            if (error && error.message != 'redirected') {
-                if (error != "TypeError: Failed to fetch") {
-                    console.log(error);
-                    alert(error);
-                }
-            }
-        })
+    //     })
+    //     .catch((error) => {
+    //         if (error && error.message != 'redirected') {
+    //             if (error != "TypeError: Failed to fetch") {
+    //                 console.log(error);
+    //                 alert(error);
+    //             }
+    //         }
+    //     })
 
     // === FUNCTIONS ===
 
@@ -702,9 +704,6 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // SEARCH BAR SUBMIT BUTTON
-    searchBtn.onclick = searchUsers;
-
     // BULK DELETE
     bulkDeleteBtn.onclick = () => {
         let checkedItems = []
@@ -732,5 +731,36 @@ window.addEventListener('DOMContentLoaded', () => {
             bulkDisable({ users: checkedItems });
         }
     }
+
+    // SEARCH BAR SUBMIT BUTTON
+    searchBtn.onclick = searchUsers;
+
+    // LAZY LOADING DEFAULT SCROLL
+    const defaultScroll = () => {
+        const scrollTop = container.scrollTop;
+        const scrollHeight = container.scrollHeight;
+        const clientHeight = container.clientHeight;
+
+        if ((scrollHeight - (scrollTop + clientHeight) <= 200) && !isLoading && !eof) {
+            isLoading = true;
+            //getPermGroups();
+        }
+    }
+
+    // LAZY LOADING SEARCHED SCROLL
+    const filterScroll = () => {
+        const scrollTop = container.scrollTop;
+        const scrollHeight = container.scrollHeight;
+        const clientHeight = container.clientHeight;
+
+        if ((scrollHeight - (scrollTop + clientHeight) <= 200) && !isLoading && !eof) {
+            isLoading = true;
+            //getPermGroups(searchFilter);
+        }
+    }
+
+    // LAZY LOADING
+    container.addEventListener('scroll', defaultScroll)
+
 })
 
