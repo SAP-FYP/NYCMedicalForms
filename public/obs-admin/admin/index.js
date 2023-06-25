@@ -16,8 +16,11 @@ window.addEventListener('DOMContentLoaded', () => {
     const enableModal = new bootstrap.Modal(myModalEnable);
     const disableModal = new bootstrap.Modal(myModalDisable);
     const modal = new bootstrap.Modal(myModalEl);
+    const container = document.getElementById('data-container');
+
 
     // === FLAGS ===
+
     let isLoading = false;
     let eof = false;
     let offset = 0;
@@ -25,78 +28,76 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // === FETCHES ===
 
-    // GET ROLES 
-    const getRoles = fetch('/obs-admin/roles');
+    // GET ROLES  
+    const getRoles = () => {
+        fetch('/obs-admin/roles')
+            .then(handleResponse)
+            .then((jsonData) => {
+                const userRole = jsonData.result;
+
+                if (!userRole) {
+                    alert('no user roles found')
+                    // handle no user roles
+                } else {
+                    const roleSelect = createForm.querySelector('#role-input');
+                    userRole.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.roleId;
+                        option.text = item.roleName;
+                        roleSelect.appendChild(option);
+                    });
+                }
+            })
+            .catch(handleError)
+    }
 
     // GET GROUPS
-    const getPermGroups = fetch('/obs-admin/permission/groups/-1/20/0');
+    const getPermGroups = () => {
+        fetch(`/obs-admin/permission/groups/-1/999/0`)
+            .then(handleResponse)
+            .then((jsonData) => {
+                const permGroups = jsonData.result;
+
+                if (!permGroups) {
+                    alert('no permission groups found')
+                    // handle no permission groups
+                } else {
+
+                    const permissionSelect = createForm.querySelector('#permission-input');
+                    permGroups.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.groupId;
+                        option.text = item.groupName;
+                        permissionSelect.appendChild(option);
+                    });
+                }
+            })
+            .catch(handleError)
+    }
 
     // GET ALL USERS
-    const getUsers = fetch('/obs-admin/users/-1');
+    const getUsers = (filter) => {
+        !filter ? filter = -1 : filter;
 
-    // Promise.all([getRoles, getPermGroups, getUsers])
-    //     .then(async function (responses) {
+        fetch(`/obs-admin/users/${filter}/16/${offset}`)
+            .then(handleResponse)
+            .then((jsonData) => {
+                const users = jsonData.result;
 
-    //         if (responses.some(response => response.redirected)) {
-    //             window.location.href = responses[0].url;
-    //             throw new Error('redirected');
-    //         }
+                if (!users) {
+                    eof = true;
+                    alert('no users found')
+                    // handle no users
+                } else {
+                    buildUsers(users);
+                }
 
-    //         if (responses.some(response => response.status != 200 && response.status != 404)) {
-    //             const error = new Error('Unknown error')
-    //             error.status = 500;
-    //             throw error;
-    //         }
-
-    //         const [userRoles, permGroups, users] = await Promise.all(responses.map(response => response.json()));
-
-    //         return [userRoles.result, permGroups.result, users.result];
-    //     })
-    //     .then((allJsonData) => {
-
-    //         const [userRole, permGroups, users] = allJsonData;
-
-    //         // Validate responses
-    //         if (!userRole) {
-    //             // handle no roles
-    //         }
-
-    //         if (!permGroups) {
-    //             // handle no perms group
-    //         }
-
-    //         if (!users) {
-    //             // handle no users
-    //         }
-
-    //         // Handle data
-    //         const roleSelect = createForm.querySelector('#role-input');
-    //         userRole.forEach(item => {
-    //             const option = document.createElement('option');
-    //             option.value = item.roleId;
-    //             option.text = item.roleName;
-    //             roleSelect.appendChild(option);
-    //         });
-
-    //         const permissionSelect = createForm.querySelector('#permission-input');
-    //         permGroups.forEach(item => {
-    //             const option = document.createElement('option');
-    //             option.value = item.groupId;
-    //             option.text = item.groupName;
-    //             permissionSelect.appendChild(option);
-    //         });
-
-    //         buildUsers(users);
-
-    //     })
-    //     .catch((error) => {
-    //         if (error && error.message != 'redirected') {
-    //             if (error != "TypeError: Failed to fetch") {
-    //                 console.log(error);
-    //                 alert(error);
-    //             }
-    //         }
-    //     })
+                offset += 16;
+                isLoading = false;
+                filter == -1 ? container.addEventListener('scroll', defaultScroll) : container.addEventListener('scroll', filterScroll)
+            })
+            .catch(handleError)
+    }
 
     // === FUNCTIONS ===
 
@@ -109,41 +110,15 @@ window.addEventListener('DOMContentLoaded', () => {
             },
             body: JSON.stringify(newuser)
 
-        }).then((response) => {
-            if (response.redirected) {
-                window.location.href = response.url
-                throw new Error('redirected');
-            }
-
-            if (response.status == 400) {
-                const error = new Error("Invalid user data");
-                error.status = response.status
-                throw error;
-
-            } else if (response.status == 422) {
-                const error = new Error("Email already exists");
-                error.status = response.status
-                throw error;
-
-            } else if (response.status != 201) {
-                const error = new Error("Unknown error");
-                error.status = response.status
-                throw error;
-            }
-
-            createForm.reset();
-            modal.hide();
-            alert('Successfully created')
-            location.reload();
-
-        }).catch((error) => {
-            if (error && error.message != 'redirected') {
-                if (error != "TypeError: Failed to fetch") {
-                    console.log(error);
-                    alert(error);
-                }
-            }
         })
+            .then(handleCreateEditResponse)
+            .then(() => {
+                createForm.reset();
+                modal.hide();
+                alert('Successfully created')
+                location.reload();
+            })
+            .catch(handleError)
     }
 
     // BUILD USERS TEMPLATE
@@ -212,52 +187,6 @@ window.addEventListener('DOMContentLoaded', () => {
         })
     }
 
-    // GET USERS 
-    const searchUsers = () => {
-        let filter = searchInput.value.trim() || -1;
-
-        return fetch(`/obs-admin/users/${filter}`)
-            .then((response) => {
-                if (response.redirected) {
-                    window.location.href = response.url
-                    throw new Error('redirected');
-                }
-
-                if (response.status != 200 && response.status != 404) {
-                    const error = new Error('Unknown error')
-                    error.status = 500;
-                    throw error;
-                }
-
-                return response.json()
-            })
-            .then((jsonData) => {
-                const users = jsonData.result;
-
-                if (!users) {
-                    alert('No user found')
-                    return
-                    // handle empty
-                }
-
-                const templateContainer = document.getElementById("insert-user-template");
-                while (templateContainer.firstChild) {
-                    templateContainer.removeChild(templateContainer.firstChild);
-                }
-
-                buildUsers(users);
-
-            })
-            .catch((error) => {
-                if (error && error.message != 'redirected') {
-                    if (error != "TypeError: Failed to fetch") {
-                        console.log(error);
-                        alert(error);
-                    }
-                }
-            })
-    }
-
     // EDIT USER BUTTON HANDLER
     const editButtonHandler = (user) => {
         createForm.reset();
@@ -295,40 +224,15 @@ window.addEventListener('DOMContentLoaded', () => {
             },
             body: JSON.stringify(user)
 
-        }).then((response) => {
-            if (response.redirected) {
-                window.location.href = response.url
-                throw new Error('redirected');
-            }
-
-            if (response.status == 400) {
-                const error = new Error("Invalid user data");
-                error.status = response.status
-                throw error;
-
-            } else if (response.status == 422) {
-                const error = new Error("Email already exists");
-                error.status = response.status
-                throw error;
-
-            } else if (response.status != 200) {
-                const error = new Error("Unknown error");
-                error.status = response.status
-                throw error;
-            }
-
-            createForm.reset();
-            modal.hide();
-            alert('Successfully edited')
-            location.reload();
-
-        }).catch((error) => {
-            if (error && error.message != 'redirected') {
-                console.log(error);
-                alert(error);
-            }
-            // display error
         })
+            .then(handleCreateEditResponse)
+            .then(() => {
+                createForm.reset();
+                modal.hide();
+                alert('Successfully edited user');
+                location.reload();
+            })
+            .catch(handleError)
     }
 
     // DELETE USER BUTTON HANDLER
@@ -345,33 +249,12 @@ window.addEventListener('DOMContentLoaded', () => {
             return fetch(`/obs-admin/delete/user/${user.email}`, {
                 method: 'PUT'
             })
-                .then((response) => {
-                    if (response.redirected) {
-                        window.location.href = response.url
-                        throw new Error('redirected');
-                    }
-
-                    if (response.status == 400) {
-                        const error = new Error("Invalid user data");
-                        error.status = response.status
-                        throw error;
-
-                    } else if (response.status != 200) {
-                        const error = new Error("Unknown error");
-                        error.status = response.status
-                        throw error;
-                    }
-
-                    alert('Successfully deleted!')
+                .then(handleCreateEditResponse)
+                .then(() => {
+                    alert('Successfully deleted user');
                     location.reload();
                 })
-                .catch((error) => {
-                    if (error && error.message != 'redirected') {
-                        console.log(error);
-                        alert(error);
-                    }
-                    // display error
-                })
+                .catch(handleError)
         };
     }
 
@@ -393,33 +276,12 @@ window.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify(users)
             })
-                .then((response) => {
-                    if (response.redirected) {
-                        window.location.href = response.url
-                        throw new Error('redirected');
-                    }
-
-                    if (response.status == 400) {
-                        const error = new Error("Invalid permission data");
-                        error.status = response.status
-                        throw error;
-
-                    } else if (response.status != 200) {
-                        const error = new Error("Unknown error");
-                        error.status = response.status
-                        throw error;
-                    }
-
-                    alert('Successfully deleted!')
+                .then(handleCreateEditResponse)
+                .then(() => {
+                    alert('Successfully deleted selected users');
                     location.reload();
                 })
-                .catch((error) => {
-                    if (error && error.message != 'redirected') {
-                        console.log(error);
-                        alert(error);
-                    }
-                    // display error
-                })
+                .catch(handleError)
         }
     }
 
@@ -437,24 +299,9 @@ window.addEventListener('DOMContentLoaded', () => {
             return fetch(`/obs-admin/disable/user/${user.email}/${status}`, {
                 method: 'PUT'
             })
-                .then((response) => {
-                    if (response.redirected) {
-                        window.location.href = response.url
-                        throw new Error('redirected');
-                    }
-
-                    if (response.status == 400) {
-                        const error = new Error("Invalid user data");
-                        error.status = response.status
-                        throw error;
-
-                    } else if (response.status != 200) {
-                        const error = new Error("Unknown error");
-                        error.status = response.status
-                        throw error;
-                    }
-
-                    alert('Successfully disabled!')
+                .then(handleCreateEditResponse)
+                .then(() => {
+                    alert('Successfully disabled user!')
                     disableModal.hide();
                     document.getElementById(`profile-button-${user.email}`).classList.add('profile-button-disabled')
                     document.getElementById(`profile-button-${user.email}`).innerHTML = `<i class="material-icons profile-button-icon"
@@ -468,13 +315,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     });
                     updateCheckedCount();
                 })
-                .catch((error) => {
-                    if (error && error.message != 'redirected') {
-                        console.log(error);
-                        alert(error);
-                    }
-                    // display error
-                })
+                .catch(handleError)
         };
     }
 
@@ -496,24 +337,9 @@ window.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify(users)
             })
-                .then((response) => {
-                    if (response.redirected) {
-                        window.location.href = response.url
-                        throw new Error('redirected');
-                    }
-
-                    if (response.status == 400) {
-                        const error = new Error("Invalid permission data");
-                        error.status = response.status
-                        throw error;
-
-                    } else if (response.status != 200) {
-                        const error = new Error("Unknown error");
-                        error.status = response.status
-                        throw error;
-                    }
-
-                    alert('Successfully disabled!')
+                .then(handleCreateEditResponse)
+                .then(() => {
+                    alert('Successfully disabled selected users!')
                     disableModal.hide();
 
                     users.users.forEach(user => {
@@ -532,13 +358,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     });
 
                 })
-                .catch((error) => {
-                    if (error && error.message != 'redirected') {
-                        console.log(error);
-                        alert(error);
-                    }
-                    // display error
-                })
+                .catch(handleError)
         }
     }
 
@@ -550,25 +370,10 @@ window.addEventListener('DOMContentLoaded', () => {
             return fetch(`/obs-admin/disable/user/${user.email}/${status}`, {
                 method: 'PUT'
             })
-                .then((response) => {
-                    if (response.redirected) {
-                        window.location.href = response.url
-                        throw new Error('redirected');
-                    }
-
-                    if (response.status == 400) {
-                        const error = new Error("Invalid user data");
-                        error.status = response.status
-                        throw error;
-
-                    } else if (response.status != 200) {
-                        const error = new Error("Unknown error");
-                        error.status = response.status
-                        throw error;
-                    }
-
+                .then(handleCreateEditResponse)
+                .then(() => {
                     enableModal.hide();
-                    alert('Successfully enabled!')
+                    alert('Successfully enabled user!')
                     document.getElementById(`profile-button-${user.email}`).classList.remove('profile-button-disabled')
                     document.getElementById(`profile-button-${user.email}`).innerHTML = `<i class="material-icons profile-button-icon"
                     style="font-size:28px;color:#485EAB; margin-right: 5px;">person</i>
@@ -581,13 +386,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     });
                     updateCheckedCount();
                 })
-                .catch((error) => {
-                    if (error && error.message != 'redirected') {
-                        console.log(error);
-                        alert(error);
-                    }
-                    // display error
-                })
+                .catch(handleError)
         };
     }
 
@@ -626,6 +425,60 @@ window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('bulk-action').style.visibility = 'hidden';
         }
 
+    }
+
+    // === ERROR AND RESPONSE HANDLING ===
+
+    // 400 , 422 , !200
+    const handleCreateEditResponse = (response) => {
+        if (response.redirected) {
+            window.location.href = response.url
+            throw new Error('redirected');
+        }
+
+        if (response.status == 400) {
+            const error = new Error("Invalid data");
+            error.status = response.status
+            throw error;
+
+        } else if (response.status == 422) {
+            const error = new Error("Email already exists");
+            error.status = response.status
+            throw error;
+
+        } else if (response.status != 200) {
+            const error = new Error("Unknown error");
+            error.status = response.status
+            throw error;
+        }
+
+        return;
+    }
+
+    // !404 , !200
+    const handleResponse = (response) => {
+        if (response.redirected) {
+            window.location.href = response.url;
+            throw new Error('redirected');
+        }
+
+        if (response.status !== 200 && response.status !== 404) {
+            const error = new Error('Unknown error');
+            error.status = 500;
+            throw error;
+        }
+
+        return response.json();
+    }
+
+    // TODO: Proper Error
+    const handleError = (error) => {
+        if (error && error.message !== 'redirected') {
+            if (error !== "TypeError: Failed to fetch") {
+                console.log(error);
+                alert(error);
+            }
+        }
     }
 
     // === EVENT HANDLERS ===
@@ -693,16 +546,57 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // SEARCH BAR CLEAR BUTTON
     searchClearBtn.onclick = () => {
+        eof = false;
+        offset = 0;
+        container.removeEventListener('scroll', defaultScroll)
+        container.removeEventListener('scroll', filterScroll)
+        document.getElementById('bulk-action').style.visibility = 'hidden';
         searchInput.value = "";
-        searchUsers();
+
+        const templateContainer = document.getElementById("insert-user-template");
+        while (templateContainer.firstChild) {
+            templateContainer.removeChild(templateContainer.firstChild);
+        }
+
+        getUsers();
     }
 
     // SEARCH BAR CLEAR 'ENTER' KEY
     searchInput.addEventListener('keydown', event => {
         if (event.key === 'Enter') {
-            searchUsers();
+            searchFilter = searchInput.value.trim();
+            eof = false;
+            offset = 0;
+            container.removeEventListener('scroll', defaultScroll)
+            container.removeEventListener('scroll', filterScroll)
+            document.getElementById('bulk-action').style.visibility = 'hidden';
+
+            const templateContainer = document.getElementById("insert-user-template");
+            while (templateContainer.firstChild) {
+                templateContainer.removeChild(templateContainer.firstChild);
+            }
+
+            getUsers(searchFilter);
         }
     });
+
+    // SEARCH BAR SUBMIT BUTTON
+    searchBtn.onclick = () => {
+        searchFilter = searchInput.value.trim();
+
+        eof = false;
+        offset = 0;
+        container.removeEventListener('scroll', defaultScroll)
+        container.removeEventListener('scroll', filterScroll)
+        document.getElementById('bulk-action').style.visibility = 'hidden';
+
+        const templateContainer = document.getElementById("insert-user-template");
+        while (templateContainer.firstChild) {
+            templateContainer.removeChild(templateContainer.firstChild);
+        }
+
+        getUsers(searchFilter);
+    }
 
     // BULK DELETE
     bulkDeleteBtn.onclick = () => {
@@ -732,9 +626,6 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // SEARCH BAR SUBMIT BUTTON
-    searchBtn.onclick = searchUsers;
-
     // LAZY LOADING DEFAULT SCROLL
     const defaultScroll = () => {
         const scrollTop = container.scrollTop;
@@ -743,7 +634,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
         if ((scrollHeight - (scrollTop + clientHeight) <= 200) && !isLoading && !eof) {
             isLoading = true;
-            //getPermGroups();
+            getUsers();
         }
     }
 
@@ -755,12 +646,15 @@ window.addEventListener('DOMContentLoaded', () => {
 
         if ((scrollHeight - (scrollTop + clientHeight) <= 200) && !isLoading && !eof) {
             isLoading = true;
-            //getPermGroups(searchFilter);
+            getUsers(searchFilter);
         }
     }
 
-    // LAZY LOADING
+    // LAZY LOADING USERS
     container.addEventListener('scroll', defaultScroll)
 
+    getUsers();
+    getPermGroups();
+    getRoles();
 })
 

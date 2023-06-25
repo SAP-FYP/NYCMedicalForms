@@ -14,6 +14,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('data-container');
 
     // === FLAGS ===
+
     let isLoading = false;
     let eof = false;
     let offset = 0;

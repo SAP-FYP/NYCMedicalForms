@@ -263,6 +263,10 @@ input[type=number] {
     outline: none;
 }
 
+#permission-input {
+    overflow-y: scroll;
+}
+
 /* DATA ITEM */
 #insert-user-template {
     display: flex;

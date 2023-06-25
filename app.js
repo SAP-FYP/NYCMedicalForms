@@ -287,7 +287,7 @@ app.post('/obs-admin/newuser', authHelper.verifyToken, authHelper.checkIat, (req
 });
 
 // Get All Users
-app.get('/obs-admin/users/:search', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+app.get('/obs-admin/users/:search/:limit/:offset', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
@@ -299,8 +299,12 @@ app.get('/obs-admin/users/:search', authHelper.verifyToken, authHelper.checkIat,
         searchInput = req.params.search
     }
 
+    const { email } = req.decodedToken
+    const offset = parseInt(req.params.offset);
+    const limit = parseInt(req.params.limit);
+
     return adminModel
-        .getAllUsers(req.decodedToken.email, searchInput)
+        .getAllUsers(email, searchInput, limit, offset)
         .then((result) => {
             if (!result) {
                 const error = new Error("No users found")
@@ -328,7 +332,11 @@ app.get('/obs-admin/permission/groups/:search/:limit/:offset', authHelper.verify
     }
 
     const offset = parseInt(req.params.offset);
-    const limit = parseInt(req.params.limit);
+    let limit = null;
+
+    req.params.limit ? limit = parseInt(req.params.limit) : limit;
+    //limit = parseInt(req.params.limit);
+
 
     return adminModel
         .getPermissionGroups(searchInput, limit, offset)
