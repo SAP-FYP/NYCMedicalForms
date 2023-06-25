@@ -38,11 +38,11 @@ function createFormattedDate(date) {
     day: "2-digit",
   });
 }
-function createExportButtonAll() {
+function createExportButtonAll(id) {
   // Create the export button element for all data
   const exportIcon = document.createElement('img');
   exportIcon.src = '../../assets/images/export-to-excel-icon.png';
-  exportIcon.id = 'export-btn';
+  exportIcon.id = id;
   exportIcon.alt = 'export-icon';
   return exportIcon;
 }
@@ -416,7 +416,7 @@ function updateStatusApprove(formData) {
     });
 }
 //FUNCTION TO HANDLE MODAL BUTTONS SO THAT THEY OPEN THE MODAL
-function handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData) {
+function handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData, index) {
   const modalBtn1 = clonedRowTemplate.querySelector('.modalBtn1');
   const modalBtn2 = clonedRowTemplate.querySelector('.modalBtn2');
   const modalBtn3 = clonedRowTemplate.querySelector('.modalBtn3');
@@ -428,19 +428,18 @@ function handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData) {
 
   modalBtns.forEach(function (modalBtn) {
     modalBtn.setAttribute("data-bs-toggle", "modal");
-    
   });
 
   const formStatusDiv = clonedRowTemplate.querySelector('.pillPending');
-  formStatusDiv.textContent = formData[i].formStatus;
+  formStatusDiv.textContent = formData[index].formStatus;
 
-  if (formData[i].formStatus === "Pending") {
+  if (formData[index].formStatus === "Pending") {
     formStatusDiv.classList.add("pillPending");
-  } else if (formData[i].formStatus === "Rejected") {
+  } else if (formData[index].formStatus === "Rejected") {
     formStatusDiv.classList.add("pillRejected");
-  } else if (formData[i].formStatus === "Approved") {
+  } else if (formData[index].formStatus === "Approved") {
     formStatusDiv.classList.add("pillApproved");
-  } else if (formData[i].formStatus === "Pending Parent") {
+  } else if (formData[index].formStatus === "Pending Parent") {
     formStatusDiv.classList.add("pillParent");
   }
 
@@ -463,16 +462,16 @@ function handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData) {
     }
   }
 
-  handleFormClick(i);
+  handleFormClick(index);
 
   modalBtns.forEach(function (modalBtn) {
     modalBtn.addEventListener("mousedown", function () {
       modalBtn7.classList.add("changePill");
       openModal(nameOfStudentCell.getAttribute("nameOfStudent"));
-      
     });
   });
 }
+
 //FUNCTION TO UPDATE STATUS OF FORM TO REJECTED
 function updateStatusReject(formData) {
   const studentId = formData.studentId;
@@ -618,7 +617,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
-        handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData);
+        handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData, i);
         ;
 
 
@@ -650,14 +649,7 @@ function createExportButtonSearch() {
   return exportIcon;
 }
 
-function createExportButtonFilter() {
-  // Create the export button element for all data
-  const exportIcon = document.createElement('img');
-  exportIcon.src = '../../assets/images/export-to-excel-icon.png';
-  exportIcon.id = 'export-btn';
-  exportIcon.alt = 'export-icon';
-  return exportIcon;
-}
+
 const searchInput = document.querySelector("#searchInput");
 const searchBtn = document.querySelector('#search-button');
 const searchClearBtn = document.querySelector('#clear-button');
@@ -749,7 +741,7 @@ function searchForms() {
 
 
           //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
-            handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData);
+             handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData, i);
           ;
 
         }
@@ -893,6 +885,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             li.textContent = item.class;
             li.className = "m-3";
             li.setAttribute("class-id", item.class);
+            li.style.cursor = "pointer"; // Set the cursor style
             li.addEventListener('click', function () {
               const classId = this.getAttribute('class-id');
               axios.get(`${API_URL}/filter/class/${classId}`)
@@ -915,8 +908,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
                   updateFormCounts(formData);
 
                   //call function to create export button for
-                  const exportIcon = createExportButtonFilter();
-
+                  const exportIcon = createExportButtonAll(`export-icon-${classId}`)
+                    
 
                   const successBtn = document.querySelector('.successBtn');
                   const rejectBtn = document.querySelector('.rejectBtn');
@@ -967,10 +960,10 @@ const dataFilterClass = [];
                     //call function to handle checkboxes
                     handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, exportBtnFilter, exportIcon,dataFilterClass)
           
-          
+            
                     //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
-                      handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData);
-                    ;
+                    handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData, i);
+                    
           
                   }
                   //Outside of for loop 
@@ -980,6 +973,7 @@ const dataFilterClass = [];
                   exportBtnBulk.addEventListener('click', function () {
                     console.log(dataFilterClass);
                     exportToExcelBulk(dataFilterClass);
+                    location.reload();
                   });
                 }
 
@@ -1122,7 +1116,7 @@ const dataFilterClass = [];
                   }
                   //call function to update status count
                   const formData = response.data;
-                  console.log(response);
+                  console.log(formData);
                   updateFormCounts(formData);
 
                 
@@ -1146,7 +1140,7 @@ const dataFilterClass = [];
                     });
                   }
                     //call function to create export button for
-                    const exportIcon = createExportButtonAll();
+                    const exportIcon = createExportButtonAll(`export-icon-${schoolId}`);
                     console.log(exportBtnFilterSchool)
                   const dataFilterSchool = []
                   // Loop through the data and add it to the page
@@ -1177,7 +1171,7 @@ const dataFilterClass = [];
                     } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
                     
                     
-                    console.log("huhuh")
+  
                    
                   
                      //call function to handle checkboxes
@@ -1186,7 +1180,7 @@ const dataFilterClass = [];
 
 
                     //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
-                      handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData);
+                     handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData, i);
                     ;
 
 
@@ -1199,6 +1193,7 @@ const dataFilterClass = [];
                   exportBtnBulk.addEventListener('click', function () {
                     console.log(dataFilterSchool);
                     exportToExcelBulk(dataFilterSchool);
+                    location.reload();
                   });
                 }
 
@@ -1352,7 +1347,7 @@ const dataFilterClass = [];
 
                   //call function to create export button for
 
-                  const exportIcon = createExportButtonAll();
+                  const exportIcon = createExportButtonAll(`export-icon-${courseDate}`)
 
 
                   const successBtn = document.querySelector('.successBtn');
@@ -1406,7 +1401,7 @@ const dataFilterClass = [];
 
 
                     //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
-                      handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData);
+                      handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData, i);
                     ;
 
 
@@ -1418,6 +1413,7 @@ const dataFilterClass = [];
                   exportBtnBulk.addEventListener('click', function () {
                     console.log(dataFilterCourseDate);
                     exportToExcelBulk(dataFilterCourseDate);
+                    location.reload();
                   });
                 }
 
@@ -1613,7 +1609,7 @@ const dataFilterClass = [];
 
         //call function to create export button for
 
-        const exportIcon = createExportButtonAll();
+        const exportIcon = createExportButtonAll(`export-icon-${eligibilityIds}`)
 
 
         const successBtn = document.querySelector('.successBtn');
@@ -1668,7 +1664,7 @@ const dataFilterClass = [];
 
         
           //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
-            handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData);
+            handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData, i);
           ;
 
 
