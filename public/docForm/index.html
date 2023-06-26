@@ -60,8 +60,19 @@
                                 <input type="date" class="form-control" id="dateOfBirth" required>
                             </div>
                             <div class="mb-3">
-                                <label for="schoolName" class="form-label">Organization/School</label>
-                                <input type="text" class="form-control" id="schoolName" required>
+                                <label for="schoolDropDown" class="form-label">Organization/School</label>
+                                <!-- <input type="text" class="form-control" id="schoolName" required> -->
+                                <div class="dropdown" id="schoolDropDown">
+                                    <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="schoolDropDownBtn">
+                                        School Name
+                                    </button>
+                                    <ul class="dropdown-menu" id="schoolDropDownMenu" style="width: 100%;text-align: center;max-height: 340px;overflow-y: auto; overflow-x: hidden;">
+                                        <div class="loadingMsg m-3">
+                                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                            Loading...
+                                        </div>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                         <div class="col-xl-6 col-12">
@@ -195,6 +206,12 @@
             <div class="me-2 ms-2">
                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                 Loading...
+            </div>
+        </template>
+
+        <template id="schoolSearchTemplate">
+            <div style="width: 100%;">
+                <input type="search" class="m-3" style="width: 90%;" id="schoolSearch">
             </div>
         </template>
 

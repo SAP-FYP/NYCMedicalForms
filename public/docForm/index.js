@@ -11,10 +11,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const loadingModal = new bootstrap.Modal('#loadingModal', {
         keyboard: false
     });
+    let schools = [];
+    let currentSchool;
     let canvas = document.getElementById('signatureCanvas');
     let signaturePad = new SignaturePad(canvas);
-    let clearSignatureBtn = document.getElementById('clearSignatureBtn');
-    let availabilityBtn = document.getElementById('availabilityBtn');
+    const clearSignatureBtn = document.getElementById('clearSignatureBtn');
+    const availabilityBtn = document.getElementById('availabilityBtn');
     let isAvailabilityBtn = false;
     let isDoctorNew = true;
     let currentDoctor;
@@ -22,7 +24,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     //student section
     const studentNameInput = document.getElementById('studentName');
+    const schoolSearch = document.getElementById('schoolSearch')
+    const schoolDropDownMenu = document.getElementById('schoolDropDownMenu')
+    //DELETE SCHOOLNAME INPUT
     const schoolNameInput = document.getElementById('schoolName');
+    //DELETE SCHOOLNAME INPUT
+    const schoolDropDown = document.getElementById('schoolDropDown');
+    const schoolDropDownBtn = document.getElementById('schoolDropDownBtn');
     const dateOfBirth = document.getElementById('dateOfBirth');
     const studentNRICInput = document.getElementById('studentNRIC');
     const studentClassInput = document.getElementById('studentClass');
@@ -40,28 +48,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const contactNoInput = document.getElementById('contactNo');
     const clinicAddressInput = document.getElementById('clinicAddress');
     const doctorMCRInput = document.getElementById('doctorMCR');
-
-    // ONLY FOR TESTING PLEASE DELETE LATER-----------------------------------------------
-    // document.getElementById('studentName').value = 'John Doe';
-    // document.getElementById('schoolName').value = 'Example School2';
-    // document.getElementById('dateOfBirth').value = '2005-01-01';
-    // document.getElementById('studentNRIC').value = 'G1234567D';
-    // document.getElementById('studentClass').value = '5A';
-    // document.getElementById('courseDate').value = '2005-01-01';
-    // document.getElementById('dateOfVaccine').value = '2005-01-01';
-    // document.getElementById('parentEmail').value = 'parent@example.com';
-    // document.getElementById('parentContact').value = '82345678';
-
-    // document.getElementById('fit').checked = true;
-    // commentsTextarea.disabled = true;
-
-    // physicianNameInput.value = 'Dr. John Doe';
-    // clinicNameInput.value = 'Clinic Name';
-    // dateInput.value = '2023-06-16';
-    // contactNoInput.value = '82345677';
-    // clinicAddressInput.value = 'Clinic Address';
-    // doctorMCRInput.value = 'MCR Value';
-    // ONLY FOR TESTING -----------------------------------------------
 
     //date object
     let today = new Date();
@@ -194,7 +180,6 @@ document.addEventListener('DOMContentLoaded', function () {
         inputElement.setCustomValidity('');
         return true;
     };
-
     // doctorForm autoFill format
     const doctorAutoFill = (doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo) => {
         //signature info extract
@@ -233,6 +218,27 @@ document.addEventListener('DOMContentLoaded', function () {
         isDoctorNew = false;
         currentDoctor = doctorMCR;
     }
+    const createListElement = (school) => {
+        const li = document.createElement('li');
+        li.textContent = school;
+        li.className = "p-3";
+
+        li.addEventListener('mouseover', (event) => {
+            event.target.style.backgroundColor = "#f3f3f3"; 
+        });
+
+        li.addEventListener('mouseout', (event) => {
+            event.target.style.backgroundColor = "";
+        });
+
+        // Add click event listener
+        li.addEventListener('click', (event) => {
+            schoolDropDownBtn.textContent = event.target.textContent;
+            currentSchool = event.target.textContent;
+        });
+
+        return li;
+    }
 
     // Disable comment section
     for (let i = 0; i < eligibilityRadios.length; i++) {
@@ -246,13 +252,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // clear signature
-    clearSignatureBtn.addEventListener('click', function (event) {
+    clearSignatureBtn.addEventListener('click', (event) => {
         event.preventDefault();
         signaturePad.clear();
     });
 
     //still need to handle autofill for signature
-    availabilityBtn.addEventListener('click', function (event) {
+    availabilityBtn.addEventListener('click', (event) => {
         event.preventDefault();
 
         // check if doctorMCR input is empty or not
@@ -308,6 +314,57 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
     });
+
+    schoolDropDown.addEventListener('show.bs.dropdown',(event) => {
+        fetch('https://search.moe.gov.sg/solr/moe_school_index/select?q=*&fq=school_journey_ss%3A%22Secondary%20school%22&sort=slug_s%20asc&rows=500&start=0&fq=active_b:true&json.facet={school_area:{type:terms,field:school_area_s,limit:-1,sort:index,domain:{excludeTags:%22area%22}},subjects_offered:{type:terms,field:subjects_offered_ss,limit:-1,sort:index},electives_full_path:{type:terms,field:electives_full_path,limit:-1,sort:index},max_cop:%22max(cop_max_i)%22,min_cop:%22min(cop_min_i)%22,co_cirricular_activities_full_path:{type:terms,field:co_cirricular_activities_full_path,limit:-1,sort:index},special_needs:{type:terms,field:special_needs_ss,limit:-1,sort:index,domain:{excludeTags:%22specialNeeds%22}},dsa_admission:{type:terms,field:dsa_admission_ss,limit:-1,sort:index},dsa_ip:{type:terms,field:dsa_ip_ss,limit:-1,sort:index},dsa_list:{type:terms,field:dsa_list_ss,limit:-1,sort:index},school_nature:{type:terms,field:school_nature_s,limit:-1,sort:index,domain:{excludeTags:%22nature%22}},school_type:{type:terms,field:school_type_ss,limit:-1,sort:index,domain:{excludeTags:%22type%22}},school_other_programme:{type:terms,field:school_other_programme_ss,limit:-1,sort:index,domain:{excludeTags:%22otherProgramme%22}},school_status_type:{type:terms,field:school_status_type_ss,limit:-1,sort:index},school_affiliated_b:{type:terms,field:school_affiliated_b_ss,limit:-1,sort:index}}')
+        .then((response) => {
+            if(!response.ok){
+                throw new Error('Fetching school failed')
+            }
+            return response.json();
+        })
+        .then(data => {
+            const schoolsData = data.response.docs
+            const loadingMsgDiv = schoolDropDownMenu.querySelector('.loadingMsg');
+            if(loadingMsgDiv){
+                loadingMsgDiv.remove();
+            }
+            let isFirstIteration = true;
+            schoolsData.forEach(school => {
+                schools.push(school.school_name_s);
+                if (isFirstIteration) {
+                    const schoolSearchTemplate = document.getElementById('schoolSearchTemplate');
+                    const clone = schoolSearchTemplate.content.cloneNode(true);
+                    const schoolSearch = clone.querySelector('#schoolSearch');
+                    
+                    schoolSearch.addEventListener('input', (event) => {
+                        let schoolSearchValue = event.target.value;
+                        let matchingSchools = schools.filter(school => school.toLowerCase().includes(schoolSearchValue.toLowerCase()));
+                        let lis = schoolDropDownMenu.querySelectorAll('li');
+                        lis.forEach(li => {
+                            li.remove();
+                        });
+                        matchingSchools.forEach(school => {
+                            schoolDropDownMenu.appendChild(createListElement(school));
+                        });
+                    });
+
+                    schoolDropDownMenu.appendChild(clone);
+                    isFirstIteration = false;
+                }
+                schoolDropDownMenu.appendChild(createListElement(school.school_name_s));
+            }); 
+        })
+    })
+
+    schoolDropDown.addEventListener('hide.bs.dropdown',(event) => {
+        schoolDropDownMenu.innerHTML = '';
+        const loadingTemp = document.getElementById('loadingTemplate');
+        const loadingTempClone = loadingTemp.content.cloneNode(true);
+        loadingTempClone.querySelector('div').className = 'loadingMsg m-3';
+        schoolDropDownMenu.appendChild(loadingTempClone);
+        schools = [];
+    })
 
     // handle form submission
     form.addEventListener('submit', function (event) {

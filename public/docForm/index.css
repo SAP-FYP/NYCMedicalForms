@@ -49,3 +49,10 @@ html {
 #formDiv::-webkit-scrollbar {
     width: 0px;
 }
+
+#schoolDropDownBtn {
+    width: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
