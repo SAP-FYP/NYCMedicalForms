@@ -9,7 +9,7 @@ const multer = require('multer');
 const cloudinary = require("cloudinary").v2;
 const {
     UserNotFoundError
-  } = require("./errors");
+} = require("./errors");
 const crypto = require('crypto');
 const key = Buffer.from(process.env.encryptKey, 'hex');
 const iv = Buffer.from(process.env.encryptIV, 'hex');
@@ -70,6 +70,12 @@ app.post('/login', (req, res, next) => {
             if (!bcrypt.compareSync(credentials.password, result.password)) {
                 const error = new Error("Invalid email or password");
                 error.status = 401;
+                throw error;
+            }
+
+            if (result.isDisabled) {
+                const error = new Error("Account is disabled. Please dontact admin for more information");
+                error.status = 403;
                 throw error;
             }
 
@@ -180,20 +186,47 @@ app.post('/post-acknowledge', (req, res) => {
 
 })
     
+// Twilio SMS
+app.post('/send-sms', (req, res) => {
+    const { contact } = req.body;
+
+    // Compose the sms parameters
+    const smsParams = {
+        to: contact,
+        body: `"📩 Important: Check your email! 📩 <br><br><br><br>
+        Dear Parents,<br><br>
+        Your child's health update requires your attention. Please check your email for important information regarding new medical conditions. Kindly acknowledge upon reading.<br><br>
+        Thank you,<br><br>
+        National Youth Council in affiliation with Outward Bound Singapore"`
+    }
+
+    // Send sms
+    client.messages.create(smsParams)
+        .then((message) => {
+            console.log(message.sid)
+            return res.status(200).send({ 'message': 'SMS sent successfully' });
+        })
+        .catch((error) => {
+            console.log(error)
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+})
 
 // Email test
 app.post('/send-email', (req, res) => {
     const { email, studentId } = req.body;
+    // Make studentId into a string
+    const parsedStudentId = studentId.toString();
     // Encrypt studentId
     const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
-    let encryptedStudentId = cipher.update(studentId, 'utf8', 'hex');
+    let encryptedStudentId = cipher.update(parsedStudentId, 'utf8', 'hex');
     encryptedStudentId += cipher.final('hex');
 
     // Compose the email parameters
     const emailParams = {
         to: email,
         subject: "Require Parent's Acknowledgement: New Changes in Your Child's Medical Condition",
-        from: 'leebarry008@gmail.com',
+        from: 'sg.outwardbound@gmail.com',
         body: `<p>Dear Parents,
         We hope this email finds you and your family in good health and high spirits. As part of our ongoing commitment to provide the best care for your children, we would like to inform you about some important updates regarding their medical conditions. <br> <br>
         At our recent healthcare evaluation, we have made significant progress in understanding and managing your child's medical condition. To ensure that our records are up to date, we kindly request your cooperation in acknowledging the new changes in your child's medical condition by clicking on the following link: spmeet.onrender.com/acknowledge/?encrypted=${encryptedStudentId}<br> <br>
@@ -277,6 +310,34 @@ app.post('/obs-admin/newuser', authHelper.verifyToken, authHelper.checkIat, (req
             })
     })
 
+});
+
+// Get All Users
+app.get('/obs-admin/users/:search', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+
+    // AUTHORIZATION CHECK - ADMIN
+    if (req.decodedToken.role != 1) {
+        return res.redirect('/error?code=403')
+    }
+
+    let searchInput = ""
+    if (req.params.search != -1) {
+        searchInput = req.params.search
+    }
+
+    return adminModel
+        .getAllUsers(req.decodedToken.email, searchInput)
+        .then((result) => {
+            if (!result) {
+                const error = new Error("No users found")
+                error.status = 404;
+                throw error
+            }
+            return res.json({ result })
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        })
 });
 
 // Get All Permission Groups or by Search
@@ -468,45 +529,122 @@ app.delete('/obs-admin/permission/groups/:groupId', authHelper.verifyToken, auth
         })
 })
 
-// Update User Permission Group
-app.put('/obs-admin/update-user-group', (req, res, next) => {
-    const { email, groupId } = req.body;
-    // TODO: Error handling and validation
-    return userModel.updateUserPermission(email, groupId)
+// Update User
+app.put('/obs-admin/user', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+
+    // AUTHORIZATION CHECK - ADMIN
+    if (req.decodedToken.role != 1) {
+        return res.redirect('/error?code=403')
+    }
+
+    const user = {
+        email: req.body.email,
+        name: req.body.name,
+        role: req.body.role,
+        group: req.body.group,
+        contact: req.body.contact,
+        invalidationDate: moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss')
+    }
+
+    if (!user.name || !user.email || !user.contact || !user.group || (user.group == -1 && user.role != 1) || user.role == -1) {
+        const error = new Error("Empty or invalid user information");
+        error.status = 400;
+        throw error;
+    }
+
+    if (user.role == 1) {
+        user.group = 0
+    }
+
+    return adminModel
+        .editUser(user)
         .then((result) => {
-            return res.json(result);
+            if (!result) {
+                const error = new Error("Unable to update user")
+                error.status = 500;
+                throw error;
+            }
+            return res.sendStatus(200);
         })
         .catch((error) => {
+            console.log(error)
+            if (error.code == "ER_DUP_ENTRY") {
+                return res.status(422).json({ error: "User email already exists" });
+            }
             return res.status(error.status || 500).json({ error: error.message });
         })
-});
+})
+
+// Delete User
+app.put('/obs-admin/delete/user/:email', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+
+    // AUTHORIZATION CHECK - ADMIN
+    if (req.decodedToken.role != 1) {
+        return res.redirect('/error?code=403')
+    }
+
+    const user = {
+        email: req.params.email,
+        invalidationDate: moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss')
+    }
+
+    if (!user.email) {
+        const error = new Error("Empty user email")
+        error.status = 400;
+        throw error;
+    }
+
+    return adminModel
+        .deleteUser(user)
+        .then((result) => {
+            if (!result) {
+                const error = new Error("Unable to delete user")
+                error.status = 500;
+                throw error;
+            }
+            return res.sendStatus(200);
+        })
+        .catch((error) => {
+            console.log(error)
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+})
 
 // Disable Account
-app.put('/obs-admin/update-account-status', (req, res, next) => {
-    const { email, status } = req.body;
-    // TODO: Error handling and validation
-    return userModel.updateAccountStatus(email, status)
+app.put('/obs-admin/disable/user/:email/:status', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+
+    // AUTHORIZATION CHECK - ADMIN
+    if (req.decodedToken.role != 1) {
+        return res.redirect('/error?code=403')
+    }
+
+    const user = {
+        email: req.params.email,
+        status: req.params.status,
+        invalidationDate: moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss')
+    }
+
+    if (!user.email || !user.status) {
+        const error = new Error("Empty user email")
+        error.status = 400;
+        throw error;
+    }
+
+    return adminModel
+        .disableUser(user)
         .then((result) => {
-            return res.json(result);
+            if (!result) {
+                const error = new Error("Unable to disable/enable user")
+                error.status = 500;
+                throw error;
+            }
+            return res.sendStatus(200);
         })
         .catch((error) => {
+            console.log(error)
             return res.status(error.status || 500).json({ error: error.message });
         })
 });
-
-// Delete Account
-app.put('/obs-admin/delete-user', (req, res, next) => {
-    const { email } = req.body;
-    // TODO: Error handling and validation
-    return userModel.deleteUser(email)
-        .then((result) => {
-            return res.json(result);
-        })
-        .catch((error) => {
-            return res.status(error.status || 500).json({ error: error.message });
-        })
-});
-
 
 
 /**
@@ -646,194 +784,194 @@ app.put('/parent/acknowledge', (req, res, next) => {
  */
 
 cloudinary.config({
-  cloud_name: "sp-esde-2100030",
-  api_key: "189815745826899",
-  api_secret: "eAKSNgdEoKxTWu8kh__hUi3U7J0",
+    cloud_name: "sp-esde-2100030",
+    api_key: "189815745826899",
+    api_secret: "eAKSNgdEoKxTWu8kh__hUi3U7J0",
 });
 
 //upload image to cloudinary
 app.post('/uploadSign', (req, res) => {
-  const file = req.body.signature;
-  //console.log(file)
-  cloudinary.uploader.upload(file, { resource_type: 'image', format: 'png' }, (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ message: "Upload failed" });
-    }
-    return res.json({ url: result.secure_url });
-  });
+    const file = req.body.signature;
+    //console.log(file)
+    cloudinary.uploader.upload(file, { resource_type: 'image', format: 'png' }, (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Upload failed" });
+        }
+        return res.json({ url: result.secure_url });
+    });
 });
 
 // upload doctor informtaion
-app.post('/postDoctorInfo',(req,res,next) => {
-  const{doctorMCR, physicianName,signatureData,clinicName,clinicAddress,contactNo} = req.body;
-  try {
-    // encryption part
-    const algorithm = 'aes-256-cbc'; // encryption algorithm
-    const key = Buffer.from('qW3eRt5yUiOpAsDfqW3eRt5yUiOpAsDf'); //must be 32 characters
-    const iv = Buffer.from('qW3eRt5yUiOpAsDf'); // the initialization vector(), recommended to create randombytes and store safely crypto.randomBytes(16)
+app.post('/postDoctorInfo', (req, res, next) => {
+    const { doctorMCR, physicianName, signatureData, clinicName, clinicAddress, contactNo } = req.body;
+    try {
+        // encryption part
+        const algorithm = 'aes-256-cbc'; // encryption algorithm
+        const key = Buffer.from('qW3eRt5yUiOpAsDfqW3eRt5yUiOpAsDf'); //must be 32 characters
+        const iv = Buffer.from('qW3eRt5yUiOpAsDf'); // the initialization vector(), recommended to create randombytes and store safely crypto.randomBytes(16)
 
-    const cipher = crypto.createCipheriv(algorithm, key, iv);//create cipher iv first,
-    let encryptedsignatureInfo = cipher.update(signatureData, 'utf8', 'hex'); //and encrypt the data with it
-    encryptedsignatureInfo += cipher.final('hex'); //this is to signal the end of encryption, and to notice the type of data the encryption
-    //you cannot cipher.update or cipher.final once you finished encryption using cipher.final. it will throw error
+        const cipher = crypto.createCipheriv(algorithm, key, iv);//create cipher iv first,
+        let encryptedsignatureInfo = cipher.update(signatureData, 'utf8', 'hex'); //and encrypt the data with it
+        encryptedsignatureInfo += cipher.final('hex'); //this is to signal the end of encryption, and to notice the type of data the encryption
+        //you cannot cipher.update or cipher.final once you finished encryption using cipher.final. it will throw error
 
-    return doctorFormModel
-    .postDoctorInfo(doctorMCR, physicianName,encryptedsignatureInfo,clinicName,clinicAddress,contactNo)
-    .then(data => {
-      console.log(data)
-      res.json(data);
-    })
-    .catch(error => {
-      if (error instanceof DUPLICATE_ENTRY_ERROR) {
-        res.status(409).json({ message: error.message });
-      } else {
-        res.status(500).json({ message: 'Internal server error' });
-      }
-    })
-  }catch (error) {
-    // Encryption Error
-    console.error('Encryption Error:', error);
-    res.status(500).json({ message: 'Encryption Error' });
-  }
+        return doctorFormModel
+            .postDoctorInfo(doctorMCR, physicianName, encryptedsignatureInfo, clinicName, clinicAddress, contactNo)
+            .then(data => {
+                console.log(data)
+                res.json(data);
+            })
+            .catch(error => {
+                if (error instanceof DUPLICATE_ENTRY_ERROR) {
+                    res.status(409).json({ message: error.message });
+                } else {
+                    res.status(500).json({ message: 'Internal server error' });
+                }
+            })
+    } catch (error) {
+        // Encryption Error
+        console.error('Encryption Error:', error);
+        res.status(500).json({ message: 'Encryption Error' });
+    }
 });
 
 //upload student information
-app.post('/postStudentInfo',(req,res,next) => {
-  const{studentName, schoolName,dateOfBirth,studentNRIC,studentClass,dateOfVaccine} = req.body;
-  return doctorFormModel
-  .postStudentInfo(studentNRIC,studentName,dateOfBirth,studentClass,schoolName,dateOfVaccine)
-  .then(data => {
-    console.log(data)
-    res.json(data);
-  })
-  .catch(error => {
-    if (error instanceof DUPLICATE_ENTRY_ERROR) {
-      res.status(409).json({ message: error.message });
-    } else {
-      res.status(500).json({ message: 'Internal server error' });
-    }
-  });
+app.post('/postStudentInfo', (req, res, next) => {
+    const { studentName, schoolName, dateOfBirth, studentNRIC, studentClass, dateOfVaccine } = req.body;
+    return doctorFormModel
+        .postStudentInfo(studentNRIC, studentName, dateOfBirth, studentClass, schoolName, dateOfVaccine)
+        .then(data => {
+            console.log(data)
+            res.json(data);
+        })
+        .catch(error => {
+            if (error instanceof DUPLICATE_ENTRY_ERROR) {
+                res.status(409).json({ message: error.message });
+            } else {
+                res.status(500).json({ message: 'Internal server error' });
+            }
+        });
 });
 
 //upload form information
-app.post('/postFormInfo',(req,res,next) => {
-  const{studentId, courseDate,doctorMCR,eligibility,comments,date} = req.body;
-  return doctorFormModel
-  .postFormInfo(studentId, courseDate,doctorMCR,eligibility,comments,date)
-  .then(data => {
-    console.log(data)
-    res.json(data);
-  })
-  .catch(error => {
-    if (error instanceof DUPLICATE_ENTRY_ERROR) {
-      res.status(409).json({ message: error.message });
-    } else {
-      res.status(500).json({ message: 'Internal server error' });
-    }
-  });
+app.post('/postFormInfo', (req, res, next) => {
+    const { studentId, courseDate, doctorMCR, eligibility, comments, date } = req.body;
+    return doctorFormModel
+        .postFormInfo(studentId, courseDate, doctorMCR, eligibility, comments, date)
+        .then(data => {
+            console.log(data)
+            res.json(data);
+        })
+        .catch(error => {
+            if (error instanceof DUPLICATE_ENTRY_ERROR) {
+                res.status(409).json({ message: error.message });
+            } else {
+                res.status(500).json({ message: 'Internal server error' });
+            }
+        });
 });
 
 // check doctor mcr
 app.post('/checkDoctorMCR', (req, res, next) => {
-  //retrieve doctorMCR here...
-  const { doctorMCR } = req.body;
-  //continue to database...
-  return doctorFormModel
-    .matchDoctorInfo(doctorMCR)
-    .then(data => {
-      const encryptedSignInfo = data[0].signature
-      const key = Buffer.from('qW3eRt5yUiOpAsDfqW3eRt5yUiOpAsDf'); //must be 32 characters
-      const iv = Buffer.from('qW3eRt5yUiOpAsDf'); //must be 16 characters
-      try {
-        // Create the decipher object
-        const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
-        let decrypted = decipher.update(encryptedSignInfo, 'hex', 'utf8');
-        decrypted += decipher.final('utf8');
+    //retrieve doctorMCR here...
+    const { doctorMCR } = req.body;
+    //continue to database...
+    return doctorFormModel
+        .matchDoctorInfo(doctorMCR)
+        .then(data => {
+            const encryptedSignInfo = data[0].signature
+            const key = Buffer.from('qW3eRt5yUiOpAsDfqW3eRt5yUiOpAsDf'); //must be 32 characters
+            const iv = Buffer.from('qW3eRt5yUiOpAsDf'); //must be 16 characters
+            try {
+                // Create the decipher object
+                const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+                let decrypted = decipher.update(encryptedSignInfo, 'hex', 'utf8');
+                decrypted += decipher.final('utf8');
 
-        data[0].signature = decrypted;
-        res.json(data);
-      } catch (error) {
-        // Decrypt Error
-        console.error('Decryption Error:', error);
-        res.status(500).json({ message: 'Decryption Error' });
-      }
-    })
-    .catch(err => {
-      console.error(err);
-      if (err instanceof UserNotFoundError) {
-        // user is not found
-        res.status(404).json({ message: 'DoctorNotFound'});
-      } else {
-        // unknown internal error(system failure)
-        res.status(500).json({ message: 'Unknown error occurred.' });
-      }
-    });
+                data[0].signature = decrypted;
+                res.json(data);
+            } catch (error) {
+                // Decrypt Error
+                console.error('Decryption Error:', error);
+                res.status(500).json({ message: 'Decryption Error' });
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            if (err instanceof UserNotFoundError) {
+                // user is not found
+                res.status(404).json({ message: 'DoctorNotFound' });
+            } else {
+                // unknown internal error(system failure)
+                res.status(500).json({ message: 'Unknown error occurred.' });
+            }
+        });
 });
 
 // get classes
 app.get('/getClasses', (req, res, next) => {
-  const limit = parseInt(req.query.limit);
-  const offset = parseInt(req.query.offset);
-  const search =req.query.search || '';
-  console.log(search)
-  return doctorFormModel
-    .getClasses(limit,offset,search)
-    .then(data => {
-      const classLists = data[0];
-      console.log(classLists)
-      res.json(classLists);
-    })
-    .catch(err => {
-      if (error instanceof EMPTY_RESULT_ERROR) {
-        res.status(404).json({ message: error.message });
-      } else {
-        res.status(500).json({ message: 'Internal server error' });
-      }
-    });
+    const limit = parseInt(req.query.limit);
+    const offset = parseInt(req.query.offset);
+    const search = req.query.search || '';
+    console.log(search)
+    return doctorFormModel
+        .getClasses(limit, offset, search)
+        .then(data => {
+            const classLists = data[0];
+            console.log(classLists)
+            res.json(classLists);
+        })
+        .catch(err => {
+            if (error instanceof EMPTY_RESULT_ERROR) {
+                res.status(404).json({ message: error.message });
+            } else {
+                res.status(500).json({ message: 'Internal server error' });
+            }
+        });
 });
 
 // get schools
 app.get('/getSchools', (req, res, next) => {
-  const limit = parseInt(req.query.limit);
-  const offset = parseInt(req.query.offset);
-  const search =req.query.search || '';
-  
-  return doctorFormModel
-    .getSchools(limit,offset,search)
-    .then(data => {
-      const schoolLists = data[0];
-      console.log(schoolLists)
-      res.json(schoolLists);
-    })
-    .catch(err => {
-      if (error instanceof EMPTY_RESULT_ERROR) {
-        res.status(404).json({ message: error.message });
-      } else {
-        res.status(500).json({ message: 'Internal server error' });
-      }
-    });
+    const limit = parseInt(req.query.limit);
+    const offset = parseInt(req.query.offset);
+    const search = req.query.search || '';
+
+    return doctorFormModel
+        .getSchools(limit, offset, search)
+        .then(data => {
+            const schoolLists = data[0];
+            console.log(schoolLists)
+            res.json(schoolLists);
+        })
+        .catch(err => {
+            if (error instanceof EMPTY_RESULT_ERROR) {
+                res.status(404).json({ message: error.message });
+            } else {
+                res.status(500).json({ message: 'Internal server error' });
+            }
+        });
 });
 
 // get course dates
 app.get('/getCourseDates', (req, res, next) => {
-  const limit = parseInt(req.query.limit);
-  const offset = parseInt(req.query.offset);
-  const search =req.query.search || '';
+    const limit = parseInt(req.query.limit);
+    const offset = parseInt(req.query.offset);
+    const search = req.query.search || '';
 
-  return doctorFormModel
-    .getCourseDates(limit,offset,search)
-    .then(data => {
-      const courseDateLists = data[0];
-      res.json(courseDateLists)
-    })
-    .catch(err => {
-      if (error instanceof EMPTY_RESULT_ERROR) {
-        res.status(404).json({ message: error.message });
-      } else {
-        res.status(500).json({ message: 'Internal server error' });
-      }
-    });
+    return doctorFormModel
+        .getCourseDates(limit, offset, search)
+        .then(data => {
+            const courseDateLists = data[0];
+            res.json(courseDateLists)
+        })
+        .catch(err => {
+            if (error instanceof EMPTY_RESULT_ERROR) {
+                res.status(404).json({ message: error.message });
+            } else {
+                res.status(500).json({ message: 'Internal server error' });
+            }
+        });
 });
 
 // Retrieve form details for parent acknowledgement- Used by Barry (for identification for merging)

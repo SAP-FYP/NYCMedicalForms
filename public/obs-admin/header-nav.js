@@ -16,7 +16,6 @@ window.addEventListener('DOMContentLoaded', () => {
     // GET USER DATA - AUTHORIZATION
     const getUser = fetch('/user')
         .then((response) => {
-
             if (response.redirected) {
                 window.location.href = response.url;
                 throw new Error('redirected');
@@ -32,9 +31,7 @@ window.addEventListener('DOMContentLoaded', () => {
         .then((jsonData) => {
             // SET HEADER DATA
             headerName.textContent = jsonData.user.name;
-            if (!jsonData.user.picUrl) {
-                headerImg.src = '../../../assets/images/default-user-icon.png'
-            }
+            headerImg.src = jsonData.user.picUrl || '../../../assets/images/default-user-icon.png';
 
         })
         .catch((error) => {

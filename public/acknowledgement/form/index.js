@@ -105,7 +105,7 @@ window.addEventListener("DOMContentLoaded", function () {
   const parentNRIC = document.getElementById("parent-nric");
 
 //   Change to UTC
-  const date = new Date().toLocaleDateString("en-SG").split("/").join("-");
+  const date = new Date().toISOString().split("T")[0];
 
   // On submit
   const submitBtn = document.getElementById("submit-button");
@@ -190,6 +190,7 @@ if (parentNRIC.value.length !== 9) {
       })
       .then((response) => {
         // window.location.href = "/acknowledgement/success";
+        alert("Acknowledgement successful");
       })
       .catch((error) => {
         // TODO Add error handling

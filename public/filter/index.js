@@ -1,29 +1,9 @@
-document.addEventListener('DOMContentLoaded', function (event) {
+document.addEventListener('DOMContentLoaded', (event) => {
     var dropdownMenuStayOpen = document.querySelectorAll('.dropdown-menu-stay');
     const classDropDown = document.getElementById('classDropDown');
     const schoolDropDown = document.getElementById('schoolDropDown');
     const courseDateDropDown = document.getElementById('courseDateDropDown');
-    
-    // empty out filter divs
-    classDropDown.addEventListener('hidden.bs.dropdown',event => {
-        const loadingMsgTemplate = document.getElementById("loadingMsgTemp").content.cloneNode(true);
-        const classesDiv = document.getElementById('classesDiv');
-        classesDiv.innerHTML = "";
-        classesDiv.appendChild(loadingMsgTemplate);
-    })
-    schoolDropDown.addEventListener('hidden.bs.dropdown',event =>{
-        const loadingMsgTemplate = document.getElementById("loadingMsgTemp").content.cloneNode(true);;
-        const schoolsDiv = document.getElementById('schoolsDiv');
-        schoolsDiv.innerHTML = "";
-        schoolsDiv.appendChild(loadingMsgTemplate);
-    })
-    courseDateDropDown.addEventListener('hidden.bs.dropdown',event =>{
-        const loadingMsgTemplate = document.getElementById("loadingMsgTemp").content.cloneNode(true);;
-        const courseDatesDiv = document.getElementById('courseDatesDiv');
-        courseDatesDiv.innerHTML = "";
-        courseDatesDiv.appendChild(loadingMsgTemplate);
-    })
-
+   
     // prevent menu from closing down 
     for (var i = 0; i < dropdownMenuStayOpen.length; i++) {
         dropdownMenuStayOpen[i].addEventListener('click', function (e) {
@@ -32,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
     }
 
     document.getElementById('classMenuButton').addEventListener('click', function() {
-        let limit = 7;
+        const limit = 7;
         let offset = 0;
         const classesDiv = document.getElementById('classesDiv');
         const searchBar = document.getElementById('classSearch');
@@ -59,19 +39,18 @@ document.addEventListener('DOMContentLoaded', function (event) {
     
                 // Increase the offset for the next fetch
                 offset += limit;
-                
+                console.log(offset+'1')
                 // If reached the end of data, remove any more scroll
                 if (data.length < limit) {
                     document.getElementById('classDropDownMenu').removeEventListener('scroll', handleScroll);
                 }
-            })
+            })  
             .catch(error => console.error('Error:', error));
         };
     
         const handleScroll = (e) => {
             const nearBottom = e.target.scrollHeight - e.target.scrollTop <= e.target.clientHeight + 5;
-            console.log(e.target.scrollHeight - e.target.scrollTop)
-            console.log(e.target.clientHeight)
+            console.log(offset+'2')
             if (nearBottom) {
                 console.log("aaaaaaaaaa")
                 // Remove the scroll event listener to prevent multiple requests
@@ -87,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
             // Reset the offset and clear the classesDiv
             offset = 0;
             classesDiv.innerHTML = "";
-            
+            console.log(offset+'3')
             // Add the loading message
             const loadingMsgTemplate = document.getElementById("loadingMsgTemp").content.cloneNode(true);
             classesDiv.appendChild(loadingMsgTemplate);
@@ -99,8 +78,21 @@ document.addEventListener('DOMContentLoaded', function (event) {
             document.getElementById('classDropDownMenu').addEventListener('scroll', handleScroll);
         });
         
+        // when dropdown is closed
+        classDropDown.addEventListener('hide.bs.dropdown',event => {
+            const loadingMsgTemplate = document.getElementById("loadingMsgTemp").content.cloneNode(true);
+            const classesDiv = document.getElementById('classesDiv');
+            searchBar.value = '';
+            classesDiv.innerHTML = '';
+            classesDiv.appendChild(loadingMsgTemplate);
+            document.getElementById('classDropDownMenu').removeEventListener('scroll', handleScroll);
+            offset = 0;
+            console.log(offset);
+        });
+
         // Fetch the first set of data
         fetchClasses();
+        console.log(offset+'0')
         document.getElementById('classDropDownMenu').addEventListener('scroll', handleScroll);
     });
     
@@ -159,6 +151,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
                 // Fetch the next set of data
                 fetchSchools();
             }
+            
         };
         
         // Search event listener
@@ -175,6 +168,17 @@ document.addEventListener('DOMContentLoaded', function (event) {
     
             // Reattach the scroll event listener
             //schoolsDiv.addEventListener('scroll', handleScroll);
+        });
+
+        schoolDropDown.addEventListener('hidden.bs.dropdown',event =>{
+            const loadingMsgTemplate = document.getElementById("loadingMsgTemp").content.cloneNode(true);;
+            const schoolsDiv = document.getElementById('schoolsDiv');
+            searchBar.value = '';
+            schoolsDiv.innerHTML = "";
+            schoolsDiv.appendChild(loadingMsgTemplate);
+            document.getElementById('schoolDropDownMenu').removeEventListener('scroll', handleScroll);
+            offset = 0;
+            console.log(offset);
         });
         // Fetch the first set of data
         fetchSchools();
@@ -252,6 +256,18 @@ document.addEventListener('DOMContentLoaded', function (event) {
             // Reattach the scroll event listener
             //courseDatesDiv.addEventListener('scroll', handleScroll);
         });
+
+        courseDateDropDown.addEventListener('hidden.bs.dropdown',event =>{
+            const loadingMsgTemplate = document.getElementById("loadingMsgTemp").content.cloneNode(true);;
+            const courseDatesDiv = document.getElementById('courseDatesDiv');
+            searchBar.value = '';
+            courseDatesDiv.innerHTML = "";
+            courseDatesDiv.appendChild(loadingMsgTemplate);
+            document.getElementById('courseDateDropDownMenu').removeEventListener('scroll', handleScroll);
+            offset = 0;
+            console.log(offset);
+        });
+    
         // Fetch the first set of data
         fetchCourseDates();
         document.getElementById('courseDateDropDownMenu').addEventListener('scroll', handleScroll);

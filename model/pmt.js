@@ -39,6 +39,24 @@ module.exports.retrieveSubmission = function retrieveSubmission(nameOfStudent) {
             });
 };
 
+module.exports.retrieveSubmissionBySearch = function retrieveSubmissionByStudentId(searchInput) {
+    const sql = `SELECT *
+    FROM form F
+    JOIN student S ON F.studentId = S.studentId
+    JOIN parentAcknowledgement PA ON F.studentId = PA.studentId
+    JOIN doctor D ON F.doctorMCR = D.doctorMCR
+    WHERE S.nameOfStudent LIKE ?`;
+    return query(sql, `%${searchInput}%`)
+        .then((result) => {
+            if (result.length === 0) {
+                throw new Error(searchInput + "'s submission not found");
+            }
+            return result;
+        })
+        .catch((error) => {
+            throw new Error(error);
+        })
+}
 module.exports.updateSubmissionStatus = function updateSubmissionStatus(formStatus, studentId) {
     const sql = `UPDATE form 
                  SET formStatus = ?
@@ -53,3 +71,6 @@ module.exports.updateSubmissionStatus = function updateSubmissionStatus(formStat
                throw new Error(error);
            });
 };
+
+
+

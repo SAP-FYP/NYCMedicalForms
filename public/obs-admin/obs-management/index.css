@@ -50,6 +50,7 @@ body {
     position: fixed;
     transition: ease-in-out 300ms;
     min-height: 95%;
+    z-index: 99;
 }
 
 .navbar-nav {
