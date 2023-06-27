@@ -386,3 +386,45 @@ module.exports.bulkDisableUser = async function bulkDisableUser(users, status, i
         throw error
     }
 }
+
+module.exports.updateUserPassword = function updateUserPassword(email, password, invalidationDate) {
+    const sql = 'UPDATE user SET password = ?, invalidationDate = ?, passwordUpdated = ? WHERE email = ?';
+    return query(sql, [password, invalidationDate, invalidationDate, email])
+        .then((result) => {
+            const affectedRows = result[0].affectedRows;
+
+            if (affectedRows == 0) {
+                const error = new Error("Unable to update account");
+                error.status = 500;
+                throw error;
+            }
+            return affectedRows;
+        }).catch((error) => {
+            console.log(error)
+            throw error;
+        })
+}
+
+module.exports.updateUserProfile = function updateUserProfile(email, name, contact, invalidationDate, picUrl) {
+
+    const sql = picUrl
+        ? 'UPDATE user SET nameOfUser = ?, contactNo = ?, invalidationDate = ?, picUrl = ? WHERE email = ?'
+        : 'UPDATE user SET nameOfUser = ?, contactNo = ?, invalidationDate = ? WHERE email = ?';
+
+    const params = picUrl ? [name, contact, invalidationDate, picUrl, email] : [name, contact, invalidationDate, email];
+
+    return query(sql, params)
+        .then((result) => {
+            const affectedRows = result[0].affectedRows;
+
+            if (affectedRows == 0) {
+                const error = new Error("Unable to update account");
+                error.status = 500;
+                throw error;
+            }
+            return affectedRows;
+        }).catch((error) => {
+            console.log(error)
+            throw error;
+        })
+}

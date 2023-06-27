@@ -26,6 +26,61 @@ window.addEventListener('DOMContentLoaded', () => {
     let offset = 0;
     let searchFilter;
 
+
+    // === ERROR AND RESPONSE HANDLING ===
+
+    // 400 , 422 , !200
+    const handleCreateEditResponse = (response) => {
+        if (response.redirected) {
+            window.location.href = response.url
+            throw new Error('redirected');
+        }
+
+        if (response.status == 400) {
+            const error = new Error("Invalid data");
+            error.status = response.status
+            throw error;
+
+        } else if (response.status == 422) {
+            const error = new Error("Email already exists");
+            error.status = response.status
+            throw error;
+
+        } else if (response.status != 200) {
+            const error = new Error("Unknown error");
+            error.status = response.status
+            throw error;
+        }
+
+        return;
+    }
+
+    // !404 , !200
+    const handleResponse = (response) => {
+        if (response.redirected) {
+            window.location.href = response.url;
+            throw new Error('redirected');
+        }
+
+        if (response.status !== 200 && response.status !== 404) {
+            const error = new Error('Unknown error');
+            error.status = 500;
+            throw error;
+        }
+
+        return response.json();
+    }
+
+    // TODO: Proper Error
+    const handleError = (error) => {
+        if (error && error.message !== 'redirected') {
+            if (error !== "TypeError: Failed to fetch") {
+                console.log(error);
+                alert(error);
+            }
+        }
+    }
+
     // === FETCHES ===
 
     // GET ROLES  
@@ -145,9 +200,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 content.querySelector(".dropdown-disable").textContent = 'Enable';
 
                 content.querySelector(".profile-button").classList.add('profile-button-disabled')
-                content.querySelector(".profile-button").innerHTML = `<i class="material-icons profile-button-icon"
-                        style="font-size:28px;color:#5a5a5a; margin-right: 5px;">person</i>
-                        Disabled`
+                content.querySelector(".profile-button").textContent = `Disabled`
             }
 
             content.querySelector(".dropdown-disable").addEventListener('click', (e) => {
@@ -304,9 +357,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     alert('Successfully disabled user!')
                     disableModal.hide();
                     document.getElementById(`profile-button-${user.email}`).classList.add('profile-button-disabled')
-                    document.getElementById(`profile-button-${user.email}`).innerHTML = `<i class="material-icons profile-button-icon"
-                    style="font-size:28px;color:#5a5a5a; margin-right: 5px;">person</i>
-                    Disabled`
+                    document.getElementById(`profile-button-${user.email}`).textContent = `Disabled`
                     document.getElementById(`item-${user.email}`).getElementsByClassName('dropdown-disable')[0].textContent = 'Enable'
                     document.getElementById(`item-${user.email}`).getElementsByClassName('dropdown-disable')[0].setAttribute('data-bs-target', '#confirmationEnableModal');
                     document.getElementById(`item-${user.email}`).getElementsByClassName('dropdown-disable')[0].addEventListener('click', (e) => {
@@ -344,9 +395,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
                     users.users.forEach(user => {
                         document.getElementById(`profile-button-${user}`).classList.add('profile-button-disabled')
-                        document.getElementById(`profile-button-${user}`).innerHTML = `<i class="material-icons profile-button-icon"
-                    style="font-size:28px;color:#5a5a5a; margin-right: 5px;">person</i>
-                    Disabled`
+                        document.getElementById(`profile-button-${user}`).textContent = `Disabled`
                         document.getElementById(`item-${user}`).getElementsByClassName('dropdown-disable')[0].textContent = 'Enable'
                         document.getElementById(`item-${user}`).getElementsByClassName('dropdown-disable')[0].setAttribute('data-bs-target', '#confirmationEnableModal');
                         document.getElementById(`item-${user}`).getElementsByClassName('dropdown-disable')[0].addEventListener('click', (e) => {
@@ -375,9 +424,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     enableModal.hide();
                     alert('Successfully enabled user!')
                     document.getElementById(`profile-button-${user.email}`).classList.remove('profile-button-disabled')
-                    document.getElementById(`profile-button-${user.email}`).innerHTML = `<i class="material-icons profile-button-icon"
-                    style="font-size:28px;color:#485EAB; margin-right: 5px;">person</i>
-                    Profile`
+                    document.getElementById(`profile-button-${user.email}`).textContent = `Enabled`
                     document.getElementById(`item-${user.email}`).getElementsByClassName('dropdown-disable')[0].textContent = 'Disable'
                     document.getElementById(`item-${user.email}`).getElementsByClassName('dropdown-disable')[0].setAttribute('data-bs-target', '#confirmationDisableModal');
                     document.getElementById(`item-${user.email}`).getElementsByClassName('dropdown-disable')[0].addEventListener('click', (e) => {
@@ -425,60 +472,6 @@ window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('bulk-action').style.visibility = 'hidden';
         }
 
-    }
-
-    // === ERROR AND RESPONSE HANDLING ===
-
-    // 400 , 422 , !200
-    const handleCreateEditResponse = (response) => {
-        if (response.redirected) {
-            window.location.href = response.url
-            throw new Error('redirected');
-        }
-
-        if (response.status == 400) {
-            const error = new Error("Invalid data");
-            error.status = response.status
-            throw error;
-
-        } else if (response.status == 422) {
-            const error = new Error("Email already exists");
-            error.status = response.status
-            throw error;
-
-        } else if (response.status != 200) {
-            const error = new Error("Unknown error");
-            error.status = response.status
-            throw error;
-        }
-
-        return;
-    }
-
-    // !404 , !200
-    const handleResponse = (response) => {
-        if (response.redirected) {
-            window.location.href = response.url;
-            throw new Error('redirected');
-        }
-
-        if (response.status !== 200 && response.status !== 404) {
-            const error = new Error('Unknown error');
-            error.status = 500;
-            throw error;
-        }
-
-        return response.json();
-    }
-
-    // TODO: Proper Error
-    const handleError = (error) => {
-        if (error && error.message !== 'redirected') {
-            if (error !== "TypeError: Failed to fetch") {
-                console.log(error);
-                alert(error);
-            }
-        }
     }
 
     // === EVENT HANDLERS ===

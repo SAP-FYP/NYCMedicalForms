@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.SECRETKEY;
 
+const bcrypt = require('bcrypt');
 const userModel = require('../model/user')
 const momentHelper = require('../helper/epochConverter')
 
@@ -48,8 +49,8 @@ module.exports.checkIat = function checkIat(req, res, next) {
                 res.clearCookie('jwt');
                 const error = new Error("Token expired/invalidated! Reason(Invalidated token)");
                 error.status = 401;
+                console.log('Error: ' + error.message);
                 return next(error);
-
             }
             next();
         })
@@ -57,4 +58,43 @@ module.exports.checkIat = function checkIat(req, res, next) {
             console.log(error)
             return res.status(error.status || 500).json({ error: error.message });
         })
+}
+
+module.exports.checkPassword = function checkPassword(req, res, next) {
+    const credentials = {
+        email: req.decodedToken.email,
+        password: req.body.password.currentPassword,
+    };
+
+    if (!credentials.email || !credentials.password) {
+        const error = new Error("Empty email or password");
+        error.status = 400;
+        throw error;
+    }
+
+    return userModel
+        .loginUser(credentials.email)
+        .then((result) => {
+
+            // CHECK HASH
+            if (!bcrypt.compareSync(credentials.password, result.password)) {
+                const error = new Error("Invalid email or password");
+                error.status = 401;
+                console.log('Error: ' + error.message);
+                throw error;
+            }
+
+            if (result.isDisabled) {
+                const error = new Error("Account is disabled. Please dontact admin for more information");
+                error.status = 403;
+                console.log('Error: ' + error.message);
+                next(error);
+            }
+
+            next();
+        })
+        .catch((error) => {
+            console.log(error)
+            return res.status(error.status || 500).json({ error: error.message });
+        });
 }

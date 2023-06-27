@@ -2,26 +2,25 @@ const express = require("express");
 const cookieParser = require('cookie-parser');
 const moment = require('moment');
 const bodyParser = require('body-parser');
+const formData = require("express-form-data");
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const elasticEmail = require('elasticemail');
-const multer = require('multer');
 const cloudinary = require("cloudinary").v2;
-const {
-    UserNotFoundError
-} = require("./errors");
 const crypto = require('crypto');
+
+const { UserNotFoundError } = require("./errors");
 const key = Buffer.from(process.env.encryptKey, 'hex');
 const iv = Buffer.from(process.env.encryptIV, 'hex');
 
-const authHelper = require('./auth/userAuth')
-const userModel = require('./model/user')
+const authHelper = require('./auth/userAuth');
+const userModel = require('./model/user');
 const doctorFormModel = require('./model/doctorForm');
-const parentModel = require('./model/parent')
-const formModel = require('./model/form')
-const adminModel = require('./model/admin')
-const pmtModel = require('./model/pmt')
-
+const parentModel = require('./model/parent');
+const formModel = require('./model/form');
+const adminModel = require('./model/admin');
+const pmtModel = require('./model/pmt');
+const cloudinaryModel = require('./model/cloudinary');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -35,6 +34,13 @@ app.use((req, res, next) => {
     next();
 });
 
+// Form Data Parser
+app.use(formData.parse({}));
+app.use(formData.format());
+app.use(formData.stream());
+app.use(formData.union());
+
+// JSON Parser
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -129,22 +135,278 @@ app.post('/login', (req, res, next) => {
         });
 });
 
+// Check password
+app.post('/checkpass', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+
+    const credentials = {
+        email: req.decodedToken.email,
+        password: req.body.password,
+    };
+
+    if (!credentials.email || !credentials.password) {
+        const error = new Error("Empty email or password");
+        error.status = 400;
+        throw error;
+    }
+
+    return userModel
+        .loginUser(credentials.email)
+        .then((result) => {
+
+            // CHECK HASH
+            if (!bcrypt.compareSync(credentials.password, result.password)) {
+                const error = new Error("Invalid email or password");
+                error.status = 401;
+                throw error;
+            }
+
+            if (result.isDisabled) {
+                const error = new Error("Account is disabled. Please dontact admin for more information");
+                error.status = 403;
+                throw error;
+            }
+
+            res.sendStatus(200);
+        })
+        .catch((error) => {
+            console.log(error)
+            return res.status(error.status || 500).json({ error: error.message });
+        });
+});
+
 // Get User Info
 app.get('/user', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
-
     const user = req.decodedToken;
 
     if (!user) {
-        const error = new Error("Empty user");
-        error.status = 404;
-        throw error;
+        return res.redirect('/error?code=401')
     }
 
     delete user.iat;
     delete user.exp;
     delete user.permissionGroup;
 
-    return res.send({ user });
+    return adminModel
+        .getUserRoles()
+        .then((result) => {
+            if (!result) {
+                const error = new Error("No user roles found")
+                error.status = 404;
+                throw error
+            }
+
+            result.forEach(i => {
+                if (i.roleId == user.role) {
+                    user.roleName = i.roleName
+                }
+            });
+
+            return res.send({ user });
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+})
+
+// Update user password
+app.put('/user/password', authHelper.verifyToken, authHelper.checkIat, authHelper.checkPassword, (req, res, next) => {
+    const user = req.decodedToken;
+
+    if (!user) {
+        return res.redirect('/error?code=401')
+    }
+
+    if (!req.body.password.newPassword || !user.email) {
+        const error = new Error("Empty or invalid information");
+        error.status = 400;
+        throw error;
+    }
+
+    const { newPassword } = req.body.password;
+
+    bcrypt.hash(newPassword, 10, async function (err, hash) {
+        if (err) {
+            return res.status(500).json({ error: 'Error hashing password' });
+        }
+
+        const email = user.email;
+        const password = hash;
+        const invalidationDate = moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss');
+
+        return adminModel
+            .updateUserPassword(email, password, invalidationDate)
+            .then((result) => {
+
+                if (!result) {
+                    const error = new Error("Unable to update account password")
+                    error.status = 500;
+                    throw error;
+                }
+
+                return userModel
+                    .loginUser(email)
+                    .then((result) => {
+
+                        // CHECK HASH
+                        if (!bcrypt.compareSync(newPassword, result.password)) {
+                            const error = new Error("Invalid email or password");
+                            error.status = 401;
+                            throw error;
+                        }
+
+                        if (result.isDisabled) {
+                            const error = new Error("Account is disabled. Please dontact admin for more information");
+                            error.status = 403;
+                            throw error;
+                        }
+
+                        // SET JWT
+                        let payload = {
+                            'email': result.email,
+                            'name': result.nameOfUser,
+                            'permissionGroup': result.groupId,
+                            'role': result.roleId,
+                            'permissions': result.permissions,
+                            'picUrl': result.picUrl,
+                            'contact': result.contactNo
+                        }
+
+                        let tokenConfig = {
+                            expiresIn: 28800,
+                            algorithm: 'HS256'
+                        };
+
+                        // SIGN JWT
+                        jwt.sign(payload, JWT_SECRET, tokenConfig, (err, token) => {
+
+                            if (err) {
+                                const error = new Error("Failed to sign JWT");
+                                error.status = 500;
+                                throw error;
+                            };
+
+                            res.cookie('jwt', token, {
+                                httpOnly: true,
+                                secure: false,
+                                sameSite: 'strict'
+                            });
+
+                            if (payload.role) {
+                                return res.sendStatus(200);
+                            } else {
+                                const error = new Error("Invalid user role");
+                                error.status = 500;
+                                throw error;
+                            }
+                        })
+                    })
+            })
+            .catch((error) => {
+                console.log(error)
+                return res.status(error.status || 500).json({ error: error.message });
+            })
+    })
+})
+
+// Update user
+app.put('/user/profile', authHelper.verifyToken, authHelper.checkIat, authHelper.checkPassword, (req, res, next) => {
+    const user = req.decodedToken;
+
+    if (!user) {
+        return res.redirect('/error?code=401')
+    }
+
+    if (!req.body.name || !req.body.number || !user.email) {
+        const error = new Error("Empty or invalid information");
+        error.status = 400;
+        throw error;
+    }
+
+    const email = user.email;
+    const name = req.body.name;
+    const number = req.body.number;
+    const img = req.body.img || null;
+    const invalidationDate = moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss');
+
+    return cloudinaryModel
+        .uploadImage(img)
+        .then((result) => {
+            const imageUrl = result || null;
+
+            return adminModel
+                .updateUserProfile(email, name, number, invalidationDate, imageUrl)
+                .then((result) => {
+                    if (!result) {
+                        const error = new Error("Unable to update profile")
+                        error.status = 500;
+                        throw error;
+                    }
+
+                    return userModel
+                        .loginUser(email)
+                        .then((result) => {
+
+                            const { currentPassword } = req.body.password;
+
+                            // CHECK HASH
+                            if (!bcrypt.compareSync(currentPassword, result.password)) {
+                                const error = new Error("Invalid email or password");
+                                error.status = 401;
+                                throw error;
+                            }
+
+                            if (result.isDisabled) {
+                                const error = new Error("Account is disabled. Please dontact admin for more information");
+                                error.status = 403;
+                                throw error;
+                            }
+
+                            // SET JWT
+                            let payload = {
+                                'email': result.email,
+                                'name': result.nameOfUser,
+                                'permissionGroup': result.groupId,
+                                'role': result.roleId,
+                                'permissions': result.permissions,
+                                'picUrl': result.picUrl,
+                                'contact': result.contactNo
+                            }
+
+                            let tokenConfig = {
+                                expiresIn: 28800,
+                                algorithm: 'HS256'
+                            };
+
+                            // SIGN JWT
+                            jwt.sign(payload, JWT_SECRET, tokenConfig, (err, token) => {
+
+                                if (err) {
+                                    const error = new Error("Failed to sign JWT");
+                                    error.status = 500;
+                                    throw error;
+                                };
+
+                                res.cookie('jwt', token, {
+                                    httpOnly: true,
+                                    secure: false,
+                                    sameSite: 'strict'
+                                });
+
+                                if (payload.role) {
+                                    return res.sendStatus(200);
+                                } else {
+                                    const error = new Error("Invalid user role");
+                                    error.status = 500;
+                                    throw error;
+                                }
+                            })
+                        })
+                })
+        })
+        .catch((error) => {
+            console.log(error)
+            return res.status(error.status || 500).json({ error: error.message });
+        })
 })
 
 // Logout
@@ -185,7 +447,6 @@ app.post('/post-acknowledge', (req, res) => {
         )
 
 })
-
 
 // Email test
 app.post('/send-email', (req, res) => {

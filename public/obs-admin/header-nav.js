@@ -8,6 +8,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const collapseNav = document.getElementById("collapse-li");
     const logoutNav = document.getElementById("logout-li");
 
+    const profileContainer = document.getElementById('profile-container');
     const headerName = document.getElementById('profile-user-name');
     const headerImg = document.getElementById('profile-user-image');
 
@@ -82,5 +83,9 @@ window.addEventListener('DOMContentLoaded', () => {
                 navbarLabels[i].style.visibility = "hidden"
             }
         }
+    }
+
+    profileContainer.onclick = () => {
+        window.location.href = '/obs-admin/profile'
     }
 })
