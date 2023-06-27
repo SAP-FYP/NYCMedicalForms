@@ -265,10 +265,7 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementById('email-input').value = user.email;
         document.getElementById('number-input').value = user.contact;
         document.getElementById('create-user-modal-icon').src = "../../../assets/images/edit-permission-icon.png"
-
-        modal.show();
     }
-
 
     // EDIT USER 
     const editUser = (user) => {
@@ -486,8 +483,6 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementById('permission-input').disabled = false;
         document.getElementById('staticBackdropLabel').textContent = "Create New User";
         document.getElementById('create-user-modal-icon').src = "../../../assets/images/create-modal-icon.png"
-
-        modal.show();
     }
 
     // FORM SUBMIT
@@ -502,7 +497,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
         if (!email || !permissionGroup || !name || !password || !contact || (permissionGroup == -1 && role != 1) || role == -1) {
             alert("Please fill in all fields");
-
+        } else if (!validator.isEmail(email)) {
+            alert("Please enter a valid email");
+        } else if (!validator.isStrongPassword(password)) {
+            alert("Password does not meet requirements");
         } else {
             const newuser = {
                 email,
@@ -663,5 +661,6 @@ window.addEventListener('DOMContentLoaded', () => {
     getUsers();
     getPermGroups();
     getRoles();
+
 })
 
