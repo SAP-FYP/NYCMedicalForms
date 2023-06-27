@@ -10,6 +10,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const permissionInput = document.getElementById("permission-input");
     const editFormSumbitButton = document.getElementById('edit-user-icon');
     const createFormSumbitButton = document.getElementById('confirm-user-icon')
+    const createButton = document.getElementById('create-user-icon');
     const myModalEl = document.getElementById('createUserModal');
     const myModalEnable = document.getElementById('confirmationEnableModal');
     const myModalDisable = document.getElementById('confirmationDisableModal');
@@ -46,7 +47,7 @@ window.addEventListener('DOMContentLoaded', () => {
             error.status = response.status
             throw error;
 
-        } else if (response.status != 200) {
+        } else if (response.status != 200 && response.status != 201) {
             const error = new Error("Unknown error");
             error.status = response.status
             throw error;
@@ -268,6 +269,7 @@ window.addEventListener('DOMContentLoaded', () => {
         modal.show();
     }
 
+
     // EDIT USER 
     const editUser = (user) => {
         return fetch('/obs-admin/user', {
@@ -475,6 +477,18 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     // === EVENT HANDLERS ===
+
+    createButton.onclick = () => {
+        createForm.reset();
+        createFormSumbitButton.style.display = 'inline';
+        editFormSumbitButton.style.display = 'none';
+        document.getElementById('email-input').disabled = false;
+        document.getElementById('permission-input').disabled = false;
+        document.getElementById('staticBackdropLabel').textContent = "Create New User";
+        document.getElementById('create-user-modal-icon').src = "../../../assets/images/create-modal-icon.png"
+
+        modal.show();
+    }
 
     // FORM SUBMIT
     createForm.onsubmit = (e) => {
