@@ -117,10 +117,10 @@
                         <div class="d-flex">
                             <div>
 
-                                <button  id="filter-icon-container">
+                                <button id="filter-icon-container">
                                     <img src="../../assets/images/filter-icon.png" id="filter-icon" alt="filter-icon">
                                 </button>
-                                
+
                             </div>
                             <div class="displayFilters ">
                                 <div class="row custom-row">
@@ -353,92 +353,98 @@
                                     <!--FORM-->
                                     <form style="height:100%; background-color: #C7D3EF;">
                                         <div class="row">
-                                            <div class="col-12">
-                                                <h4>Student Section:</h4>
+                                            <div class="col-12 mb-3">
+                                                <h4>Student Section</h3>
                                             </div>
-                                            <div class="col-12">
+                                            <div class="col-xl-6 col-12">
                                                 <div class="mb-3">
-                                                    <label for="applicantName" class="form-label">Name of
-                                                        Applicant:</label>
-                                                    <input type="text" class="form-control" id="applicantName"
-                                                        value="Jerry" disabled>
+                                                    <label for="studentName" class="form-label">Name of
+                                                        Applicant</label>
+                                                    <input type="text" class="form-control" id="applicantName" disabled>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="studentName" class="form-label">Date of Birth of
+                                                        Applicant</label>
+                                                    <input type="date" class="form-control" id="dateOfBirth" disabled>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="schoolName"
+                                                        class="form-label">Organization/School</label>
+                                                    <input type="text" class="form-control" id="schoolOrg" disabled>
                                                 </div>
                                             </div>
                                             <div class="col-xl-6 col-12">
                                                 <div class="mb-3">
-                                                    <label for="schoolOrg"
-                                                        class="form-label">Organization/School:</label>
-                                                    <input type="text" class="form-control" id="schoolOrg"
-                                                        value="Singapore Secondary School" disabled>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label for="personalId" class="form-label">Personal
-                                                        Identification Number:<br>(Birth
-                                                        Cert/NRIC/FIN)</label>
+                                                    <label for="studentNRIC" class="form-label">Student NRIC</label>
                                                     <input type="text" class="form-control" id="personalId"
-                                                        value="T0889875G" disabled>
-                                                </div>
-
-                                            </div>
-                                            <div class="col-xl-6 col-12">
-                                                <div class="mb-3">
-                                                    <label for="designation"
-                                                        class="form-label">Designation/class:</label>
-                                                    <input type="text" class="form-control" id="designation" value="4E3"
-                                                        disabled>
+                                                        maxlength="9" disabled>
                                                 </div>
                                                 <div class="mb-3">
-                                                    <label for="courseDate" class="form-label mt-xl-4">Course
-                                                        Date:</label>
-                                                    <input type="date" class="form-control" id="courseDate"
-                                                        value="2023-11-02" disabled>
+                                                    <label for="studentClass"
+                                                        class="form-label">Designation/class</label>
+                                                    <input type="text" class="form-control" id="designation" disabled>
                                                 </div>
-
+                                                <div class="mb-3">
+                                                    <label for="courseDate" class="form-label">Course Date</label>
+                                                    <input type="date" class="form-control" id="courseDate" disabled>
+                                                </div>
                                             </div>
                                             <div class="col-12">
-                                                <div class="row mt-xl-3 mb-3">
+                                                <div class="row mb-3">
                                                     <div class="col-xl-6 col-12">
-                                                        <label for="tetanusVaccine" class="form-label">Period of
-                                                            Tetanus Vaccination:</label>
-                                                    </div>
-                                                    <div class="col-xl-6 col-12 ">
+                                                        <label for="dateOfVaccine" class="form-label">Period of Tetanus
+                                                            Vaccination</label>
                                                         <input type="date" class="form-control" id="tetanusVaccine"
                                                             value="2023-11-02" disabled>
                                                     </div>
-
                                                 </div>
                                             </div>
-                                            <div class="col-12 mb-3">
-                                                <h4>Physician Section:</h4>
+
+                                            <div class="col-12 mt-4 mb-3">
+                                                <h4>Physician Section</h4>
                                             </div>
 
-
+                                            <!-- <div class="col-12">
+                                            <div class="form-group">
+                                                <div class="col-12 text-center mb-4">
+                                                    <label for="medical_check">I, the undersigned, have assessed the Applicant's Registration
+                                                        Form,<br>examined the Applicant & recommend him/her to be (please tick)</label>
+                                                </div>   
+                                            </div>
+                                            </div> -->
                                             <div class="col-12">
                                                 <div class="form-group">
                                                     <div class="col-12 text-center mb-3">
-                                                        <label for="medical_text">Subject to additional information
-                                                            provided on the following:<br>condition(s)(any):
-                                                        </label>
+                                                        <label for="comment">Subject to additional information provided
+                                                            on the following<br>condition(s)(any):</label>
                                                     </div>
-                                                    <textarea class="form-control mb-5" id="medicalText"
-                                                        name="medical_text" rows="10" disabled></textarea>
+                                                    <div class="col-12 text-center mb-3">
+                                                        <div class="btn btn-primary btn-sm submitReviewBtn" >Submit
+                                                            Review</div>
+                                                    </div>
+                                                    <div class="editReviewBtn">
+                                                        <textarea class="form-control mb-3" id="medicalText"
+                                                            name="medical_text" rows="10" disabled></textarea>
+                                                    </div>
                                                 </div>
                                             </div>
+
+
                                             <div class="col-12">
+                                                <div class="mb-3">
+                                                    <label for="mcrNo" class="form-label">Physician MCR No:</label>
+                                                    <input type="text" class="form-control" id="mcrNo" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-6 col-12">
                                                 <div class="mb-3">
                                                     <label for="physicianName" class="form-label">Name of
                                                         Physician:</label>
                                                     <input type="text" class="form-control" id="physicianName" disabled>
                                                 </div>
-                                            </div>
-                                            <div class="col-xl-6 col-12">
-                                                <div class="mb-3">
-                                                    <label for="mcrNo" class="form-label">Physician MCR No:</label>
-                                                    <input type="text" class="form-control" id="mcrNo" disabled>
-                                                </div>
                                                 <div class="mb-3">
                                                     <label for="clinicName" class="form-label">Name Of
-                                                        Clinic</label>
+                                                        Clinic:</label>
                                                     <input type="text" class="form-control" id="clinicName" disabled>
                                                 </div>
                                                 <div class="mb-3">
@@ -453,7 +459,7 @@
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="clinicAddress" class="form-label">Address Of
-                                                        Clinic</label>
+                                                        Clinic:</label>
                                                     <input type="text" class="form-control" id="clinicAddress" disabled>
                                                 </div>
                                             </div>
@@ -500,6 +506,18 @@
                                                     <label for="date" class="form-label">Date:</label>
                                                     <input type="date" class="form-control" id="parent-date" disabled>
                                                 </div>
+
+                                                <div class="mb-3">
+                                                    <label for="parentEmail" class="form-label">Parent's Email</label>
+                                                    <input type="text" class="form-control" id="parent-email" disabled>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="parents-contact" class="form-label">Contact No:</label>
+                                                    <input type="text" class="form-control" id="parent-contact"
+                                                        disabled>
+                                                </div>
+
+
                                             </div>
                                             <div class="col-xl-6 col-12 mb-3">
                                                 <div class="mb-3">
@@ -508,13 +526,9 @@
                                                         style="border: 1px solid #485EAB; background-color: white;"></canvas>
                                                     <input type="hidden" id="parent-signature" name="signatureData">
                                                 </div>
-                                                <div class="mb-3">
-                                                    <label for="parents-contact" class="form-label">Contact No:</label>
-                                                    <input type="text" class="form-control" id="parent-contact"
-                                                        disabled>
-                                                </div>
+
                                             </div>
-                                            <div class="col-12 mb-3" id="pmtHeadingForm">
+                                            <div class="col-12 mb-3 mt-4" id="pmtHeadingForm">
 
                                             </div>
                                             <div class="form-group" id="apprRejContainer">
@@ -533,7 +547,28 @@
                         </div>
                     </div>
 
+                    <!-- Modal Reviewed-->
+                    <div class="modal fade" id="staticBackdropRev" data-bs-keyboard="false" tabindex="-1"
+                        aria-labelledby="staticBackdropLabel" aria-hidden="true" data-bs-backdrop="static">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-body text-center">
+                                    <h3 class=" text-center">Edited Review.</h3>
+                                    <h5>The review has been changed.</h5>
+                                    <img src="../../assets/images/Approved.png" alt="approved" class=" h-auto"
+                                        id="errorIcon">
 
+                                    <div class="d-flex justify-content-center align-items-center pt-2">
+                                        <button type="button" class="btn btn-primary successBtn"
+                                            data-bs-dismiss="modal">Confirm</button>
+                                      
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Modal Approve-->
                     <div class="modal fade" id="staticBackdropAppr" data-bs-keyboard="false" tabindex="-1"

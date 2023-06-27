@@ -1,7 +1,7 @@
 const url = window.location
 const domain = url.protocol + "//" + url.host;
 API_URL = `${domain}/obs-admin/pmt`;
-
+API_URL_MST = `${domain}/obs-admin/mst`;
 //Function for status count
 function updateFormCounts(formData) {
   const formCounts = formData.reduce(
@@ -203,17 +203,17 @@ function openModal(studentName) {
 
       function handleExportClick(e) {
         e.preventDefault(); // prevent the default form submission behavior
-      
+
         // Extract the form data
         const applicantName = formData.nameOfStudent;
         const schoolOrg = formData.school;
         const classNo = formData.class;
         const courseDate = formattedCourseDate;
         const formStatus = formData.formStatus;
-      
+
         // Call the exportData function with the form data
         exportToExcel(applicantName, schoolOrg, classNo, courseDate, formStatus);
-      
+
         // Remove the event listener to avoid repeated downloads
         exportBtns.forEach((exportBtn) => {
           exportBtn.removeEventListener("click", handleExportClick);
@@ -247,6 +247,7 @@ function displayFormModal(formData, formattedCourseDate, formattedVaccinationDat
   const doctorSignatureInput = document.querySelector('#signatureData');
   const parentName = document.querySelector('#parent-name');
   const parentNRIC = document.querySelector('#parent-nric');
+  const parentEmail = document.querySelector('#parent-email');
   const parentContact = document.querySelector('#parent-contact');
   const parentDate = document.querySelector('#parent-date');
   const parentSignature = document.querySelector('#parent-signature');
@@ -269,6 +270,7 @@ function displayFormModal(formData, formattedCourseDate, formattedVaccinationDat
   parentName.value = `${formData.nameOfParent}`;
 
   parentNRIC.value = `****${formData.parentNRIC}`;
+  parentEmail.value = `${formData.parentEmail}`;
   parentContact.value = `${formData.parentContactNo}`;
   parentDate.value = `${formattedAckDate}`;
   parentSignature.value = `${formData.parentSignature}`;
@@ -342,6 +344,9 @@ function displayFormModal(formData, formattedCourseDate, formattedVaccinationDat
     apprRejContainer.innerHTML = ''
     const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
     pmtHeadingForm.innerHTML = ''
+    const textarea = document.getElementById("medicalText");
+    textarea.disabled = true;
+
   });
 
   const rejectBtn = document.querySelector('#rejectBtn');
@@ -402,6 +407,25 @@ function displayFormModal(formData, formattedCourseDate, formattedVaccinationDat
 
 
     });
+
+    const editReviewBtn = document.querySelector('.editReviewBtn');
+    const textarea = document.querySelector("#medicalText");
+    editReviewBtn.addEventListener('click', function () {
+      const newReview = document.querySelector('#medicalText');
+      textarea.disabled = false;
+      const submitReview = document.querySelector('.submitReviewBtn');
+      //click on submit button
+      submitReview.addEventListener('click', function () {
+        editReview(formData, newReview)
+        textarea.disabled = true;
+        // Show the modal
+
+        submitReview.setAttribute("data-bs-toggle", "modal");
+        submitReview.setAttribute("data-bs-target", "#staticBackdropRev");
+
+
+      })
+    })
   }
 
 
@@ -495,7 +519,25 @@ function updateStatusReject(formData) {
       // Display an error message or handle the error as needed
     });
 }
+function editReview(formData, newReview) {
 
+  const studentId = formData.studentId;
+
+  axios.put(`${API_URL_MST}/review/${studentId}`,
+    {
+      review: newReview.value,
+    }
+  )
+    .then(function (response) {
+    })
+    .catch(function (error) {
+      // Handle error
+      console.log(error);
+      alert('No Permission');
+      location.reload();
+      // Display an error message or handle the error as needed
+    });
+}
 
 //Function to export to excel individually
 // function exportToExcel(applicantName, schoolOrg, classNo, courseDate, formStatus) {
@@ -554,66 +596,95 @@ function updateStatusReject(formData) {
 
 //Function to export to excel individually
 function exportToExcel(applicantName, schoolOrg, classNo, courseDate, formStatus) {
-  // Make an AJAX request to the export endpoint
-  const xhr = new XMLHttpRequest();
-  xhr.open('GET', '/export?applicantName=' + encodeURIComponent(applicantName) + '&schoolOrg=' + encodeURIComponent(schoolOrg) + '&classNo=' + encodeURIComponent(classNo) + '&courseDate=' + encodeURIComponent(courseDate) + '&formStatus=' + encodeURIComponent(formStatus));
-  xhr.responseType = 'blob'; // Set the response type to 'blob' to handle binary data
-  xhr.onload = function () {
-    if (xhr.status === 200) {
-      // Create a blob object from the response
-      const blob = new Blob([xhr.response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  axios.get('/export', {
+    params: {
+      applicantName: applicantName,
+      schoolOrg: schoolOrg,
+      classNo: classNo,
+      courseDate: courseDate,
+      formStatus: formStatus
+    },
+    responseType: 'blob' // Set the response type to 'blob' to handle binary data
+  })
+    .then(response => {
+      const contentType = response.headers["content-type"];
+      if (contentType === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+        const url = URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `${applicantName}.xlsx`;
+        document.body.appendChild(link);
+        link.click();
+        URL.revokeObjectURL(url);
+        link.remove();
+      } else {
+        console.error("Invalid file format received:", contentType);
+        alert("No Permission");
+        location.reload();
+      }
+    })
+    .catch(error => {
+      console.error("Export request failed:", error);
+    });
+  // .then(response => {
+  //   if (response.status === 200) {
+  //     // Create a blob object from the response
+  //     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 
-      // Create a temporary URL for the blob object
-      const url = URL.createObjectURL(blob);
+  //     // Create a temporary URL for the blob object
+  //     const url = URL.createObjectURL(blob);
 
-      // Create a link element and set its attributes
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${applicantName}.xlsx`; // Set the desired file name
+  //     // Create a link element and set its attributes
+  //     const link = document.createElement('a');
+  //     link.href = url;
+  //     link.download = `${applicantName}.xlsx`; // Set the desired file name
 
-      // Append the link element to the document body
-      document.body.appendChild(link);
+  //     // Append the link element to the document body
+  //     document.body.appendChild(link);
 
-      // Programmatically click the link to trigger the download
-      link.click();
+  //     // Programmatically click the link to trigger the download
+  //     link.click();
 
-      // Clean up the temporary URL and remove the link element
-      URL.revokeObjectURL(url);
-      link.remove();
-    } else {
-      console.error('Export request failed with status: ' + xhr.status);
-    }
-  };
-  xhr.send();
+  //     // Clean up the temporary URL and remove the link element
+  //     URL.revokeObjectURL(url);
+  //     link.remove();
+  //   } else {
+  //     console.error('Export request failed with status: ' + response.status);
+  //   }
+  // })
+  // .catch(error => {
+  //   console.error('Export request failed:', error);
+  // });
 }
+
 //Function to export to excel bulk
 function exportToExcelBulk(data) {
- 
-
   axios.get("/export-bulk", {
     params: {
       data: JSON.stringify(data),
     },
     responseType: "blob"
   })
-  .then(response => {
-    const contentType = response.headers["content-type"];
-    if (contentType === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
-      const url = URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "exported-Bulk.xlsx";
-      document.body.appendChild(link);
-      link.click();
-      URL.revokeObjectURL(url);
-      link.remove();
-    } else {
-      console.error("Invalid file format received:", contentType);
-    }
-  })
-  .catch(error => {
-    console.error("Export request failed:", error);
-  });
+    .then(response => {
+      const contentType = response.headers["content-type"];
+      if (contentType === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+        const url = URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "exported-Bulk.xlsx";
+        document.body.appendChild(link);
+        link.click();
+        URL.revokeObjectURL(url);
+        link.remove();
+      } else {
+        console.error("Invalid file format received:", contentType);
+        alert("No Permission");
+        location.reload();
+      }
+    })
+    .catch(error => {
+      console.error("Export request failed:", error);
+    });
 }
 
 
@@ -757,10 +828,10 @@ function searchForms() {
     exportBtnFilterEligibility.style.display = 'none';
   }
 
-  const dataSearch = [];
+  // const dataSearch = [];
 
-  const exportBtnBulkContainer = document.querySelector('#export-btn-search');
-  const exportIcon = createExportButtonSearch();
+  // const exportBtnBulkContainer = document.querySelector('#export-btn-search');
+  // const exportIcon = createExportButtonSearch();
 
 
   if (searchInput.value.trim() === '') {
@@ -811,7 +882,7 @@ function searchForms() {
           } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
 
           //call function to handle checkboxes
-          handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, exportBtnBulkContainer, exportIcon, dataSearch)
+          handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, /*exportBtnBulkContainer, exportIcon, dataSearch*/)
 
 
 
@@ -822,12 +893,12 @@ function searchForms() {
         }
         //Outside of for loop 
         //Export to Excel Bulk Once
-        const exportBtnBulk = document.querySelector('#export-btn-search');
-        exportBtnBulk.addEventListener('click', function () {
-          console.log(dataSearch);
-          exportToExcelBulk(dataSearch);
+        // const exportBtnBulk = document.querySelector('#export-btn-search');
+        // exportBtnBulk.addEventListener('click', function () {
+        //   console.log(dataSearch);
+        //   exportToExcelBulk(dataSearch);
 
-        });
+        // });
       })
       .catch(function (error) {
         if (error && error.message !== "redirected") {
@@ -1049,7 +1120,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
                     exportBtnBulk.addEventListener('click', function () {
                       console.log(dataFilterClass);
                       exportToExcelBulk(dataFilterClass);
-                      location.reload();
                     });
 
                   }
@@ -1270,7 +1340,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
                     exportBtnBulk.addEventListener('click', function () {
                       console.log(dataFilterSchool);
                       exportToExcelBulk(dataFilterSchool);
-                      location.reload();
                     });
                   }
 
@@ -1490,7 +1559,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
                     exportBtnBulk.addEventListener('click', function () {
                       console.log(dataFilterCourseDate);
                       exportToExcelBulk(dataFilterCourseDate);
-                      location.reload();
                     });
                   }
 
@@ -1769,3 +1837,4 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
 
 });
+

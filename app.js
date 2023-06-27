@@ -21,6 +21,7 @@ const parentModel = require('./model/parent')
 const formModel = require('./model/form')
 const adminModel = require('./model/admin')
 const pmtModel = require('./model/pmt')
+const mstModel = require('./model/mst')
 
 
 const app = express();
@@ -112,9 +113,9 @@ app.post('/login', (req, res, next) => {
 
                 if (payload.role == 1) {
                     return res.redirect('/obs-admin/admin')
-                } else if (payload.role == 2 || payload.role == 3) {
+                } else if (payload.role == 2 || payload.role == 4) {
                     return res.redirect('/obs-admin/obs-management')
-                } else if (payload.role == 4) {
+                } else if (payload.role == 3) {
                     return res.redirect('/obs-form')
                 } else {
                     const error = new Error("Invalid user role");
@@ -658,8 +659,8 @@ app.get('/obs-admin/pmt/all', authHelper.verifyToken, authHelper.checkIat, async
         return res.redirect('/error?code=403')
     }
 
-    // AUTHORIZATION CHECK - PMT 
-    if (req.decodedToken.role != 2) {
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 4) {
         return res.redirect('/error?code=403')
     }
     return pmtModel
@@ -682,9 +683,8 @@ app.get('/obs-admin/pmt/:nameOfStudent', authHelper.verifyToken, authHelper.chec
      if (!req.decodedToken.permissions.includes(1)) {
         return res.redirect('/error?code=403')
     }
-
-    // AUTHORIZATION CHECK - PMT 
-    if (req.decodedToken.role != 2) {
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 4) {
         return res.redirect('/error?code=403')
     }
     return pmtModel
@@ -704,8 +704,8 @@ app.get('/obs-admin/pmt/:nameOfStudent', authHelper.verifyToken, authHelper.chec
 app.put('/obs-admin/pmt/:studentId', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
     const studentId = req.params.studentId;
     const formStatus = req.body.formStatus;
-
-    if (req.decodedToken.role != 2) {
+    // IF NO PERMISSIONS
+    if (!req.decodedToken.permissions.includes(2)) {
         return res.redirect('/error?code=403')
     }
     return pmtModel
@@ -731,8 +731,8 @@ app.put('/obs-admin/pmt/:studentId', authHelper.verifyToken, authHelper.checkIat
 //PMT Retrieve Submission By Student Name Search 
 app.get('/obs-admin/pmt/search/:search', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
     const searchInput = req.params.search;
-    // AUTHORIZATION CHECK - PMT 
-    if (req.decodedToken.role != 2) {
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 4) {
         return res.redirect('/error?code=403')
     }
 
@@ -757,8 +757,8 @@ app.get('/obs-admin/pmt/search/:search', authHelper.verifyToken, authHelper.chec
 //PMT Retrieve Submission By Filtering by school
 app.get('/obs-admin/pmt/filter/school/:filter', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
     const filter = req.params.filter;
-    // AUTHORIZATION CHECK - PMT 
-    if (req.decodedToken.role != 2) {
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 4) {
         return res.redirect('/error?code=403')
     }
 
@@ -778,8 +778,8 @@ app.get('/obs-admin/pmt/filter/school/:filter', authHelper.verifyToken, authHelp
 //PMT Retrieve Submission By Filtering by class
 app.get('/obs-admin/pmt/filter/class/:filter', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
     const filter = req.params.filter;
-    // AUTHORIZATION CHECK - PMT 
-    if (req.decodedToken.role != 2) {
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 4) {
         return res.redirect('/error?code=403')
     }
 
@@ -799,8 +799,8 @@ app.get('/obs-admin/pmt/filter/class/:filter', authHelper.verifyToken, authHelpe
 //PMT Retrieve Submission By Filtering by class
 app.get('/obs-admin/pmt/filter/courseDate/:filter', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
     const filter = req.params.filter;
-    // AUTHORIZATION CHECK - PMT 
-    if (req.decodedToken.role != 2) {
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 4) {
         return res.redirect('/error?code=403')
     }
 
@@ -821,9 +821,9 @@ app.get('/obs-admin/pmt/filter/courseDate/:filter', authHelper.verifyToken, auth
 app.get('/obs-admin/pmt/filter/eligibility/:filter', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
     const filter = req.params.filter;
     
-    // AUTHORIZATION CHECK - PMT
-    if (req.decodedToken.role !== 2) {
-      return res.redirect('/error?code=403');
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 4) {
+        return res.redirect('/error?code=403')
     }
     
     const [eligibility1, eligibility2] = filter.split(',');
@@ -845,7 +845,15 @@ const XLSX = require('xlsx');
 
 
 // Endpoint for exporting the Excel file
-app.get('/export', (req, res) => {
+app.get('/export', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
+   // IF NO PERMISSIONS
+   if (!req.decodedToken.permissions.includes(5)) {
+    return res.redirect('/error?code=403')
+}
+ // AUTHORIZATION CHECK - PMT
+ if (req.decodedToken.role != 2) {
+    return res.redirect('/error?code=403')
+}
   // Extract the form data from the request
   const { applicantName, schoolOrg, classNo, courseDate, formStatus } = req.query;
   // Create a new workbook
@@ -883,10 +891,20 @@ app.get('/export', (req, res) => {
 });
 
 // Endpoint for exporting the Excel file in bulk
-app.get('/export-bulk', (req, res) => {
+app.get('/export-bulk', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
+    // IF NO PERMISSIONS
+    if (!req.decodedToken.permissions.includes(5)) {
+        return res.redirect('/error?code=403')
+    }
+     // AUTHORIZATION CHECK - PMT
+ if (req.decodedToken.role != 2) {
+    return res.redirect('/error?code=403')
+}
     // Retrieve the bulk data from the request or pass it as a parameter
     const data = req.query.data;
+
     const dataArray = JSON.parse(data);
+    
     // Create a new worksheet with the formatted data
     const worksheet = XLSX.utils.json_to_sheet(dataArray, {
       header: [
@@ -914,6 +932,39 @@ app.get('/export-bulk', (req, res) => {
     res.send(excelBuffer);
   });
   
+  app.put('/obs-admin/mst/review/:studentId', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
+    // IF NO PERMISSIONS
+    if (!req.decodedToken.permissions.includes(7)) {
+        return res.redirect('/error?code=403')
+    }
+     // AUTHORIZATION CHECK - PMT, MST 
+     if (req.decodedToken.role != 2 && req.decodedToken.role != 4) {
+        return res.redirect('/error?code=403')
+    }
+    const studentId = req.params.studentId;
+    const review = req.body.review;
+    
+    return mstModel
+        .updateSubmissionReview(review, studentId)
+        .then((result) => {
+            if (!studentId || !review) {
+                return res.status(400).json({ error: "Review cannot be empty" });
+            }
+            if (result.affectedRows === 0) {
+                throw new Error("Submission not found");
+            }
+            return res.json(result);
+        })
+        .catch((error) => {
+            if (isNaN(studentId)) {
+                return res.status(400).json({ error: "Invalid student ID" });
+            }
+
+            return res.status(error.status || 500).json({ error: error.message });
+        });
+});
+
+
 /**
  * User: Parents
  */
