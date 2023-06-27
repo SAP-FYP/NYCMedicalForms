@@ -840,6 +840,79 @@ app.get('/obs-admin/pmt/filter/eligibility/:filter', authHelper.verifyToken, aut
         return res.status(error.status || 500).json({ error: error.message });
       });
   });
+
+const XLSX = require('xlsx');
+
+
+// Endpoint for exporting the Excel file
+app.get('/export', (req, res) => {
+  // Extract the form data from the request
+  const { applicantName, schoolOrg, classNo, courseDate, formStatus } = req.query;
+  // Create a new workbook
+  const workbook = XLSX.utils.book_new();
+  // Create a new worksheet with the form data
+  const worksheet = XLSX.utils.json_to_sheet([
+    {
+      "Name of Applicant": applicantName,
+      "Organization/School": schoolOrg,
+      "Designation/Class": classNo,
+      "Course Date": courseDate,
+      "Form Status": formStatus,
+    },
+  ], {
+    header: [
+      "Name of Applicant",
+      "Organization/School",
+      "Designation/Class",
+      "Course Date",
+      "Form Status",
+    ],
+  });
+  // Add the worksheet to the workbook
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Student Data");
+
+  // Generate the Excel file buffer
+  const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+
+  // Set the response headers for downloading the file
+  res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  res.setHeader('Content-Disposition', 'attachment; filename="' + encodeURIComponent(applicantName) + '.xlsx"');
+
+  // Send the Excel file buffer as the response
+  res.send(excelBuffer);
+});
+
+// Endpoint for exporting the Excel file in bulk
+app.get('/export-bulk', (req, res) => {
+    // Retrieve the bulk data from the request or pass it as a parameter
+    const data = req.query.data;
+    const dataArray = JSON.parse(data);
+    // Create a new worksheet with the formatted data
+    const worksheet = XLSX.utils.json_to_sheet(dataArray, {
+      header: [
+        "Name of Applicant",
+        "Organization/School",
+        "Designation/Class",
+        "Course Date",
+        "Form Status",
+      ],
+    });
+  
+    // Create a new workbook and add the worksheet to it
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Bulk Data");
+  
+    // Generate the Excel file buffer
+    const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+  
+    // Set the response headers for downloading the file
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="exported-Bulk.xlsx"');
+
+  
+    // Send the Excel file buffer as the response
+    res.send(excelBuffer);
+  });
   
 /**
  * User: Parents
