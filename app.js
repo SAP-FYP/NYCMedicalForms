@@ -26,9 +26,10 @@ const pmtModel = require('./model/pmt')
 const app = express();
 const port = process.env.PORT || 3000;
 const JWT_SECRET = process.env.SECRETKEY;
-const elasticEmailClient = elasticEmail.createClient({
-    apiKey: process.env.elasticAPIKey
-});
+
+const twilioClient = require('twilio')(process.env.twilioSID, process.env.twilioToken);
+
+const elasticEmailClient = elasticEmail.createClient({ apiKey: process.env.elasticAPIKey});
 
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
@@ -192,20 +193,24 @@ app.post('/send-sms', (req, res) => {
 
     // Compose the sms parameters
     const smsParams = {
-        to: contact,
-        body: `"📩 Important: Check your email! 📩 <br><br><br><br>
-        Dear Parents,<br><br>
-        Your child's health update requires your attention. Please check your email for important information regarding new medical conditions. Kindly acknowledge upon reading.<br><br>
-        Thank you,<br><br>
-        National Youth Council in affiliation with Outward Bound Singapore"`
+        from: "+14178525159",
+        to: "+65" + contact,
+        body: `"📩 Important: Check your email! 📩
+Dear Parents,
+
+Your child's health update requires your attention. Please check your email for important information regarding new medical conditions. Kindly acknowledge upon reading.
+
+Thank you,
+National Youth Council in affiliation with Outward Bound Singapore"`
     }
 
     // Send sms
-    client.messages.create(smsParams)
+    twilioClient.messages.create(smsParams)
         .then((message) => {
             console.log(message.sid)
             return res.status(200).send({ 'message': 'SMS sent successfully' });
         })
+        // TODO NEED TO DO ERROR HANDLING FOR INCORRECT PHONE NUMBER)
         .catch((error) => {
             console.log(error)
             return res.status(error.status || 500).json({ error: error.message });
