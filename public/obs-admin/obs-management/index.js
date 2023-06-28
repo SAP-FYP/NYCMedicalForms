@@ -87,53 +87,92 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
   const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
   const checkBoxTop = document.querySelector('#checkBoxTop');
 
-  checkBoxTop.addEventListener('change', function () {
-    const isChecked = checkBoxTop.checked;
+  function appendExportIcon() {
+    if (!exportContainer.contains(exportIcon)) {
+      exportContainer.appendChild(exportIcon);
+    }
+  }
 
-    checkBoxes.forEach(function (checkbox) {
-      checkbox.checked = isChecked;
-      checkbox.disabled = isChecked;
+  function removeExportIcon() {
+    if (exportContainer.contains(exportIcon)) {
+      exportContainer.removeChild(exportIcon);
+    }
+  }
+
+  checkBoxes.forEach(function (checkbox) {
+    checkbox.removeAttribute('disabled'); // Remove the disabled attribute
+    checkbox.addEventListener('change', function () {
+      const isChecked = this.checked;
+
+      const applicantName = nameOfStudentCell.textContent;
+      const schoolOrg = schoolCell.textContent;
+      const classNo = classCell.textContent;
+      const courseDate = formattedDateCell.textContent;
+      const formStatus = formStatusValue;
+
+      const data = {
+        "Name of Applicant": applicantName,
+        "Organization/School": schoolOrg,
+        "Designation/Class": classNo,
+        "Course Date": courseDate,
+        "Form Status": formStatus
+      };
 
       if (isChecked) {
-        const applicantName = nameOfStudentCell.textContent;
-        const schoolOrg = schoolCell.textContent;
-        const classNo = classCell.textContent;
-        const courseDate = formattedDateCell.textContent;
-        const formStatus = formStatusValue;
-
-        targetDataArray.push({
-          "Name of Applicant": applicantName,
-          "Organization/School": schoolOrg,
-          "Designation/Class": classNo,
-          "Course Date": courseDate,
-          "Form Status": formStatus
-        });
-
-        console.log(targetDataArray);
+        targetDataArray.push(data);
+        appendExportIcon();
       } else {
-        for (let i = 0; i < targetDataArray.length; i++) {
-          if (targetDataArray[i]["Name of Applicant"] === nameOfStudentCell.textContent) {
-            targetDataArray.splice(i, 1);
-          }
+        const index = targetDataArray.findIndex((item) => item["Name of Applicant"] === applicantName);
+        if (index !== -1) {
+          targetDataArray.splice(index, 1);
         }
+        removeExportIcon();
+      }
+
+      console.log(targetDataArray);
+    });
+  });
+
+  checkBoxTop.addEventListener('change', function () {
+    const isChecked = checkBoxTop.checked;
+    checkBoxes.forEach(function (checkbox) {
+      // If checkbox is checked, skip to next iteration
+      if (checkbox.checked === isChecked) {
+        return;
+      }
+      checkbox.checked = isChecked;
+      const applicantName = nameOfStudentCell.textContent;
+      const schoolOrg = schoolCell.textContent;
+      const classNo = classCell.textContent;
+      const courseDate = formattedDateCell.textContent;
+      const formStatus = formStatusValue;
+
+      const data = {
+        "Name of Applicant": applicantName,
+        "Organization/School": schoolOrg,
+        "Designation/Class": classNo,
+        "Course Date": courseDate,
+        "Form Status": formStatus
+      };
+
+      if ( checkbox.checked) {
+        targetDataArray.push(data);
+        appendExportIcon();
+      } else {
+        const index = targetDataArray.findIndex((item) => item["Name of Applicant"] === applicantName);
+        if (index !== -1) {
+          targetDataArray.splice(index, 1);
+        }
+        removeExportIcon();
       }
     });
 
-    if (isChecked) {
-      // Append exportIcon when the checkbox is checked
-      exportContainer.appendChild(exportIcon);
-    } else {
-      // Remove exportIcon when the checkbox is not checked
-      if (exportIcon.parentNode === exportContainer) {
-        exportContainer.removeChild(exportIcon);
-      }
-    }
-
-
+    console.log(targetDataArray);
   });
-
-
 }
+
+
+
 
 
 //FUNCTION TO OPEN MODAL VIA CLICKING ON THE TABLE ROW
@@ -888,12 +927,13 @@ searchClearBtn.onclick = () => {
 const filterIcons = document.querySelector('#filter-icon');
 const filterDropDowns = document.querySelector('.displayFilters');
 filterIcons.addEventListener('click', () => {
-  if (filterDropDowns.style.display === 'none') {
+  if (filterDropDowns.style.display === '' || filterDropDowns.style.display === 'none') {
     filterDropDowns.style.display = 'block';
   } else {
     filterDropDowns.style.display = 'none';
   }
 });
+
 
 
 
