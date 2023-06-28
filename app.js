@@ -804,6 +804,22 @@ app.get('/getCourseDates', (req, res, next) => {
     });
 });
 
+app.get('/getSchools', (req, res, next) => {
+    return doctorFormModel
+      .getSchools()
+      .then(data => {
+        const courseDateLists = data[0];
+        res.json(courseDateLists)
+      })
+      .catch(err => {
+        if (error instanceof EMPTY_RESULT_ERROR) {
+          res.status(404).json({ message: error.message });
+        } else {
+          res.status(500).json({ message: 'Internal server error' });
+        }
+      });
+  });
+
 // Retrieve form details for parent acknowledgement- Used by Barry (for identification for merging)
 app.get('/form/:encrypted', (req, res, next) => {
     const encrypted = req.params.encrypted;

@@ -137,20 +137,27 @@ document.addEventListener('DOMContentLoaded', function () {
             return response.json();
         })
     }
+    const getSchools = () => {
+        return fetch(`/getSchools`)
+        .then((response) => {
+            if(!response.ok){
+                throw new Error('Fetching school failed')
+            }
+            return response.json();
+        })
+    }
 
     // Validation functions
     const validatePhone = (inputElement, feedbackElement, value) => {
         const phonePattern = /^[89]\d{7}$/;
         if (!phonePattern.test(value)) {
             inputElement.classList.add('is-invalid');
-            feedbackElement.style.display = 'block';
             feedbackElement.textContent = 'Please enter 8 digits starting with 8/9';
             return false;
         }
         else{
             inputElement.classList.remove('is-invalid');
             inputElement.classList.add('is-valid');
-            feedbackElement.style.display = 'none';
             return true;
         }
     }
@@ -158,14 +165,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const namePattern = /^[a-zA-Z\s]+$/;
         if (!namePattern.test(value)) {
             inputElement.classList.add('is-invalid');
-            feedbackElement.style.display = 'block';
-            feedbackElement.textContent = 'Please enter valid name with alphabets';
+            feedbackElement.textContent = 'Please enter valid name';
             return false;
         }
         else{
             inputElement.classList.remove('is-invalid');
             inputElement.classList.add('is-valid');
-            feedbackElement.style.display = 'none';
             return true;
         }
     };
@@ -173,14 +178,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const emailRegEx = /\S+@\S+\.\S+/;
         if (!emailRegEx.test(value)) {
             inputElement.classList.add('is-invalid');
-            parentEmailFeedback.style.display = 'block';
             parentEmailFeedback.textContent = 'Please enter a valid email address';
             return false;
         }
         else{
             inputElement.classList.remove('is-invalid');
             inputElement.classList.add('is-valid');
-            parentEmailFeedback.style.display = 'none';
             return true;
         }
     };
@@ -188,14 +191,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const nricPattern = /^[STFG]\d{7}[A-Z]$/i;
         if (!nricPattern.test(value)) {
             inputElement.classList.add('is-invalid');
-            studentNRICFeedback.style.display = 'block';
             studentNRICFeedback.textContent = 'Please enter a valid NRIC';
             return false;
         }
         else{
             inputElement.classList.remove('is-invalid');
             inputElement.classList.add('is-valid');
-            studentNRICFeedback.style.display = 'none';
             return true;
         }
     };
@@ -205,20 +206,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (!datePattern.test(value)) {
             inputElement.classList.add('is-invalid');
-            feedbackElement.style.display = 'block';
-            feedbackElement.textContent = 'Please enter a valid date (e.g. 2023-06-16)';
+            feedbackElement.textContent = 'Please enter a valid date';
             return false;
         }
         else if (isNaN(date.getTime())) {
             inputElement.classList.add('is-invalid');
-            feedbackElement.style.display = 'block';
-            feedbackElement.textContent = 'Please enter a valid date (e.g. 2023-06-16)';
+            feedbackElement.textContent = 'Please enter a valid date';
             return false;
         }
         else{
             inputElement.classList.remove('is-invalid');
             inputElement.classList.add('is-valid');
-            feedbackElement.style.display = 'none';
             return true;
         }
     };
@@ -226,14 +224,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const mcrPattern = /^[a-zA-Z0-9]+$/;
         if (!mcrPattern.test(value)) {
             inputElement.classList.add('is-invalid');
-            doctorMCRFeedback.style.display = 'block';
             doctorMCRFeedback.textContent = 'Please enter a valid MCR';
             return false;
         }
         else{
             inputElement.classList.remove('is-invalid');
             inputElement.classList.add('is-valid');
-            doctorMCRFeedback.style.display = 'none';
             return true;
         }
     };
@@ -348,13 +344,11 @@ document.addEventListener('DOMContentLoaded', function () {
     studentClassInput.addEventListener('input',(event)=>{
         if(event.target.value == '' || event.target.value == undefined){
             studentClassInput.classList.add('is-invalid');
-            studentClassFeedback.style.display = 'block';
             studentClassFeedback.textContent = 'Please enter value';
         }
         else{
             studentClassInput.classList.remove('is-invalid');
             studentClassInput.classList.add('is-valid');
-            studentClassFeedback.style.display = 'none';
         }
     });
     courseDateInput.addEventListener('input',(event)=>{
@@ -381,25 +375,21 @@ document.addEventListener('DOMContentLoaded', function () {
     clinicNameInput.addEventListener('input',(event)=>{
         if(event.target.value == '' || event.target.value == undefined){
             clinicNameInput.classList.add('is-invalid');
-            clinicNameFeedback.style.display = 'block';
             clinicNameFeedback.textContent = 'Please enter value';
         }
         else{
             clinicNameInput.classList.remove('is-invalid');
             clinicNameInput.classList.add('is-valid');
-            clinicNameFeedback.style.display = 'none';
         }
     });
     clinicAddressInput.addEventListener('input',(event)=>{
         if(event.target.value == '' || event.target.value == undefined){
             clinicAddressInput.classList.add('is-invalid');
-            clinicAddressFeedback.style.display = 'block';
             clinicAddressFeedback.textContent = 'Please enter value';
         }
         else{
             clinicAddressInput.classList.remove('is-invalid');
             clinicAddressInput.classList.add('is-valid');
-            clinicAddressFeedback.style.display = 'none';
         }
     });
     dateInput.addEventListener('input',(event)=>{
@@ -411,8 +401,7 @@ document.addEventListener('DOMContentLoaded', function () {
         event.preventDefault();
         signaturePad.clear();
     });
-
-    //still need to handle autofill for signature
+    //Check MCR Availablability
     availabilityBtn.addEventListener('click', (event) => {
         event.preventDefault();
 
@@ -472,24 +461,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
     });
-
+    // drop down handlers
     schoolDropDown.addEventListener('show.bs.dropdown',(event) => {
-        fetch('https://search.moe.gov.sg/solr/moe_school_index/select?q=*&fq=school_journey_ss%3A%22Secondary%20school%22&sort=slug_s%20asc&rows=500&start=0&fq=active_b:true&json.facet={school_area:{type:terms,field:school_area_s,limit:-1,sort:index,domain:{excludeTags:%22area%22}},subjects_offered:{type:terms,field:subjects_offered_ss,limit:-1,sort:index},electives_full_path:{type:terms,field:electives_full_path,limit:-1,sort:index},max_cop:%22max(cop_max_i)%22,min_cop:%22min(cop_min_i)%22,co_cirricular_activities_full_path:{type:terms,field:co_cirricular_activities_full_path,limit:-1,sort:index},special_needs:{type:terms,field:special_needs_ss,limit:-1,sort:index,domain:{excludeTags:%22specialNeeds%22}},dsa_admission:{type:terms,field:dsa_admission_ss,limit:-1,sort:index},dsa_ip:{type:terms,field:dsa_ip_ss,limit:-1,sort:index},dsa_list:{type:terms,field:dsa_list_ss,limit:-1,sort:index},school_nature:{type:terms,field:school_nature_s,limit:-1,sort:index,domain:{excludeTags:%22nature%22}},school_type:{type:terms,field:school_type_ss,limit:-1,sort:index,domain:{excludeTags:%22type%22}},school_other_programme:{type:terms,field:school_other_programme_ss,limit:-1,sort:index,domain:{excludeTags:%22otherProgramme%22}},school_status_type:{type:terms,field:school_status_type_ss,limit:-1,sort:index},school_affiliated_b:{type:terms,field:school_affiliated_b_ss,limit:-1,sort:index}}')
-        .then((response) => {
-            if(!response.ok){
-                throw new Error('Fetching school failed')
-            }
-            return response.json();
-        })
+        getSchools()
         .then(data => {
-            const schoolsData = data.response.docs
             const loadingMsgDiv = schoolDropDownMenu.querySelector('.loadingMsg');
             if(loadingMsgDiv){
                 loadingMsgDiv.remove();
             }
             let isFirstIteration = true;
-            schoolsData.forEach(school => {
-                schools.push(school.school_name_s);
+            data.forEach(school => {
+                schools.push(school.schoolName);
                 if (isFirstIteration) {
                     const schoolSearchTemplate = document.getElementById('schoolSearchTemplate');
                     const clone = schoolSearchTemplate.content.cloneNode(true);
@@ -510,11 +492,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     schoolDropDownMenu.appendChild(clone);
                     isFirstIteration = false;
                 }
-                schoolDropDownMenu.appendChild(createListElement(school.school_name_s));
+                schoolDropDownMenu.appendChild(createListElement(school.schoolName));
             }); 
         })
-    })
-
+    });
     schoolDropDown.addEventListener('hide.bs.dropdown',(event) => {
         schoolDropDownMenu.innerHTML = '';
         const loadingTemp = document.getElementById('loadingTemplate');
@@ -522,10 +503,10 @@ document.addEventListener('DOMContentLoaded', function () {
         loadingTempClone.querySelector('div').className = 'loadingMsg m-3';
         schoolDropDownMenu.appendChild(loadingTempClone);
         schools = [];
-    })
+        if(currentSchool === "Select School"){
 
-    // Live Validations
-
+        }
+    });
 
     // handle form submission
     form.addEventListener('submit', function (event) {
@@ -560,7 +541,6 @@ document.addEventListener('DOMContentLoaded', function () {
             contactNo: doctorcontactNoInput.value
         }
         const allEntry = { ...studentEntry, ...formEntry, ...doctorEntry };
-        alert(allEntry)
         // Validation Logic
         for (let [key, value] of Object.entries(allEntry)) {
             const inputElement = document.getElementById(key);

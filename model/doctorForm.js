@@ -99,3 +99,15 @@ module.exports.getCourseDates = function getCourseDates(limit,offset,search){
       return rows;
   });
 };
+
+module.exports.getSchools = function getSchools(){
+  const sql = `SELECT schoolName FROM school`;
+  return query(sql).then(function (result) {
+      const rows = result;
+      console.log(rows);
+      if (rows.length === 0) {
+          throw new EMPTY_RESULT_ERROR('No Schools Found');
+      }
+      return rows;
+  });
+};
