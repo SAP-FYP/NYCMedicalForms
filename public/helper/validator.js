@@ -1,9 +1,3 @@
-import validator from "validator";
-
-module.exports.emailValidator = function emailValidator(email) {
-    return validator.isEmail(email)
-}
-
 module.exports.numberValidator = function numberValidator(number) {
 
     // Starts with optional +65 or 65
@@ -12,18 +6,4 @@ module.exports.numberValidator = function numberValidator(number) {
 
     const phoneNumberPattern = /^(\+?65)?[689]\d{7}$/;
     return phoneNumberPattern.test(phoneNumber);
-}
-
-module.exports.isStrongPassword = function isStrongPassword(password) {
-
-    const options = {
-        minLength: 8,
-        minLowercase: 1,
-        minUppercase: 1,
-        minNumbers: 1,
-        minSymbols: 1,
-        returnScore: false, // Set to true if you want to get the password strength score
-    };
-
-    return validator.isStrongPassword(password, options);
 }

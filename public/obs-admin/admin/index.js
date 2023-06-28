@@ -475,6 +475,31 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // === EVENT HANDLERS ===
 
+    document.getElementById('name-input').oninput = (e) => {
+        !e.target.value.trim()
+            ? document.getElementById('name-input').classList.add('is-invalid')
+            : document.getElementById('name-input').classList.remove('is-invalid');
+    }
+
+    document.getElementById('permission-input').onchange = (e) => {
+        (e.target.value == -1 && roleInput.value != 1)
+            ? document.getElementById('permission-input').classList.add('is-invalid')
+            : document.getElementById('permission-input').classList.remove('is-invalid');
+    }
+
+    document.getElementById('email-input').oninput = (e) => {
+        !validator.isEmail(e.target.value.trim())
+            ? document.getElementById('email-input').classList.add('is-invalid')
+            : document.getElementById('email-input').classList.remove('is-invalid');
+    }
+
+    document.getElementById('number-input').oninput = (e) => {
+        const phoneNumberPattern = /^(\+?65)?[689]\d{7}$/;
+        !phoneNumberPattern.test(e.target.value.trim())
+            ? document.getElementById('number-input').classList.add('is-invalid')
+            : document.getElementById('number-input').classList.remove('is-invalid');
+    }
+
     createButton.onclick = () => {
         createForm.reset();
         createFormSumbitButton.style.display = 'inline';
@@ -494,13 +519,15 @@ window.addEventListener('DOMContentLoaded', () => {
         const password = createForm.querySelector('#password-input').value;
         const contact = createForm.querySelector('#number-input').value.trim();
         const role = createForm.querySelector('#role-input').value;
+        const phoneNumberPattern = /^(\+?65)?[689]\d{7}$/;
 
-        if (!email || !permissionGroup || !name || !password || !contact || (permissionGroup == -1 && role != 1) || role == -1) {
+        // validate here and show errors when user click submit.
+        if (!permissionGroup || !name || (permissionGroup == -1 && role != 1) || role == -1) {
             alert("Please fill in all fields");
         } else if (!validator.isEmail(email)) {
             alert("Please enter a valid email");
-        } else if (!validator.isStrongPassword(password)) {
-            alert("Password does not meet requirements");
+        } else if (!phoneNumberPattern.test(phoneNumber)) {
+            alert("Please enter a valid number");
         } else {
             const newuser = {
                 email,
@@ -541,9 +568,14 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // ON DROP DOWN ROLE CHANGE
     roleInput.onchange = (e) => {
+        e.target.value == -1
+            ? document.getElementById('role-input').classList.add('is-invalid')
+            : document.getElementById('role-input').classList.remove('is-invalid');
+
         if (e.target.value == 1) {
             permissionInput.value = -1;
             permissionInput.disabled = true;
+            document.getElementById('permission-input').classList.remove('is-invalid');
         } else {
             permissionInput.disabled = false;
         }

@@ -124,7 +124,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
     profileForm.onsubmit = (e) => {
         e.preventDefault();
-
         if (!document.getElementById('input-password').value) {
             alert('Please enter password to continue');
 
