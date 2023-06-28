@@ -20,15 +20,12 @@ document.addEventListener('DOMContentLoaded', function () {
     let isAvailabilityBtn = false;
     let isDoctorNew = true;
     let currentDoctor;
+    let studentNRIC = '';
     let form = document.querySelector('form');
 
     //student section
     const studentNameInput = document.getElementById('studentName');
-    const schoolSearch = document.getElementById('schoolSearch')
-    const schoolDropDownMenu = document.getElementById('schoolDropDownMenu')
-    //DELETE SCHOOLNAME INPUT
-    const schoolNameInput = document.getElementById('schoolName');
-    //DELETE SCHOOLNAME INPUT
+    const schoolDropDownMenu = document.getElementById('schoolDropDownMenu');
     const schoolDropDown = document.getElementById('schoolDropDown');
     const schoolDropDownBtn = document.getElementById('schoolDropDownBtn');
     const dateOfBirth = document.getElementById('dateOfBirth');
@@ -42,12 +39,29 @@ document.addEventListener('DOMContentLoaded', function () {
     // physician sector
     const eligibilityRadios = document.getElementsByName('eligibility');
     const commentsTextarea = document.getElementById('medical_text');
-    const physicianNameInput = document.getElementById('physicianName');
+    const doctorNameInput = document.getElementById('physicianName');
     const clinicNameInput = document.getElementById('clinicName');
     const dateInput = document.getElementById('date');
-    const contactNoInput = document.getElementById('contactNo');
+    const doctorcontactNoInput = document.getElementById('doctorContact');
     const clinicAddressInput = document.getElementById('clinicAddress');
     const doctorMCRInput = document.getElementById('doctorMCR');
+
+    // Feedback elements
+    const studentNameFeedback = document.getElementById('studentNameFeedback');
+    const studentNRICFeedback = document.getElementById('studentNRICFeedback');
+    const dateOfBirthFeedback = document.getElementById('dateOfBirthFeedback');
+    const studentClassFeedback = document.getElementById('studentClassFeedback');
+    const schoolDropDownFeedback = document.getElementById('schoolDropDownFeedback');
+    const courseDateFeedback = document.getElementById('courseDateFeedback');
+    const dateOfVaccineFeedback = document.getElementById('dateOfVaccineFeedback');
+    const parentEmailFeedback = document.getElementById('parentEmailFeedback');
+    const parentContactFeedback = document.getElementById('parentContactFeedback');
+    const doctorMCRFeedback = document.getElementById('doctorMCRFeedback');
+    const physicianNameFeedback = document.getElementById('physicianNameFeedback');
+    const doctorContactFeedback = document.getElementById('doctorContactFeedback');
+    const clinicNameFeedback = document.getElementById('clinicNameFeedback');
+    const clinicAddressFeedback = document.getElementById('clinicAddressFeedback');
+    const dateFeedback = document.getElementById('dateFeedback');
 
     //date object
     let today = new Date();
@@ -66,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById("courseDate").setAttribute("max", today);
     document.getElementById("date").setAttribute("max", today);
 
-    // FUNCTIONS
+    // Fetch functions
     const postDoctorInfo = (doctorEntry) => {
         return fetch('/postDoctorInfo', {
             method: 'POST',
@@ -123,64 +137,108 @@ document.addEventListener('DOMContentLoaded', function () {
             return response.json();
         })
     }
-    // validation functions
-    const validatePhone = (inputElement, value) => {
+
+    // Validation functions
+    const validatePhone = (inputElement, feedbackElement, value) => {
         const phonePattern = /^[89]\d{7}$/;
         if (!phonePattern.test(value)) {
-            inputElement.setCustomValidity('Please enter 8 digits starting with 8/9');
-            inputElement.reportValidity();
+            inputElement.classList.add('is-invalid');
+            feedbackElement.style.display = 'block';
+            feedbackElement.textContent = 'Please enter 8 digits starting with 8/9';
             return false;
         }
-        return true;
+        else{
+            inputElement.classList.remove('is-invalid');
+            inputElement.classList.add('is-valid');
+            feedbackElement.style.display = 'none';
+            return true;
+        }
     }
-    const validateName = (inputElement, value) => {
+    const validateName = (inputElement, feedbackElement, value) => {
         const namePattern = /^[a-zA-Z\s]+$/;
         if (!namePattern.test(value)) {
-          inputElement.setCustomValidity("Please enter a valid name with alphabets, spaces, hyphens, and apostrophes only.");
-          inputElement.reportValidity();
-          return false;
+            inputElement.classList.add('is-invalid');
+            feedbackElement.style.display = 'block';
+            feedbackElement.textContent = 'Please enter valid name with alphabets';
+            return false;
         }
-        return true;
+        else{
+            inputElement.classList.remove('is-invalid');
+            inputElement.classList.add('is-valid');
+            feedbackElement.style.display = 'none';
+            return true;
+        }
     };
     const validateEmail = (inputElement, value) => {
         const emailRegEx = /\S+@\S+\.\S+/;
         if (!emailRegEx.test(value)) {
-            inputElement.setCustomValidity(`Please enter a valid email address.`);
-            inputElement.reportValidity();
+            inputElement.classList.add('is-invalid');
+            parentEmailFeedback.style.display = 'block';
+            parentEmailFeedback.textContent = 'Please enter a valid email address';
             return false;
         }
-        return true;
-    }
+        else{
+            inputElement.classList.remove('is-invalid');
+            inputElement.classList.add('is-valid');
+            parentEmailFeedback.style.display = 'none';
+            return true;
+        }
+    };
     const validateNRIC = (inputElement, value) => {
-        const nricPattern = /^[STFG]\d{7}[A-Z]$/;
+        const nricPattern = /^[STFG]\d{7}[A-Z]$/i;
         if (!nricPattern.test(value)) {
-            inputElement.setCustomValidity('Please enter a valid NRIC (e.g., S1234567D)');
-            inputElement.reportValidity();
+            inputElement.classList.add('is-invalid');
+            studentNRICFeedback.style.display = 'block';
+            studentNRICFeedback.textContent = 'Please enter a valid NRIC';
             return false;
         }
-        inputElement.setCustomValidity('');
-        return true;
+        else{
+            inputElement.classList.remove('is-invalid');
+            inputElement.classList.add('is-valid');
+            studentNRICFeedback.style.display = 'none';
+            return true;
+        }
     };
-    const validateDate = (inputElement, value) => {
+    const validateDate = (inputElement, feedbackElement, value) => {
         const datePattern = /^\d{4}-\d{2}-\d{2}$/;
-        if (!datePattern.test(value)) {
-            inputElement.setCustomValidity('Please enter a valid date (e.g., 2023-06-16)');
-            inputElement.reportValidity();
-            return false;
-        }
-
-        // Check if date is valid
         const date = new Date(value);
-        if (isNaN(date.getTime())) {
-            inputElement.setCustomValidity('Please enter a valid date (e.g., 2023-06-16)');
-            inputElement.reportValidity();
+
+        if (!datePattern.test(value)) {
+            inputElement.classList.add('is-invalid');
+            feedbackElement.style.display = 'block';
+            feedbackElement.textContent = 'Please enter a valid date (e.g. 2023-06-16)';
             return false;
         }
-
-        inputElement.setCustomValidity('');
-        return true;
+        else if (isNaN(date.getTime())) {
+            inputElement.classList.add('is-invalid');
+            feedbackElement.style.display = 'block';
+            feedbackElement.textContent = 'Please enter a valid date (e.g. 2023-06-16)';
+            return false;
+        }
+        else{
+            inputElement.classList.remove('is-invalid');
+            inputElement.classList.add('is-valid');
+            feedbackElement.style.display = 'none';
+            return true;
+        }
     };
-    // doctorForm autoFill format
+    const validateMCR = (inputElement, value) => {
+        const mcrPattern = /^[a-zA-Z0-9]+$/;
+        if (!mcrPattern.test(value)) {
+            inputElement.classList.add('is-invalid');
+            doctorMCRFeedback.style.display = 'block';
+            doctorMCRFeedback.textContent = 'Please enter a valid MCR';
+            return false;
+        }
+        else{
+            inputElement.classList.remove('is-invalid');
+            inputElement.classList.add('is-valid');
+            doctorMCRFeedback.style.display = 'none';
+            return true;
+        }
+    };
+
+    // Other functions
     const doctorAutoFill = (doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo) => {
         //signature info extract
         const signInfoArr = signature.split(';');
@@ -193,18 +251,18 @@ document.addEventListener('DOMContentLoaded', function () {
         let canvas = document.getElementById('signatureCanvas');
         canvas.parentNode.replaceChild(signatureImg, canvas);
 
-        physicianNameInput.value = nameOfDoctor;
+        doctorNameInput.value = nameOfDoctor;
         clinicNameInput.value = nameOfClinic;
-        contactNoInput.value = contactNo;
+        doctorcontactNoInput.value = contactNo;
 
         today = yyyy + '-' + mm + '-' + dd;
         dateInput.value = today;
         clinicAddressInput.value = clinicAddress;
 
         doctorMCRInput.disabled = true;
-        physicianNameInput.disabled = true;
+        doctorNameInput.disabled = true;
         clinicNameInput.disabled = true;
-        contactNoInput.disabled = true;
+        doctorcontactNoInput.disabled = true;
         dateInput.disabled = true;
         clinicAddressInput.disabled = true;
 
@@ -217,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Doctor already exists
         isDoctorNew = false;
         currentDoctor = doctorMCR;
-    }
+    };
     const createListElement = (school) => {
         const li = document.createElement('li');
         li.textContent = school;
@@ -238,6 +296,17 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         return li;
+    };
+    const emptyOutStudentInputs = () => {
+        studentNameInput.value = '';
+        schoolDropDownBtn.textContent = 'Select School';
+        dateOfBirth.value = '';
+        studentNRICInput.value = '';
+        studentClassInput.value = '';
+        courseDateInput.value = '';
+        dateOfVaccineInput.value = '';
+        parentContact.value = '';
+        parentEmail.value = '';
     }
 
     // Disable comment section
@@ -251,6 +320,92 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Input Validation event listners:
+    studentNameInput.addEventListener('input',(event)=>{
+        validateName(studentNameInput,studentNameFeedback,event.target.value);
+    });
+    studentNRICInput.addEventListener('input',(event)=>{
+        
+        const nric = event.target.value;
+        if(studentNRIC.length < nric.length){
+            studentNRIC += nric[nric.length-1];
+        }
+        else if(studentNRIC.length > nric.length){
+            const difference = studentNRIC.length - nric.length;
+            studentNRIC = studentNRIC.substring(0,studentNRIC.length - difference);
+        }
+        if (nric.length > 4) {
+            event.target.value = '*'.repeat(4) + nric.slice(4);
+        } else {
+            event.target.value = '*'.repeat(nric.length);
+        }
+        console.log(studentNRIC)
+        validateNRIC(studentNRICInput,studentNRIC);
+    });
+    dateOfBirth.addEventListener('input',(event)=>{
+        validateDate(dateOfBirth,dateOfBirthFeedback,event.target.value);
+    });
+    studentClassInput.addEventListener('input',(event)=>{
+        if(event.target.value == '' || event.target.value == undefined){
+            studentClassInput.classList.add('is-invalid');
+            studentClassFeedback.style.display = 'block';
+            studentClassFeedback.textContent = 'Please enter value';
+        }
+        else{
+            studentClassInput.classList.remove('is-invalid');
+            studentClassInput.classList.add('is-valid');
+            studentClassFeedback.style.display = 'none';
+        }
+    });
+    courseDateInput.addEventListener('input',(event)=>{
+        validateDate(courseDateInput,courseDateFeedback,event.target.value);
+    });
+    dateOfVaccineInput.addEventListener('input',(event)=>{
+        validateDate(dateOfVaccineInput,dateOfVaccineFeedback,event.target.value);
+    });
+    parentEmail.addEventListener('input',(event)=>{
+        validateEmail(parentEmail,event.target.value);
+    });
+    parentContact.addEventListener('input',(event)=>{
+        validatePhone(parentContact,parentContactFeedback,event.target.value);
+    });
+    doctorMCRInput.addEventListener('input',(event)=>{
+        validateMCR(doctorMCRInput,event.target.value);
+    });
+    doctorNameInput.addEventListener('input',(event)=>{
+        validateName(doctorNameInput,physicianNameFeedback,event.target.value);
+    });
+    doctorcontactNoInput.addEventListener('input',(event)=>{
+        validatePhone(doctorcontactNoInput,doctorContactFeedback,event.target.value);
+    });
+    clinicNameInput.addEventListener('input',(event)=>{
+        if(event.target.value == '' || event.target.value == undefined){
+            clinicNameInput.classList.add('is-invalid');
+            clinicNameFeedback.style.display = 'block';
+            clinicNameFeedback.textContent = 'Please enter value';
+        }
+        else{
+            clinicNameInput.classList.remove('is-invalid');
+            clinicNameInput.classList.add('is-valid');
+            clinicNameFeedback.style.display = 'none';
+        }
+    });
+    clinicAddressInput.addEventListener('input',(event)=>{
+        if(event.target.value == '' || event.target.value == undefined){
+            clinicAddressInput.classList.add('is-invalid');
+            clinicAddressFeedback.style.display = 'block';
+            clinicAddressFeedback.textContent = 'Please enter value';
+        }
+        else{
+            clinicAddressInput.classList.remove('is-invalid');
+            clinicAddressInput.classList.add('is-valid');
+            clinicAddressFeedback.style.display = 'none';
+        }
+    });
+    dateInput.addEventListener('input',(event)=>{
+        validateDate(dateInput,dateFeedback,event.target.value);
+    });
+
     // clear signature
     clearSignatureBtn.addEventListener('click', (event) => {
         event.preventDefault();
@@ -263,11 +418,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // check if doctorMCR input is empty or not
         if (!doctorMCRInput.value) {
-            doctorMCRInput.setCustomValidity('Please enter a value');
-            doctorMCRInput.reportValidity();
+            doctorMCRInput.classList.add('is-invalid');
+            doctorMCRFeedback.style.display = 'block';
+            doctorMCRFeedback.textContent = 'Please enter a value';
             return; // return early from the event handler if doctorMCR is empty
         } else {
-            doctorMCRInput.setCustomValidity('');
+            doctorMCRInput.classList.remove('is-invalid');
+            doctorMCRInput.classList.add('is-valid');
+            doctorMCRFeedback.style.display = 'none';
         }
 
         const template = document.getElementById('loadingTemplate');
@@ -304,7 +462,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (err.message == 'DoctorNotFound') {
                     // if doctor is new and available
                     availabilityBtn.disabled = true;
-                    availabilityBtn.textContent = `MCR is available!`
+                    availabilityBtn.textContent = `You are new!`
                     availabilityBtn.className = 'btn btn-success'
                     isAvailabilityBtn = true;
                 }
@@ -366,6 +524,9 @@ document.addEventListener('DOMContentLoaded', function () {
         schools = [];
     })
 
+    // Live Validations
+
+
     // handle form submission
     form.addEventListener('submit', function (event) {
         event.preventDefault();
@@ -378,9 +539,9 @@ document.addEventListener('DOMContentLoaded', function () {
         // All Entries handling...
         const studentEntry = {
             studentName: studentNameInput.value,
-            schoolName: schoolNameInput.value,
+            schoolName: currentSchool,
             dateOfBirth: dateOfBirth.value,
-            studentNRIC: studentNRICInput.value,
+            studentNRIC: studentNRIC,
             studentClass: studentClassInput.value,
             dateOfVaccine: dateOfVaccineInput.value,
             parentContact: parentContact.value,
@@ -393,13 +554,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         const doctorEntry = {
             doctorMCR: doctorMCRInput.value,
-            physicianName: physicianNameInput.value,
+            physicianName: doctorNameInput.value,
             clinicName: clinicNameInput.value,
             clinicAddress: clinicAddressInput.value,
-            contactNo: contactNoInput.value
+            contactNo: doctorcontactNoInput.value
         }
         const allEntry = { ...studentEntry, ...formEntry, ...doctorEntry };
-
+        alert(allEntry)
         // Validation Logic
         for (let [key, value] of Object.entries(allEntry)) {
             const inputElement = document.getElementById(key);
@@ -409,26 +570,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     inputElement.setCustomValidity(`Please fill out Before submit`);
                     inputElement.reportValidity();
                     isValid = false;
-                } else {
-                    // If the value exists, clear any previous custom validity message
-                    inputElement.setCustomValidity('');
-
-                    // Contact Validation
-                    if (['parentContact', 'contactNo'].includes(key)) {
-                        isValid = validatePhone(inputElement, value) && isValid;
-                    }
-                    // Date Validation
-                    else if (['dateOfBirth', 'dateOfVaccine', 'courseDate', 'date'].includes(key)) {
-                        isValid = validateDate(inputElement, value) && isValid;
-                    }
-                    // Email Validation
-                    else if (key === 'parentEmail') {
-                        isValid = validateEmail(inputElement, value) && isValid;
-                    }
-                    // NRIC Validation
-                    else if (key === 'studentNRIC') {
-                        isValid = validateNRIC(inputElement, value) && isValid;
-                    }
                 }
                 inputElement.addEventListener('input', function () {
                     inputElement.setCustomValidity('');
@@ -485,7 +626,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         return response.json();
                     })
                     .then(data => {
-                        signatureCredentials = `${data.url};${today};${physicianNameInput.value}`;
+                        signatureCredentials = `${data.url};${today};${doctorNameInput.value}`;
                         doctorEntry.signatureData = signatureCredentials;
 
                         return Promise.all([postDoctorInfo(doctorEntry), postStudentInfo(studentEntry)]);
@@ -507,20 +648,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     // })
                     .then(data => {
                         loadingModal.hide();
-
-                        studentNameInput.value = '';
-                        schoolNameInput.value = '';
-                        dateOfBirth.value = '';
-                        studentNRICInput.value = '';
-                        studentClassInput.value = '';
-                        courseDateInput.value = '';
-                        dateOfVaccineInput.value = '';
-                        parentContact.value = '';
-                        parentEmail.value = '';
+                        emptyOutStudentInputs();
 
                         let scrollableDiv = document.getElementById("formDiv");
                         scrollableDiv.scrollTop = 0;
-                        doctorAutoFill(doctorMCRInput.value, physicianNameInput.value, signatureCredentials, clinicNameInput.value, clinicAddressInput.value, contactNoInput.value);
+                        doctorAutoFill(doctorMCRInput.value, doctorNameInput.value, signatureCredentials, clinicNameInput.value, clinicAddressInput.value, doctorcontactNoInput.value);
                     })
                     .catch(error => {
                         if (error.message === 'Upload failed') {
@@ -554,16 +686,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     .then(data => {
                         // hide loading modal
                         loadingModal.hide();
+                        emptyOutStudentInputs();
 
-                        studentNameInput.value = '';
-                        schoolNameInput.value = '';
-                        dateOfBirth.value = '';
-                        studentNRICInput.value = '';
-                        studentClassInput.value = '';
-                        courseDateInput.value = '';
-                        dateOfVaccineInput.value = '';
-                        parentContact.value = '';
-                        parentEmail.value = '';
                         for (let i = 0; i < eligibilityRadios.length; i++) {
                             eligibilityRadios[i].checked = false;
                         }
