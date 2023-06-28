@@ -65,7 +65,16 @@ module.exports.postFormInfo = function postFormInfo(studentId, courseDate,doctor
 };
 
 module.exports.getClasses = function getClasses(limit,offset,search){
-  const sql = `SELECT class, COUNT(*) as count FROM student WHERE class LIKE ? GROUP BY class ORDER BY count DESC, class ASC LIMIT ? OFFSET ?;`;
+  const sql = `SELECT S.class, COUNT(*) AS count
+  FROM form F
+  JOIN student S ON F.studentId = S.studentId
+  JOIN parentAcknowledgement PA ON F.studentId = PA.studentId
+  JOIN doctor D ON F.doctorMCR = D.doctorMCR
+  WHERE S.class LIKE ?
+  GROUP BY S.class
+  ORDER BY S.class ASC
+  LIMIT ? OFFSET ?;
+  `;
   return query(sql,[`%${search}%`,limit,offset]).then(function (result) {
       const rows = result;
       console.log(rows[0])
@@ -77,7 +86,15 @@ module.exports.getClasses = function getClasses(limit,offset,search){
 };
 
 module.exports.getSchools = function getSchools(limit,offset,search){
-  const sql = `SELECT school, COUNT(*) as count FROM student WHERE school LIKE ? GROUP BY school ORDER BY count DESC, school ASC LIMIT ? OFFSET ?;`;
+  const sql = `SELECT S.school, COUNT(*) AS count
+  FROM form F
+  JOIN student S ON F.studentId = S.studentId
+  JOIN parentAcknowledgement PA ON F.studentId = PA.studentId
+  JOIN doctor D ON F.doctorMCR = D.doctorMCR
+  WHERE S.school LIKE ?
+  GROUP BY S.school
+  ORDER BY S.school ASC
+  LIMIT ? OFFSET ?;`
   return query(sql,[`%${search}%`,limit,offset]).then(function (result) {
       const rows = result;
       console.log(rows);
@@ -89,7 +106,16 @@ module.exports.getSchools = function getSchools(limit,offset,search){
 };
 
 module.exports.getCourseDates = function getCourseDates(limit,offset,search){
-  const sql = `SELECT courseDate, COUNT(*) as count FROM form WHERE courseDate LIKE ? GROUP BY courseDate ORDER BY count DESC, courseDate ASC LIMIT ? OFFSET ?;`;
+  const sql = `SELECT F.courseDate, COUNT(*) AS count
+  FROM form F
+  JOIN student S ON F.studentId = S.studentId
+  JOIN parentAcknowledgement PA ON F.studentId = PA.studentId
+  JOIN doctor D ON F.doctorMCR = D.doctorMCR
+  WHERE F.courseDate LIKE ?
+  GROUP BY F.courseDate
+  ORDER BY F.courseDate ASC
+  LIMIT ? OFFSET ?;
+  `;
   return query(sql,[`%${search}%`,limit,offset]).then(function (result) {
       const rows = result;
       console.log(rows);
@@ -99,3 +125,24 @@ module.exports.getCourseDates = function getCourseDates(limit,offset,search){
       return rows;
   });
 };
+
+module.exports.getEligibility = function getEligibility(limit,offset){
+  const sql = `SELECT F.eligibility, COUNT(*) AS count
+  FROM form F
+  JOIN student S ON F.studentId = S.studentId
+  JOIN parentAcknowledgement PA ON F.studentId = PA.studentId
+  JOIN doctor D ON F.doctorMCR = D.doctorMCR
+  GROUP BY F.eligibility
+  ORDER BY F.eligibility ASC
+  LIMIT ? OFFSET ?;
+  `;
+  return query(sql,[limit,offset]).then(function (result) {
+      const rows = result;
+      console.log(rows);
+      if (rows.length === 0) {
+          throw new EMPTY_RESULT_ERROR('No Course Dates Found');
+      }
+      return rows;
+  });
+};
+
