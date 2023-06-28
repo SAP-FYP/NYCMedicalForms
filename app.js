@@ -161,6 +161,11 @@ app.get('/logout', (req, res, next) => {
     }
 })
 
+/**
+ * User: Parent
+ */
+
+
 // Setting parent's acknowledgement
 app.post('/post-acknowledge', (req, res) => {
     const parentEmail = req.body.parentEntry.parentEmail;
@@ -195,13 +200,13 @@ app.post('/send-sms', (req, res) => {
     const smsParams = {
         from: "+14178525159",
         to: "+65" + contact,
-        body: `"📩 Important: Check your email! 📩
+        body: `📩 Important: Check your email! 📩
 Dear Parents,
 
 Your child's health update requires your attention. Please check your email for important information regarding new medical conditions. Kindly acknowledge upon reading.
 
 Thank you,
-National Youth Council in affiliation with Outward Bound Singapore"`
+National Youth Council in affiliation with Outward Bound Singapore`
     }
 
     // Send sms
