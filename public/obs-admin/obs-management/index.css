@@ -281,7 +281,7 @@ tr {
 }
 
 td{
-    padding: 10px!important;
+    padding: 15px!important;
     text-align: left !important;
     vertical-align:middle !important;
     font-size: 18px !important;
@@ -303,60 +303,47 @@ td:first-child {
  }
 
  /*All the different pills colours*/
-.pillPending {
-    display: inline-block;
+
+.pillRejected,
+.pillParent,
+.pillPending,
+.pillApproved {
+    display: flex;
+    justify-content: center!important;
+    align-items: center!important;
     padding: 3px 15px;
-    font-size: 18px;
-    width: 105px;
-    max-height: 35px;
-    background-color: #f2c153 !important;
-    border:#485eab 2px solid;
+    font-size: 14px;
+    color: #334772 !important;
+    width: 145px;
+    height: 34px;
+    border: 1px solid #334772 !important;
     border-radius: 20px; /* make it pill-shaped */
     text-align: center;
     line-height: normal !important; /* height fixed */
+    white-space: nowrap; /* don't wrap text */
 }
-.pillApproved{
-    display: inline-block;
-    padding: 3px 15px;
-    font-size: 18px;
-    width: 105px;
-    max-height: 35px;
-    background-color: #9ee5ac !important;
-    border:#485eab 2px solid;
-    border-radius: 20px; /* make it pill-shaped */
-    text-align: center;
-    line-height: normal !important; /* height fixed */
+
+.pillPending {
+   
+    background-color: #f2c153 !important;
+   
 }
 .pillRejected {
-    display: inline-block;
-    padding: 3px 15px;
-    font-size: 18px;
-    color: #334772 !important;
-    width: 105px;
-    max-height: 35px;
+   
     background-color: #ea6363 !important;
-    border:#485eab 2px solid;
-    border-radius: 20px; /* make it pill-shaped */
-    text-align: center;
-    line-height: normal !important; /* height fixed */
+   
+}
+.pillApproved{
+   
+    background-color: #9ee5ac !important;
+   
 }
 
 
 .pillParent {
-    display: inline-block;
-    padding: 3px 15px;
-    font-size: 18px;
-    width: 105px;
-    max-height: 35px;
+   
     background-color: #f2c153 !important;
-    border:#485eab 2px solid;
-    border-radius: 20px; /* make it pill-shaped */
-    text-align: center;
-    line-height: normal !important; /* height fixed */
-    overflow: hidden; /* hide the extra text */
-    white-space: nowrap; /* prevent text from wrapping */
-    text-overflow: ellipsis; /* show ellipsis (...) when text overflows */
-    vertical-align: middle;
+  
   }
   
   .pillParent:hover,
@@ -366,10 +353,7 @@ td:first-child {
     text-overflow: clip; /* clip the text instead of showing ellipsis */
   }
 /*ICONS*/
-.tripleDot {
-    width: 25px;
-    fill:#485eab;
-}
+
 
 #checkBoxTop {
     transform: translateY(4px);

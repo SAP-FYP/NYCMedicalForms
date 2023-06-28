@@ -477,7 +477,7 @@ function handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData, inde
 
   getAllForms.appendChild(clonedRowTemplate);
 
-  function handleFormClick(index) {
+  function handleFormClick(index) { 
     if (index >= 0 && index < formData.length) {
       const formStatus = formData[index].formStatus;
       modalBtns.forEach(function (modalBtn) {
@@ -519,6 +519,7 @@ function updateStatusReject(formData) {
       // Display an error message or handle the error as needed
     });
 }
+
 function editReview(formData, newReview) {
 
   const studentId = formData.studentId;
@@ -538,61 +539,6 @@ function editReview(formData, newReview) {
       // Display an error message or handle the error as needed
     });
 }
-
-//Function to export to excel individually
-// function exportToExcel(applicantName, schoolOrg, classNo, courseDate, formStatus) {
-//   // create a new workbook
-//   const workbook = XLSX.utils.book_new();
-//   // create a new worksheet with the form data
-//   const worksheet = XLSX.utils.json_to_sheet(
-//     [
-//       {
-//         "Name of Applicant": applicantName,
-//         "Organization/School": schoolOrg,
-//         "Designation/Class": classNo,
-//         "Course Date": courseDate,
-//         "Form Status": formStatus,
-//       },
-//     ],
-//     {
-//       header: [
-//         "Name of Applicant",
-//         "Organization/School",
-//         "Designation/Class",
-//         "Course Date",
-//         "Form Status",
-//       ],
-//     }
-//   );
-//   // add the worksheet to the workbook
-//   XLSX.utils.book_append_sheet(workbook, worksheet, "Student Data");
-//   // save the workbook as an Excel file
-//   XLSX.writeFile(workbook, applicantName + ".xlsx");
-
-// }
-
-//Function to export to excel bulk
-// function exportToExcelBulk(data) {
-
-
-//   // Create a new worksheet with the formatted data
-//   const worksheet = XLSX.utils.json_to_sheet(data, {
-//     header: [
-//       "Name of Applicant",
-//       "Organization/School",
-//       "Designation/Class",
-//       "Course Date",
-//       "Form Status",
-//     ],
-//   });
-//   console.log(data)
-//   // Create a new workbook and add the worksheet to it
-//   const workbook = XLSX.utils.book_new();
-//   XLSX.utils.book_append_sheet(workbook, worksheet, "Bulk Data");
-
-//   // Save the workbook as an Excel file
-//   XLSX.writeFile(workbook, "exportedBulk.xlsx");
-// }
 
 //Function to export to excel individually
 function exportToExcel(applicantName, schoolOrg, classNo, courseDate, formStatus) {
