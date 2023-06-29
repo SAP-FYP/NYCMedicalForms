@@ -387,9 +387,9 @@ module.exports.bulkDisableUser = async function bulkDisableUser(users, status, i
     }
 }
 
-module.exports.updateUserPassword = function updateUserPassword(email, password, invalidationDate) {
+module.exports.updateUserPassword = function updateUserPassword(email, password, invalidationDate, passwordUpdated) {
     const sql = 'UPDATE user SET password = ?, invalidationDate = ?, passwordUpdated = ? WHERE email = ?';
-    return query(sql, [password, invalidationDate, invalidationDate, email])
+    return query(sql, [password, invalidationDate, passwordUpdated, email])
         .then((result) => {
             const affectedRows = result[0].affectedRows;
 
@@ -425,6 +425,24 @@ module.exports.updateUserProfile = function updateUserProfile(email, name, conta
             return affectedRows;
         }).catch((error) => {
             console.log(error)
+            throw error;
+        })
+}
+
+module.exports.getUserInfo = function getUserInfo(email) {
+    const sql = `SELECT * FROM user WHERE email = ?`;
+
+    return query(sql, [email])
+        .then((result) => {
+            const row = result[0];
+            if (!row) {
+                const error = new Error("User does not exist");
+                error.status = 404;
+                throw error;
+            }
+            return row[0];
+        })
+        .catch((error) => {
             throw error;
         })
 }

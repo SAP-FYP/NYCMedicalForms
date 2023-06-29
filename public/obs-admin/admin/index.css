@@ -259,6 +259,10 @@ input[type=number] {
     padding: 0px 10px !important;
 }
 
+.is-invalid {
+    border: 1px solid rgb(255, 69, 69) !important;
+}
+
 .form-input:focus {
     outline: none;
 }

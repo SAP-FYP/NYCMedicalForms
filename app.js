@@ -21,6 +21,7 @@ const formModel = require('./model/form');
 const adminModel = require('./model/admin');
 const pmtModel = require('./model/pmt');
 const cloudinaryModel = require('./model/cloudinary');
+const passwordGenerator = require('./helper/passwordGenerator')
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -232,9 +233,10 @@ app.put('/user/password', authHelper.verifyToken, authHelper.checkIat, authHelpe
         const email = user.email;
         const password = hash;
         const invalidationDate = moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss');
+        const passwordUpdated = invalidationDate;
 
         return adminModel
-            .updateUserPassword(email, password, invalidationDate)
+            .updateUserPassword(email, password, invalidationDate, passwordUpdated)
             .then((result) => {
 
                 if (!result) {
@@ -498,11 +500,13 @@ app.post('/obs-admin/newuser', authHelper.verifyToken, authHelper.checkIat, (req
         return res.redirect('/error?code=403')
     }
 
+    const generatedPassword = passwordGenerator.generatePassword();
+
     const newuser = {
         name: req.body.name,
         email: req.body.email,
         contact: req.body.contact,
-        password: req.body.password,
+        password: generatedPassword,
         permissionGroup: req.body.permissionGroup,
         role: req.body.role
     }
@@ -525,7 +529,7 @@ app.post('/obs-admin/newuser', authHelper.verifyToken, authHelper.checkIat, (req
         }
 
         newuser.password = hash;
-        newuser.created_at = moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss')
+        newuser.created_at = moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss');
 
         return adminModel
             .createUser(newuser)
@@ -535,7 +539,24 @@ app.post('/obs-admin/newuser', authHelper.verifyToken, authHelper.checkIat, (req
                     error.status = 500;
                     throw error;
                 }
-                return res.sendStatus(201);
+
+                const emailOptions = {
+                    to: newuser.email,
+                    subject: "Welcome to the OBS Team!",
+                    from: 'sg.outwardbound@gmail.com',
+                    body: `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Forget Password</title><style>body{font-family:Arial,sans-serif;padding:20px;background-color:#f5f5f5}.container{max-width:600px;margin:0 auto;background-color:#fff;padding:20px;border-radius:5px;box-shadow:0 2px 5px rgba(0,0,0,.1)}.logo{text-align:left;margin-bottom:40px}.logo img{max-width:300px}.message{margin-bottom:20px;font-size:16px}.password-block{background-color:#f5f5f5;padding:10px;border-radius:5px;text-align:center}.password{font-weight:700;font-size:24px;color:#007bff}.btn{display:inline-block;padding:10px 20px;background-color:#007bff;color:#fff;text-decoration:none;border-radius:5px;font-weight:700}.btn:hover{background-color:#0056b3}.footer{text-align:center;color:#888;font-size:14px;margin-top:20px;border-top:1px solid #ccc;padding-top:20px}.footer hr{margin-bottom:10px}.footer p{margin-bottom:10px}</style></head><body><div class="container"><div class="logo"><img src="https://res.cloudinary.com/sp-esde-2100030/image/upload/v1688051640/obs-logo_pi70gy.png" alt="Logo"></div><div class="message"><p><b>Hello ${newuser.name}, Welcome to the team!</b></p><p>Your account have been successfully created and you may now login with your email and the given password below.</p><div class="password-block"><span class="password" id="new-password">${generatedPassword}</span></div><p>Please use this password to log in to your account. We recommend changing your password after logging in for security reasons.</p><p>If you did not initiate this request, please ignore this email or contact our support team.</p></div><div class="footer"><p>This email was sent to you by the Administrative Team. If you have any questions, please contact our support team.</p><p>© National Youth Council | Outward Bound Singapore.</p></div></div></body></html>
+                    `,
+                };
+
+                elasticEmailClient.mailer.send(emailOptions, (error, result) => {
+                    if (error) {
+                        const error = new Error("Failed to send email");
+                        error.status = 500;
+                        throw error;
+                    } else {
+                        res.sendStatus(201);
+                    }
+                });
             })
             .catch((error) => {
                 if (error.code == "ER_DUP_ENTRY") {
@@ -988,6 +1009,68 @@ app.put('/obs-admin/disable/user', authHelper.verifyToken, authHelper.checkIat, 
             console.log(error)
             return res.status(error.status || 500).json({ error: error.message });
         })
+});
+
+// Reset user password
+app.post('/obs-admin/reset/:email', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
+    try {
+        // AUTHORIZATION CHECK - ADMIN
+        if (req.decodedToken.role !== 1) {
+            return res.redirect('/error?code=403');
+        }
+
+        const { email } = req.params;
+
+        if (!email) {
+            const error = new Error("Empty user email");
+            error.status = 400;
+            throw error;
+        }
+
+        const result = await adminModel.getUserInfo(email);
+
+        if (!result) {
+            const error = new Error("User does not exist");
+            error.status = 404;
+            throw error;
+        }
+
+        const name = result.nameOfUser;
+        const password = passwordGenerator.generatePassword();
+        const hash = await bcrypt.hash(password, 10);
+        const invalidationDate = moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss');
+        const passwordUpdated = null;
+
+        const updateResult = await adminModel.updateUserPassword(email, hash, invalidationDate, passwordUpdated);
+
+        if (!updateResult) {
+            const error = new Error("Unable to update account password");
+            error.status = 500;
+            throw error;
+        }
+
+        const emailOptions = {
+            to: email,
+            subject: "Reset your OBS password",
+            from: 'sg.outwardbound@gmail.com',
+            body: `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Forget Password</title><style>body{font-family:Arial,sans-serif;padding:20px;background-color:#f5f5f5}.container{max-width:600px;margin:0 auto;background-color:#fff;padding:20px;border-radius:5px;box-shadow:0 2px 5px rgba(0,0,0,.1)}.logo{text-align:left;margin-bottom:40px}.logo img{max-width:300px}.message{margin-bottom:20px; font-size: 16px;}.password-block{background-color:#f5f5f5;padding:10px;border-radius:5px;text-align:center}.password{font-weight:700;font-size:24px;color:#007bff}.btn{display:inline-block;padding:10px 20px;background-color:#007bff;color:#fff;text-decoration:none;border-radius:5px;font-weight:700}.btn:hover{background-color:#0056b3}.footer{text-align:center;color:#888;font-size:14px;margin-top:20px;border-top:1px solid #ccc;padding-top:20px}.footer hr{margin-bottom:10px}.footer p{margin-bottom:10px}</style></head><body><div class="container"><div class="logo"><img src="https://res.cloudinary.com/sp-esde-2100030/image/upload/v1688051640/obs-logo_pi70gy.png" alt="Logo"></div><div class="message"><p><b>Hello ${name},</b></p><p>You have requested a new password for your account. Below is your new password:</p><div class="password-block"><span class="password" id="new-password">${password}</span></div><p>Please use this password to log in to your account. We recommend changing your password after logging in for security reasons.</p><p>If you did not request a password reset, email or contact our support team immediately.</p></div><div class="footer"><p>This email was sent to you by the Administrative Team. If you have any questions, please contact our support team.</p><p>© National Youth Council | Outward Bound Singapore.</p></div></div></body></html>
+            `,
+        };
+
+        elasticEmailClient.mailer.send(emailOptions, (error, result) => {
+            if (error) {
+                const error = new Error("Failed to send email");
+                error.status = 500;
+                throw error;
+            } else {
+                res.sendStatus(200);
+            }
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(error.status || 500).json({ error: error.message });
+    }
 });
 
 /**

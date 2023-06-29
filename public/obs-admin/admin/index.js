@@ -244,6 +244,13 @@ window.addEventListener('DOMContentLoaded', () => {
     // EDIT USER BUTTON HANDLER
     const editButtonHandler = (user) => {
         createForm.reset();
+        createForm.querySelector('#email-input').classList.remove('is-invalid');
+        createForm.querySelector('#permission-input').classList.remove('is-invalid');
+        createForm.querySelector('#role-input').classList.remove('is-invalid');
+        createForm.querySelector('#number-input').classList.remove('is-invalid');
+        createForm.querySelector('#name-input').classList.remove('is-invalid');
+        createForm.querySelector('#password-input').value = "Reset Password";
+        createForm.querySelector('#password-input').disabled = false;
 
         editFormSumbitButton.style.display = 'inline';
         editFormSumbitButton.value = user.email;
@@ -436,6 +443,22 @@ window.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    // RESET PASSWORD
+    const resetPassword = (email) => {
+        fetch(`/obs-admin/reset/${email}`, {
+            method: 'POST'
+        })
+            .then((response) => {
+                if (response.status != 200) {
+                    const error = new Error('Failed to reset user password')
+                    error.status = response.status
+                    throw error;
+                }
+                alert('password sent to user email')
+            })
+            .catch(handleError)
+    }
+
     // GET NUMBER OF CHECKBOXES 
     const updateCheckboxes = () => {
         itemCheckboxes = document.querySelectorAll('.select-item-chkbox');
@@ -475,35 +498,91 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // === EVENT HANDLERS ===
 
+    const validateInput = (inputElement, validationFn) => {
+        const isValid = validationFn(inputElement.value.trim());
+        isValid ? inputElement.classList.remove('is-invalid') : inputElement.classList.add('is-invalid');
+    }
+
+    const validateForm = () => {
+        const email = document.getElementById('email-input').value.trim();
+        const permissionGroup = document.getElementById('permission-input').value;
+        const name = document.getElementById('name-input').value.trim();
+        const contact = document.getElementById('number-input').value.trim();
+        const role = document.getElementById('role-input').value;
+        const phoneNumberPattern = /^(\+?65)?[689]\d{7}$/;
+        let valid = true;
+
+        if (role == -1) {
+            createForm.querySelector('#role-input').classList.add('is-invalid')
+            valid = false;
+        }
+
+        if ((permissionGroup == -1 && role != 1)) {
+            createForm.querySelector('#permission-input').classList.add('is-invalid')
+            valid = false;
+        }
+
+        if (!permissionGroup) {
+            createForm.querySelector('#permission-input').classList.add('is-invalid')
+            valid = false;
+        }
+
+        if (permissionGroup == -1 && role != 1) {
+            createForm.querySelector('#permission-input').classList.add('is-invalid')
+            valid = false;
+        }
+
+        if (!name) {
+            createForm.querySelector('#name-input').classList.add('is-invalid')
+            valid = false;
+        }
+
+        if (!validator.isEmail(email)) {
+            createForm.querySelector('#email-input').classList.add('is-invalid')
+            valid = false;
+        }
+
+        if (!phoneNumberPattern.test(contact)) {
+            createForm.querySelector('#number-input').classList.add('is-invalid')
+            valid = false;
+        }
+
+        return valid;
+    }
+
+    document.getElementById('password-input').onclick = (e) => {
+        e.preventDefault();
+        const email = editFormSumbitButton.value;
+        if (!email) {
+            alert('no email')
+        } else {
+            resetPassword(email);
+        }
+    }
+
     document.getElementById('name-input').oninput = (e) => {
-        !e.target.value.trim()
-            ? document.getElementById('name-input').classList.add('is-invalid')
-            : document.getElementById('name-input').classList.remove('is-invalid');
+        validateInput(e.target, (value) => value);
     }
 
     document.getElementById('permission-input').onchange = (e) => {
-        (e.target.value == -1 && roleInput.value != 1)
-            ? document.getElementById('permission-input').classList.add('is-invalid')
-            : document.getElementById('permission-input').classList.remove('is-invalid');
+        validateInput(e.target, (value) => !(value == -1 && roleInput.value != 1));
     }
 
     document.getElementById('email-input').oninput = (e) => {
-        !validator.isEmail(e.target.value.trim())
-            ? document.getElementById('email-input').classList.add('is-invalid')
-            : document.getElementById('email-input').classList.remove('is-invalid');
+        validateInput(e.target, (value) => validator.isEmail(value));
     }
 
     document.getElementById('number-input').oninput = (e) => {
         const phoneNumberPattern = /^(\+?65)?[689]\d{7}$/;
-        !phoneNumberPattern.test(e.target.value.trim())
-            ? document.getElementById('number-input').classList.add('is-invalid')
-            : document.getElementById('number-input').classList.remove('is-invalid');
+        validateInput(e.target, (value) => phoneNumberPattern.test(value));
     }
 
     createButton.onclick = () => {
         createForm.reset();
         createFormSumbitButton.style.display = 'inline';
         editFormSumbitButton.style.display = 'none';
+        document.getElementById('password-input').value = "Automatically Generated";
+        document.getElementById('password-input').disabled = true;
         document.getElementById('email-input').disabled = false;
         document.getElementById('permission-input').disabled = false;
         document.getElementById('staticBackdropLabel').textContent = "Create New User";
@@ -516,24 +595,16 @@ window.addEventListener('DOMContentLoaded', () => {
         const email = createForm.querySelector('#email-input').value.trim();
         const permissionGroup = createForm.querySelector('#permission-input').value;
         const name = createForm.querySelector('#name-input').value.trim();
-        const password = createForm.querySelector('#password-input').value;
         const contact = createForm.querySelector('#number-input').value.trim();
         const role = createForm.querySelector('#role-input').value;
-        const phoneNumberPattern = /^(\+?65)?[689]\d{7}$/;
+        const valid = validateForm();
 
-        // validate here and show errors when user click submit.
-        if (!permissionGroup || !name || (permissionGroup == -1 && role != 1) || role == -1) {
-            alert("Please fill in all fields");
-        } else if (!validator.isEmail(email)) {
-            alert("Please enter a valid email");
-        } else if (!phoneNumberPattern.test(phoneNumber)) {
-            alert("Please enter a valid number");
-        } else {
+
+        if (valid) {
             const newuser = {
                 email,
                 permissionGroup,
                 name,
-                password,
                 contact,
                 role
             };
@@ -544,17 +615,15 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // SUBMIT EDIT PERMISSION GROUPS BUTTON
     editFormSumbitButton.onclick = (e) => {
-        const email = e.target.value
-        const name = createForm.querySelector('#name-input').value.trim();
-        const role = createForm.querySelector('#role-input').value;
+        e.preventDefault();
+        const email = e.target.value;
         const group = createForm.querySelector('#permission-input').value;
+        const name = createForm.querySelector('#name-input').value.trim();
         const contact = createForm.querySelector('#number-input').value.trim();
-        //password? to be randomly generated / reset by admin. another feature so for now no need to fill
+        const role = createForm.querySelector('#role-input').value;
+        const valid = validateForm();
 
-        if (!email || !group || !name || !contact || (group == -1 && role != 1) || role == -1) {
-            alert("Please fill in all fields");
-
-        } else {
+        if (valid) {
             const user = {
                 email,
                 name,
@@ -562,6 +631,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 group,
                 contact
             }
+
             editUser(user);
         }
     }
