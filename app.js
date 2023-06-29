@@ -634,7 +634,7 @@ app.post('/uploadSign', (req, res) => {
 
 // upload doctor informtaion
 app.post('/postDoctorInfo',(req,res,next) => {
-  const{doctorMCR, physicianName,signatureData,clinicName,clinicAddress,contactNo} = req.body;
+  const{doctorMCR, physicianName,signatureData,clinicName,clinicAddress,doctorContact} = req.body;
   try {
     // encryption part
     const algorithm = 'aes-256-cbc'; // encryption algorithm
@@ -647,7 +647,7 @@ app.post('/postDoctorInfo',(req,res,next) => {
     //you cannot cipher.update or cipher.final once you finished encryption using cipher.final. it will throw error
 
     return doctorFormModel
-    .postDoctorInfo(doctorMCR, physicianName,encryptedsignatureInfo,clinicName,clinicAddress,contactNo)
+    .postDoctorInfo(doctorMCR, physicianName,encryptedsignatureInfo,clinicName,clinicAddress,doctorContact)
     .then(data => {
       console.log(data)
       res.json(data);

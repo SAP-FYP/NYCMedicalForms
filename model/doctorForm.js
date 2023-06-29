@@ -19,9 +19,9 @@ module.exports.matchDoctorInfo = function matchDoctorInfo(doctorMCR){
     });
 };
 
-module.exports.postDoctorInfo = function postDoctorInfo(doctorMCR, physicianName,encryptedsignatureInfo,clinicName,clinicAddress,contactNo) {
+module.exports.postDoctorInfo = function postDoctorInfo(doctorMCR, physicianName,encryptedsignatureInfo,clinicName,clinicAddress,doctorContact) {
     const sql = `INSERT INTO doctor (doctorMCR,nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo) VALUES (?,?,?,?,?,?)`;
-    return query(sql, [doctorMCR, physicianName,encryptedsignatureInfo,clinicName,clinicAddress,contactNo])
+    return query(sql, [doctorMCR, physicianName,encryptedsignatureInfo,clinicName,clinicAddress,doctorContact])
     .catch(function (error) {
         console.error('Error in postDoctorInfo:', error);
         if (error.code === 'ER_DUP_ENTRY') {

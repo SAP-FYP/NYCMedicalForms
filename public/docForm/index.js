@@ -22,12 +22,32 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentDoctor;
     let studentNRIC = '';
     let form = document.querySelector('form');
+    const validities = {
+        isStudentNameValid : false,
+        isStudentNRICValid : false,
+        isDateOfBirthValid : false,
+        isClassValid : false,
+        isSchoolValid : false,
+        isCourseDateValid : false,
+        isVaccineValid : false,
+        isParentEmailValid : false,
+        isParentContactValid : false,
+        isEligibilityValid : false,
+        isCommentValid : false,
+        isDoctorMCRValid: false,
+        isDoctorNameValid : false,
+        isDoctorContactValid : false,
+        isClinicNameValid : false,
+        isClinicAddressValid : false,
+        isDateValid : false,
+        isSignatureValid : false
+    }
 
     //student section
     const studentNameInput = document.getElementById('studentName');
     const schoolDropDownMenu = document.getElementById('schoolDropDownMenu');
     const schoolDropDown = document.getElementById('schoolDropDown');
-    const schoolDropDownBtn = document.getElementById('schoolDropDownBtn');
+    const schoolName = document.getElementById('schoolName');
     const dateOfBirth = document.getElementById('dateOfBirth');
     const studentNRICInput = document.getElementById('studentNRIC');
     const studentClassInput = document.getElementById('studentClass');
@@ -38,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // physician sector
     const eligibilityRadios = document.getElementsByName('eligibility');
-    const commentsTextarea = document.getElementById('medical_text');
+    const commentsTextarea = document.getElementById('comment');
     const doctorNameInput = document.getElementById('physicianName');
     const clinicNameInput = document.getElementById('clinicName');
     const dateInput = document.getElementById('date');
@@ -79,6 +99,30 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById("dateOfBirth").setAttribute("max", today);
     document.getElementById("courseDate").setAttribute("max", today);
     document.getElementById("date").setAttribute("max", today);
+
+    // Disable comment section
+    for (let i = 0; i < eligibilityRadios.length; i++) {
+        eligibilityRadios[i].addEventListener('change', function () {
+            const checkContainer = document.getElementById('checkContainer');
+            if(checkContainer.classList.contains('is-invalid')){
+                checkContainer.classList.remove('is-invalid');
+            }
+            if (this.value === 'Fit') {
+                if(commentsTextarea.classList.contains('is-invalid')){
+                    commentsTextarea.classList.remove('is-invalid');
+                }
+                commentsTextarea.value = '';
+                commentsTextarea.disabled = true;
+            } else {
+                if(this.value === 'Unfit'){
+                    if(commentsTextarea.value === ''){
+                        commentsTextarea.classList.add('is-invalid');
+                    }
+                }
+                commentsTextarea.disabled = false;
+            }
+        });
+    }
 
     // Fetch functions
     const postDoctorInfo = (doctorEntry) => {
@@ -142,6 +186,21 @@ document.addEventListener('DOMContentLoaded', function () {
         .then((response) => {
             if(!response.ok){
                 throw new Error('Fetching school failed')
+            }
+            return response.json();
+        })
+    }
+    const uploadSignature = (data) => {
+        return fetch('/uploadSign', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Upload failed');
             }
             return response.json();
         })
@@ -233,6 +292,44 @@ document.addEventListener('DOMContentLoaded', function () {
             return true;
         }
     };
+    const validateEmptyValue = (allEntry) => {
+        const signatureMsg = document.getElementById('signatureMsg');
+        for (const key in allEntry) {
+            // double check if the entry have the key
+            if (allEntry.hasOwnProperty(key)) {
+                const value = allEntry[key];
+                // check signature
+                if(key === "signatureData"){
+                    if (signaturePad.isEmpty()) {
+                        if (document.getElementById('signatureImg')) {
+                            isValid = true;
+                        } else {
+                            signatureMsg.textContent = 'Please provide your signature';
+                            signatureMsg.className = 'text-danger';
+                            isValid = false;
+                        }
+                    }
+                    signaturePad.onBegin = function () {
+                        // clear signature
+                        signatureMsg.textContent = '';
+                        signatureMsg.className = '';
+                    };
+                }
+                // show error message
+                if(value === "" || value === undefined || value === null){
+                    if(key === "eligibility"){
+                        document.getElementById("checkContainer").classList.add('is-invalid');
+                        
+                    }
+                    else{
+                        document.getElementById(key).classList.add('is-invalid');
+                        isValid = false;
+                    }
+                }
+            }
+        }
+        
+    };
 
     // Other functions
     const doctorAutoFill = (doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo) => {
@@ -287,15 +384,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Add click event listener
         li.addEventListener('click', (event) => {
-            schoolDropDownBtn.textContent = event.target.textContent;
+            schoolName.textContent = event.target.textContent;
             currentSchool = event.target.textContent;
+            if(schoolName.classList.contains('is-invalid')){
+                schoolName.classList.remove('is-invalid');
+                schoolName.classList.add('is-valid');
+            }
         });
 
         return li;
     };
     const emptyOutStudentInputs = () => {
         studentNameInput.value = '';
-        schoolDropDownBtn.textContent = 'Select School';
+        schoolName.textContent = 'Select School';
         dateOfBirth.value = '';
         studentNRICInput.value = '';
         studentClassInput.value = '';
@@ -303,18 +404,7 @@ document.addEventListener('DOMContentLoaded', function () {
         dateOfVaccineInput.value = '';
         parentContact.value = '';
         parentEmail.value = '';
-    }
-
-    // Disable comment section
-    for (let i = 0; i < eligibilityRadios.length; i++) {
-        eligibilityRadios[i].addEventListener('change', function () {
-            if (this.value === 'Fit') {
-                commentsTextarea.disabled = true;
-            } else {
-                commentsTextarea.disabled = false;
-            }
-        });
-    }
+    };
 
     // Input Validation event listners:
     studentNameInput.addEventListener('input',(event)=>{
@@ -394,6 +484,12 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     dateInput.addEventListener('input',(event)=>{
         validateDate(dateInput,dateFeedback,event.target.value);
+    });
+    commentsTextarea.addEventListener('input',(event)=>{
+        if(commentsTextarea.classList.contains('is-invalid')){
+            commentsTextarea.classList.remove('is-invalid');
+            commentsTextarea.classList.add('is-valid');
+        }
     });
 
     // clear signature
@@ -512,10 +608,10 @@ document.addEventListener('DOMContentLoaded', function () {
     form.addEventListener('submit', function (event) {
         event.preventDefault();
         let isValid = true;
+        let validities =[];
 
         // signature data handling...
         const signatureData = signaturePad.toDataURL();
-        const signatureMsg = document.getElementById('signatureMsg');
 
         // All Entries handling...
         const studentEntry = {
@@ -531,57 +627,27 @@ document.addEventListener('DOMContentLoaded', function () {
         const formEntry = {
             courseDate: courseDateInput.value,
             eligibility: Array.from(eligibilityRadios).find(radio => radio.checked)?.value || '',
-            date: dateInput.value
+            date: dateInput.value,
+            comment : commentsTextarea.value
         }
         const doctorEntry = {
             doctorMCR: doctorMCRInput.value,
             physicianName: doctorNameInput.value,
             clinicName: clinicNameInput.value,
             clinicAddress: clinicAddressInput.value,
-            contactNo: doctorcontactNoInput.value
+            doctorContact: doctorcontactNoInput.value,
+            signatureData: signatureData
         }
         const allEntry = { ...studentEntry, ...formEntry, ...doctorEntry };
-        // Validation Logic
-        for (let [key, value] of Object.entries(allEntry)) {
-            const inputElement = document.getElementById(key);
-            if (inputElement && inputElement instanceof HTMLInputElement) {
-                // check if any value is empty or not
-                if (!value) {
-                    inputElement.setCustomValidity(`Please fill out Before submit`);
-                    inputElement.reportValidity();
-                    isValid = false;
-                }
-                inputElement.addEventListener('input', function () {
-                    inputElement.setCustomValidity('');
-                });
-            }
-        }
 
-        // add back signatureData
-        doctorEntry.signatureData = signatureData;
-        // signature validation
-
-        if (signaturePad.isEmpty()) {
-            if (document.getElementById('signatureImg')) {
-                isValid = true;
-            } else {
-                signatureMsg.textContent = 'Please provide your signature'
-                signatureMsg.className = 'text-danger'
-                isValid = false;
-            }
-        }
-        signaturePad.onBegin = function () {
-            // clear signature
-            signatureMsg.textContent = '';
-            signatureMsg.className = '';
-        };
+        // Empty value validation
+        validateEmptyValue(allEntry);
 
         // Proceed submission
         if (isValid) {
             // Availability button validation
             if (isAvailabilityBtn === false) {
-                availabilityBtn.setCustomValidity('Please check availability');
-                availabilityBtn.reportValidity();
+                availabilityBtn.classList.add('is-invalid');
             }
             else {
                 if (isDoctorNew === true) {
@@ -592,19 +658,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     
                     // show loading modal
                     loadingModal.show();
-                    fetch('/uploadSign', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(data)
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Upload failed');
-                        }
-                        return response.json();
-                    })
+                    uploadSignature(data)
                     .then(data => {
                         signatureCredentials = `${data.url};${today};${doctorNameInput.value}`;
                         doctorEntry.signatureData = signatureCredentials;
@@ -615,7 +669,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         studentId = studentResponse[0].insertId;
                         formEntry.studentId = studentId;
                         formEntry.doctorMCR = doctorMCRInput.value;
-                        formEntry.comments = commentsTextarea.value;
                         return postFormInfo(formEntry);
                     })
                     // .then(data => {
