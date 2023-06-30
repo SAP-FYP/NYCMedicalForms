@@ -8,20 +8,12 @@ This file includes validation of form values and send data to APIs to save data 
 */
 
 document.addEventListener('DOMContentLoaded', function () {
-    const loadingModal = new bootstrap.Modal('#loadingModal', {
-        keyboard: false
-    });
+    
     let schools = [];
     let currentSchool;
-    let canvas = document.getElementById('signatureCanvas');
-    let signaturePad = new SignaturePad(canvas);
-    const clearSignatureBtn = document.getElementById('clearSignatureBtn');
-    const availabilityBtn = document.getElementById('availabilityBtn');
-    let isAvailabilityBtn = false;
-    let isDoctorNew = true;
     let currentDoctor;
+    let isDoctorNew = true;
     let studentNRIC = '';
-    let form = document.querySelector('form');
     const validities = {
         isStudentNameValid : false,
         isStudentNRICValid : false,
@@ -42,6 +34,15 @@ document.addEventListener('DOMContentLoaded', function () {
         isDateValid : false,
         isSignatureValid : false
     }
+    let isAvailabilityBtn = false;
+    let form = document.querySelector('form');
+    let canvas = document.getElementById('signatureCanvas');
+    let signaturePad = new SignaturePad(canvas);
+    const availabilityBtn = document.getElementById('availabilityBtn');
+    const clearSignatureBtn = document.getElementById('clearSignatureBtn');
+    const loadingModal = new bootstrap.Modal('#loadingModal', {
+        keyboard: false
+    });
 
     //student section
     const studentNameInput = document.getElementById('studentName');
@@ -71,7 +72,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const studentNRICFeedback = document.getElementById('studentNRICFeedback');
     const dateOfBirthFeedback = document.getElementById('dateOfBirthFeedback');
     const studentClassFeedback = document.getElementById('studentClassFeedback');
-    const schoolDropDownFeedback = document.getElementById('schoolDropDownFeedback');
     const courseDateFeedback = document.getElementById('courseDateFeedback');
     const dateOfVaccineFeedback = document.getElementById('dateOfVaccineFeedback');
     const parentEmailFeedback = document.getElementById('parentEmailFeedback');
@@ -104,23 +104,33 @@ document.addEventListener('DOMContentLoaded', function () {
     for (let i = 0; i < eligibilityRadios.length; i++) {
         eligibilityRadios[i].addEventListener('change', function () {
             const checkContainer = document.getElementById('checkContainer');
+            validities.isEligibilityValid = true;
             if(checkContainer.classList.contains('is-invalid')){
                 checkContainer.classList.remove('is-invalid');
             }
+
             if (this.value === 'Fit') {
                 if(commentsTextarea.classList.contains('is-invalid')){
                     commentsTextarea.classList.remove('is-invalid');
                 }
                 commentsTextarea.value = '';
                 commentsTextarea.disabled = true;
-            } else {
-                if(this.value === 'Unfit'){
-                    if(commentsTextarea.value === ''){
-                        commentsTextarea.classList.add('is-invalid');
-                    }
+                validities.isCommentValid = true;
+            } else if(this.value === 'Unfit'){
+                if(commentsTextarea.value === ''){
+                    commentsTextarea.classList.add('is-invalid');
+                    validities.isCommentValid = false;
                 }
                 commentsTextarea.disabled = false;
             }
+            else{
+                if(commentsTextarea.classList.contains('is-invalid')){
+                    commentsTextarea.classList.remove('is-invalid');
+                }
+                commentsTextarea.disabled = false;
+                validities.isCommentValid = true;
+            }
+            console.log(validities)
         });
     }
 
@@ -278,6 +288,7 @@ document.addEventListener('DOMContentLoaded', function () {
             inputElement.classList.add('is-valid');
             return true;
         }
+
     };
     const validateMCR = (inputElement, value) => {
         const mcrPattern = /^[a-zA-Z0-9]+$/;
@@ -301,35 +312,56 @@ document.addEventListener('DOMContentLoaded', function () {
                 // check signature
                 if(key === "signatureData"){
                     if (signaturePad.isEmpty()) {
-                        if (document.getElementById('signatureImg')) {
-                            isValid = true;
-                        } else {
-                            signatureMsg.textContent = 'Please provide your signature';
-                            signatureMsg.className = 'text-danger';
-                            isValid = false;
-                        }
+                        signatureMsg.textContent = 'Please provide your signature';
+                        signatureMsg.className = 'text-danger';
+                        validities.isSignatureValid = false;
                     }
-                    signaturePad.onBegin = function () {
-                        // clear signature
-                        signatureMsg.textContent = '';
-                        signatureMsg.className = '';
-                    };
+                }
+                else if(key === "schoolName"){
+                    console.log(value)
                 }
                 // show error message
                 if(value === "" || value === undefined || value === null){
                     if(key === "eligibility"){
+                        console.log(value)
                         document.getElementById("checkContainer").classList.add('is-invalid');
-                        
+                        validities.isCommentValid = false;
+                    }
+                    else if(key === "comment"){
+                        if(allEntry.eligibility.value === "Fit" || allEntry.eligibility.value === "Fit_with_condition"){
+                            if(document.getElementById(key).classList.contains('is-invalid')){
+                                document.getElementById(key).classList.remove('is-invalid');
+                            }
+                            validities.isCommentValid = false;
+                        }
                     }
                     else{
                         document.getElementById(key).classList.add('is-invalid');
-                        isValid = false;
                     }
                 }
             }
         }
         
     };
+    const validateValidities = (validities) => {
+        let foundFalse = false;
+
+        for(const key in validities){
+            const value = validities[key];
+            if(!value){
+                console.log(key + "--------" + value);
+                foundFalse = true;
+                break;
+            }
+        }
+
+        if(foundFalse){
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
 
     // Other functions
     const doctorAutoFill = (doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo) => {
@@ -390,6 +422,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 schoolName.classList.remove('is-invalid');
                 schoolName.classList.add('is-valid');
             }
+            if(!schoolName.classList.contains('is-valid')){
+                schoolName.classList.add('is-valid');
+            }
+            validities.isSchoolValid = true;
         });
 
         return li;
@@ -408,10 +444,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Input Validation event listners:
     studentNameInput.addEventListener('input',(event)=>{
-        validateName(studentNameInput,studentNameFeedback,event.target.value);
+        if(validateName(studentNameInput,studentNameFeedback,event.target.value)){
+            validities.isStudentNameValid = true;
+        }
+        else{
+            validities.isStudentNameValid = false;
+        }
     });
     studentNRICInput.addEventListener('input',(event)=>{
-        
         const nric = event.target.value;
         if(studentNRIC.length < nric.length){
             studentNRIC += nric[nric.length-1];
@@ -425,72 +465,134 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             event.target.value = '*'.repeat(nric.length);
         }
-        console.log(studentNRIC)
-        validateNRIC(studentNRICInput,studentNRIC);
+        if(validateNRIC(studentNRICInput,studentNRIC)){
+            validities.isStudentNRICValid = true;
+        }
+        else{
+            validities.isStudentNRICValid = false;
+        }
     });
     dateOfBirth.addEventListener('input',(event)=>{
-        validateDate(dateOfBirth,dateOfBirthFeedback,event.target.value);
+        if(validateDate(dateOfBirth,dateOfBirthFeedback,event.target.value)){
+            validities.isDateOfBirthValid = true;
+        }
+        else{
+            validities.isDateOfBirthValid = false;
+        }
     });
     studentClassInput.addEventListener('input',(event)=>{
         if(event.target.value == '' || event.target.value == undefined){
             studentClassInput.classList.add('is-invalid');
             studentClassFeedback.textContent = 'Please enter value';
+            validities.isClassValid = false;
         }
         else{
             studentClassInput.classList.remove('is-invalid');
             studentClassInput.classList.add('is-valid');
+            validities.isClassValid = true;
         }
     });
     courseDateInput.addEventListener('input',(event)=>{
-        validateDate(courseDateInput,courseDateFeedback,event.target.value);
+        if(validateDate(courseDateInput,courseDateFeedback,event.target.value)){
+            validities.isCourseDateValid = true;
+        }
+        else{
+            validities.isCourseDateValid = false;
+        }
     });
     dateOfVaccineInput.addEventListener('input',(event)=>{
-        validateDate(dateOfVaccineInput,dateOfVaccineFeedback,event.target.value);
+        if(validateDate(dateOfVaccineInput,dateOfVaccineFeedback,event.target.value)){
+            validities.isVaccineValid = true;
+        }
+        else{
+            validities.isVaccineValid = false;
+        }
     });
     parentEmail.addEventListener('input',(event)=>{
-        validateEmail(parentEmail,event.target.value);
+        if(validateEmail(parentEmail,event.target.value)){
+            validities.isParentEmailValid = true;
+        }
+        else{
+            validities.isParentEmailValid = false;
+        }
     });
     parentContact.addEventListener('input',(event)=>{
-        validatePhone(parentContact,parentContactFeedback,event.target.value);
+        if(validatePhone(parentContact,parentContactFeedback,event.target.value)){
+            validities.isParentContactValid = true;
+        }
+        else{
+            validities.isParentContactValid = false;
+        }
     });
     doctorMCRInput.addEventListener('input',(event)=>{
-        validateMCR(doctorMCRInput,event.target.value);
+        if(validateMCR(doctorMCRInput,event.target.value)){
+            validities.isDoctorMCRValid = true;
+        }
+        else{
+            validities.isDoctorMCRValid = false;
+        }
     });
     doctorNameInput.addEventListener('input',(event)=>{
-        validateName(doctorNameInput,physicianNameFeedback,event.target.value);
+        if(validateName(doctorNameInput,physicianNameFeedback,event.target.value)){
+            validities.isDoctorNameValid = true;
+        }
+        else{
+            validities.isDoctorNameValid = false;
+        }
     });
     doctorcontactNoInput.addEventListener('input',(event)=>{
-        validatePhone(doctorcontactNoInput,doctorContactFeedback,event.target.value);
+        if(validatePhone(doctorcontactNoInput,doctorContactFeedback,event.target.value)){
+            validities.isDoctorContactValid = true;
+        }
+        else{
+            validities.isDoctorContactValid = false;
+        }
     });
     clinicNameInput.addEventListener('input',(event)=>{
         if(event.target.value == '' || event.target.value == undefined){
             clinicNameInput.classList.add('is-invalid');
             clinicNameFeedback.textContent = 'Please enter value';
+            validities.isClinicNameValid = false;
         }
         else{
             clinicNameInput.classList.remove('is-invalid');
             clinicNameInput.classList.add('is-valid');
+            validities.isClinicNameValid = true;
         }
     });
     clinicAddressInput.addEventListener('input',(event)=>{
         if(event.target.value == '' || event.target.value == undefined){
             clinicAddressInput.classList.add('is-invalid');
             clinicAddressFeedback.textContent = 'Please enter value';
+            validities.isClinicAddressValid = false;
         }
         else{
             clinicAddressInput.classList.remove('is-invalid');
             clinicAddressInput.classList.add('is-valid');
+            validities.isClinicAddressValid = true;
         }
     });
     dateInput.addEventListener('input',(event)=>{
-        validateDate(dateInput,dateFeedback,event.target.value);
+        if(validateDate(dateInput,dateFeedback,event.target.value)){
+            validities.isDateValid = true;
+        }
+        else{
+            validities.isDateValid = false;
+        }
     });
     commentsTextarea.addEventListener('input',(event)=>{
         if(commentsTextarea.classList.contains('is-invalid')){
             commentsTextarea.classList.remove('is-invalid');
             commentsTextarea.classList.add('is-valid');
+            validities.isCommentValid = true;
         }
     });
+    signaturePad.onBegin = function () {
+        const signatureMsg = document.getElementById('signatureMsg');
+        signatureMsg.textContent = '';
+        signatureMsg.className = '';
+        validities.isSignatureValid = true;
+    };
 
     // clear signature
     clearSignatureBtn.addEventListener('click', (event) => {
@@ -607,9 +709,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // handle form submission
     form.addEventListener('submit', function (event) {
         event.preventDefault();
-        let isValid = true;
-        let validities =[];
-
         // signature data handling...
         const signatureData = signaturePad.toDataURL();
 
@@ -642,10 +741,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Empty value validation
         validateEmptyValue(allEntry);
-
+        console.log(validities)
         // Proceed submission
-        if (isValid) {
+        if (validateValidities(validities)) {
             // Availability button validation
+            console.log('in')
             if (isAvailabilityBtn === false) {
                 availabilityBtn.classList.add('is-invalid');
             }
@@ -741,6 +841,14 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     });
                 }
+            }
+        }
+        else{
+            const firstInvalidElement = document.querySelector('.is-invalid');
+
+            if (firstInvalidElement) {
+            // Scroll to the top of the first invalid element
+            firstInvalidElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
     });
