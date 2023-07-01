@@ -75,7 +75,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // TODO: Proper Error
     const handleError = (error) => {
         if (error && error.message !== 'redirected') {
-            if (error !== "TypeError: Failed to fetch") {
+            if (error.message !== "Failed to fetch") {
                 console.log(error);
                 alert(error);
             }

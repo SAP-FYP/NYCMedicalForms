@@ -56,7 +56,7 @@ window.addEventListener('DOMContentLoaded', () => {
             })
             .catch((error) => {
                 if (error && error.message != 'redirected') {
-                    if (error != "TypeError: Failed to fetch") {
+                    if (error.message !== "Failed to fetch") {
                         console.log(error);
                         alert(error);
                     }
@@ -91,7 +91,7 @@ window.addEventListener('DOMContentLoaded', () => {
             })
             .catch((error) => {
                 if (error && error.message != 'redirected') {
-                    if (error != "TypeError: Failed to fetch") {
+                    if (error.message !== "Failed to fetch") {
                         console.log(error);
                         alert(error);
                     }

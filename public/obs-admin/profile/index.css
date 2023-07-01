@@ -93,14 +93,18 @@ body {
 }
 
 .form-input {
-    color: #485EAB;
-    border: 1px solid #485EAB;
-    border-radius: 10px;
-    padding: 10px 15px;
-    outline: none;
-    font-size: 1.1rem;
-    font-weight: 500;
-    margin-bottom: 1.6vh;
+    color: #485EAB !important;
+    border: 1px solid #485EAB !important;
+    border-radius: 10px !important;
+    padding: 10px 15px !important;
+    outline: none !important;
+    font-size: 1.1rem !important;
+    font-weight: 500 !important;
+    box-shadow: none !important;
+}
+
+.input-group {
+    margin-bottom: 1.6vh !important;
 }
 
 .form-button {
@@ -123,7 +127,7 @@ body {
 }
 
 #change-password-button {
-    margin-top: 30px;
+    margin-top: 60px;
 }
 
 /* MODAL */
@@ -159,18 +163,27 @@ body {
 }
 
 #change-password-modal .form-input {
+    font-size: 1rem !important;
     border: #485EAB 1px solid;
-    border-radius: 5px;
-    height: 40px;
-    padding: 0px 10px;
-    font-weight: 400;
+    border-right: 0px !important;
+    border-radius: 5px !important;
+    height: 45px !important;
+    padding: 10px 15px !important;
+    padding-bottom: 12px !important;
+    font-weight: 400 !important;
+    border-top-right-radius: 0px !important;
+    border-bottom-right-radius: 0px !important;
+}
+
+#change-password-modal .form-input:active {
+    outline: none;
 }
 
 #confirm-password-icon {
     width: 50px;
     height: 50px;
     margin-right: 16px;
-    padding: 9px 10px;
+    padding: 10px;
     border-radius: 10px;
     border: 2px solid #485EAB;
     background-color: #C7D3EF;
@@ -185,18 +198,31 @@ body {
 }
 
 #change-password-form button {
-    margin-left: -42px;
-    height: 36px;
-    display: flex;
-    flex-wrap: nowrap;
-    justify-content: center;
-    align-items: center;
-    background-color: #ffffff;
-    margin-top: 2px;
-    border: none;
-
+    height: 45px;
+    background-color: white;
+    border: 1px solid #485EAB !important;
+    border-left: 0px !important;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    cursor: default !important;
 }
 
-.button-icons {
-    margin-right: 0px !important;
+.modal-button-icons {
+    cursor: pointer;
+    padding: 0px;
+    transition: ease-in-out 150ms;
+    margin-top: 3px;
+}
+
+.modal-button-icons:hover {
+    color: #485EAB !important;
+}
+
+#password-req {
+    font-size: 16px;
+    padding-left: 30px;
+}
+
+#password-req text {
+    padding: 5px;
 }

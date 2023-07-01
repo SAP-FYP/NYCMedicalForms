@@ -69,16 +69,32 @@
 
                     <div id="form-container" class="col-4">
                         <form id="profile-form">
-                            <label class="col-12 form-label">Name</label>
-                            <input class="col-12 form-input" type="text" id="input-name">
-                            <label class="col-12 form-label">Contact</label>
-                            <input class="col-12 form-input" type="text" id="input-number">
-                            <label class="col-12 form-label">Email</label>
-                            <input class="col-12 form-input" type="text" id="input-email" disabled>
-                            <label class="col-12 form-label">Role</label>
-                            <input class="col-12 form-input" type="text" id="input-role" disabled>
-                            <label class="col-12 form-label">Password</label>
-                            <input class="col-12 form-input" type="text" id="input-password">
+
+                            <div class="input-group">
+                                <label class="col-12 form-label">Name</label>
+                                <input class="col-12 form-input form-control" type="text" id="input-name">
+                                <div class="invalid-tooltip" style="right: 0">Please enter valid name</div>
+                            </div>
+
+                            <div class="input-group">
+                                <label class="col-12 form-label">Contact</label>
+                                <input class="col-12 form-input form-control" type="text" id="input-number">
+                                <div class="invalid-tooltip" style="right: 0">Please enter valid number</div>
+                            </div>
+                            <div class="input-group">
+                                <label class="col-12 form-label">Email</label>
+                                <input class="col-12 form-input" type="text" id="input-email" disabled>
+                            </div>
+                            <div class="input-group">
+                                <label class="col-12 form-label">Role</label>
+                                <input class="col-12 form-input" type="text" id="input-role" disabled>
+                            </div>
+
+                            <div class="input-group">
+                                <label class="col-12 form-label">Password</label>
+                                <input class="col-12 form-input form-control" type="password" id="input-password">
+                                <div class="invalid-tooltip" style="right: 0">Please enter your password</div>
+                            </div>
 
                             <button class="col-12 form-button" id="change-password-button" data-bs-toggle="modal"
                                 data-bs-target="#editPasswordModal" type="button"><i class="material-icons button-icons"
@@ -87,6 +103,7 @@
                             <button class="col-12 form-button" type="submit" id="save-changes-button"><i
                                     class="material-icons button-icons"
                                     style="font-size:24px;color:#485EAB;">save</i>Save Changes</button>
+
                         </form>
                     </div>
                 </div>
@@ -107,39 +124,92 @@
                             <div class="modal-body">
                                 <div class="container-fluid">
                                     <div class="row">
-                                        <form id="change-password-form">
 
-                                            <div style="display: flex; flex-wrap: wrap;">
-                                                <label class="form-label col-12" for="current-input">Current
+                                        <form id="change-password-form" class="col-7">
+                                            <div class="input-group mb-3 col-7">
+                                                <label class="col-12 form-label" for="current-input">Current
                                                     Password</label>
-                                                <input class="form-input col-lg-6 col-12" id="current-input"
-                                                    type="password" />
-                                                <button id="current-btn" type="button"><i
-                                                        class="material-icons button-icons"
-                                                        style="font-size:24px;color:#485EAB;">visibility</i></button>
+                                                <input class="form-input form-control col-12" type="password"
+                                                    id="current-input">
+
+                                                <button class="btn btn-outline-secondary modal-button" id="current-btn"
+                                                    type="button">
+                                                    <i class="material-icons modal-button-icons"
+                                                        style="font-size:24px;color:#757575;">visibility</i></button>
+
+                                                <div class="invalid-tooltip" style="right: 0">Please enter current
+                                                    password
+                                                </div>
                                             </div>
 
-                                            <div style="display: flex; flex-wrap: wrap;">
-                                                <label class="form-label col-12" for="new-input">New
+                                            <div class="input-group mb-3">
+                                                <label class="col-12 form-label">New
                                                     Password</label>
-                                                <input class="form-input col-lg-6 col-12" id="new-input"
-                                                    type="password" />
-                                                <button id="new-btn" type="button"><i
-                                                        class="material-icons button-icons"
-                                                        style="font-size:24px;color:#485EAB;">visibility</i></button>
+                                                <input class="form-input form-control col-12" type="password"
+                                                    id="new-input">
+
+                                                <button class="btn btn-outline-secondary modal-button" id="new-btn"
+                                                    type="button">
+                                                    <i class="material-icons modal-button-icons"
+                                                        style="font-size:24px;color:#757575;">visibility</i></button>
+
+                                                <div class="invalid-tooltip" style="right: 0">Please enter new
+                                                    password
+                                                </div>
                                             </div>
 
-                                            <div style="display: flex; flex-wrap: wrap;">
-                                                <label class="form-label col-12" for="confirm-input">Confirm
+                                            <div class="input-group mb-3">
+                                                <label class="col-12 form-label">Confirm
                                                     Password</label>
-                                                <input class="form-input col-lg-6 col-12" id="confirm-input"
-                                                    type="password" />
-                                                <button id="confirm-btn" type="button"><i
-                                                        class="material-icons button-icons"
-                                                        style="font-size:24px;color:#485EAB;">visibility</i></button>
+                                                <input class="form-input form-control col-12" type="password"
+                                                    id="confirm-input">
+
+                                                <button class="btn btn-outline-secondary modal-button" id="confirm-btn"
+                                                    type="button">
+                                                    <i class="material-icons modal-button-icons"
+                                                        style="font-size:24px;color:#757575;">visibility</i></button>
+
+                                                <div class="invalid-tooltip" style="right: 0">Passwords do not match
+                                                </div>
                                             </div>
 
                                         </form>
+
+                                        <div class="col-5" id="password-req">
+
+                                            <text class="col-12 d-flex align-items-center" id="check-min"><b>Password
+                                                    requirements:</b></text>
+
+                                            <text class="col-12 d-flex align-items-center" id="check-min"><i
+                                                    class="material-icons"
+                                                    style="font-size:16px;color:#cc0000; margin: 0px 6px">close</i>At
+                                                least 8
+                                                characters</text>
+
+                                            <text class="col-12 d-flex align-items-center" id="check-upper"><i
+                                                    class="material-icons"
+                                                    style="font-size:16px;color:#cc0000; margin: 0px 6px">close</i>At
+                                                least one
+                                                uppercase letter</text>
+
+                                            <text class="col-12 d-flex align-items-center" id="check-lower"><i
+                                                    class="material-icons"
+                                                    style="font-size:16px;color:#cc0000; margin: 0px 6px">close</i>At
+                                                least one
+                                                lowercase letter</text>
+
+                                            <text class="col-12 d-flex align-items-center" id="check-number"><i
+                                                    class="material-icons"
+                                                    style="font-size:16px;color:#cc0000; margin: 0px 6px">close</i>At
+                                                least one
+                                                number</text>
+
+                                            <text class="col-12 d-flex align-items-center" id="check-symbol"><i
+                                                    class="material-icons"
+                                                    style="font-size:16px;color:#cc0000; margin: 0px 6px">close</i>At
+                                                least one
+                                                special character</text>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -22,6 +22,7 @@ const adminModel = require('./model/admin');
 const pmtModel = require('./model/pmt');
 const cloudinaryModel = require('./model/cloudinary');
 const passwordGenerator = require('./helper/passwordGenerator')
+const momentHelper = require('./helper/epochConverter')
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -72,7 +73,6 @@ app.post('/login', (req, res, next) => {
     return userModel
         .loginUser(credentials.email)
         .then((result) => {
-
             // CHECK HASH
             if (!bcrypt.compareSync(credentials.password, result.password)) {
                 const error = new Error("Invalid email or password");
@@ -81,9 +81,54 @@ app.post('/login', (req, res, next) => {
             }
 
             if (result.isDisabled) {
-                const error = new Error("Account is disabled. Please dontact admin for more information");
+                const error = new Error("Account is disabled. Please contact admin for more information");
                 error.status = 403;
                 throw error;
+            }
+
+            const passwordExpiry = momentHelper.utcToLocale(result.passwordUpdated);
+            const today = moment();
+
+            // to simulate and test
+            //const today = moment().add(180, 'days')
+            //console.log(today.diff(passwordExpiry, 'days'))
+
+            // PASSWORD EXPIRY CHECK (180 DAYS)
+            if (today.diff(passwordExpiry, 'days') >= 180 || !passwordExpiry.isValid()) {
+
+                let payload = {
+                    'email': result.email,
+                    'forcereset': true
+                }
+
+                let tokenConfig = {
+                    expiresIn: 28800,
+                    algorithm: 'HS256'
+                };
+
+                jwt.sign(payload, JWT_SECRET, tokenConfig, (err, token) => {
+
+                    if (err) {
+                        const error = new Error("Failed to sign JWT");
+                        error.status = 500;
+                        throw error;
+                    };
+
+                    res.cookie('resetToken', token, {
+                        httpOnly: true,
+                        secure: false,
+                        sameSite: 'strict'
+                    });
+
+                    if (payload.email) {
+                        return res.redirect('/reset-password');
+
+                    } else {
+                        const error = new Error("Invalid user data");
+                        error.status = 500;
+                        throw error;
+                    }
+                })
             }
 
             // SET JWT
@@ -223,7 +268,13 @@ app.put('/user/password', authHelper.verifyToken, authHelper.checkIat, authHelpe
         throw error;
     }
 
-    const { newPassword } = req.body.password;
+    const { newPassword, confirmPassword } = req.body.password;
+
+    if (newPassword != confirmPassword) {
+        const error = new Error("Passwords do not match");
+        error.status = 400;
+        throw error;
+    }
 
     bcrypt.hash(newPassword, 10, async function (err, hash) {
         if (err) {
@@ -295,6 +346,128 @@ app.put('/user/password', authHelper.verifyToken, authHelper.checkIat, authHelpe
 
                             if (payload.role) {
                                 return res.sendStatus(200);
+                            } else {
+                                const error = new Error("Invalid user role");
+                                error.status = 500;
+                                throw error;
+                            }
+                        })
+                    })
+            })
+            .catch((error) => {
+                console.log(error)
+                return res.status(error.status || 500).json({ error: error.message });
+            })
+    })
+})
+
+// Force update panel access check
+app.get('/user/updatepassword', authHelper.verifyResetToken, (req, res, next) => {
+
+    if (!req.decodedToken.forcereset) {
+        return res.redirect('/error?code=403')
+    }
+
+    res.sendStatus(200);
+})
+
+// Update user password (force update panel)
+app.put('/user/updatepassword', authHelper.verifyResetToken, (req, res, next) => {
+    const user = req.decodedToken;
+
+    if (!user.forcereset) {
+        return res.redirect('/error?code=403')
+    }
+
+    if (!req.body.password.newPassword || !user.email) {
+        const error = new Error("Empty or invalid information");
+        error.status = 400;
+        throw error;
+    }
+
+    const { newPassword, confirmPassword } = req.body.password;
+
+    if (newPassword != confirmPassword) {
+        const error = new Error("Passwords do not match");
+        error.status = 400;
+        throw error;
+    }
+
+    bcrypt.hash(newPassword, 10, async function (err, hash) {
+        if (err) {
+            return res.status(500).json({ error: 'Error hashing password' });
+        }
+
+        const email = user.email;
+        const password = hash;
+        const invalidationDate = moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss');
+        const passwordUpdated = invalidationDate;
+
+        return adminModel
+            .updateUserPassword(email, password, invalidationDate, passwordUpdated)
+            .then((result) => {
+
+                if (!result) {
+                    const error = new Error("Unable to update account password")
+                    error.status = 500;
+                    throw error;
+                }
+
+                return userModel
+                    .loginUser(email)
+                    .then((result) => {
+
+                        // CHECK HASH
+                        if (!bcrypt.compareSync(newPassword, result.password)) {
+                            const error = new Error("Invalid email or password");
+                            error.status = 401;
+                            throw error;
+                        }
+
+                        if (result.isDisabled) {
+                            const error = new Error("Account is disabled. Please dontact admin for more information");
+                            error.status = 403;
+                            throw error;
+                        }
+
+                        // SET JWT
+                        let payload = {
+                            'email': result.email,
+                            'name': result.nameOfUser,
+                            'permissionGroup': result.groupId,
+                            'role': result.roleId,
+                            'permissions': result.permissions,
+                            'picUrl': result.picUrl,
+                            'contact': result.contactNo
+                        }
+
+                        let tokenConfig = {
+                            expiresIn: 28800,
+                            algorithm: 'HS256'
+                        };
+
+                        // SIGN JWT
+                        jwt.sign(payload, JWT_SECRET, tokenConfig, (err, token) => {
+
+                            if (err) {
+                                const error = new Error("Failed to sign JWT");
+                                error.status = 500;
+                                throw error;
+                            };
+
+                            res.clearCookie('resetToken');
+                            res.cookie('jwt', token, {
+                                httpOnly: true,
+                                secure: false,
+                                sameSite: 'strict'
+                            });
+
+                            if (payload.role == 1) {
+                                return res.redirect('/obs-admin/admin')
+                            } else if (payload.role == 2 || payload.role == 3) {
+                                return res.redirect('/obs-admin/obs-management')
+                            } else if (payload.role == 4) {
+                                return res.redirect('/obs-form')
                             } else {
                                 const error = new Error("Invalid user role");
                                 error.status = 500;
@@ -489,7 +662,7 @@ app.post('/send-email', (req, res) => {
 });
 
 /**
- * User: Super Admin
+ * User: Super Admin    
  */
 
 // Create Account

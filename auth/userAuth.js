@@ -98,3 +98,42 @@ module.exports.checkPassword = function checkPassword(req, res, next) {
             return res.status(error.status || 500).json({ error: error.message });
         });
 }
+
+module.exports.verifyResetToken = function verifyResetToken(req, res, next) {
+    const token = req.cookies.resetToken;
+
+    if (!token) {
+
+        // NO TOKEN
+        const error = new Error("No token found! Reason(Empty token)");
+        error.status = 401;
+        console.log('Error: ' + error.message);
+        return next(error);
+
+    } else {
+        // CHECK TOKEN
+        jwt.verify(token, JWT_SECRET, { algorithm: ['HS256'] }, function (err, decodedPayload) {
+            if (err) {
+                // FAIL CHECK
+                res.clearCookie('resetToken');
+                const error = new Error("Not authorized! Reason(Invalid token)");
+                error.status = 403;
+                console.log('Error: ' + error.message);
+                return next(error);
+
+            } else {
+                // PASS CHECK
+
+                if (!decodedPayload.forcereset) {
+                    const error = new Error("Not authorized! Reason(Invalid token)");
+                    error.status = 403;
+                    console.log('Error: ' + error.message);
+                    return next(error);
+                }
+
+                req.decodedToken = decodedPayload;
+                next();
+            }
+        });
+    }
+}

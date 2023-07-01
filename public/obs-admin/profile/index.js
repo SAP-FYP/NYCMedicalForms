@@ -3,6 +3,10 @@ window.addEventListener('DOMContentLoaded', () => {
     const numberInput = document.getElementById('input-number');
     const roleInput = document.getElementById('input-role');
     const emailInput = document.getElementById('input-email');
+    const passwordInput = document.getElementById('input-password');
+    const newInput = document.getElementById('new-input');
+    const confirmInput = document.getElementById('confirm-input');
+    const currentInput = document.getElementById('current-input');
     const profileImg = document.getElementById('profile-img');
     const imgProfileFile = document.querySelector("#edit-profile-upload");
 
@@ -14,7 +18,6 @@ window.addEventListener('DOMContentLoaded', () => {
     const profileForm = document.getElementById('profile-form');
     const myModalEl = document.getElementById('editPasswordModal');
     const modal = new bootstrap.Modal(myModalEl);
-
 
     // === ERROR AND RESPONSE HANDLING ===
 
@@ -31,6 +34,12 @@ window.addEventListener('DOMContentLoaded', () => {
             throw error;
         }
 
+        if (response.status == 400) {
+            const error = new Error('Passwords do not match')
+            error.status = response.status || 500
+            throw error;
+        }
+
         if (response.status != 200) {
             const error = new Error('Failed to update')
             error.status = response.status || 500
@@ -43,7 +52,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // TODO: Proper Error
     const handleError = (error) => {
         if (error && error.message !== 'redirected') {
-            if (error !== "TypeError: Failed to fetch") {
+            if (error.message !== "Failed to fetch") {
                 console.log(error);
                 alert(error);
             }
@@ -101,6 +110,12 @@ window.addEventListener('DOMContentLoaded', () => {
                 passwordForm.reset();
                 modal.hide();
                 alert('Successfully changed password!')
+
+                const checkItems = ['#check-min', '#check-upper', '#check-lower', '#check-number', '#check-symbol'];
+                checkItems.forEach(item => {
+                    document.querySelector(`${item} i`).textContent = "close";
+                    document.querySelector(`${item} i`).style.color = "#cc0000";
+                });
             })
             .catch(handleError)
     }
@@ -122,50 +137,139 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // === EVENT HANDLERS ===
 
+
+    // UPDATE PROFILE SUBMIT
     profileForm.onsubmit = (e) => {
         e.preventDefault();
-        if (!document.getElementById('input-password').value) {
-            alert('Please enter password to continue');
+        const valid = validateForm();
 
-        } else {
+        if (valid) {
             const password = document.getElementById('input-password').value;
-
             const webFormData = new FormData();
 
-            if (!nameInput.value.trim() || !numberInput.value.trim()) {
-                alert('Please fill in all fields');
+            webFormData.append('name', nameInput.value.trim());
+            webFormData.append('number', numberInput.value.trim());
+            webFormData.append('password[currentPassword]', password);
 
-            } else {
-                webFormData.append('name', nameInput.value.trim());
-                webFormData.append('number', numberInput.value.trim());
-                webFormData.append('password[currentPassword]', password);
-
-                if (imgProfileFile.files[0]) {
-                    webFormData.append("img", imgProfileFile.files[0]);
-                }
-
-                updateUser(webFormData);
+            if (imgProfileFile.files[0]) {
+                webFormData.append("img", imgProfileFile.files[0]);
             }
+
+            updateUser(webFormData);
         }
     }
 
+    // VALIDATE UPDATE PROFILE FORM
+    const validateForm = () => {
+        const name = nameInput.value.trim();
+        const contact = numberInput.value.trim();
+        const password = passwordInput.value;
+        const phoneNumberPattern = /^(\+?65)?[689]\d{7}$/;
+        let valid = true;
+
+        if (!name) {
+            nameInput.classList.add('is-invalid');
+            valid = false;
+        }
+
+        if (!phoneNumberPattern.test(contact)) {
+            numberInput.classList.add('is-invalid');
+            valid = false;
+        }
+
+        if (!password) {
+            passwordInput.classList.add('is-invalid');
+            valid = false;
+        }
+
+        return valid;
+    }
+
+    // VALIDATOR FOR NAME / NUMBER / PASSWORD
+    const validateInput = (inputElement, validationFn) => {
+        const isValid = validationFn(inputElement.value);
+        isValid ? inputElement.classList.remove('is-invalid') : inputElement.classList.add('is-invalid');
+    }
+
+    // ON NAME CHANGE
+    nameInput.oninput = (e) => {
+        validateInput(e.target, (value) => value);
+    }
+
+    // ON NUMBER CHANGE
+    numberInput.oninput = (e) => {
+        const phoneNumberPattern = /^(\+?65)?[689]\d{7}$/;
+        validateInput(e.target, (value) => phoneNumberPattern.test(value));
+    }
+
+    // ON PASSWORD CHANGE
+    passwordInput.oninput = (e) => {
+        validateInput(e.target, (value) => value);
+    }
+
+    // ON NEW PASSWORD CHANGE
+    newInput.oninput = (e) => {
+        const password = e.target.value;
+        checkRequirements(document.querySelector('#check-min i'), password.length >= 8)
+        checkRequirements(document.querySelector('#check-upper i'), /[A-Z]/.test(password))
+        checkRequirements(document.querySelector('#check-lower i'), /[a-z]/.test(password))
+        checkRequirements(document.querySelector('#check-number i'), /\d/.test(password))
+        checkRequirements(document.querySelector('#check-symbol i'), /[-#!$@£%^&*()_+|~=`{}\[\]:";'<>?,.\/]/.test(password))
+    }
+
+    // VALIDATOR FOR NEW PASSWORD
+    const checkRequirements = (inputId, checkFn) => {
+        if (checkFn) {
+            inputId.textContent = "check"
+            inputId.style.color = "#00cc11"
+        } else {
+            inputId.textContent = "close"
+            inputId.style.color = "#cc0000"
+        }
+
+        const confirmPassword = confirmInput.value;
+        const password = newInput.value;
+
+        if (confirmPassword != password) {
+            confirmInput.classList.add('is-invalid');
+        } else {
+            confirmInput.classList.remove('is-invalid');
+        }
+
+    }
+
+    // ON CURRENT PASSWORD CHANGE
+    currentInput.oninput = (e) => {
+        validateInput(e.target, (value) => value);
+    }
+
+    // ON CONFIRM PASSWORD CHANGE
+    confirmInput.oninput = (e) => {
+        const newPassword = newInput.value;
+        validateInput(e.target, (value) => value == newPassword);
+    }
+
+    // UPDATE PASSWORD SUBMIT
     submitPassword.onclick = (e) => {
         e.preventDefault();
+
         const pass = {
-            currentPassword: document.getElementById('current-input').value.trim(),
-            newPassword: document.getElementById('new-input').value.trim(),
-            confirmPassword: document.getElementById('confirm-input').value.trim(),
+            currentPassword: document.getElementById('current-input').value,
+            newPassword: document.getElementById('new-input').value,
+            confirmPassword: document.getElementById('confirm-input').value,
         }
 
-        if (!pass.currentPassword || !pass.newPassword || !pass.confirmPassword) {
-            alert('Please fill in all fields');
-        } else if (pass.newPassword != pass.confirmPassword) {
-            alert('Passwords do not match');
-        } else {
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[-#!$@£%^&*()_+|~=`{}\[\]:";'<>?,.\/]).{8,}$/;
+        const isValid = (passwordRegex.test(pass.newPassword)) && (pass.newPassword == pass.confirmPassword)
+
+        if (isValid) {
             updateUserPassword(pass);
+        } else {
+            alert('Please enter a valid password / Passwords do not match');
         }
     }
 
+    // ON PROFILE IMAGE CHANGE
     imgProfileFile.onchange = (e) => {
         let file = e.target.files[0];
         if (!file.type.startsWith('image/')) {
@@ -175,21 +279,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    visibilityCurrent.onclick = (e) => {
-        e.preventDefault();
-        togglePassword('current-input', 'current-btn')
-    }
-
-    visibilityNew.onclick = (e) => {
-        e.preventDefault();
-        togglePassword('new-input', 'new-btn')
-    }
-
-    visibilityConfirm.onclick = (e) => {
-        e.preventDefault();
-        togglePassword('confirm-input', 'confirm-btn')
-    }
-
+    // TOGGLE PASSWORD VISIBILITY
     const togglePassword = (input, icon) => {
         let inputId = document.getElementById(input);
         let iconId = document.querySelector(`#${icon} i`);
@@ -202,6 +292,24 @@ window.addEventListener('DOMContentLoaded', () => {
             iconId.textContent = "visibility"
         }
     }
+
+    // VISIBILITY BUTTON - CURRENT PASSWORD
+    visibilityCurrent.onclick = (e) => {
+        e.preventDefault();
+        togglePassword('current-input', 'current-btn')
+    }
+    // VISIBILITY BUTTON - NEW PASSWORD
+    visibilityNew.onclick = (e) => {
+        e.preventDefault();
+        togglePassword('new-input', 'new-btn')
+    }
+    // VISIBILITY BUTTON - CONFIRM PASSWORD
+    visibilityConfirm.onclick = (e) => {
+        e.preventDefault();
+        togglePassword('confirm-input', 'confirm-btn')
+    }
+
+
 
 })
 
