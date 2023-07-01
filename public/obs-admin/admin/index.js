@@ -449,6 +449,11 @@ window.addEventListener('DOMContentLoaded', () => {
             method: 'POST'
         })
             .then((response) => {
+                if (response.redirected) {
+                    window.location.href = response.url
+                    throw new Error('redirected');
+                }
+
                 if (response.status != 200) {
                     const error = new Error('Failed to reset user password')
                     error.status = response.status

@@ -15,24 +15,34 @@ window.addEventListener('DOMContentLoaded', () => {
             })
 
         }).then((response) => {
-            if (response.status === 400 || response.status === 401) {
+
+            if (response.status === 400 || response.status === 401 || response.status === 404) {
                 const error = new Error("Invalid email or password");
                 error.status = response.status;
                 throw error;
+            }
 
-            } else if (response.status !== 200) {
+            if (response.status === 403) {
+                const error = new Error("Account is disabled. Please contact admin for more information");
+                error.status = response.status;
+                throw error;
+            }
+
+            if (response.redirected) {
+                window.location.href = response.url
+                throw new Error('redirected');
+
+            } else {
                 const error = new Error("Unknown Error");
                 error.status = response.status;
                 throw error;
             }
-            // role check
-            // redirect to superadmin/pmt/mst form
-            // can redirect in app.js using res.redirect
 
         }).catch((error) => {
-            console.log(error)
-            alert(error)
-            // display error
+            if (error && error.message != 'redirected') {
+                console.log(error);
+                alert(error);
+            }
         })
     }
 

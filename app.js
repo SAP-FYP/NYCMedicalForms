@@ -59,6 +59,9 @@ app.get('/', (req, res) => {
 
 // Login
 app.post('/login', (req, res, next) => {
+
+    const requestUrl = req.headers.referer;
+
     const credentials = {
         email: req.body.email,
         password: req.body.password,
@@ -74,7 +77,10 @@ app.post('/login', (req, res, next) => {
         .loginUser(credentials.email)
         .then((result) => {
             // CHECK HASH
-            if (!bcrypt.compareSync(credentials.password, result.password)) {
+
+            if ((requestUrl.includes("/obs-admin/login") && result.roleId == 4) ||
+                (!requestUrl.includes("/obs-admin/login") && result.roleId != 4) ||
+                (!bcrypt.compareSync(credentials.password, result.password))) {
                 const error = new Error("Invalid email or password");
                 error.status = 401;
                 throw error;
@@ -167,7 +173,7 @@ app.post('/login', (req, res, next) => {
                 } else if (payload.role == 2 || payload.role == 3) {
                     return res.redirect('/obs-admin/obs-management')
                 } else if (payload.role == 4) {
-                    return res.redirect('/obs-form')
+                    return res.redirect('/docForm')
                 } else {
                     const error = new Error("Invalid user role");
                     error.status = 500;
@@ -467,7 +473,7 @@ app.put('/user/updatepassword', authHelper.verifyResetToken, (req, res, next) =>
                             } else if (payload.role == 2 || payload.role == 3) {
                                 return res.redirect('/obs-admin/obs-management')
                             } else if (payload.role == 4) {
-                                return res.redirect('/obs-form')
+                                return res.redirect('/docForm')
                             } else {
                                 const error = new Error("Invalid user role");
                                 error.status = 500;

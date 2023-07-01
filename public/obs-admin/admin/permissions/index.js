@@ -300,7 +300,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
         // DELETE PERMISSION GROUPS
         document.getElementById('confirmation-delete-button').onclick = () => {
-            console.log('singled')
+
             return fetch(`/obs-admin/permission/groups/${permGroup.groupId}`, {
                 method: 'DELETE'
             })
