@@ -17,7 +17,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // ---START---WINDOW ONLOAD---
     window.onload = function (e) {
-        const getEnv = fetch('http://localhost:3000/getEnv')
+        const getEnv = fetch('https://singpassdemo.onrender.com/getEnv')
             .then((response) => {
                 if (response.status != 200) {
                     throw new Error('Failed to fetch ENV')
@@ -85,7 +85,7 @@ window.addEventListener('DOMContentLoaded', () => {
         // console.log("State:",state);
 
         // invoke AJAX call from frontend client side to your backend server side
-        fetch('http://localhost:3000/getPersonData', {
+        fetch('https://singpassdemo.onrender.com/getPersonData', {
             method: 'POST', // post to server side
             headers: {
                 'Content-Type': 'application/json'
