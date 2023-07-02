@@ -1,3 +1,4 @@
+const { locale } = require('moment');
 const conn = require('../database');
 const { query, pool } = conn;
 
@@ -112,12 +113,13 @@ module.exports.createPermGroup = async function createPermGroup(newPermGroup) {
         }
 
         await connection.commit();
-        return groupInsertId
+        return groupInsertId;
 
     } catch (error) {
-        await connection.rollback()
-        connection.release()
+        await connection.rollback();
         throw error
+    } finally {
+        connection.release();
     }
 }
 
@@ -166,12 +168,13 @@ module.exports.editPermGroup = async function createPermGroup(permGroup) {
         }
 
         await connection.commit();
-        return affectedRows1
+        return affectedRows1;
 
     } catch (error) {
-        await connection.rollback()
-        connection.release()
-        throw error
+        await connection.rollback();
+        throw error;
+    } finally {
+        connection.release();
     }
 }
 
@@ -204,12 +207,13 @@ module.exports.deletePermissionGroup = async function getPermissions(groupId) {
         }
 
         await connection.commit();
-        return affectedRows2
+        return affectedRows2;
 
     } catch (error) {
-        await connection.rollback()
-        connection.release()
+        await connection.rollback();
         throw error
+    } finally {
+        connection.release();
     }
 }
 
@@ -241,12 +245,13 @@ module.exports.bulkDeletePermissionGroup = async function bulkDeletePermissionGr
         }
 
         await connection.commit();
-        return affectedRows2
+        return affectedRows2;
 
     } catch (error) {
-        await connection.rollback()
-        connection.release()
+        await connection.rollback();
         throw error
+    } finally {
+        connection.release();
     }
 }
 
@@ -337,9 +342,10 @@ module.exports.bulkDeleteUser = async function bulkDeleteUser(users, invalidatio
         return affectedRows;
 
     } catch (error) {
-        await connection.rollback()
-        connection.release()
-        throw error
+        await connection.rollback();
+        throw error;
+    } finally {
+        connection.release();
     }
 }
 
@@ -381,9 +387,10 @@ module.exports.bulkDisableUser = async function bulkDisableUser(users, status, i
         return affectedRows;
 
     } catch (error) {
-        await connection.rollback()
-        connection.release()
-        throw error
+        await connection.rollback();
+        throw error;
+    } finally {
+        connection.release();
     }
 }
 

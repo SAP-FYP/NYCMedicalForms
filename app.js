@@ -23,6 +23,7 @@ const pmtModel = require('./model/pmt');
 const cloudinaryModel = require('./model/cloudinary');
 const passwordGenerator = require('./helper/passwordGenerator')
 const momentHelper = require('./helper/epochConverter')
+const cronJob = require('./helper/cron')
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -47,6 +48,9 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
+
+// CRON Jobs
+cronJob.dataRetentionJob();
 
 app.get('/', (req, res) => {
     res.send(`Server running on port ${port}`)
