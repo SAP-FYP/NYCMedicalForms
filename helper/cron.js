@@ -24,7 +24,7 @@ module.exports.dataRetentionJob = function dataRetentionJob() {
     //     }
     // });
 
-    // EVERY DAY 1 OF THE MONTH AT 00:00 HRS
+    // EVERY FIRST DAY OF THE MONTH AT 00:00 HRS
     cron.schedule("0 0 1 * *", async function () {
         const today = moment().tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss');
         const interval = '1 YEAR';

@@ -49,12 +49,16 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-// CRON Jobs
+// CRON Job
 cronJob.dataRetentionJob();
 
 app.get('/', (req, res) => {
     res.send(`Server running on port ${port}`)
+});
 
+// callback function - directs back to home page
+app.get('/callback', function (req, res) {
+    res.sendFile(__dirname + '/public/index.html');
 });
 
 /**
