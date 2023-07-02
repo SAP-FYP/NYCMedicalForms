@@ -654,13 +654,12 @@ app.put('/obs-admin/disable/user/:email/:status', authHelper.verifyToken, authHe
 
 //PMT Retrieve All Submissions
 app.get('/obs-admin/pmt/all', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
-     // IF NO PERMISSIONS
-     if (!req.decodedToken.permissions.includes(1)) {
+     // AUTHORIZATION CHECK - PMT, MST 
+     if (req.decodedToken.role != 2 && req.decodedToken.role != 4) {
         return res.redirect('/error?code=403')
     }
-
-    // AUTHORIZATION CHECK - PMT, MST 
-    if (req.decodedToken.role != 2 && req.decodedToken.role != 4) {
+     // IF NO PERMISSIONS
+     if (!req.decodedToken.permissions.includes(1)) {
         return res.redirect('/error?code=403')
     }
     return pmtModel
@@ -668,7 +667,10 @@ app.get('/obs-admin/pmt/all', authHelper.verifyToken, authHelper.checkIat, async
         .then((result) => {
             if (result.length === 0) {
                 throw new Error("No submissions found");
-            }
+            } 
+         
+          
+         
             return res.json(result[0]);
         })
         .catch((error) => {
@@ -693,6 +695,7 @@ app.get('/obs-admin/pmt/:nameOfStudent', authHelper.verifyToken, authHelper.chec
             if (result.length === 0) {
                 throw new Error(nameOfStudent + "'s submission not found");
             }
+            result[0].push(req.decodedToken.permissions);
             return res.json(result[0]);
         })
         .catch((error) => {
@@ -932,7 +935,8 @@ app.get('/export-bulk', authHelper.verifyToken, authHelper.checkIat, (req, res) 
     res.send(excelBuffer);
   });
   
-  app.put('/obs-admin/mst/review/:studentId', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
+  //MST Update Submission Comment
+  app.put('/obs-admin/mst/comment/:studentId', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
     // IF NO PERMISSIONS
     if (!req.decodedToken.permissions.includes(7)) {
         return res.redirect('/error?code=403')
@@ -942,17 +946,18 @@ app.get('/export-bulk', authHelper.verifyToken, authHelper.checkIat, (req, res) 
         return res.redirect('/error?code=403')
     }
     const studentId = req.params.studentId;
-    const review = req.body.review;
+    const comment = req.body.comments;
     
     return mstModel
-        .updateSubmissionReview(review, studentId)
+        .updateSubmissionComment(comment, studentId)
         .then((result) => {
-            if (!studentId || !review) {
-                return res.status(400).json({ error: "Review cannot be empty" });
+            if (!studentId || !comment) {
+                return res.status(400).json({ error: "Comment cannot be empty" });
             }
             if (result.affectedRows === 0) {
                 throw new Error("Submission not found");
             }
+            
             return res.json(result);
         })
         .catch((error) => {
