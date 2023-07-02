@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const elasticEmail = require('elasticemail');
 const multer = require('multer');
+const XLSX = require('xlsx');
 const cloudinary = require("cloudinary").v2;
 const {
     UserNotFoundError
@@ -764,95 +765,46 @@ app.get('/obs-admin/pmt/search/:search', authHelper.verifyToken, authHelper.chec
         })
 });
 
-//PMT Retrieve Submission By Filtering by school
-app.get('/obs-admin/pmt/filter/school/:filter', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
-    const filter = req.params.filter;
-    // AUTHORIZATION CHECK - PMT, MST 
-    if (req.decodedToken.role != 2 && req.decodedToken.role != 4) {
-        return res.redirect('/error?code=403')
+
+// PMT Retrieve submissions by filtering (School, Class, Eligibility, CourseDate
+app.post('/obs-admin/pmt/filter/', (req, res, next) => {
+
+    let school = req.body.school
+    let stuClass = req.body.class
+    let eligibility = req.body.eligibility
+    let courseDate = req.body.courseDate
+
+    // For each of courseDate, convert to Singapore Time
+    if (courseDate) {
+        courseDate = courseDate.map((date) => {
+            return moment(date).tz("Asia/Singapore").format("YYYY-MM-DD HH:mm:ss")
+        })
     }
 
-    return pmtModel
-        .retrieveSubmissionBySchoolName(filter)
-        .then((result) => {
-            if (result.length === 0) {
-                throw new Error("No submission found");
-            }
-            return res.json(result[0]);
-        })
-        .catch((error) => {
-            return res.status(error.status || 500).json({ error: error.message });
-        })
-});
-
-//PMT Retrieve Submission By Filtering by class
-app.get('/obs-admin/pmt/filter/class/:filter', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
-    const filter = req.params.filter;
-    // AUTHORIZATION CHECK - PMT, MST 
-    if (req.decodedToken.role != 2 && req.decodedToken.role != 4) {
-        return res.redirect('/error?code=403')
-    }
-
-    return pmtModel
-        .retrieveSubmissionByClassName(filter)
-        .then((result) => {
-            if (result.length === 0) {
-                throw new Error("No submission found");
-            }
-            return res.json(result[0]);
-        })
-        .catch((error) => {
-            return res.status(error.status || 500).json({ error: error.message });
-        })
-});
-
-//PMT Retrieve Submission By Filtering by class
-app.get('/obs-admin/pmt/filter/courseDate/:filter', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
-    const filter = req.params.filter;
-    // AUTHORIZATION CHECK - PMT, MST 
-    if (req.decodedToken.role != 2 && req.decodedToken.role != 4) {
-        return res.redirect('/error?code=403')
-    }
-
-    return pmtModel
-        .retrieveSubmissionByCourseDate(filter)
-        .then((result) => {
-            if (result.length === 0) {
-                throw new Error("No submission found");
-            }
-            return res.json(result[0]);
-        })
-        .catch((error) => {
-            return res.status(error.status || 500).json({ error: error.message });
-        })
-});
-
-//PMT Retrieve Submission By Filtering by class
-app.get('/obs-admin/pmt/filter/eligibility/:filter', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
-    const filter = req.params.filter;
-    
-    // AUTHORIZATION CHECK - PMT, MST 
-    if (req.decodedToken.role != 2 && req.decodedToken.role != 4) {
-        return res.redirect('/error?code=403')
+    const filter = {
+        school: school,
+        class: stuClass,
+        eligibility: eligibility,
+        courseDate: courseDate
     }
     
-    const [eligibility1, eligibility2] = filter.split(',');
-  
+    console.log(filter);
+
+    // AUTHORIZATION CHECK - PMT, MST
+
     return pmtModel
-      .retrieveSubmissionByEligibility(eligibility1, eligibility2)
-      .then((result) => {
-        if (result.length === 0) {
-          throw new Error("No submission found");
-        }
-        return res.json(result[0]);
-      })
-      .catch((error) => {
-        return res.status(error.status || 500).json({ error: error.message });
-      });
-  });
-
-const XLSX = require('xlsx');
-
+        .retrieveSubmissionByFilter(filter)
+        .then((result) => {
+            if (result.length === 0) {
+                throw new Error("No submission found");
+            }
+            return res.json(result[0]);
+        })
+        .catch((error) => {
+            console.log(error);
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+});
 
 // Endpoint for exporting the Excel file
 app.get('/export', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
