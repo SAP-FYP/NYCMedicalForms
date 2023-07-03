@@ -78,13 +78,13 @@ module.exports.updateSubmissionStatus = function updateSubmissionStatus(
 module.exports.retrieveSubmissionByFilter = function retrieveSubmissionByFilter(
   filter
 ) {
-  // Check if there is an array filter for (School, Class, Course Date, Eligibility)
+
   let conditions = "";
   let values = [];
   let count = 0;
 
   if (filter.school.length !== 0) {
-    conditions += "S.school = ?";
+    conditions += "(S.school = ?";
     count += 1;
     if (filter.school.length > 1) {
       for (let i = 0; i < filter.school.length; i++) {
@@ -96,12 +96,13 @@ module.exports.retrieveSubmissionByFilter = function retrieveSubmissionByFilter(
     } else {
       values.push(filter.school);
     }
+    conditions += ")";
   }
   if (filter.class.length !== 0) {
     if (count > 0) {
       conditions += " AND ";
     }
-    conditions += "S.class = ?";
+    conditions += "(S.class = ?";
     count += 1;
     if (filter.class.length > 1) {
       for (let i = 0; i < filter.class.length; i++) {
@@ -113,12 +114,13 @@ module.exports.retrieveSubmissionByFilter = function retrieveSubmissionByFilter(
     } else {
       values.push(filter.class);
     }
+    conditions += ")";
   }
   if (filter.courseDate.length !== 0) {
     if (count > 0) {
       conditions += " AND ";
     }
-    conditions += "F.courseDate = ?";
+    conditions += "(F.courseDate = ?";
     count += 1;
     if (filter.courseDate.length > 1) {
       for (let i = 0; i < filter.courseDate.length; i++) {
@@ -130,12 +132,13 @@ module.exports.retrieveSubmissionByFilter = function retrieveSubmissionByFilter(
     } else {
       values.push(filter.courseDate);
     }
+    conditions += ")";
   }
   if (filter.eligibility.length !== 0) {
     if (count > 0) {
       conditions += " AND ";
     }
-    conditions += "F.eligibility = ?";
+    conditions += "(F.eligibility = ?";
     count += 1;
     if (filter.eligibility.length > 1) {
       for (let i = 0; i < filter.eligibility.length; i++) {
@@ -147,6 +150,7 @@ module.exports.retrieveSubmissionByFilter = function retrieveSubmissionByFilter(
     } else {
       values.push(filter.eligibility);
     }
+    conditions += ")";
   }
 
   const sql = `SELECT F.formId, S.studentId, S.studentNRIC, S.nameOfStudent, S.class, S.school, F.courseDate, F.eligibility, F.formStatus
