@@ -309,12 +309,16 @@ document.addEventListener('DOMContentLoaded', function () {
             // double check if the entry have the key
             if (allEntry.hasOwnProperty(key)) {
                 const value = allEntry[key];
+                
+                console.log(key+'-----'+value)
                 // check signature
                 if(key === "signatureData"){
                     if (signaturePad.isEmpty()) {
-                        signatureMsg.textContent = 'Please provide your signature';
-                        signatureMsg.className = 'text-danger';
-                        validities.isSignatureValid = false;
+                        if(!document.getElementById('signatureMsg')){
+                            signatureMsg.textContent = 'Please provide your signature';
+                            signatureMsg.className = 'text-danger';
+                            validities.isSignatureValid = false;
+                        }
                     }
                 }
                 else if(key === "schoolName"){
@@ -440,6 +444,30 @@ document.addEventListener('DOMContentLoaded', function () {
         dateOfVaccineInput.value = '';
         parentContact.value = '';
         parentEmail.value = '';
+        commentsTextarea.value = '';
+        studentNRIC = '';
+        currentSchool = '';
+
+        validities.isStudentNameValid = false;
+        validities.isStudentNRICValid = false;
+        validities.isDateOfBirthValid = false;
+        validities.isClassValid = false;
+        validities.isSchoolValid = false;
+        validities.isCourseDateValid = false;
+        validities.isVaccineValid = false;
+        validities.isParentEmailValid = false;
+        validities.isParentContactValid = false;
+        validities.isEligibilityValid = false;
+
+        let elements = form.elements;
+
+        for (var i = 0; i < elements.length; i++) {
+            var element = elements[i];
+
+            if (element.classList.contains('is-valid')) {
+                element.classList.remove('is-valid');
+            }
+        }
     };
 
     // Input Validation event listners:
@@ -644,6 +672,14 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 const { doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo } = data[0];
                 doctorAutoFill(doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo);
+                
+                validities.isDoctorMCRValid = true;
+                validities.isDoctorNameValid = true;
+                validities.isDoctorContactValid = true;
+                validities.isClinicNameValid = true;
+                validities.isClinicAddressValid = true;
+                validities.isDateValid = true;
+                validities.isSignatureValid = true;
             })
             .catch(err => {
                 if (err.message == 'DoctorNotFound') {
