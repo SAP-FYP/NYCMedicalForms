@@ -13,6 +13,7 @@ const {
 const crypto = require('crypto');
 const key = Buffer.from(process.env.encryptKey, 'hex');
 const iv = Buffer.from(process.env.encryptIV, 'hex');
+const XLSX = require('xlsx');
 
 const authHelper = require('./auth/userAuth')
 const userModel = require('./model/user')
@@ -113,9 +114,9 @@ app.post('/login', (req, res, next) => {
 
                 if (payload.role == 1) {
                     return res.redirect('/obs-admin/admin')
-                } else if (payload.role == 2 || payload.role == 4) {
+                } else if (payload.role == 2 || payload.role == 3) {
                     return res.redirect('/obs-admin/obs-management')
-                } else if (payload.role == 3) {
+                } else if (payload.role == 4) {
                     return res.redirect('/obs-form')
                 } else {
                     const error = new Error("Invalid user role");
@@ -186,7 +187,7 @@ app.post('/post-acknowledge', (req, res) => {
         )
 
 })
-    
+
 // Twilio SMS
 app.post('/send-sms', (req, res) => {
     const { contact } = req.body;
@@ -654,12 +655,12 @@ app.put('/obs-admin/disable/user/:email/:status', authHelper.verifyToken, authHe
 
 //PMT Retrieve All Submissions
 app.get('/obs-admin/pmt/all', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
-     // AUTHORIZATION CHECK - PMT, MST 
-     if (req.decodedToken.role != 2 && req.decodedToken.role != 4) {
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
         return res.redirect('/error?code=403')
     }
-     // IF NO PERMISSIONS
-     if (!req.decodedToken.permissions.includes(1)) {
+    // IF NO PERMISSIONS
+    if (!req.decodedToken.permissions.includes(1)) {
         return res.redirect('/error?code=403')
     }
     return pmtModel
@@ -667,10 +668,10 @@ app.get('/obs-admin/pmt/all', authHelper.verifyToken, authHelper.checkIat, async
         .then((result) => {
             if (result.length === 0) {
                 throw new Error("No submissions found");
-            } 
-         
-          
-         
+            }
+
+
+            result[0].push(req.decodedToken.permissions);
             return res.json(result[0]);
         })
         .catch((error) => {
@@ -679,21 +680,22 @@ app.get('/obs-admin/pmt/all', authHelper.verifyToken, authHelper.checkIat, async
 });
 
 //PMT Retrieve Submission By Student Name
-app.get('/obs-admin/pmt/:nameOfStudent', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
-    const nameOfStudent = req.params.nameOfStudent;
-     // IF NO PERMISSIONS
-     if (!req.decodedToken.permissions.includes(1)) {
-        return res.redirect('/error?code=403')
-    }
+app.get('/obs-admin/pmt/:studentId', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
+    const studentId = req.params.studentId;
     // AUTHORIZATION CHECK - PMT, MST 
-    if (req.decodedToken.role != 2 && req.decodedToken.role != 4) {
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
         return res.redirect('/error?code=403')
     }
+    // IF NO PERMISSIONS
+    if (!req.decodedToken.permissions.includes(1)) {
+        return res.redirect('/error?code=403')
+    }
+
     return pmtModel
-        .retrieveSubmission(nameOfStudent)
+        .retrieveSubmission(studentId)
         .then((result) => {
             if (result.length === 0) {
-                throw new Error(nameOfStudent + "'s submission not found");
+                throw new Error(studentId + "'s submission not found");
             }
             result[0].push(req.decodedToken.permissions);
             return res.json(result[0]);
@@ -735,14 +737,9 @@ app.put('/obs-admin/pmt/:studentId', authHelper.verifyToken, authHelper.checkIat
 app.get('/obs-admin/pmt/search/:search', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
     const searchInput = req.params.search;
     // AUTHORIZATION CHECK - PMT, MST 
-    if (req.decodedToken.role != 2 && req.decodedToken.role != 4) {
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
         return res.redirect('/error?code=403')
     }
-
-    // let searchInput = ""
-    // if (req.params.search != -1) {
-    //     searchInput = req.params.search
-    // }
 
     return pmtModel
         .retrieveSubmissionBySearch(searchInput)
@@ -761,7 +758,7 @@ app.get('/obs-admin/pmt/search/:search', authHelper.verifyToken, authHelper.chec
 app.get('/obs-admin/pmt/filter/school/:filter', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
     const filter = req.params.filter;
     // AUTHORIZATION CHECK - PMT, MST 
-    if (req.decodedToken.role != 2 && req.decodedToken.role != 4) {
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
         return res.redirect('/error?code=403')
     }
 
@@ -823,131 +820,134 @@ app.get('/obs-admin/pmt/filter/courseDate/:filter', authHelper.verifyToken, auth
 //PMT Retrieve Submission By Filtering by class
 app.get('/obs-admin/pmt/filter/eligibility/:filter', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
     const filter = req.params.filter;
-    
+
     // AUTHORIZATION CHECK - PMT, MST 
     if (req.decodedToken.role != 2 && req.decodedToken.role != 4) {
         return res.redirect('/error?code=403')
     }
-    
-    const [eligibility1, eligibility2] = filter.split(',');
-  
-    return pmtModel
-      .retrieveSubmissionByEligibility(eligibility1, eligibility2)
-      .then((result) => {
-        if (result.length === 0) {
-          throw new Error("No submission found");
-        }
-        return res.json(result[0]);
-      })
-      .catch((error) => {
-        return res.status(error.status || 500).json({ error: error.message });
-      });
-  });
 
-const XLSX = require('xlsx');
+    const [eligibility1, eligibility2] = filter.split(',');
+
+    return pmtModel
+        .retrieveSubmissionByEligibility(eligibility1, eligibility2)
+        .then((result) => {
+            if (result.length === 0) {
+                throw new Error("No submission found");
+            }
+            return res.json(result[0]);
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        });
+});
+
+
 
 
 // Endpoint for exporting the Excel file
 app.get('/export', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
-   // IF NO PERMISSIONS
-   if (!req.decodedToken.permissions.includes(5)) {
-    return res.redirect('/error?code=403')
-}
- // AUTHORIZATION CHECK - PMT
- if (req.decodedToken.role != 2) {
-    return res.redirect('/error?code=403')
-}
-  // Extract the form data from the request
-  const { applicantName, schoolOrg, classNo, courseDate, formStatus } = req.query;
-  // Create a new workbook
-  const workbook = XLSX.utils.book_new();
-  // Create a new worksheet with the form data
-  const worksheet = XLSX.utils.json_to_sheet([
-    {
-      "Name of Applicant": applicantName,
-      "Organization/School": schoolOrg,
-      "Designation/Class": classNo,
-      "Course Date": courseDate,
-      "Form Status": formStatus,
-    },
-  ], {
-    header: [
-      "Name of Applicant",
-      "Organization/School",
-      "Designation/Class",
-      "Course Date",
-      "Form Status",
-    ],
-  });
-  // Add the worksheet to the workbook
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Student Data");
-
-  // Generate the Excel file buffer
-  const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-
-  // Set the response headers for downloading the file
-  res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-  res.setHeader('Content-Disposition', 'attachment; filename="' + encodeURIComponent(applicantName) + '.xlsx"');
-
-  // Send the Excel file buffer as the response
-  res.send(excelBuffer);
-});
-
-// Endpoint for exporting the Excel file in bulk
-app.get('/export-bulk', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
+    // AUTHORIZATION CHECK - PMT
+    if (req.decodedToken.role != 2) {
+        return res.redirect('/error?code=403')
+    }
     // IF NO PERMISSIONS
     if (!req.decodedToken.permissions.includes(5)) {
         return res.redirect('/error?code=403')
     }
-     // AUTHORIZATION CHECK - PMT
- if (req.decodedToken.role != 2) {
-    return res.redirect('/error?code=403')
-}
+
+    // Extract the form data from the request
+    const { applicantName, schoolOrg, classNo, courseDate, formStatus } = req.query;
+    // Create a new workbook
+    const workbook = XLSX.utils.book_new();
+    // Create a new worksheet with the form data
+    const worksheet = XLSX.utils.json_to_sheet([
+        {
+            "Name of Applicant": applicantName,
+            "Organization/School": schoolOrg,
+            "Designation/Class": classNo,
+            "Course Date": courseDate,
+            "Form Status": formStatus,
+        },
+    ], {
+        header: [
+            "Name of Applicant",
+            "Organization/School",
+            "Designation/Class",
+            "Course Date",
+            "Form Status",
+        ],
+    });
+    // Add the worksheet to the workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Student Data");
+
+    // Generate the Excel file buffer
+    const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+
+    // Set the response headers for downloading the file
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="' + encodeURIComponent(applicantName) + '.xlsx"');
+
+    // Send the Excel file buffer as the response
+    res.send(excelBuffer);
+});
+
+// Endpoint for exporting the Excel file in bulk
+app.get('/export-bulk', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
+    // AUTHORIZATION CHECK - PMT
+    if (req.decodedToken.role != 2) {
+        return res.redirect('/error?code=403')
+    }
+    // IF NO PERMISSIONS
+    if (!req.decodedToken.permissions.includes(5)) {
+        return res.redirect('/error?code=403')
+    }
+
     // Retrieve the bulk data from the request or pass it as a parameter
     const data = req.query.data;
 
     const dataArray = JSON.parse(data);
-    
+
     // Create a new worksheet with the formatted data
     const worksheet = XLSX.utils.json_to_sheet(dataArray, {
-      header: [
-        "Name of Applicant",
-        "Organization/School",
-        "Designation/Class",
-        "Course Date",
-        "Form Status",
-      ],
+        header: [
+            "Name of Applicant",
+            "Organization/School",
+            "Designation/Class",
+            "Course Date",
+            "Form Status",
+        ],
     });
-  
+
     // Create a new workbook and add the worksheet to it
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Bulk Data");
-  
+
     // Generate the Excel file buffer
     const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-  
+
     // Set the response headers for downloading the file
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', 'attachment; filename="exported-Bulk.xlsx"');
 
-  
+
     // Send the Excel file buffer as the response
     res.send(excelBuffer);
-  });
-  
-  //MST Update Submission Comment
-  app.put('/obs-admin/mst/comment/:studentId', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
+});
+
+//MST Update Submission Comment
+app.put('/obs-admin/mst/comment/:studentId', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+        return res.redirect('/error?code=403')
+    }
     // IF NO PERMISSIONS
     if (!req.decodedToken.permissions.includes(7)) {
         return res.redirect('/error?code=403')
     }
-     // AUTHORIZATION CHECK - PMT, MST 
-     if (req.decodedToken.role != 2 && req.decodedToken.role != 4) {
-        return res.redirect('/error?code=403')
-    }
+
     const studentId = req.params.studentId;
     const comment = req.body.comments;
-    
+
     return mstModel
         .updateSubmissionComment(comment, studentId)
         .then((result) => {
@@ -957,7 +957,7 @@ app.get('/export-bulk', authHelper.verifyToken, authHelper.checkIat, (req, res) 
             if (result.affectedRows === 0) {
                 throw new Error("Submission not found");
             }
-            
+
             return res.json(result);
         })
         .catch((error) => {

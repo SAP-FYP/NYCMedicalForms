@@ -3,9 +3,8 @@ const { query } = conn;
 
 module.exports.retrieveAllSubmissions = function retrieveAllSubmissions() {
     const sql = `SELECT *
-                    FROM form F
-                    JOIN student S ON F.studentId = S.studentId
-                    JOIN parentAcknowledgement PA ON F.studentId = PA.studentId
+                 FROM form F
+                 Left JOIN student S ON F.studentId = S.studentId
                     ;`;
     return query(sql)
         .then((result) => {
@@ -19,17 +18,17 @@ module.exports.retrieveAllSubmissions = function retrieveAllSubmissions() {
         });
 };
 
-module.exports.retrieveSubmission = function retrieveSubmission(nameOfStudent) {
+module.exports.retrieveSubmission = function retrieveSubmission(studentId) {
      const sql = `SELECT *
                   FROM form F
-                  JOIN student S ON F.studentId = S.studentId
-                  JOIN parentAcknowledgement PA ON F.studentId = PA.studentId
-                  JOIN doctor D ON F.doctorMCR = D.doctorMCR
-                  WHERE S.nameOfStudent= ?;`;
-        return query(sql, [nameOfStudent])
+                  LEFT JOIN student S ON F.studentId = S.studentId
+                  LEFT JOIN parentAcknowledgement PA ON F.studentId = PA.studentId
+                  LEFT JOIN doctor D ON F.doctorMCR = D.doctorMCR
+                  WHERE S.studentId= ?;`;
+        return query(sql, [studentId])
             .then((result) => {
                 if (result.length === 0) {
-                    throw new Error(nameOfStudent + "'s submission not found");
+                    throw new Error("Student Id: " + studentId + " submission not found");
                 }
                 return result;
             }

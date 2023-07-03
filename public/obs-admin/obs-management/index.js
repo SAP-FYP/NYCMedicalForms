@@ -56,6 +56,8 @@ function populateRowData(clonedRowTemplate, formData, index, formattedDate) {
   const nameOfStudentCell = clonedRowTemplate.querySelector('.studentName');
   nameOfStudentCell.textContent = formData[index].nameOfStudent;
   nameOfStudentCell.setAttribute("nameOfStudent", formData[index].nameOfStudent);
+  nameOfStudentCell.setAttribute("studentId", formData[index].studentId);
+  const studentId = formData[index].studentId;
 
   const classCell = clonedRowTemplate.querySelector('.studentClass');
   classCell.textContent = formData[index].class;
@@ -78,7 +80,8 @@ function populateRowData(clonedRowTemplate, formData, index, formattedDate) {
     schoolCell,
     eligibilityCell,
     formattedDateCell,
-    formStatusValue
+    formStatusValue,
+    studentId
   };
 }
 
@@ -131,9 +134,9 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
           targetDataArray.splice(index, 1);
         }
         if (targetDataArray.length === 0) {
-           removeExportIcon();
+          removeExportIcon();
         }
-       
+
       }
 
       console.log(targetDataArray);
@@ -185,14 +188,14 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
 
 
 //FUNCTION TO OPEN MODAL VIA CLICKING ON THE TABLE ROW
-function openModal(studentName) {
-  // Perform additional actions or make API requests using the studentName
-  axios.get(`${API_URL}/${studentName}`)
+function openModal(studentId) {
+  // Perform additional actions or make API requests using the studentId
+  axios.get(`${API_URL}/${studentId}`)
     .then(function (response) {
       const formData = response.data[0];
-      
+
       const userPermissions = response.data[1];
-      
+
       console.log(formData);
       const dateObjCourseDate = new Date(formData.courseDate);
       const formatToLocal = dateObjCourseDate.toLocaleDateString("en-US", {
@@ -247,9 +250,24 @@ function openModal(studentName) {
 
 
       //call exportToExcel function
+      const successBtn = document.querySelector(".successBtn");
+      const rejectBtn = document.querySelector(".rejectBtn");
+      const closeBtn = document.querySelector(".closeBtn");
       const exportBtns = document.querySelectorAll(".exportBtn");
       exportBtns.forEach((exportBtn) => {
-        exportBtn.addEventListener("click", handleExportClick);
+        if (userPermissions.includes(5)) {
+          exportBtn.classList.remove('d-none');
+          exportBtn.addEventListener("click", handleExportClick);
+          successBtn.addEventListener("click", function (e) {
+            exportBtn.removeEventListener("click", handleExportClick);
+          });
+          rejectBtn.addEventListener("click", function (e) {
+            exportBtn.removeEventListener("click", handleExportClick);
+          });
+          closeBtn.addEventListener("click", function (e) {
+            exportBtn.removeEventListener("click", handleExportClick);
+          });
+        }
       });
 
       function handleExportClick(e) {
@@ -270,6 +288,30 @@ function openModal(studentName) {
           exportBtn.removeEventListener("click", handleExportClick);
         });
       }
+      //   const exportBtns = document.querySelectorAll(".exportBtn");
+      //   const confirmBtn = document.querySelector(".successBtn");
+      //   const closeBtn = document.querySelector(".closeBtn");
+      //   exportBtns.forEach(function (exportBtn) {
+      //   if (userPermissions.includes(5)) {
+      //     exportBtn.classList.remove('d-none');
+      //     exportBtn.addEventListener("click", handleExportClick);
+      //     confirmBtn.addEventListener("click", function (e) {
+      //       exportBtn.removeEventListener("click", handleExportClick);
+      //     });
+      //     closeBtn.addEventListener("click", function (e) {
+      //       exportBtn.removeEventListener("click", handleExportClick);
+      //     });
+      //   }
+      // })
+      //   function handleExportClick() {
+      //     const applicantName = formData.nameOfStudent;
+      //     const schoolOrg = formData.school;
+      //     const classNo = formData.class;
+      //     const courseDate = formattedCourseDate;
+      //     const formStatus = formData.formStatus;
+      //     // Call the exportData function with the form data
+      //     exportToExcel(applicantName, schoolOrg, classNo, courseDate, formStatus);
+      //   }
 
       displayFormModal(formData, userPermissions, formattedCourseDate, formattedVaccinationDate, formattedExamDate, formattedAckDate);
 
@@ -462,34 +504,24 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
 
 
     });
-  
-    const editReviewBtn = document.querySelector('.editReviewBtn');
+
     const textarea = document.querySelector("#mst-comment");
     const submitReview = document.querySelector('.submitReviewBtn');
+    const newComment = document.querySelector('#mst-comment');
     if (userPermissions.includes(7)) {
       submitReview.classList.remove('d-none');
-    } 
-    editReviewBtn.addEventListener('click', function () {
-      const newComment = document.querySelector('#mst-comment');
       textarea.disabled = false;
-      //click on submit button
-      submitReview.addEventListener('click', function (event) {
-        event.preventDefault(); // Prevent the default form submission behavior
-     
-        if (userPermissions.includes(7)) {
-          submitReview.click();
-          submitReview.setAttribute("data-bs-toggle", "modal");
-          submitReview.setAttribute("data-bs-target", "#staticBackdropRev");
-        } 
-        textarea.disabled = true;
-        // Show the modal
-      
-       
-        editReview(formData, newComment)
-
-      })
+    }
+    //click on submit button
+    submitReview.addEventListener('mousedown', function (event) {
+      if (userPermissions.includes(7)) {
+        submitReview.setAttribute("data-bs-toggle", "modal");
+        submitReview.setAttribute("data-bs-target", "#staticBackdropRev");
+      }
+      editReview(formData, newComment)
     })
   }
+
 
 
 
@@ -509,7 +541,7 @@ function updateStatusApprove(formData) {
     });
 }
 //FUNCTION TO HANDLE MODAL BUTTONS SO THAT THEY OPEN THE MODAL
-function handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData, index) {
+function handleModalButtons(clonedRowTemplate, studentId, formData, index) {
   const modalBtn1 = clonedRowTemplate.querySelector('.modalBtn1');
   const modalBtn2 = clonedRowTemplate.querySelector('.modalBtn2');
   const modalBtn3 = clonedRowTemplate.querySelector('.modalBtn3');
@@ -540,7 +572,7 @@ function handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData, inde
 
   getAllForms.appendChild(clonedRowTemplate);
 
-  function handleFormClick(index) { 
+  function handleFormClick(index) {
     if (index >= 0 && index < formData.length) {
       const formStatus = formData[index].formStatus;
       modalBtns.forEach(function (modalBtn) {
@@ -564,7 +596,7 @@ function handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData, inde
   modalBtns.forEach(function (modalBtn) {
     modalBtn.addEventListener("mousedown", function () {
       modalBtn7.classList.add("changePill");
-      openModal(nameOfStudentCell.getAttribute("nameOfStudent"));
+      openModal(studentId);
     });
   });
 }
@@ -593,18 +625,18 @@ function editReview(formData, newComment) {
     }
   )
     .then(function (response) {
-    
-     
+
+
     })
     .catch(function (error) {
       // Handle error
       console.log(error);
-      
-    
+
+
     })
-    // .finally(function () {
-    //   location.reload();
-    // });
+  // .finally(function () {
+  //   location.reload();
+  // });
 }
 
 //Function to export to excel individually
@@ -715,8 +747,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
       //call function to update status count
       const formData = response.data;
-      console.log(response);
-    
+      console.log(response.data);
+
+      //remove user permission from array of data
+      const userPermission = response.data.pop();
+
       updateFormCounts(formData);
 
       //call function to create export button for
@@ -742,9 +777,10 @@ document.addEventListener("DOMContentLoaded", function () {
         });
       }
       //create array to store all data for export to excel bulk
-   
+
       // Loop through the data and add it to the page
       for (i = 0; i < formData.length; i++) {
+
         //call function to format date
         const formattedDate = createFormattedDate(formData[i].courseDate);
         console.log(formattedDate);
@@ -768,16 +804,25 @@ document.addEventListener("DOMContentLoaded", function () {
           schoolCell,
           eligibilityCell,
           formattedDateCell,
-          formStatusValue
+          formStatusValue,
+          studentId
         } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
 
         //call function to handle checkboxes
-        handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, exportBtnBulkContainer, exportIcon, dataAll)
-
+        if (userPermission.includes(5)) {
+          handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, exportBtnBulkContainer, exportIcon, dataAll)
+        } else {
+          const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
+          const checkBoxTop = document.querySelector('#checkBoxTop');
+          checkBoxes.forEach(function (checkBox) {
+            checkBox.classList.add('d-none');
+          });
+          checkBoxTop.classList.add('d-none');
+        }
 
 
         //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
-        handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData, i);
+        handleModalButtons(clonedRowTemplate, studentId, formData, i);
         ;
 
 
@@ -1052,7 +1097,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 .then(response => {
                   const configURL = response.config.url;
                   const requestURL = response.request.responseURL;
-    
+
                   // Decode the URL-encoded strings
                   const decodedConfigURL = decodeURIComponent(configURL);
                   const decodedRequestURL = decodeURIComponent(requestURL);
@@ -1065,7 +1110,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                   //call function to update status count
                   const formData = response.data;
                   console.log(formData);
-                 
+
                   updateFormCounts(formData);
 
                   //call function to create export button for
@@ -1090,11 +1135,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
                     });
                   }
-           
+
 
                   // Loop through the data and add it to the page
                   for (i = 0; i < formData.length; i++) {
-                   
+
                     //call function to format date
                     const formattedDate = createFormattedDate(formData[i].courseDate);
                     // Get references to the status container and template
@@ -1120,7 +1165,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                       formattedDateCell,
                       formStatusValue
                     } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
-                   
+
                     //call function to handle checkboxes
                     handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, exportBtnFilter, exportIcon, dataAll)
 
@@ -1306,7 +1351,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                   //call function to create export button for
                   const exportIcon = createExportButtonAll(`export-icon-${schoolId}`);
                   console.log(exportBtnFilterSchool)
-               
+
                   // Loop through the data and add it to the page
                   for (i = 0; i < formData.length; i++) {
                     //call function to format date
@@ -1531,7 +1576,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
                     });
                   }
-        
+
                   // Loop through the data and add it to the page
                   for (i = 0; i < formData.length; i++) {
                     //call function to format date
@@ -1793,7 +1838,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
             });
           }
-  
+
           // Loop through the data and add it to the page
           for (i = 0; i < formData.length; i++) {
             console.log("HHIIHHI")
@@ -1806,7 +1851,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
             //clear html content in getAllForms once since using template
             if (i === 0) {
-              dataAll=[]
+              dataAll = []
               getAllForms.innerHTML = "";
             }
             // Clone the template and append it to the status container
