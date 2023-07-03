@@ -787,8 +787,6 @@ app.post('/obs-admin/pmt/filter/', (req, res, next) => {
         eligibility: eligibility,
         courseDate: courseDate
     }
-    
-    console.log(filter);
 
     // AUTHORIZATION CHECK - PMT, MST
 
