@@ -44,6 +44,10 @@ document.addEventListener('DOMContentLoaded', function () {
         keyboard: false
     });
 
+    // Section divs
+    const sectionOneContainer = document.getElementById('sectionOneContainer');
+    const sectionTwoContainer = document.getElementById('sectionTwoContainer');
+
     //student section
     const studentNameInput = document.getElementById('studentName');
     const schoolDropDownMenu = document.getElementById('schoolDropDownMenu');
@@ -58,6 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const parentContact = document.getElementById('parentContact');
 
     // physician sector
+    const acknowledgeCheckBox = document.getElementById('acknowledgeCheckBox');
     const eligibilityRadios = document.getElementsByName('eligibility');
     const commentsTextarea = document.getElementById('comment');
     const doctorNameInput = document.getElementById('physicianName');
@@ -470,6 +475,16 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 
+    // sections div click event
+    sectionOneContainer.addEventListener('click',(event)=>{
+        form.style.display = 'none';
+        document.getElementById('infoDiv').style.display = 'block'
+    });
+    sectionTwoContainer.addEventListener('click',(event)=>{
+        form.style.display = 'block';
+        document.getElementById('infoDiv').style.display = 'none'
+    });
+
     // Input Validation event listners:
     studentNameInput.addEventListener('input',(event)=>{
         if(validateName(studentNameInput,studentNameFeedback,event.target.value)){
@@ -807,14 +822,19 @@ document.addEventListener('DOMContentLoaded', function () {
                         formEntry.doctorMCR = doctorMCRInput.value;
                         return postFormInfo(formEntry);
                     })
-                    // .then(data => {
-                    //     // if checkbox, send email
-                    //     const emailEntry ={
-                    //         studentId : studentId,
-                    //         parentEmail : parentEmail
-                    //     }
-                    //     return sendEmail(emailEntry);
-                    // })
+                    .then(data => {
+                        // if checkbox, send email
+                        if(acknowledgeCheckBox.checked){
+                            const emailEntry ={
+                                studentId : studentId,
+                                email : parentEmail.value
+                            }
+                            return sendEmail(emailEntry);
+                        }
+                        else{
+                            return;
+                        }
+                    })
                     .then(data => {
                         loadingModal.hide();
                         emptyOutStudentInputs();
@@ -851,6 +871,19 @@ document.addEventListener('DOMContentLoaded', function () {
                         formEntry.doctorMCR = currentDoctor;
                         formEntry.comments = commentsTextarea.value;
                         return postFormInfo(formEntry);
+                    })
+                    .then(data => {
+                        // if checkbox, send email
+                        if(acknowledgeCheckBox.checked){
+                            const emailEntry ={
+                                studentId : studentId,
+                                email : parentEmail.value
+                            }
+                            return sendEmail(emailEntry);
+                        }
+                        else{
+                            return;
+                        }
                     })
                     .then(data => {
                         // hide loading modal

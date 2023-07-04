@@ -157,6 +157,7 @@ app.get('/logout', (req, res, next) => {
 // Email test
 app.post('/send-email', (req, res) => {
     const { email } = req.body;
+    console.log(email)
     // Compose the email parameters
     const emailParams = {
         to: email,
@@ -180,7 +181,7 @@ app.post('/send-email', (req, res) => {
             res.status(500).send('Failed to send email');
         } else {
             console.log('Email sent successfully:', result);
-            res.status(200).send('Email sent successfully');
+            return res.status(200).json({message : 'Email sent successfully:'});
         }
     });
 });

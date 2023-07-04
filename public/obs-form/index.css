@@ -23,12 +23,24 @@ html {
     height: 72px;
     font-size: 20px;
     gap: 10px;
+    cursor: pointer;
 }
 
 #sectionTwoContainer {
     font-size: 20px;
     height: 72px;
     gap: 10px;
+    cursor: pointer;
+}
+
+#sectionOneContainer:hover {
+    background-color: #7785bb;
+    border-radius: 12px 12px 0px 0px;
+}
+
+#sectionTwoContainer:hover {
+    background-color: #7785bb;
+    border-radius: 0px 0px 12px 12px;
 }
 
 #doctorForm {

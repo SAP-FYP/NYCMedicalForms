@@ -17,7 +17,7 @@
             <div id="menuContainer" class="col-xl-2 col-md-2 col-12 col-sm-12 mt-xl-5 mt-md-5 me-xl-5 rounded-4 h-25" >
                 <div class="row">
                     <div id="sectionOneContainer" class="col-xl-12 col-md-12 col-sm-6 col-6 d-flex align-items-center justify-content-center" >
-                        <svg id="Layer_2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 53.04 52.15" width="30" height="30">
+                        <svg id="menuSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 53.04 52.15" width="30" height="30">
                             <defs><style>.cls-1{fill:#485eab;}</style></defs>
                             <g id="Layer_44"><g>
                                 <path class="cls-1" d="M0,0V23.89H23.89V0H0ZM19.9,19.9H3.99V3.99h15.91v15.91Z"/>
@@ -29,7 +29,7 @@
                         Section 1
                     </div>
                     <div id="sectionTwoContainer" class="col-xl-12 col-md-12 col-sm-6 col-6 d-flex align-items-center justify-content-center" >
-                        <svg id="Layer_2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 53.04 52.15" width="30" height="30">
+                        <svg id="menuSvg2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 53.04 52.15" width="30" height="30">
                             <defs><style>.cls-1{fill:#485eab;}</style></defs>
                             <g id="Layer_44"><g>
                                 <path class="cls-1" d="M0,0V23.89H23.89V0H0ZM19.9,19.9H3.99V3.99h15.91v15.91Z"/>
@@ -44,6 +44,9 @@
                 </div>
             </div>
             <!-- form div -->
+            <div class="col-xl-6 col-md-8 col-12 col-sm-12 mt-xl-5" id="infoDiv" style="display: none; height: 100vh;">
+                <embed src="../assets/pdf/medical_examination.pdf" type="application/pdf" width="100%" height="100%" />
+            </div>
             <div class="col-xl-6 col-md-8 col-12 col-sm-12" id="formDiv">
                 <form class="mt-xl-5 mt-md-5 mb-5 rounded-4 pt-3 p-xl-5 p-3" id="doctorForm" novalidate>
                     <div class="row">
@@ -133,7 +136,7 @@
                                 <div id="checkContainer" class="form-check-inline">
                                     <input class="form-check-input" type="radio" name="eligibility" id="fit_With_Condition"
                                         value="Fit_with_condition" required>
-                                    <label class="form-check-label" for="fit_with_condition">Fit with condition</label>
+                                    <label class="form-check-label" for="fit_With_Condition">Fit with condition</label>
                                 </div>
 
                                 <div class="form-check-inline">
@@ -156,9 +159,17 @@
                                     <label for="comment">Subject to additional information provided on the following<br>condition(s)(any) </label>
                                 </div>
                                 <div class="position-relative">
-                                    <textarea class="form-control mb-5" id="comment" name="comment" rows="10"></textarea>
+                                    <textarea class="form-control mb-3" id="comment" name="comment" rows="10"></textarea>
                                     <div id="commentFeedback" class="invalid-tooltip">Please enter value</div>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="col-12 mb-5">
+                            <div class="form-group d-flex justify-content-center">
+                            <input class="form-check-input" type="checkbox" id="acknowledgeCheckBox">
+                            <label class="form-check-label ms-2" for="acknowledgeCheckBox">
+                                Send Parent Acknowledgement
+                            </label>
                             </div>
                         </div>
                         <div class="col-12">
