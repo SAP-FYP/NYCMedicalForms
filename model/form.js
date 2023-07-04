@@ -3,10 +3,10 @@ const { query } = conn;
 
 module.exports.getFormDetails = function getFormDetails(studentID) {
   const sql = `
-  SELECT s.nameOfStudent, CONCAT("****",s.studentNRIC) as studentNRIC, s.dateOfBirth, s.class, s.school, s.dateOfVaccination, 
+  SELECT s.nameOfStudent, s.studentNRIC as studentNRIC, s.dateOfBirth, s.class, s.school, s.dateOfVaccination, 
   f.eligibility, f.comments, f.courseDate, f.examinationDate, 
-  d.nameOfDoctor, d.doctorMCR, d.nameOfClinic, d.clinicAddress, d.contactNo, d.signature ,
-  p.parentContactNo, p.parentEmail, p.parentSignature
+  d.nameOfDoctor, d.doctorMCR, d.nameOfClinic, d.clinicAddress, d.contactNo, d.signature,
+  p.parentContactNo, p.parentEmail
   FROM student s 
   INNER JOIN form f ON s.studentID = f.studentID 
   INNER JOIN doctor d ON f.doctorMCR = d.doctorMCR

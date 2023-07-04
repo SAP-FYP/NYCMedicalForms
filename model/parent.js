@@ -23,6 +23,21 @@ module.exports.updateAcknowledgement = function updateAcknowledgement(data) {
         )
 };
 
+module.exports.postAcknowledgement = function postAcknowledgement(studentID, parentContactNo, parentEmail) {
+    const sql = `INSERT INTO parentAcknowledgement (studentId,parentContactNo,parentEmail) VALUES (?,?,?)`;
+      return query(sql, [studentID, parentContactNo, parentEmail])
+    .then((result) => {
+        const row = result[0];
+        if (row.length === 0) {
+            // TODO ERROR HANDLING
+            const error = new Error("Invalid URL");
+            error.status = 401;
+            throw error;
+        }
+        return row[0];
+    });
+};
+
 module.exports.setParentsAcknowledgement = function setParentsAcknowledgement(data) {
     const sql = "INSERT INTO parentAcknowledgement (studentId, parentContactNo, parentEmail) VALUES (?, ?, ?)";
     return query(sql, [data.studentId, data.parentContact, data.parentEmail])

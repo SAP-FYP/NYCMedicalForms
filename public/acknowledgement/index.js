@@ -3,22 +3,16 @@ window.addEventListener("DOMContentLoaded", function () {
   const urlParams = new URLSearchParams(window.location.search);
   const encrypted = urlParams.get("encrypted");
   
-  // ! BUG, DATE IS SET ONE DAY BEFORE. NEED TO FIX
   // Get password from field
   const password = document.getElementById("login-password");
 
   // Get login button
   const loginBtn = document.getElementById("login-button");
 
-  // TODO ERROR HANDLING
-  // Get error message
-  // ! const errorMessage = document.getElementById('error-message');
-
   // Add event listener to login button
   loginBtn.addEventListener("click", function (e) {
     // Prevent default form submission
     e.preventDefault();
-
     // Axios post request to /parent/login
     axios
       .post("/parent/login", {
@@ -29,14 +23,14 @@ window.addEventListener("DOMContentLoaded", function () {
       .then((response) => {
         console.log(response);
         // Set local storage
-        localStorage.setItem("user", JSON.stringify(response.data.user));
+        localStorage.setItem("key", JSON.stringify(password.value));
         window.location.href = "/acknowledgement/form?encrypted=" + encrypted;
         // TODO ERROR HANDLING
-        // If unsuccessful, display error message
+
       })
       .catch((error) => {
         console.log(error);
-        // ! errorMessage.innerHTML = error.response.data.error;
+        alert("Invalid URL or password");
       });
   });
 });

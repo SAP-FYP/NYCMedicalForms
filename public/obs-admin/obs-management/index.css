@@ -42,56 +42,12 @@ body {
 
 /* NAV BAR */
 #nav-bar {
-    height: calc(100vh - 52px);
-    width: 70px;
-    margin: 26px 26px;
-    background-color: #485EAB;
-    border-radius: 20px;
-    position: fixed;
-    transition: ease-in-out 300ms;
     min-height: 95%;
-    z-index: 99;
 }
 
-.navbar-nav {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-.navbar-nav li {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-}
-
-#logout-li {
-    margin-top: auto;
-}
 
 .navbar-nav img {
-    margin: 15px 0px;
     margin-left: 15px;
-}
-
-#navbar-icons-arrow,
-#navbar-icons-logout {
-    height: 40px;
-    width: 40px;
-    transition: ease-in-out 200ms;
-}
-
-#navbar-icons-permission {
-    height: 40px;
-    width: 40px;
-    padding: 6px;
-}
-
-#navbar-icons-profile {
-    height: 40px;
-    width: 40px;
-    min-width: 40px;
-    padding: 6px 8px;
 }
 
 #navbar-icons-form {
@@ -102,14 +58,7 @@ body {
 }
 
 .navbar-label {
-    white-space: nowrap;
-    color: white;
-    font-size: 1.1rem;
-    font-weight: 400;
-    margin: 0px 20px;
-    opacity: 0;
-    text-decoration: none;
-    transition: ease-in-out 300ms;
+        visibility: visible;
 }
 
 
@@ -131,11 +80,6 @@ body {
 }
 
 /*PROFILE*/
-#profileIconContainer {
-    margin-left: 20px !important;
-    height: 50px !important;
-    width: 50px !important;
-}
 .profileText {
     text-decoration: none;
     color: #485eab;
@@ -236,11 +180,74 @@ body {
 
 
 /*Filter*/
-#filter-icon {
-    height: 60px;
-    width: 60px;
+a {
+    cursor: pointer;
+}
+
+#filter-icon-container {
+    padding: 8px 9px;
+    border-radius: 10px;
+    border: 2px solid #485EAB;
+    background-color: #C7D3EF;
+    transition: ease-in-out 150ms;
+    cursor: pointer;
+    height: 50px;
+    width: 50px;
+}
+#filter-icon{
+    padding-left: 1px;
+    padding-top: 1px;
+    height: 25px;
+    width: 26px;
    
 }
+
+#filter-icon-container:hover {
+    box-shadow: 7px 7px 7px 0px rgba(0, 0, 0, 0.2);
+}
+
+
+
+.displayFilters {
+margin-left: 10px;
+margin-top: 1px;
+  }
+.custom-column {
+    padding: 9px 20px;
+    border-radius: 17px;
+    height: 47px;
+    text-align: center;
+    border: 2px solid #485EAB;
+    background-color: #C7D3EF;
+    box-shadow: 7px 7px 7px 0px rgba(0, 0, 0, 0.2);
+}
+
+.custom-row {
+    max-width: 800px;
+}
+
+
+.custom-menu {
+    min-width: 200px;
+    background-color: #C7D3EF !important;
+    color: #485EAB;
+    max-height: 275px;
+    overflow-y: auto;
+}
+
+.searchBarFilter {
+    height: 50px;
+    border: solid 1px grey;
+    border-radius: 10px;
+    padding-left: 7px;
+    background-color: #C7D3EF;
+}
+
+.dropDownLists {
+    margin: 10px;
+}
+
+
 
 /*Table*/
 .tableContainer {
@@ -248,7 +255,7 @@ body {
     border: 2px solid #485eab !important;
     border-radius: 18px !important;
     /* max-height: calc(100vh - 480px);  */
-    min-height: 386px;
+    max-height: 686px;
 }
 table {
     border-collapse:separate !important;
@@ -273,7 +280,7 @@ tr {
 }
 
 td{
-    padding: 10px!important;
+    padding: 15px!important;
     text-align: left !important;
     vertical-align:middle !important;
     font-size: 18px !important;
@@ -295,77 +302,62 @@ td:first-child {
  }
 
  /*All the different pills colours*/
-.pillPending {
-    display: inline-block;
+
+.pillRejected,
+.pillParent,
+.pillPending,
+.pillApproved {
+    display: flex;
+    justify-content: center!important;
+    align-items: center!important;
     padding: 3px 15px;
-    font-size: 18px;
-    width: 105px;
-    max-height: 35px;
-    background-color: #f2c153 !important;
-    border:#485eab 2px solid;
+    font-size: 14px;
+    color: #334772 !important;
+    width: 145px;
+    height: 34px;
+    border: 1px solid #334772 !important;
     border-radius: 20px; /* make it pill-shaped */
     text-align: center;
     line-height: normal !important; /* height fixed */
+    white-space: nowrap; /* don't wrap text */
 }
-.pillApproved{
-    display: inline-block;
-    padding: 3px 15px;
-    font-size: 18px;
-    width: 105px;
-    max-height: 35px;
-    background-color: #9ee5ac !important;
-    border:#485eab 2px solid;
-    border-radius: 20px; /* make it pill-shaped */
-    text-align: center;
-    line-height: normal !important; /* height fixed */
+
+.pillPending {
+   
+    background-color: #f2c153 !important;
+   
 }
 .pillRejected {
-    display: inline-block;
-    padding: 3px 15px;
-    font-size: 18px;
-    color: #334772 !important;
-    width: 105px;
-    max-height: 35px;
+   
     background-color: #ea6363 !important;
-    border:#485eab 2px solid;
-    border-radius: 20px; /* make it pill-shaped */
-    text-align: center;
-    line-height: normal !important; /* height fixed */
+   
+}
+.pillApproved{
+   
+    background-color: #9ee5ac !important;
+   
 }
 
 
 .pillParent {
-    display: inline-block;
-    padding: 3px 15px;
-    font-size: 18px;
-    width: 105px;
-    max-height: 35px;
+   
     background-color: #f2c153 !important;
-    border:#485eab 2px solid;
-    border-radius: 20px; /* make it pill-shaped */
-    text-align: center;
-    line-height: normal !important; /* height fixed */
-    overflow: hidden; /* hide the extra text */
-    white-space: nowrap; /* prevent text from wrapping */
-    text-overflow: ellipsis; /* show ellipsis (...) when text overflows */
-    vertical-align: middle;
+  
   }
   
-  .pillParent:hover,
+  /*.pillParent:hover,
   .pillParent:active {
-    max-height: none; /* show the full text */
-    white-space: normal; /* allow text to wrap */
-    text-overflow: clip; /* clip the text instead of showing ellipsis */
-  }
+    max-height: none; 
+    white-space: normal; 
+    text-overflow: clip; 
+  } */
+  
 /*ICONS*/
-.tripleDot {
-    width: 25px;
-    fill:#485eab;
-}
+
 
 #checkBoxTop {
     transform: translateY(4px);
-    margin-left: 12px;
+    margin-left: 17px;
     width: 20px;
     height: 20px;
 }
@@ -413,11 +405,14 @@ fill: #485eab;
     border:#485eab 2px solid;
     border-radius: 20px; /* make it pill-shaped */
 }
-.successBtn {
+.successBtn,
+.reviewBtn,
+.rejectBtn {
     background-color: #23e571 !important;
     border: 2px solid #485eab !important;
     margin-left: 10px !important;
 }
+
 
 .verticalLine {
     width: 1px;
@@ -435,11 +430,13 @@ fill: #485eab;
     border: 2px solid #485eab !important;
     color: #485eab !important;
 }
-.exportBtn{
+.exportBtn,
+.submitReviewBtn{
     background-color: #f2f2f2 !important;
     border: 2px solid #485eab !important;
     color: #485eab !important;
 }
+
 
 /*FORM*/
 form {

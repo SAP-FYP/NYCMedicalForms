@@ -13,61 +13,6 @@
 <body>
     <div id="container" class="container-fluid bg-black">
         <div class="row justify-content-center">
-            <!-- menu div -->
-            <div id="menu-container" class="col-xl-2 col-md-2 col-12 col-sm-12 mt-xl-5 mt-md-5 me-xl-5 rounded-4 h-25">
-                <div class="row">
-                    <div id="section-one-container"
-                        class="col-xl-12 col-md-12 col-sm-6 col-6 d-flex align-items-center justify-content-center">
-                        <svg id="Layer_2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 53.04 52.15" width="30"
-                            height="30">
-                            <defs>
-                                <style>
-                                    .cls-1 {
-                                        fill: #485eab;
-                                    }
-                                </style>
-                            </defs>
-                            <g id="Layer_44">
-                                <g>
-                                    <path class="cls-1" d="M0,0V23.89H23.89V0H0ZM19.9,19.9H3.99V3.99h15.91v15.91Z" />
-                                    <path class="cls-1"
-                                        d="M29.15,28.27v23.89h23.89V28.27H29.15Zm19.9,19.9h-15.91v-15.91h15.91v15.91Z" />
-                                    <path class="cls-1"
-                                        d="M0,28.27v23.89H23.89V28.27H0Zm19.9,19.9H3.99v-15.91h15.91v15.91Z" />
-                                    <rect class="cls-1" x="29.15" y="0" width="23.89" height="23.89" />
-                                </g>
-                            </g>
-                        </svg>
-                        Section 1
-                    </div>
-                    <div id="section-two-container"
-                        class="col-xl-12 col-md-12 col-sm-6 col-6 d-flex align-items-center justify-content-center">
-                        <svg id="Layer_2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 53.04 52.15" width="30"
-                            height="30">
-                            <defs>
-                                <style>
-                                    .cls-1 {
-                                        fill: #485eab;
-                                    }
-                                </style>
-                            </defs>
-                            <g id="Layer_44">
-                                <g>
-                                    <path class="cls-1" d="M0,0V23.89H23.89V0H0ZM19.9,19.9H3.99V3.99h15.91v15.91Z" />
-                                    <path class="cls-1"
-                                        d="M29.15,0V23.89h23.89V0H29.15Zm19.9,19.9h-15.91V3.99h15.91v15.91Z" />
-                                    <path class="cls-1"
-                                        d="M29.15,28.27v23.89h23.89V28.27H29.15Zm19.9,19.9h-15.91v-15.91h15.91v15.91Z" />
-                                    <path class="cls-1"
-                                        d="M0,28.27v23.89H23.89V28.27H0Zm19.9,19.9H3.99v-15.91h15.91v15.91Z" />
-                                    <rect class="cls-1" x="29.15" y="28.27" width="23.89" height="23.89" />
-                                </g>
-                            </g>
-                        </svg>
-                        Section 2
-                    </div>
-                </div>
-            </div>
             <!-- form div -->
             <form class="col-xl-6 col-md-8 col-12 col-sm-12 mt-xl-5 mt-md-5 mb-5 me-xl-5 rounded-4 pt-3 p-xl-5 p-3"
                 id="doctor-form">
@@ -168,7 +113,7 @@
                     <div class="col-xl-6 col-12 mb-3">
                         <div class="mb-3">
                             <label for="signature" class="form-label">Signature:</label>
-                            <canvas height=200 id="doctor-signature-canvas"></canvas>
+                            <img height=200 id="doctor-signature-image"></img>
                         </div>
                         <div class="mb-3">
                             <label for="date-of-examination" class="form-label">Date:</label>
@@ -215,7 +160,7 @@
                     </div>
                     <!-- TODO Change Icon for submit Btn -->
                     <div class="col-12 text-center mb-3">
-                        <button id="submit-button" class="btn btn-primary btn-lg" type="submit">Submit Form</button>
+                        <button id="acknowledge-button" class="btn btn-danger btn-lg" type="submit">Acknowledge Form</button>
                     </div>
             </form>
         </div>

@@ -38,8 +38,9 @@ module.exports.loginUser = async function loginUser(email) {
         return userData[0];
 
     } catch (error) {
-        connection.release()
-        throw error
+        throw error;
+    } finally {
+        connection.release();
     }
 }
 
