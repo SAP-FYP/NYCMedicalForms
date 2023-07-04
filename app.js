@@ -1,6 +1,7 @@
 const express = require("express");
 const cookieParser = require('cookie-parser');
 const moment = require('moment');
+const XLSX = require('xlsx');
 const bodyParser = require('body-parser');
 const formData = require("express-form-data");
 const jwt = require("jsonwebtoken");
@@ -12,7 +13,6 @@ const crypto = require('crypto');
 const { UserNotFoundError } = require("./errors");
 const key = Buffer.from(process.env.encryptKey, 'hex');
 const iv = Buffer.from(process.env.encryptIV, 'hex');
-const XLSX = require('xlsx');
 
 const authHelper = require('./auth/userAuth');
 const userModel = require('./model/user');
@@ -21,11 +21,11 @@ const parentModel = require('./model/parent');
 const formModel = require('./model/form');
 const adminModel = require('./model/admin');
 const pmtModel = require('./model/pmt');
+const mstModel = require('./model/mst');
 const cloudinaryModel = require('./model/cloudinary');
-const passwordGenerator = require('./helper/passwordGenerator')
-const momentHelper = require('./helper/epochConverter')
-const cronJob = require('./helper/cron')
-const mstModel = require('./model/mst')
+const passwordGenerator = require('./helper/passwordGenerator');
+const momentHelper = require('./helper/epochConverter');
+const cronJob = require('./helper/cron');
 
 const app = express();
 const port = process.env.PORT || 3000;
