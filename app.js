@@ -8,6 +8,11 @@ const elasticEmail = require('elasticemail');
 const multer = require('multer');
 const XLSX = require('xlsx');
 const cloudinary = require("cloudinary").v2;
+cloudinary.config({
+    cloud_name: "sp-esde-2100030",
+    api_key: "189815745826899",
+    api_secret: "eAKSNgdEoKxTWu8kh__hUi3U7J0",
+});
 const {
     UserNotFoundError
 } = require("./errors");
@@ -168,6 +173,17 @@ app.get('/logout', (req, res, next) => {
  */
 
 
+app.post('/parent-sign-upload', (req, res) => {
+    const file = req.body.parentSignature;
+    cloudinary.uploader.upload(file, { resource_type: 'image', format: 'png' }, (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Upload failed" });
+        }
+        return res.json({ url: result.secure_url });
+    });
+});
+
 // Setting parent's acknowledgement
 app.post('/post-acknowledge', (req, res) => {
     const parentEmail = req.body.parentEntry.parentEmail;
@@ -241,7 +257,7 @@ app.post('/send-email', (req, res) => {
         from: 'sg.outwardbound@gmail.com',
         body: `<p>Dear Parents,
         We hope this email finds you and your family in good health and high spirits. As part of our ongoing commitment to provide the best care for your children, we would like to inform you about some important updates regarding their medical conditions. <br> <br>
-        At our recent healthcare evaluation, we have made significant progress in understanding and managing your child's medical condition. To ensure that our records are up to date, we kindly request your cooperation in acknowledging the new changes in your child's medical condition by clicking on the following link: spmeet.onrender.com/acknowledge/?encrypted=${encryptedStudentId}<br> <br>
+        At our recent healthcare evaluation, we have made significant progress in understanding and managing your child's medical condition. To ensure that our records are up to date, we kindly request your cooperation in acknowledging the new changes in your child's medical condition by clicking on the following link: nycmedicalforms.onrender.com/acknowledgement/?encrypted=${encryptedStudentId}<br> <br>
         By clicking on the link, you will confirm that you have received and reviewed the updates related to your child's health. Your acknowledgment will help us ensure that our information is accurate and that we can continue to provide the highest quality of care. <br> <br>
         Rest assured that all the information you provide will remain strictly confidential and will only be used for healthcare purposes. We adhere to the highest standards of privacy and data protection, in compliance with applicable laws and regulations. <br> <br>
         If you have any questions or require further assistance, please do not hesitate to reach out to our dedicated support team at nyc_enquiries@nyc.gov.sg. We are here to address any concerns you may have and guide you through the process. <br> <br>
@@ -953,12 +969,9 @@ app.post('/parent/login/', (req, res, next) => {
         .parentLogin(studentID)
         .then((result) => {
             // Convert dateofbirth to DD/MM/YYYY (Singapore format)
-            result.dateOfBirth = new Date(result.dateOfBirth).toLocaleDateString('en-SG');
-            // Remove / from dateofbirth
-            result.dateOfBirth = result.dateOfBirth.replace(/\//g, '');
+            result.dateOfBirth = new Date(result.dateOfBirth).toLocaleDateString('en-SG').replace(/\//g, '');
             // Check if password entered is == to DOB + NRIC (password) in database
             if (password != result.dateOfBirth + result.studentNRIC) {
-                // !! Thrown error is not caught by catch block
                 const error = new Error("Invalid URL or password");
                 error.status = 401;
                 throw error;
@@ -967,6 +980,10 @@ app.post('/parent/login/', (req, res, next) => {
             return res.json({ user: result });
 
         })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        }
+        );
 })
 
 // Update parent's acknowledgement
@@ -1002,11 +1019,6 @@ app.put('/parent/acknowledge', (req, res, next) => {
  * HAJIN 
  */
 
-cloudinary.config({
-    cloud_name: "sp-esde-2100030",
-    api_key: "189815745826899",
-    api_secret: "eAKSNgdEoKxTWu8kh__hUi3U7J0",
-});
 
 //upload image to cloudinary
 app.post('/uploadSign', (req, res) => {
@@ -1223,6 +1235,23 @@ app.get('/form/:encrypted', (req, res, next) => {
     return formModel
         .getFormDetails(studentID)
         .then((result) => {
+            // Decrypt signature data
+            const encryptedSignInfo = result.signature
+            const key = Buffer.from('qW3eRt5yUiOpAsDfqW3eRt5yUiOpAsDf'); //must be 32 characters
+            const iv = Buffer.from('qW3eRt5yUiOpAsDf'); //must be 16 characters
+            try {
+                // Create the decipher object
+                const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+                let decrypted = decipher.update(encryptedSignInfo, 'hex', 'utf8');
+                decrypted += decipher.final('utf8');
+                result.signature = decrypted.split(';')[0];
+                ;
+            } catch (error) {
+                // Decrypt Error
+                console.error('Decryption Error:', error);
+                res.status(500).json({ message: 'Decryption Error' });
+            }
+
             return res.json({ form: result });
         })
         .catch((error) => {
