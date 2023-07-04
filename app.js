@@ -247,7 +247,7 @@ app.post('/send-email', (req, res) => {
             res.status(500).send('Failed to send email');
         } else {
             console.log('Email sent successfully:', result);
-            res.status(200).send('Email sent successfully');
+            return res.status(200).json({message : 'Email sent successfully:'});
         }
     });
 });
@@ -1067,37 +1067,37 @@ app.post('/uploadSign', (req, res) => {
 });
 
 // upload doctor informtaion
-app.post('/postDoctorInfo', (req, res, next) => {
-    const { doctorMCR, physicianName, signatureData, clinicName, clinicAddress, contactNo } = req.body;
-    try {
-        // encryption part
-        const algorithm = 'aes-256-cbc'; // encryption algorithm
-        const key = Buffer.from('qW3eRt5yUiOpAsDfqW3eRt5yUiOpAsDf'); //must be 32 characters
-        const iv = Buffer.from('qW3eRt5yUiOpAsDf'); // the initialization vector(), recommended to create randombytes and store safely crypto.randomBytes(16)
+app.post('/postDoctorInfo',(req,res,next) => {
+  const{doctorMCR, physicianName,signatureData,clinicName,clinicAddress,doctorContact} = req.body;
+  try {
+    // encryption part
+    const algorithm = 'aes-256-cbc'; // encryption algorithm
+    const key = Buffer.from('qW3eRt5yUiOpAsDfqW3eRt5yUiOpAsDf'); //must be 32 characters
+    const iv = Buffer.from('qW3eRt5yUiOpAsDf'); // the initialization vector(), recommended to create randombytes and store safely crypto.randomBytes(16)
 
         const cipher = crypto.createCipheriv(algorithm, key, iv);//create cipher iv first,
         let encryptedsignatureInfo = cipher.update(signatureData, 'utf8', 'hex'); //and encrypt the data with it
         encryptedsignatureInfo += cipher.final('hex'); //this is to signal the end of encryption, and to notice the type of data the encryption
         //you cannot cipher.update or cipher.final once you finished encryption using cipher.final. it will throw error
 
-        return doctorFormModel
-            .postDoctorInfo(doctorMCR, physicianName, encryptedsignatureInfo, clinicName, clinicAddress, contactNo)
-            .then(data => {
-                console.log(data)
-                res.json(data);
-            })
-            .catch(error => {
-                if (error instanceof DUPLICATE_ENTRY_ERROR) {
-                    res.status(409).json({ message: error.message });
-                } else {
-                    res.status(500).json({ message: 'Internal server error' });
-                }
-            })
-    } catch (error) {
-        // Encryption Error
-        console.error('Encryption Error:', error);
-        res.status(500).json({ message: 'Encryption Error' });
-    }
+    return doctorFormModel
+    .postDoctorInfo(doctorMCR, physicianName,encryptedsignatureInfo,clinicName,clinicAddress,doctorContact)
+    .then(data => {
+      console.log(data)
+      res.json(data);
+    })
+    .catch(error => {
+      if (error instanceof DUPLICATE_ENTRY_ERROR) {
+        res.status(409).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: 'Internal server error' });
+      }
+    })
+  }catch (error) {
+    // Encryption Error
+    console.error('Encryption Error:', error);
+    res.status(500).json({ message: 'Encryption Error' });
+  }
 });
 
 //upload student information
@@ -1238,25 +1238,22 @@ app.get('/getCourseDates', (req, res, next) => {
         });
 });
 
-// get eligibility
-app.get('/getEligibility', (req, res, next) => {
-    const limit = parseInt(req.query.limit);
-    const offset = parseInt(req.query.offset);
-
+app.get('/getSchools', (req, res, next) => {
     return doctorFormModel
-        .getEligibility(limit, offset)
-        .then(data => {
-            const eligibilityLists = data[0];
-            res.json(eligibilityLists)
-        })
-        .catch(err => {
-            if (error instanceof EMPTY_RESULT_ERROR) {
-                res.status(404).json({ message: error.message });
-            } else {
-                res.status(500).json({ message: 'Internal server error' });
-            }
-        });
-});
+      .getSchools()
+      .then(data => {
+        const courseDateLists = data[0];
+        res.json(courseDateLists)
+      })
+      .catch(err => {
+        if (error instanceof EMPTY_RESULT_ERROR) {
+          res.status(404).json({ message: error.message });
+        } else {
+          res.status(500).json({ message: 'Internal server error' });
+        }
+      });
+  });
+
 // Retrieve form details for parent acknowledgement- Used by Barry (for identification for merging)
 app.get('/form/:encrypted', (req, res, next) => {
     const encrypted = req.params.encrypted;

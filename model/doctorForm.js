@@ -19,9 +19,9 @@ module.exports.matchDoctorInfo = function matchDoctorInfo(doctorMCR){
     });
 };
 
-module.exports.postDoctorInfo = function postDoctorInfo(doctorMCR, physicianName,encryptedsignatureInfo,clinicName,clinicAddress,contactNo) {
+module.exports.postDoctorInfo = function postDoctorInfo(doctorMCR, physicianName,encryptedsignatureInfo,clinicName,clinicAddress,doctorContact) {
     const sql = `INSERT INTO doctor (doctorMCR,nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo) VALUES (?,?,?,?,?,?)`;
-    return query(sql, [doctorMCR, physicianName,encryptedsignatureInfo,clinicName,clinicAddress,contactNo])
+    return query(sql, [doctorMCR, physicianName,encryptedsignatureInfo,clinicName,clinicAddress,doctorContact])
     .catch(function (error) {
         console.error('Error in postDoctorInfo:', error);
         if (error.code === 'ER_DUP_ENTRY') {
@@ -126,23 +126,14 @@ module.exports.getCourseDates = function getCourseDates(limit,offset,search){
   });
 };
 
-module.exports.getEligibility = function getEligibility(limit,offset){
-  const sql = `SELECT F.eligibility, COUNT(*) AS count
-  FROM form F
-  JOIN student S ON F.studentId = S.studentId
-  JOIN parentAcknowledgement PA ON F.studentId = PA.studentId
-  JOIN doctor D ON F.doctorMCR = D.doctorMCR
-  GROUP BY F.eligibility
-  ORDER BY F.eligibility ASC
-  LIMIT ? OFFSET ?;
-  `;
-  return query(sql,[limit,offset]).then(function (result) {
+module.exports.getSchools = function getSchools(){
+  const sql = `SELECT schoolName FROM school`;
+  return query(sql).then(function (result) {
       const rows = result;
       console.log(rows);
       if (rows.length === 0) {
-          throw new EMPTY_RESULT_ERROR('No Course Dates Found');
+          throw new EMPTY_RESULT_ERROR('No Schools Found');
       }
       return rows;
   });
 };
-

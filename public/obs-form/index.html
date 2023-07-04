@@ -86,7 +86,6 @@
                                 </div>
 
                             </div>
-                            
                         </div>
                         <div class="col-12">
                             <div class="row mt-xl-3 mb-3">
@@ -135,25 +134,7 @@
                                 <div class="col-12 text-center mb-3">
                                     <label for="comment">Subject to additional information provided on the following<br>condition(s)(any) </label>
                                 </div>
-                                <textarea class="form-control mb-3" id="medical_text" name="comment" rows="10"></textarea>
-                                <!-- Create radio button yes or no, if they need parent acknowledgement -->
-                                <div class="col-12 text-center mb-3">
-                                    <label>Require Parent Acknowledgement?</label>
-                                </div>
-                                <div class="col-12 text-center mb-4">
-
-                                    <div class="form-check form-check-inline" >
-                                        <input class="form-check-input parent-acknowledgement" type="radio" name="parent-acknowledgement" id="parent-yes"
-                                            value="parent-yes" required>
-                                        <label class="form-check-label" for="parent-yes">Yes</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input parent-acknowledgement" type="radio" name="parent-acknowledgement" id="parent-no" value="parent-no" checked>
-                                        <label class="form-check-label" for="parent-no">No</label>
-                                    </div>
-                                </div>
-                                <div id="parent-section">
-                                </div>
+                                <textarea class="form-control mb-5" id="medical_text" name="comment" rows="10"></textarea>
                             </div>
                         </div>
                         <div class="col-12">
@@ -231,25 +212,9 @@
             </div>
         </div>
 
-        <template id="parent-template">
-            <div class="col-12" id ="parent-acknowledgement">
-                <div class="row mt-xl-3 mb-3">
-                    <div class="col-xl-6 col-12">
-                        <label for="parentEmail" class="form-label">Parent's Email</label>
-                        <input type="text" class="form-control" id="parentEmail"  required>
-                    </div>
-                    <div class="col-xl-6 col-12">
-                        <label for="parentContact" class="form-label">Parent's Contact Number</label>
-                        <input type="text" class="form-control" id="parentContact" maxlength="8" required>
-                    </div>
-                </div>
-            </div>
-        </template>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
             crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.5.3/signature_pad.min.js"></script>
         <script src="index.js"></script>
     </body>
-
-</html>
