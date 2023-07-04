@@ -826,7 +826,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         // if checkbox, send email
                         if(acknowledgeCheckBox.checked){
                             const emailEntry ={
-                                studentId : studentId,
                                 email : parentEmail.value
                             }
                             return sendEmail(emailEntry);
@@ -876,7 +875,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         // if checkbox, send email
                         if(acknowledgeCheckBox.checked){
                             const emailEntry ={
-                                studentId : studentId,
                                 email : parentEmail.value
                             }
                             return sendEmail(emailEntry);
