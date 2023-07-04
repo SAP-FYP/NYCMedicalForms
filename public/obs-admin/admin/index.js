@@ -14,11 +14,13 @@ window.addEventListener('DOMContentLoaded', () => {
     const myModalEl = document.getElementById('createUserModal');
     const myModalEnable = document.getElementById('confirmationEnableModal');
     const myModalDisable = document.getElementById('confirmationDisableModal');
+    const myModalDelete = document.getElementById('confirmationModal');
     const enableModal = new bootstrap.Modal(myModalEnable);
     const disableModal = new bootstrap.Modal(myModalDisable);
+    const deleteModal = new bootstrap.Modal(myModalDelete);
     const modal = new bootstrap.Modal(myModalEl);
     const container = document.getElementById('data-container');
-
+    const alertContainer = document.getElementById('alertbox');
 
     // === FLAGS ===
 
@@ -27,6 +29,38 @@ window.addEventListener('DOMContentLoaded', () => {
     let offset = 0;
     let searchFilter;
 
+    // === ALERT BOX ===
+
+    const alertBox = (message, type) => {
+        const alertIcon = document.getElementById('alert-icon');
+        const alertMessage = document.getElementById('alert-message');
+        let alertColor;
+
+        if (type === 'danger') {
+            alertIcon.setAttribute('xlink:href', '#exclamation-triangle-fill');
+            alertColor = 'alert-danger';
+        } else if (type === 'success') {
+            alertIcon.setAttribute('xlink:href', '#check-circle-fill');
+            alertColor = 'alert-success';
+        } else if (type === 'warn') {
+            alertIcon.setAttribute('xlink:href', '#exclamation-triangle-fill');
+            alertColor = 'alert-warning';
+        } else if (type === 'info') {
+            alertIcon.setAttribute('xlink:href', '#info-fill');
+            alertColor = 'alert-primary';
+        }
+
+        alertMessage.textContent = message;
+        alertContainer.classList.add(alertColor)
+        alertContainer.classList.add('alert-visible');
+        alertContainer.classList.remove('alert-hidden');
+
+        setTimeout(() => {
+            alertContainer.classList.add('alert-hidden');
+            alertContainer.classList.remove('alert-visible');
+            alertContainer.classList.remove(alertColor);
+        }, 5000);
+    };
 
     // === ERROR AND RESPONSE HANDLING ===
 
@@ -38,17 +72,17 @@ window.addEventListener('DOMContentLoaded', () => {
         }
 
         if (response.status == 400) {
-            const error = new Error("Invalid data");
+            const error = new Error("Invalid data error occured. Please try again.");
             error.status = response.status
             throw error;
 
         } else if (response.status == 422) {
-            const error = new Error("Email already exists");
+            const error = new Error("Account already exists. Please choose another email.");
             error.status = response.status
             throw error;
 
         } else if (response.status != 200 && response.status != 201) {
-            const error = new Error("Unknown error");
+            const error = new Error("An unknown error occured.");
             error.status = response.status
             throw error;
         }
@@ -64,7 +98,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }
 
         if (response.status !== 200 && response.status !== 404) {
-            const error = new Error('Unknown error');
+            const error = new Error('An unknown error occured.');
             error.status = 500;
             throw error;
         }
@@ -76,8 +110,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const handleError = (error) => {
         if (error && error.message !== 'redirected') {
             if (error.message !== "Failed to fetch") {
-                console.log(error);
-                alert(error);
+                alertBox(error.message, 'danger');
             }
         }
     }
@@ -92,8 +125,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 const userRole = jsonData.result;
 
                 if (!userRole) {
-                    alert('no user roles found')
-                    // handle no user roles
+                    alertBox('No roles found.', 'warn');
                 } else {
                     const roleSelect = createForm.querySelector('#role-input');
                     userRole.forEach(item => {
@@ -115,10 +147,8 @@ window.addEventListener('DOMContentLoaded', () => {
                 const permGroups = jsonData.result;
 
                 if (!permGroups) {
-                    alert('no permission groups found')
-                    // handle no permission groups
+                    alertBox('No permission groups found.', 'warn');
                 } else {
-
                     const permissionSelect = createForm.querySelector('#permission-input');
                     permGroups.forEach(item => {
                         const option = document.createElement('option');
@@ -139,14 +169,7 @@ window.addEventListener('DOMContentLoaded', () => {
             .then(handleResponse)
             .then((jsonData) => {
                 const users = jsonData.result;
-
-                if (!users) {
-                    eof = true;
-                    alert('no users found')
-                    // handle no users
-                } else {
-                    buildUsers(users);
-                }
+                !users ? eof = true : buildUsers(users);
 
                 offset += 16;
                 isLoading = false;
@@ -156,6 +179,20 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     // === FUNCTIONS ===
+
+    // RESET USERS TEMPLATE 
+    const removeUsers = () => {
+        isLoading = true;
+        eof = false;
+        offset = 0;
+
+        const templateContainer = document.getElementById("insert-user-template");
+        while (templateContainer.firstChild) {
+            templateContainer.removeChild(templateContainer.firstChild);
+        }
+
+        updateCheckedCount();
+    }
 
     // CREATE USER FUNCTION
     const createUser = (newuser) => {
@@ -169,10 +206,11 @@ window.addEventListener('DOMContentLoaded', () => {
         })
             .then(handleCreateEditResponse)
             .then(() => {
+                alertBox('Successfully created user.', 'success');
                 createForm.reset();
                 modal.hide();
-                alert('Successfully created')
-                location.reload();
+                removeUsers();
+                getUsers();
             })
             .catch(handleError)
     }
@@ -286,10 +324,11 @@ window.addEventListener('DOMContentLoaded', () => {
         })
             .then(handleCreateEditResponse)
             .then(() => {
+                alertBox('Successfully edited user.', 'success');
                 createForm.reset();
                 modal.hide();
-                alert('Successfully edited user');
-                location.reload();
+                removeUsers();
+                getUsers();
             })
             .catch(handleError)
     }
@@ -310,8 +349,10 @@ window.addEventListener('DOMContentLoaded', () => {
             })
                 .then(handleCreateEditResponse)
                 .then(() => {
-                    alert('Successfully deleted user');
-                    location.reload();
+                    alertBox('Successfully deleted user.', 'success');
+                    deleteModal.hide();
+                    removeUsers();
+                    getUsers();
                 })
                 .catch(handleError)
         };
@@ -337,8 +378,10 @@ window.addEventListener('DOMContentLoaded', () => {
             })
                 .then(handleCreateEditResponse)
                 .then(() => {
-                    alert('Successfully deleted selected users');
-                    location.reload();
+                    alertBox('Successfully deleted selected users.', 'success');
+                    deleteModal.hide();
+                    removeUsers();
+                    getUsers();
                 })
                 .catch(handleError)
         }
@@ -360,7 +403,7 @@ window.addEventListener('DOMContentLoaded', () => {
             })
                 .then(handleCreateEditResponse)
                 .then(() => {
-                    alert('Successfully disabled user!')
+                    alertBox('Successfully disabled user.', 'success');
                     disableModal.hide();
                     document.getElementById(`profile-button-${user.email}`).classList.add('profile-button-disabled')
                     document.getElementById(`profile-button-${user.email}`).textContent = `Disabled`
@@ -396,7 +439,7 @@ window.addEventListener('DOMContentLoaded', () => {
             })
                 .then(handleCreateEditResponse)
                 .then(() => {
-                    alert('Successfully disabled selected users!')
+                    alertBox('Successfully disabled selected users.', 'success');
                     disableModal.hide();
 
                     users.users.forEach(user => {
@@ -428,7 +471,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 .then(handleCreateEditResponse)
                 .then(() => {
                     enableModal.hide();
-                    alert('Successfully enabled user!')
+                    alertBox('Successfully enabled user.', 'success');
                     document.getElementById(`profile-button-${user.email}`).classList.remove('profile-button-disabled')
                     document.getElementById(`profile-button-${user.email}`).textContent = `Enabled`
                     document.getElementById(`item-${user.email}`).getElementsByClassName('dropdown-disable')[0].textContent = 'Disable'
@@ -459,7 +502,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     error.status = response.status
                     throw error;
                 }
-                alert('password sent to user email')
+                alertBox(`The password has been successfully reset. New password sent to ${email}`)
             })
             .catch(handleError)
     }
@@ -476,7 +519,6 @@ window.addEventListener('DOMContentLoaded', () => {
     const updateCheckedCount = () => {
         const checkedBoxes = document.querySelectorAll('.select-item-chkbox:checked');
         const checkedCount = checkedBoxes.length;
-
         const values = Array.from(checkedBoxes).map(checkbox => checkbox.value);
 
         let enable = values.some(i => document.getElementById(`item-${i}`).getElementsByClassName('dropdown-disable')[0].textContent === 'Enable');
@@ -559,7 +601,7 @@ window.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const email = editFormSumbitButton.value;
         if (!email) {
-            alert('no email')
+            alertBox('Email does not exist. Please refresh and try again.', 'danger');
         } else {
             resetPassword(email);
         }
@@ -718,7 +760,7 @@ window.addEventListener('DOMContentLoaded', () => {
         });
 
         if (checkedItems.length < 1) {
-            alert('Please select 1 user or more');
+            alertBox('Please select 1 or more users.', 'danger');
         } else {
             bulkDelete({ users: checkedItems });
         }
@@ -732,7 +774,7 @@ window.addEventListener('DOMContentLoaded', () => {
         });
 
         if (checkedItems.length < 1) {
-            alert('Please select 1 user or more');
+            alertBox('Please select 1 or more users.', 'danger');
         } else {
             bulkDisable({ users: checkedItems });
         }

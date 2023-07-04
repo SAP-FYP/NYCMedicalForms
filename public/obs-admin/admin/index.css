@@ -361,3 +361,29 @@ input[type=number] {
     color: #5a5a5a;
     background-color: #858585;
 }
+
+/* ALERT BOX */
+
+.alert {
+    position: fixed !important;
+    z-index: 999;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2vh;
+    width: 40vw;
+    min-width: 200px;
+}
+
+.alert-hidden {
+    visibility: hidden;
+    transform: translate(0px, -99px);
+    transition: ease-in-out 400ms;
+}
+
+.alert-visible {
+    visibility: visible;
+    transform: translate(0);
+    transition: ease-in-out 400ms;
+}

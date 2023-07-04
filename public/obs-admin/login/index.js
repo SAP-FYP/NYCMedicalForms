@@ -1,6 +1,8 @@
 window.addEventListener('DOMContentLoaded', () => {
 
     const loginForm = this.document.querySelector("#login-form");
+    const errMsg = document.getElementById('err-message');
+    const errMsgContainer = document.getElementById('err-message-container');
 
     const login = (email, password) => {
 
@@ -17,13 +19,13 @@ window.addEventListener('DOMContentLoaded', () => {
         }).then((response) => {
 
             if (response.status === 400 || response.status === 401 || response.status === 404) {
-                const error = new Error("Invalid email or password");
+                const error = new Error("The email or password you entered is incorrect.");
                 error.status = response.status;
                 throw error;
             }
 
             if (response.status === 403) {
-                const error = new Error("Account is disabled. Please contact admin for more information");
+                const error = new Error("Account is disabled. Please contact admin for more information.");
                 error.status = response.status;
                 throw error;
             }
@@ -33,15 +35,14 @@ window.addEventListener('DOMContentLoaded', () => {
                 throw new Error('redirected');
 
             } else {
-                const error = new Error("Unknown Error");
+                const error = new Error("An error occured logging in.");
                 error.status = response.status;
                 throw error;
             }
 
         }).catch((error) => {
             if (error && error.message != 'redirected') {
-                console.log(error);
-                alert(error);
+                setErrMsg(error.message, 'visible');
             }
         })
     }
@@ -52,9 +53,14 @@ window.addEventListener('DOMContentLoaded', () => {
         const password = loginForm.querySelector('#login-password').value;
 
         if (!email || !password) {
-            alert("Please fill in empty fields")
+            setErrMsg('Please fill in all fields.', 'visible');
         } else {
             login(email, password)
         }
     };
+
+    const setErrMsg = (message, toggle) => {
+        errMsg.innerHTML = `<i class="material-symbols-outlined">error</i>${message}`;
+        errMsgContainer.style.visibility = toggle;
+    }
 })

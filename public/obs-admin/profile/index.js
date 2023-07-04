@@ -18,6 +18,40 @@ window.addEventListener('DOMContentLoaded', () => {
     const profileForm = document.getElementById('profile-form');
     const myModalEl = document.getElementById('editPasswordModal');
     const modal = new bootstrap.Modal(myModalEl);
+    const alertContainer = document.getElementById('alertbox');
+
+    // === ALERT BOX ===
+
+    const alertBox = (message, type) => {
+        const alertIcon = document.getElementById('alert-icon');
+        const alertMessage = document.getElementById('alert-message');
+        let alertColor;
+
+        if (type === 'danger') {
+            alertIcon.setAttribute('xlink:href', '#exclamation-triangle-fill');
+            alertColor = 'alert-danger';
+        } else if (type === 'success') {
+            alertIcon.setAttribute('xlink:href', '#check-circle-fill');
+            alertColor = 'alert-success';
+        } else if (type === 'warn') {
+            alertIcon.setAttribute('xlink:href', '#exclamation-triangle-fill');
+            alertColor = 'alert-warning';
+        } else if (type === 'info') {
+            alertIcon.setAttribute('xlink:href', '#info-fill');
+            alertColor = 'alert-primary';
+        }
+
+        alertMessage.textContent = message;
+        alertContainer.classList.add(alertColor)
+        alertContainer.classList.add('alert-visible');
+        alertContainer.classList.remove('alert-hidden');
+
+        setTimeout(() => {
+            alertContainer.classList.add('alert-hidden');
+            alertContainer.classList.remove('alert-visible');
+            alertContainer.classList.remove(alertColor);
+        }, 5000);
+    };
 
     // === ERROR AND RESPONSE HANDLING ===
 
@@ -29,19 +63,19 @@ window.addEventListener('DOMContentLoaded', () => {
         }
 
         if (response.status == 401) {
-            const error = new Error('Invalid email or password')
+            const error = new Error('Invalid email or password.')
             error.status = response.status || 500
             throw error;
         }
 
         if (response.status == 400) {
-            const error = new Error('Passwords do not match')
+            const error = new Error('Passwords do not match. PLease try again.')
             error.status = response.status || 500
             throw error;
         }
 
         if (response.status != 200) {
-            const error = new Error('Failed to update')
+            const error = new Error('Failed to perform update.')
             error.status = response.status || 500
             throw error;
         }
@@ -53,8 +87,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const handleError = (error) => {
         if (error && error.message !== 'redirected') {
             if (error.message !== "Failed to fetch") {
-                console.log(error);
-                alert(error);
+                alertBox(error.message, 'danger');
             }
         }
     }
@@ -70,7 +103,7 @@ window.addEventListener('DOMContentLoaded', () => {
             }
 
             if (response.status !== 200 && response.status !== 404) {
-                const error = new Error('Unknown error');
+                const error = new Error('An unknown error occured.');
                 error.status = 500;
                 throw error;
             }
@@ -80,8 +113,7 @@ window.addEventListener('DOMContentLoaded', () => {
         .then((jsonData) => {
             const { user } = jsonData;
             if (!user) {
-                alert('Failed to fetch profile data');
-                // do error
+                alertBox('Failed to fetch profile data.', 'danger');
             } else {
                 nameInput.value = user.name;
                 numberInput.value = user.contact;
@@ -109,7 +141,7 @@ window.addEventListener('DOMContentLoaded', () => {
             .then(() => {
                 passwordForm.reset();
                 modal.hide();
-                alert('Successfully changed password!')
+                alertBox('Password updated successfully.', 'success');
 
                 const checkItems = ['#check-min', '#check-upper', '#check-lower', '#check-number', '#check-symbol'];
                 checkItems.forEach(item => {
@@ -128,11 +160,11 @@ window.addEventListener('DOMContentLoaded', () => {
         })
             .then(handleUpdateResponse)
             .then(() => {
-                profileForm.reset();
-                alert('Successfully updated profile!')
-                location.reload();
+                imgProfileFile.value = "";
+                document.getElementById('input-password').value = "";
+                alertBox('Successfully updated profile.', 'success');
             })
-            .catch(handleError)
+            .catch(handleError);
     }
 
     // === EVENT HANDLERS ===
@@ -265,7 +297,7 @@ window.addEventListener('DOMContentLoaded', () => {
         if (isValid) {
             updateUserPassword(pass);
         } else {
-            alert('Please enter a valid password / Passwords do not match');
+            alertBox('Password not valid or does not match.', 'danger');
         }
     }
 
@@ -273,7 +305,7 @@ window.addEventListener('DOMContentLoaded', () => {
     imgProfileFile.onchange = (e) => {
         let file = e.target.files[0];
         if (!file.type.startsWith('image/')) {
-            alert('Please select an image file.')
+            alertBox('Please select an image file.', 'danger')
         } else {
             profileImg.src = window.URL.createObjectURL(file)
         }
@@ -298,11 +330,13 @@ window.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         togglePassword('current-input', 'current-btn')
     }
+
     // VISIBILITY BUTTON - NEW PASSWORD
     visibilityNew.onclick = (e) => {
         e.preventDefault();
         togglePassword('new-input', 'new-btn')
     }
+
     // VISIBILITY BUTTON - CONFIRM PASSWORD
     visibilityConfirm.onclick = (e) => {
         e.preventDefault();

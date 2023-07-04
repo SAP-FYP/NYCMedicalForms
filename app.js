@@ -181,7 +181,7 @@ app.post('/login', (req, res, next) => {
                 } else if (payload.role == 2 || payload.role == 3) {
                     return res.redirect('/obs-admin/obs-management')
                 } else if (payload.role == 4) {
-                    return res.redirect('/docForm')
+                    return res.redirect('/obs-form')
                 } else {
                     const error = new Error("Invalid user role");
                     error.status = 500;
@@ -923,6 +923,12 @@ app.put('/obs-admin/permission/groups', authHelper.verifyToken, authHelper.check
         permissions: req.body.permsId
     }
 
+    if (permGroup.permGroupId == '155') {
+        const error = new Error("Cannot edit default group");
+        error.status = 400;
+        throw error;
+    }
+
     if (!permGroup.permissions.includes('1')) {
         permGroup.permissions.push('1')
     }
@@ -961,14 +967,23 @@ app.delete('/obs-admin/permission/groups/:groupId', authHelper.verifyToken, auth
     }
 
     const groupId = req.params.groupId
+
     if (!groupId) {
         const error = new Error("Empty groupId")
         error.status = 400;
         throw error;
     }
 
+    if (groupId == '155') {
+        const error = new Error("Cannot delete default group");
+        error.status = 400;
+        throw error;
+    }
+
+    const invalidationDate = moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss');
+
     return adminModel
-        .deletePermissionGroup(groupId)
+        .deletePermissionGroup(groupId, invalidationDate)
         .then((result) => {
             if (!result) {
                 const error = new Error("Unable to delete permission group")
@@ -999,8 +1014,16 @@ app.delete('/obs-admin/permission/groups', authHelper.verifyToken, authHelper.ch
         throw error;
     }
 
+    if (groupIds.includes('155')) {
+        const error = new Error("Cannot delete default group");
+        error.status = 400;
+        throw error;
+    }
+
+    const invalidationDate = moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss');
+
     return adminModel
-        .bulkDeletePermissionGroup(groupIds)
+        .bulkDeletePermissionGroup(groupIds, invalidationDate)
         .then((result) => {
             if (!result) {
                 const error = new Error("Unable to delete permission groups")

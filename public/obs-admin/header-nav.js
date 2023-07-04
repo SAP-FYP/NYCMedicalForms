@@ -12,6 +12,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const headerName = document.getElementById('profile-user-name');
     const headerImg = document.getElementById('profile-user-image');
 
+
     // === FETCHES ===
 
     // GET USER DATA - AUTHORIZATION

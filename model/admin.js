@@ -178,7 +178,7 @@ module.exports.editPermGroup = async function createPermGroup(permGroup) {
     }
 }
 
-module.exports.deletePermissionGroup = async function getPermissions(groupId) {
+module.exports.deletePermissionGroup = async function getPermissions(groupId, invalidationDate) {
     const connection = await pool.getConnection();
 
     try {
@@ -206,6 +206,10 @@ module.exports.deletePermissionGroup = async function getPermissions(groupId) {
             throw error;
         }
 
+        // Move users to default group
+        const sql3 = 'UPDATE user SET groupId = ?, invalidationDate = ? WHERE groupId = ?';
+        await connection.query(sql3, [155, invalidationDate, groupId]);
+
         await connection.commit();
         return affectedRows2;
 
@@ -217,7 +221,7 @@ module.exports.deletePermissionGroup = async function getPermissions(groupId) {
     }
 }
 
-module.exports.bulkDeletePermissionGroup = async function bulkDeletePermissionGroup(groupIds) {
+module.exports.bulkDeletePermissionGroup = async function bulkDeletePermissionGroup(groupIds, invalidationDate) {
     const connection = await pool.getConnection();
 
     try {
@@ -244,6 +248,10 @@ module.exports.bulkDeletePermissionGroup = async function bulkDeletePermissionGr
             throw error;
         }
 
+        // Move users to default group
+        const sql3 = 'UPDATE user SET groupId = ?, invalidationDate = ? WHERE groupId IN (?)';
+        await connection.query(sql3, [155, invalidationDate, groupIds]);
+
         await connection.commit();
         return affectedRows2;
 
@@ -263,6 +271,7 @@ module.exports.getAllUsers = function getAllUsers(email, searchInput, limit, off
     // u.email != ? AND
     // (u.nameOfUser LIKE ? OR
     // u.email LIKE ?)
+    // ORDER BY u.nameOfUser 
     // LIMIT ? OFFSET ?`;
 
     const sql = `SELECT u.email, u.nameOfUser, u.contactNo, u.groupId, u.roleId, u.picUrl, u.isDisabled, r.roleName
@@ -271,6 +280,7 @@ module.exports.getAllUsers = function getAllUsers(email, searchInput, limit, off
     WHERE u.isDeleted = 0 AND
     u.email != ? AND
     u.nameOfUser LIKE ? 
+    ORDER BY u.nameOfUser 
     LIMIT ? OFFSET ?`;
 
     return query(sql, [email, `%${searchInput}%`, limit, offset])

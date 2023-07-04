@@ -4,6 +4,40 @@ window.addEventListener('DOMContentLoaded', () => {
     const newPassword = document.getElementById('input-password');
     const rePassword = document.getElementById('re-password');
     const form = document.getElementById('reset-form');
+    const alertContainer = document.getElementById('alertbox');
+
+    // === ALERT BOX ===
+
+    const alertBox = (message, type) => {
+        const alertIcon = document.getElementById('alert-icon');
+        const alertMessage = document.getElementById('alert-message');
+        let alertColor;
+
+        if (type === 'danger') {
+            alertIcon.setAttribute('xlink:href', '#exclamation-triangle-fill');
+            alertColor = 'alert-danger';
+        } else if (type === 'success') {
+            alertIcon.setAttribute('xlink:href', '#check-circle-fill');
+            alertColor = 'alert-success';
+        } else if (type === 'warn') {
+            alertIcon.setAttribute('xlink:href', '#exclamation-triangle-fill');
+            alertColor = 'alert-warning';
+        } else if (type === 'info') {
+            alertIcon.setAttribute('xlink:href', '#info-fill');
+            alertColor = 'alert-primary';
+        }
+
+        alertMessage.textContent = message;
+        alertContainer.classList.add(alertColor)
+        alertContainer.classList.add('alert-visible');
+        alertContainer.classList.remove('alert-hidden');
+
+        setTimeout(() => {
+            alertContainer.classList.add('alert-hidden');
+            alertContainer.classList.remove('alert-visible');
+            alertContainer.classList.remove(alertColor);
+        }, 5000);
+    };
 
     // === FETCHES ===
 
@@ -17,8 +51,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }).catch((error) => {
             if (error && error.message !== 'redirected') {
                 if (error.message !== "Failed to fetch") {
-                    console.log(error);
-                    alert(error);
+                    alertBox(error.message, 'danger');
                 }
             }
         })
@@ -62,8 +95,7 @@ window.addEventListener('DOMContentLoaded', () => {
             .catch((error) => {
                 if (error && error.message !== 'redirected') {
                     if (error.message !== "Failed to fetch") {
-                        console.log(error);
-                        alert(error);
+                        alertBox(error.message, 'danger');
                     }
                 }
             })
@@ -147,7 +179,7 @@ window.addEventListener('DOMContentLoaded', () => {
             }
             updateUserPassword(pass);
         } else {
-            alert('Please enter a valid password / Passwords do not match');
+            alertBox('Password not valid or does not match.', 'danger');
         }
     }
 })

@@ -85,7 +85,7 @@ module.exports.checkPassword = function checkPassword(req, res, next) {
             }
 
             if (result.isDisabled) {
-                const error = new Error("Account is disabled. Please dontact admin for more information");
+                const error = new Error("Account is disabled. Please contact admin for more information");
                 error.status = 403;
                 console.log('Error: ' + error.message);
                 next(error);

@@ -10,8 +10,11 @@ window.addEventListener('DOMContentLoaded', () => {
     const editFormSumbitButton = document.getElementById('edit-permission-icon');
     const createFormSumbitButton = document.getElementById('confirm-permission-icon');
     const myModalEl = document.getElementById('createPermissionModal');
+    const myConfirmationModal = document.getElementById('confirmationModal');
+    const confirmModal = new bootstrap.Modal(myConfirmationModal);
     const modal = new bootstrap.Modal(myModalEl);
     const container = document.getElementById('data-container');
+    const alertContainer = document.getElementById('alertbox');
 
     // === FLAGS ===
 
@@ -20,6 +23,98 @@ window.addEventListener('DOMContentLoaded', () => {
     let offset = 0;
     let searchFilter;
 
+    // === ALERT BOX ===
+
+    const alertBox = (message, type) => {
+        const alertIcon = document.getElementById('alert-icon');
+        const alertMessage = document.getElementById('alert-message');
+        let alertColor;
+
+        if (type === 'danger') {
+            alertIcon.setAttribute('xlink:href', '#exclamation-triangle-fill');
+            alertColor = 'alert-danger';
+        } else if (type === 'success') {
+            alertIcon.setAttribute('xlink:href', '#check-circle-fill');
+            alertColor = 'alert-success';
+        } else if (type === 'warn') {
+            alertIcon.setAttribute('xlink:href', '#exclamation-triangle-fill');
+            alertColor = 'alert-warning';
+        } else if (type === 'info') {
+            alertIcon.setAttribute('xlink:href', '#info-fill');
+            alertColor = 'alert-primary';
+        }
+
+        alertMessage.textContent = message;
+        alertContainer.classList.add(alertColor)
+        alertContainer.classList.add('alert-visible');
+        alertContainer.classList.remove('alert-hidden');
+
+        setTimeout(() => {
+            alertContainer.classList.add('alert-hidden');
+            alertContainer.classList.remove('alert-visible');
+            alertContainer.classList.remove(alertColor);
+        }, 5000);
+    };
+
+    // === ERROR AND RESPONSE HANDLING ===
+
+    // 400 , 422 , !200
+    const handleCreateEditResponse = async (response) => {
+        if (response.redirected) {
+            window.location.href = response.url
+            throw new Error('redirected');
+        }
+
+        if (response.status == 400) {
+            const error = new Error("Invalid permission data error occured. Please try again.");
+            error.status = response.status
+            throw error;
+
+        } else if (response.status == 422) {
+            const error = new Error("Permission group already exists.");
+            error.status = response.status
+            throw error;
+
+        } else if (response.status != 200 && response.status != 201) {
+            const error = new Error("An unknown error occured.");
+            error.status = response.status
+            throw error;
+        }
+
+        try {
+            let result = await response.json();
+            if (result) { return result; }
+            return;
+        } catch {
+            return;
+        }
+    }
+
+    // !404 , !200
+    const handleResponse = (response) => {
+        if (response.redirected) {
+            window.location.href = response.url;
+            throw new Error('redirected');
+        }
+
+        if (response.status !== 200 && response.status !== 404) {
+            const error = new Error('An unknown error occured.');
+            error.status = 500;
+            throw error;
+        }
+
+        return response.json();
+    }
+
+    // TODO: Proper Error
+    const handleError = (error) => {
+        if (error && error.message !== 'redirected') {
+            if (error.message !== "Failed to fetch") {
+                alertBox(error.message, 'danger');
+            }
+        }
+    }
+
     // === FETCHES ===
 
     // GET PERMISSIONS GROUPS
@@ -27,79 +122,44 @@ window.addEventListener('DOMContentLoaded', () => {
         !filter ? filter = -1 : filter;
 
         fetch(`/obs-admin/permission/groups/${filter}/20/${offset}`)
-            .then((response) => {
-                if (response.redirected) {
-                    window.location.href = response.url;
-                    throw new Error('redirected');
-                }
-
-                if (response.status != 200 && response.status != 404) {
-                    const error = new Error('Unknown error')
-                    error.status = 500;
-                    throw error;
-                }
-
-                return response.json();
-            })
+            .then(handleResponse)
             .then((jsonData) => {
                 const permGroup = jsonData.result;
-                if (!permGroup) {
-                    eof = true;
-                    alert('no permission groups found')
-                    // handle no perms group
-                } else {
-                    buildPermGroups(permGroup);
-                }
+                !permGroup ? eof = true : buildPermGroups(permGroup);
+
                 offset += 20;
                 isLoading = false;
                 filter == -1 ? container.addEventListener('scroll', defaultScroll) : container.addEventListener('scroll', filterScroll)
             })
-            .catch((error) => {
-                if (error && error.message != 'redirected') {
-                    if (error.message !== "Failed to fetch") {
-                        console.log(error);
-                        alert(error);
-                    }
-                }
-            })
+            .catch(handleError)
     }
 
     // GET PERMISSIONS
     const getPerms = () => {
         fetch('/obs-admin/permission')
-            .then((response) => {
-                if (response.redirected) {
-                    window.location.href = response.url;
-                    throw new Error('redirected');
-                }
-
-                if (response.status != 200 && response.status != 404) {
-                    const error = new Error('Unknown error')
-                    error.status = 500;
-                    throw error;
-                }
-                return response.json();
-            })
+            .then(handleResponse)
             .then((jsonData) => {
                 const perms = jsonData.result;
-                if (!perms) {
-                    alert('no permissions found')
-                    // handle no perms
-                } else {
-                    buildPerms(perms);
-                }
+                !perms ? alertBox('No permissions found.', 'warn') : buildPerms(perms);
             })
-            .catch((error) => {
-                if (error && error.message != 'redirected') {
-                    if (error.message !== "Failed to fetch") {
-                        console.log(error);
-                        alert(error);
-                    }
-                }
-            })
+            .catch(handleError)
     }
 
     // === FUNCTIONS ===
+
+    // REMOVE PERMISSIONS
+    const removePermissions = () => {
+        isLoading = true;
+        eof = false;
+        offset = 0;
+
+        const templateContainer = document.getElementById("insert-permission-group-template");
+        while (templateContainer.firstChild) {
+            templateContainer.removeChild(templateContainer.firstChild);
+        }
+
+        updateCheckedCount();
+    }
 
     // BUILD PERMISSION GROUPS TEMPLATE
     const buildPermGroups = async (permgroups) => {
@@ -120,25 +180,31 @@ window.addEventListener('DOMContentLoaded', () => {
                 content.querySelector(".permission-group-name").textContent = i.groupName;
                 content.querySelector(".more-button").setAttribute('value', i.groupId);
 
-                content.querySelector(".dropdown-edit").addEventListener('click', (e) => {
-                    e.preventDefault;
-                    let groupInfo = {
-                        groupId: i.groupId,
-                        groupName: i.groupName,
-                        permissions: i.permsId
-                    }
-                    editButtonHandler(groupInfo);
-                })
+                if (i.groupId != 155) {
+                    content.querySelector(".dropdown-edit").addEventListener('click', (e) => {
+                        e.preventDefault();
+                        let groupInfo = {
+                            groupId: i.groupId,
+                            groupName: i.groupName,
+                            permissions: i.permsId
+                        }
+                        editButtonHandler(groupInfo);
+                    })
 
-                content.querySelector(".dropdown-delete").addEventListener('click', (e) => {
-                    e.preventDefault;
-                    let groupInfo = {
-                        groupId: i.groupId,
-                        groupName: i.groupName,
-                        permissions: i.permsId
-                    }
-                    deleteButtonHandler(groupInfo);
-                })
+                    content.querySelector(".dropdown-delete").addEventListener('click', (e) => {
+                        e.preventDefault();
+                        let groupInfo = {
+                            groupId: i.groupId,
+                            groupName: i.groupName,
+                            permissions: i.permsId
+                        }
+                        deleteButtonHandler(groupInfo);
+                    })
+                } else {
+                    content.querySelector(".select-item-chkbox").setAttribute('disabled', 'disabled');
+                    content.querySelector(".dropdown-edit").classList.add('disabled');
+                    content.querySelector(".dropdown-delete").classList.add('disabled');
+                }
 
                 const permissions = i.permsName ? i.permsName.replace(/,/g, ', ') : 'No permissions';
                 content.querySelector(".permission-group-type").textContent = permissions;
@@ -180,29 +246,8 @@ window.addEventListener('DOMContentLoaded', () => {
             },
             body: JSON.stringify(newPermGroup)
 
-        }).then((response) => {
-            if (response.redirected) {
-                window.location.href = response.url
-                throw new Error('redirected');
-            }
-
-            if (response.status == 400) {
-                const error = new Error("Invalid permission data");
-                error.status = response.status
-                throw error;
-
-            } else if (response.status == 422) {
-                const error = new Error("Permission group already exists");
-                error.status = response.status
-                throw error;
-
-            } else if (response.status != 201) {
-                const error = new Error("Unknown error");
-                error.status = response.status
-                throw error;
-            }
-            return response.json();
         })
+            .then(handleCreateEditResponse)
             .then((jsonData) => {
                 const groupId = jsonData;
                 newPermGroup.groupId = groupId;
@@ -211,16 +256,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
                 createForm.reset();
                 modal.hide();
-                alert('Successfully created')
+                alertBox('Permission group created successfully.', 'success');
                 buildPermGroups([newPermGroup])
 
-            }).catch((error) => {
-                if (error && error.message != 'redirected') {
-                    console.log(error);
-                    alert(error);
-                }
-                // display error
-            })
+            }).catch(handleError)
     }
 
     // EDIT PERMISSION GROUPS BUTTON HANDLER
@@ -253,40 +292,16 @@ window.addEventListener('DOMContentLoaded', () => {
             },
             body: JSON.stringify(permGroup)
 
-        }).then((response) => {
-            if (response.redirected) {
-                window.location.href = response.url
-                throw new Error('redirected');
-            }
-
-            if (response.status == 400) {
-                const error = new Error("Invalid permission data");
-                error.status = response.status
-                throw error;
-
-            } else if (response.status == 422) {
-                const error = new Error("Permission group already exists");
-                error.status = response.status
-                throw error;
-
-            } else if (response.status != 200) {
-                const error = new Error("Unknown error");
-                error.status = response.status
-                throw error;
-            }
-
-            createForm.reset();
-            modal.hide();
-            alert('Successfully edited')
-            location.reload();
-
-        }).catch((error) => {
-            if (error && error.message != 'redirected') {
-                console.log(error);
-                alert(error);
-            }
-            // display error
         })
+            .then(handleCreateEditResponse)
+            .then(() => {
+                createForm.reset();
+                modal.hide();
+                alertBox('Permission group updated successfully.', 'success');
+                removePermissions();
+                getPermGroups();
+
+            }).catch(handleError)
     }
 
     // DELETE PERMISSION GROUPS BUTTON HANDLER
@@ -295,7 +310,7 @@ window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('confirmation-delete-bulk-button').id = 'confirmation-delete-button';
 
             const formLabel = document.querySelector('#confirmation-delete-button').closest('.modal-content').querySelector('.modal-body .form-label');
-            formLabel.textContent = `Are you sure you want to delete this permission group? You can't undo this action.`;
+            formLabel.textContent = `Are you sure you want to delete this permission group? All users in this permission group will be moved to 'Default Read Group'. You can't undo this action.`;
         }
 
         // DELETE PERMISSION GROUPS
@@ -304,33 +319,14 @@ window.addEventListener('DOMContentLoaded', () => {
             return fetch(`/obs-admin/permission/groups/${permGroup.groupId}`, {
                 method: 'DELETE'
             })
-                .then((response) => {
-                    if (response.redirected) {
-                        window.location.href = response.url
-                        throw new Error('redirected');
-                    }
-
-                    if (response.status == 400) {
-                        const error = new Error("Invalid permission data");
-                        error.status = response.status
-                        throw error;
-
-                    } else if (response.status != 200) {
-                        const error = new Error("Unknown error");
-                        error.status = response.status
-                        throw error;
-                    }
-
-                    alert('Successfully deleted!')
-                    location.reload();
+                .then(handleCreateEditResponse)
+                .then(() => {
+                    confirmModal.hide()
+                    alertBox('Permission group deleted successfully.', 'success');
+                    removePermissions();
+                    getPermGroups();
                 })
-                .catch((error) => {
-                    if (error && error.message != 'redirected') {
-                        console.log(error);
-                        alert(error);
-                    }
-                    // display error
-                })
+                .catch(handleError)
         };
     }
 
@@ -340,7 +336,7 @@ window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('confirmation-delete-button').id = 'confirmation-delete-bulk-button';
 
             const formLabel = document.querySelector('#confirmation-delete-bulk-button').closest('.modal-content').querySelector('.modal-body .form-label');
-            formLabel.textContent = `Are you sure you want to delete selected permission groups? You can't undo this action.`;
+            formLabel.textContent = `Are you sure you want to delete selected permission groups? All users in selected permission groups will be moved to 'Default Read Group'. You can't undo this action.`;
         }
 
         // BULK DELETE PERMISSION GROUPS
@@ -352,39 +348,20 @@ window.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify(groups)
             })
-                .then((response) => {
-                    if (response.redirected) {
-                        window.location.href = response.url
-                        throw new Error('redirected');
-                    }
-
-                    if (response.status == 400) {
-                        const error = new Error("Invalid permission data");
-                        error.status = response.status
-                        throw error;
-
-                    } else if (response.status != 200) {
-                        const error = new Error("Unknown error");
-                        error.status = response.status
-                        throw error;
-                    }
-
-                    alert('Successfully deleted!')
-                    location.reload();
+                .then(handleCreateEditResponse)
+                .then(() => {
+                    confirmModal.hide()
+                    alertBox('Successfully deleted selected permission groups.', 'success');
+                    removePermissions();
+                    getPermGroups();
                 })
-                .catch((error) => {
-                    if (error && error.message != 'redirected') {
-                        console.log(error);
-                        alert(error);
-                    }
-                    // display error
-                })
+                .catch(handleError)
         }
     }
 
     // GET NUMBER OF CHECKBOXES 
     const updateCheckboxes = () => {
-        itemCheckboxes = document.querySelectorAll('.select-item-chkbox');
+        itemCheckboxes = document.querySelectorAll('.select-item-chkbox:not([value="155"])');
         itemCheckboxes.forEach(checkbox => {
             checkbox.addEventListener('change', updateCheckedCount);
         });
@@ -392,7 +369,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // CHECKBOXES 
     const updateCheckedCount = () => {
-        const checkedCount = document.querySelectorAll('.select-item-chkbox:checked').length;
+        const checkedCount = document.querySelectorAll('.select-item-chkbox:checked:not([value="155"])').length;
 
         if (checkedCount == 1) {
             document.getElementById('bulk-action').style.visibility = 'visible';
@@ -436,7 +413,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }
 
         if (!groupName || permsId.length == 0) {
-            alert('Please fill in all fields and select at least 1 permission')
+            alertBox('Please fill in all fields and select at least 1 permission.', 'danger')
 
         } else {
             const newPermGroup = {
@@ -467,7 +444,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }
 
         if (!groupName || permsId.length == 0) {
-            alert('Please fill in all fields and select at least 1 permission')
+            alertBox('Please fill in all fields and select at least 1 permission.', 'danger')
 
         } else {
             const permGroup = {
@@ -519,7 +496,6 @@ window.addEventListener('DOMContentLoaded', () => {
     // SEARCH BAR SUBMIT BUTTON
     searchBtn.onclick = () => {
         searchFilter = searchInput.value.trim();
-
         eof = false;
         offset = 0;
         container.removeEventListener('scroll', defaultScroll)
@@ -539,20 +515,24 @@ window.addEventListener('DOMContentLoaded', () => {
         const checked = allCheckbox.checked;
 
         itemCheckboxes.forEach(checkbox => {
-            checkbox.checked = checked;
+            if (checkbox.value != 155) {
+                checkbox.checked = checked;
+            }
+
         });
         updateCheckedCount();
     }
 
     // BULK DELETE
-    bulkDeleteBtn.onclick = () => {
+    bulkDeleteBtn.onclick = (e) => {
+        e.preventDefault();
         let checkedItems = []
         document.querySelectorAll('.select-item-chkbox:checked').forEach(i => {
             checkedItems.push(i.value)
         });
 
         if (checkedItems.length < 1) {
-            alert('Please select 1 permission group or more');
+            alertBox('Please select 1 permission group or more.', 'danger')
         } else {
             bulkDelete({ groupIds: checkedItems });
         }
