@@ -8,9 +8,9 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const elasticEmail = require('elasticemail');
 const cloudinary = require("cloudinary").v2;
+const { UserNotFoundError } = require("./errors");
 const crypto = require('crypto');
 
-const { UserNotFoundError } = require("./errors");
 const key = Buffer.from(process.env.encryptKey, 'hex');
 const iv = Buffer.from(process.env.encryptIV, 'hex');
 
@@ -30,9 +30,10 @@ const cronJob = require('./helper/cron');
 const app = express();
 const port = process.env.PORT || 3000;
 const JWT_SECRET = process.env.SECRETKEY;
-const elasticEmailClient = elasticEmail.createClient({
-    apiKey: process.env.elasticAPIKey
-});
+
+const twilioClient = require('twilio')(process.env.twilioSID, process.env.twilioToken);
+
+const elasticEmailClient = elasticEmail.createClient({ apiKey: process.env.elasticAPIKey });
 
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
@@ -613,6 +614,22 @@ app.get('/logout', (req, res, next) => {
     }
 })
 
+/**
+ * User: Parent
+ */
+
+
+app.post('/parent-sign-upload', (req, res) => {
+    const file = req.body.parentSignature;
+    cloudinary.uploader.upload(file, { resource_type: 'image', format: 'png' }, (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Upload failed" });
+        }
+        return res.json({ url: result.secure_url });
+    });
+});
+
 // Setting parent's acknowledgement
 app.post('/post-acknowledge', (req, res) => {
     const parentEmail = req.body.parentEntry.parentEmail;
@@ -645,20 +662,24 @@ app.post('/send-sms', (req, res) => {
 
     // Compose the sms parameters
     const smsParams = {
-        to: contact,
-        body: `"📩 Important: Check your email! 📩 <br><br><br><br>
-        Dear Parents,<br><br>
-        Your child's health update requires your attention. Please check your email for important information regarding new medical conditions. Kindly acknowledge upon reading.<br><br>
-        Thank you,<br><br>
-        National Youth Council in affiliation with Outward Bound Singapore"`
+        from: "+14178525159",
+        to: "+65" + contact,
+        body: `📩 Important: Check your email! 📩
+Dear Parents,
+
+Your child's health update requires your attention. Please check your email for important information regarding new medical conditions. Kindly acknowledge upon reading.
+
+Thank you,
+National Youth Council in affiliation with Outward Bound Singapore`
     }
 
     // Send sms
-    client.messages.create(smsParams)
+    twilioClient.messages.create(smsParams)
         .then((message) => {
             console.log(message.sid)
             return res.status(200).send({ 'message': 'SMS sent successfully' });
         })
+        // TODO NEED TO DO ERROR HANDLING FOR INCORRECT PHONE NUMBER)
         .catch((error) => {
             console.log(error)
             return res.status(error.status || 500).json({ error: error.message });
@@ -682,7 +703,7 @@ app.post('/send-email', (req, res) => {
         from: 'sg.outwardbound@gmail.com',
         body: `<p>Dear Parents,
         We hope this email finds you and your family in good health and high spirits. As part of our ongoing commitment to provide the best care for your children, we would like to inform you about some important updates regarding their medical conditions. <br> <br>
-        At our recent healthcare evaluation, we have made significant progress in understanding and managing your child's medical condition. To ensure that our records are up to date, we kindly request your cooperation in acknowledging the new changes in your child's medical condition by clicking on the following link: spmeet.onrender.com/acknowledge/?encrypted=${encryptedStudentId}<br> <br>
+        At our recent healthcare evaluation, we have made significant progress in understanding and managing your child's medical condition. To ensure that our records are up to date, we kindly request your cooperation in acknowledging the new changes in your child's medical condition by clicking on the following link: nycmedicalforms.onrender.com/acknowledgement/?encrypted=${encryptedStudentId}<br> <br>
         By clicking on the link, you will confirm that you have received and reviewed the updates related to your child's health. Your acknowledgment will help us ensure that our information is accurate and that we can continue to provide the highest quality of care. <br> <br>
         Rest assured that all the information you provide will remain strictly confidential and will only be used for healthcare purposes. We adhere to the highest standards of privacy and data protection, in compliance with applicable laws and regulations. <br> <br>
         If you have any questions or require further assistance, please do not hesitate to reach out to our dedicated support team at nyc_enquiries@nyc.gov.sg. We are here to address any concerns you may have and guide you through the process. <br> <br>
@@ -1428,16 +1449,33 @@ app.get('/obs-admin/pmt/search/:search', authHelper.verifyToken, authHelper.chec
         })
 });
 
-//PMT Retrieve Submission By Filtering by school
-app.get('/obs-admin/pmt/filter/school/:filter', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
-    const filter = req.params.filter;
-    // AUTHORIZATION CHECK - PMT, MST 
-    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
-        return res.redirect('/error?code=403')
+
+// PMT Retrieve submissions by filtering (School, Class, Eligibility, CourseDate
+app.post('/obs-admin/pmt/filter/', (req, res, next) => {
+
+    let school = req.body.school
+    let stuClass = req.body.class
+    let eligibility = req.body.eligibility
+    let courseDate = req.body.courseDate
+
+    // For each of courseDate, convert to Singapore Time
+    if (courseDate) {
+        courseDate = courseDate.map((date) => {
+            return moment(date).tz("Asia/Singapore").format("YYYY-MM-DD HH:mm:ss")
+        })
     }
 
+    const filter = {
+        school: school,
+        class: stuClass,
+        eligibility: eligibility,
+        courseDate: courseDate
+    }
+
+    // AUTHORIZATION CHECK - PMT, MST
+
     return pmtModel
-        .retrieveSubmissionBySchoolName(filter)
+        .retrieveSubmissionByFilter(filter)
         .then((result) => {
             if (result.length === 0) {
                 throw new Error("No submission found");
@@ -1445,78 +1483,10 @@ app.get('/obs-admin/pmt/filter/school/:filter', authHelper.verifyToken, authHelp
             return res.json(result[0]);
         })
         .catch((error) => {
+            console.log(error);
             return res.status(error.status || 500).json({ error: error.message });
         })
 });
-
-//PMT Retrieve Submission By Filtering by class
-app.get('/obs-admin/pmt/filter/class/:filter', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
-    const filter = req.params.filter;
-    // AUTHORIZATION CHECK - PMT, MST 
-    if (req.decodedToken.role != 2 && req.decodedToken.role != 4) {
-        return res.redirect('/error?code=403')
-    }
-
-    return pmtModel
-        .retrieveSubmissionByClassName(filter)
-        .then((result) => {
-            if (result.length === 0) {
-                throw new Error("No submission found");
-            }
-            return res.json(result[0]);
-        })
-        .catch((error) => {
-            return res.status(error.status || 500).json({ error: error.message });
-        })
-});
-
-//PMT Retrieve Submission By Filtering by class
-app.get('/obs-admin/pmt/filter/courseDate/:filter', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
-    const filter = req.params.filter;
-    // AUTHORIZATION CHECK - PMT, MST 
-    if (req.decodedToken.role != 2 && req.decodedToken.role != 4) {
-        return res.redirect('/error?code=403')
-    }
-
-    return pmtModel
-        .retrieveSubmissionByCourseDate(filter)
-        .then((result) => {
-            if (result.length === 0) {
-                throw new Error("No submission found");
-            }
-            return res.json(result[0]);
-        })
-        .catch((error) => {
-            return res.status(error.status || 500).json({ error: error.message });
-        })
-});
-
-//PMT Retrieve Submission By Filtering by class
-app.get('/obs-admin/pmt/filter/eligibility/:filter', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
-    const filter = req.params.filter;
-
-    // AUTHORIZATION CHECK - PMT, MST 
-    if (req.decodedToken.role != 2 && req.decodedToken.role != 4) {
-        return res.redirect('/error?code=403')
-    }
-
-    const [eligibility1, eligibility2] = filter.split(',');
-
-    return pmtModel
-        .retrieveSubmissionByEligibility(eligibility1, eligibility2)
-        .then((result) => {
-            if (result.length === 0) {
-                throw new Error("No submission found");
-            }
-            return res.json(result[0]);
-        })
-        .catch((error) => {
-            return res.status(error.status || 500).json({ error: error.message });
-        });
-});
-
-
-
 
 // Endpoint for exporting the Excel file
 app.get('/export', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
@@ -1671,12 +1641,9 @@ app.post('/parent/login/', (req, res, next) => {
         .parentLogin(studentID)
         .then((result) => {
             // Convert dateofbirth to DD/MM/YYYY (Singapore format)
-            result.dateOfBirth = new Date(result.dateOfBirth).toLocaleDateString('en-SG');
-            // Remove / from dateofbirth
-            result.dateOfBirth = result.dateOfBirth.replace(/\//g, '');
+            result.dateOfBirth = new Date(result.dateOfBirth).toLocaleDateString('en-SG').replace(/\//g, '');
             // Check if password entered is == to DOB + NRIC (password) in database
             if (password != result.dateOfBirth + result.studentNRIC) {
-                // !! Thrown error is not caught by catch block
                 const error = new Error("Invalid URL or password");
                 error.status = 401;
                 throw error;
@@ -1685,6 +1652,10 @@ app.post('/parent/login/', (req, res, next) => {
             return res.json({ user: result });
 
         })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        }
+        );
 })
 
 // Update parent's acknowledgement
@@ -1733,11 +1704,6 @@ app.post('/postAcknowledge', (req, res, next) => {
  * HAJIN 
  */
 
-cloudinary.config({
-    cloud_name: "sp-esde-2100030",
-    api_key: "189815745826899",
-    api_secret: "eAKSNgdEoKxTWu8kh__hUi3U7J0",
-});
 
 //upload image to cloudinary
 app.post('/uploadSign', (req, res) => {
@@ -1929,6 +1895,23 @@ app.get('/form/:encrypted', (req, res, next) => {
     return formModel
         .getFormDetails(studentID)
         .then((result) => {
+            // Decrypt signature data
+            const encryptedSignInfo = result.signature
+            const key = Buffer.from('qW3eRt5yUiOpAsDfqW3eRt5yUiOpAsDf'); //must be 32 characters
+            const iv = Buffer.from('qW3eRt5yUiOpAsDf'); //must be 16 characters
+            try {
+                // Create the decipher object
+                const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+                let decrypted = decipher.update(encryptedSignInfo, 'hex', 'utf8');
+                decrypted += decipher.final('utf8');
+                result.signature = decrypted.split(';')[0];
+                ;
+            } catch (error) {
+                // Decrypt Error
+                console.error('Decryption Error:', error);
+                res.status(500).json({ message: 'Decryption Error' });
+            }
+
             return res.json({ form: result });
         })
         .catch((error) => {

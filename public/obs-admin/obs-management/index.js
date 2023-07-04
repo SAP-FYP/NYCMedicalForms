@@ -1133,14 +1133,14 @@ filterIcons.addEventListener('click', () => {
 
 document.addEventListener('DOMContentLoaded', (event) => {
   var dropdownMenuStayOpen = document.querySelectorAll('.dropdown-menu-stay');
-  const classDropDown = document.getElementById('classDropDown');
-  const schoolDropDown = document.getElementById('schoolDropDown');
-  const courseDateDropDown = document.getElementById('courseDateDropDown');
-  const eligibilityDropDown = document.getElementById('eligibilityDropDown');
-  const exportBtnFilter = document.querySelector('#export-btn-filter');
-  const exportBtnFilterSchool = document.querySelector('#export-btn-filter-school');
-  const exportBtnFilterCourseDate = document.querySelector('#export-btn-filter-course-date');
-  const exportBtnFilterEligibility = document.querySelector('#export-btn-filter-eligibility');
+  // const classDropDown = document.getElementById('classDropDown');
+  // const schoolDropDown = document.getElementById('schoolDropDown');
+  // const courseDateDropDown = document.getElementById('courseDateDropDown');
+  // const eligibilityDropDown = document.getElementById('eligibilityDropDown');
+  // const exportBtnFilter = document.querySelector('#export-btn-filter');
+  // const exportBtnFilterSchool = document.querySelector('#export-btn-filter-school');
+  // const exportBtnFilterCourseDate = document.querySelector('#export-btn-filter-course-date');
+  // const exportBtnFilterEligibility = document.querySelector('#export-btn-filter-eligibility');
   // prevent menu from closing down 
   for (var i = 0; i < dropdownMenuStayOpen.length; i++) {
     dropdownMenuStayOpen[i].addEventListener('click', function (e) {
@@ -1148,870 +1148,340 @@ document.addEventListener('DOMContentLoaded', (event) => {
     });
   }
 
-  document.getElementById('classMenuButton').addEventListener('click', function () {
-    const exportBtnAll = document.querySelector('#export-btn-all');
-    if (exportBtnAll) {
-      exportBtnAll.remove();
-    }
-    const exportBtnSearch = document.querySelector('#export-btn-search');
-    if (exportBtnSearch) {
-      exportBtnSearch.style.display = 'none';
-    }
-    if (exportBtnFilter) {
-      exportBtnFilter.style.display = 'block';
-    }
-    if (exportBtnFilterSchool) {
-      exportBtnFilterSchool.style.display = 'none';
-    }
-    if (exportBtnFilterCourseDate) {
-      exportBtnFilterCourseDate.style.display = 'none';
-    }
-    if (exportBtnFilterEligibility) {
-      exportBtnFilterEligibility.style.display = 'none';
-    }
+  let limit = 7;
+  let offset = 0;
+  let dataAll = [];
+  let classesArray = [];
+  let schoolsArray = [];
+  let courseDatesArray = [];
+  let eligibilityArray = [];
 
-    const limit = 7;
-    let offset = 0;
-    const classesDiv = document.getElementById('classesDiv');
-    const searchBar = document.getElementById('classSearch');
+  let fetchClasses = fetch(`/getClasses?limit=${limit}&offset=${offset}`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      const loadingMsgDiv = classesDiv.querySelector('.loadingMsg');
+      if (loadingMsgDiv) {
+        loadingMsgDiv.remove();
+      }
+
+      data.forEach(item => {
+        // Create a new <li> element with checkbox floating right
+        const newDiv = document.createElement('div');
+        newDiv.classList.add('newDiv');
+        const li = document.createElement('li');
+        li.textContent = item.class;
+        li.className = "m-3";
+        // Align checkbox to most right of li
+        const checkbox = document.createElement('input');
+        checkbox.type = "checkbox";
+        checkbox.name = "class";
+        checkbox.value = item.class;
+
+        checkbox.style.float = "right";
+        checkbox.style.margin = "3px";
+        checkbox.style.width = "15px";
+        checkbox.style.height = "15px";
+        checkbox.style.borderRadius = "50%";
+        checkbox.style.border = "1px solid #000";
+        checkbox.style.cursor = "pointer";
 
 
-    const fetchClasses = (searchTerm = '') => {
+        li.appendChild(checkbox);
+        newDiv.appendChild(li);
+        classesDiv.appendChild(newDiv);
+      });
+    })
+    .catch(function (error) {
+      if (error && error.message !== "redirected") {
+        console.log(error);
+      }
+      console.log(error);
+    });
 
+  let fetchSchools = fetch(`/getSchools?limit=${limit}&offset=${offset}`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      const loadingMsgDiv = schoolsDiv.querySelector('.loadingMsg');
+      if (loadingMsgDiv) {
+        loadingMsgDiv.remove();
+      }
 
-      fetch(`/getClasses?limit=${limit}&offset=${offset}&search=${searchTerm}`)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+      data.forEach(item => {
+        // Create a new <li> element with checkbox floating right
+        const newDiv = document.createElement('div');
+        newDiv.classList.add('newDiv');
+        const li = document.createElement('li');
+        li.textContent = item.school;
+        li.className = "m-3";
+        // Align checkbox to most right of li
+        const checkbox = document.createElement('input');
+        checkbox.type = "checkbox";
+        checkbox.name = "school";
+        checkbox.value = item.school;
+
+        checkbox.style.float = "right";
+        checkbox.style.margin = "3px";
+        checkbox.style.width = "15px";
+        checkbox.style.height = "15px";
+        checkbox.style.borderRadius = "50%";
+        checkbox.style.border = "1px solid #000";
+        checkbox.style.cursor = "pointer";
+
+        li.appendChild(checkbox);
+        newDiv.appendChild(li);
+        schoolsDiv.appendChild(newDiv);
+      });
+    })
+    .catch(function (error) {
+      if (error && error.message !== "redirected") {
+        console.log(error);
+      }
+      console.log(error);
+    });
+
+  let fetchCourseDates = fetch(`/getCourseDates?limit=${limit}&offset=${offset}`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      const loadingMsgDiv = courseDatesDiv.querySelector('.loadingMsg');
+      if (loadingMsgDiv) {
+        loadingMsgDiv.remove();
+      }
+
+      data.forEach(item => {
+        // Create a new <li> element with checkbox floating right
+        const newDiv = document.createElement('div');
+        newDiv.classList.add('newDiv');
+        const li = document.createElement('li');
+        // Change date to singapore format, no time
+        li.textContent = new Date(item.courseDate).toLocaleDateString('en-SG');
+        li.className = "m-3";
+        // Align checkbox to most right of li
+        const checkbox = document.createElement('input');
+        checkbox.type = "checkbox";
+        checkbox.name = "course-date";
+        checkbox.value = new Date(item.courseDate).toLocaleDateString('en-SG');
+
+        checkbox.style.float = "right";
+        checkbox.style.margin = "3px";
+        checkbox.style.width = "15px";
+        checkbox.style.height = "15px";
+        checkbox.style.borderRadius = "50%";
+        checkbox.style.border = "1px solid #000";
+        checkbox.style.cursor = "pointer";
+
+        li.appendChild(checkbox);
+        newDiv.appendChild(li);
+        courseDatesDiv.appendChild(newDiv);
+      });
+    })
+    .catch(function (error) {
+      if (error && error.message !== "redirected") {
+        console.log(error);
+      }
+      console.log(error);
+    });
+
+  let fetchEligiblity = fetch(`/getEligibility?limit=${limit}&offset=${offset}`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      const loadingMsgDiv = eligibilityDiv.querySelector('.loadingMsg');
+      if (loadingMsgDiv) {
+        loadingMsgDiv.remove();
+      }
+
+      data.forEach(item => {
+        // Create a new <li> element with checkbox floating right
+        const newDiv = document.createElement('div');
+        newDiv.classList.add('newDiv');
+        const li = document.createElement('li');
+        li.textContent = item.eligibility;
+        li.className = "m-3";
+        // Align checkbox to most right of li
+        const checkbox = document.createElement('input');
+        checkbox.type = "checkbox";
+        checkbox.name = "eligibility";
+        checkbox.value = item.eligibility;
+
+        checkbox.style.float = "right";
+        checkbox.style.margin = "3px";
+        checkbox.style.width = "15px";
+        checkbox.style.height = "15px";
+        checkbox.style.borderRadius = "50%";
+        checkbox.style.border = "1px solid #000";
+        checkbox.style.cursor = "pointer";
+
+        li.appendChild(checkbox);
+        newDiv.appendChild(li);
+        eligibilityDiv.appendChild(newDiv);
+      });
+    })
+    .catch(function (error) {
+      if (error && error.message !== "redirected") {
+        console.log(error);
+      }
+      console.log(error);
+    });
+
+  Promise.all([fetchClasses, fetchSchools, fetchCourseDates, fetchEligiblity])
+    // For each of the filters, add event listener to each checkbox
+    .then(() => {
+      // For all the checkbox, add event listener then every on click, fetch the data again
+      const allCheckBoxes = document.querySelectorAll('.newDiv input[type="checkbox"]');
+      allCheckBoxes.forEach(checkbox => {
+        checkbox.addEventListener('change', (event) => {
+          // If checkbox is checked, add to array
+          if (checkbox.checked) {
+            if (checkbox.name === "class") {
+              classesArray.push(checkbox.value);
+            } else if (checkbox.name === "school") {
+              schoolsArray.push(checkbox.value);
+            } else if (checkbox.name === "course-date") {
+              courseDatesArray.push(checkbox.value);
+            } else if (checkbox.name === "eligibility") {
+              eligibilityArray.push(checkbox.value);
+            }
+          } else {
+            // If checkbox is unchecked, remove from array
+            if (checkbox.name === "class") {
+              classesArray = classesArray.filter(item => item !== checkbox.value);
+            } else if (checkbox.name === "school") {
+              schoolsArray = schoolsArray.filter(item => item !== checkbox.value);
+            } else if (checkbox.name === "course-date") {
+              courseDatesArray = courseDatesArray.filter(item => item !== checkbox.value);
+            } else if (checkbox.name === "eligibility") {
+              eligibilityArray = eligibilityArray.filter(item => item !== checkbox.value);
+            }
           }
-          return response.json();
-        })
-        .then(data => {
-          const loadingMsgDiv = classesDiv.querySelector('.loadingMsg');
-          if (loadingMsgDiv) {
-            loadingMsgDiv.remove();
-          }
-          //so that there is no duplicate divs when reselected
-          const existingDivs = classesDiv.querySelectorAll('.newDiv');
-          existingDivs.forEach(div => div.remove());
 
-          data.forEach(item => {
-            const newDiv = document.createElement('div');
-            newDiv.classList.add('newDiv');
-            const li = document.createElement('li');
-            li.textContent = item.class;
-            li.className = "m-3";
-            li.setAttribute("class-id", item.class);
-            li.style.cursor = "pointer"; // Set the cursor style
-            li.addEventListener('click', function () {
-              const classId = this.getAttribute('class-id');
-              axios.get(`${API_URL}/filter/class/${classId}`)
-                .then(response => {
-                  const configURL = response.config.url;
-                  const requestURL = response.request.responseURL;
+          // Pull data to display in table
+          axios.post(`/obs-admin/pmt/filter`, {
+            school: schoolsArray,
+            class: classesArray,
+            courseDate: courseDatesArray,
+            eligibility: eligibilityArray
+          })
+            .then(response => {
+              formData = response.data;
+              console.log(formData);
+              if (formData.length === 0) {
+                const getAllForms = document.querySelector('#getAllForms');
+                getAllForms.innerHTML = "";
+              }
+              updateFormCounts(formData);
 
-                  // Decode the URL-encoded strings
-                  const decodedConfigURL = decodeURIComponent(configURL);
-                  const decodedRequestURL = decodeURIComponent(requestURL);
-                  console.log(decodedConfigURL);
-                  console.log(decodedRequestURL);
-                  if (decodedConfigURL !== decodedRequestURL) {
-                    window.location.href = "/error?code=403";
-                    throw new Error("redirected");
-                  }
-                  //call function to update status count
-                  const formData = response.data;
-                  console.log(formData);
-
-                  updateFormCounts(formData);
-
-                  //call function to create export button for
-                  const exportIcon = createExportButtonAll(`export-icon-${classId}`)
-                  console.log(exportIcon);
+              //call function to create export button for
+              const exportBtnBulkContainer = document.querySelector('#export-btn-all');
+              const exportIcon = createExportButtonAll('export-icon-all');
 
 
-                  const successBtn = document.querySelector('.successBtn');
-                  const rejectBtn = document.querySelector('.rejectBtn');
-                  if (successBtn) {
-                    successBtn.addEventListener('click', function () {
+              const successBtn = document.querySelector('.successBtn');
+              const rejectBtn = document.querySelector('.rejectBtn');
+              if (successBtn) {
+                successBtn.addEventListener('click', function () {
 
-                      const pillPending = document.querySelector('.changePill');
-                      pillPending.classList.remove('changePill');
+                  const pillPending = document.querySelector('.changePill');
+                  pillPending.classList.remove('changePill');
 
-                    });
-                  }
-                  if (rejectBtn) {
-                    rejectBtn.addEventListener('click', function () {
-                      const pillPending = document.querySelector('.changePill');
-                      pillPending.classList.remove('changePill');
-
-                    });
-                  }
-
-
-                  // Loop through the data and add it to the page
-                  for (i = 0; i < formData.length; i++) {
-
-                    //call function to format date
-                    const formattedDate = createFormattedDate(formData[i].courseDate);
-                    // Get references to the status container and template
-                    const getAllForms = document.querySelector('#getAllForms');
-                    const rowTemplate = document.querySelector('.row-table-template');
-
-                    //clear html content in getAllForms once since using template
-                    if (i === 0) {
-                      dataAll = [];  // Clear dataAll at the start of the loop
-                      getAllForms.innerHTML = "";
-                    }
-                    // Clone the template and append it to the status container
-                    const templateContent = rowTemplate.content;
-                    const clonedRowTemplate = document.importNode(templateContent, true);
-
-                    // Populate the cloned template function
-                    const {
-                      studentNRICCell,
-                      nameOfStudentCell,
-                      classCell,
-                      schoolCell,
-                      eligibilityCell,
-                      formattedDateCell,
-                      formStatusValue
-                    } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
-
-                    //call function to handle checkboxes
-                    handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, exportBtnFilter, exportIcon, dataAll)
-
-
-                    //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
-                    handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData, i);
-
-
-                  }
-                  //Outside of for loop 
-                  //Export to Excel Bulk Once
-                  const exportBtnBulk = document.querySelector('#export-btn-filter');
-                  if (exportBtnBulk) {
-                    exportBtnBulk.addEventListener('click', function () {
-                      console.log(dataAll);
-                      exportToExcelBulk(dataAll);
-                    });
-
-                  }
-
-                })
-                .catch(function (error) {
-                  if (error && error.message !== "redirected") {
-                    console.log(error);
-                  }
-                  console.log(error);
                 });
-            });
-            newDiv.appendChild(li);
-            classesDiv.appendChild(newDiv);
-          });
+              }
+              if (rejectBtn) {
+                rejectBtn.addEventListener('click', function () {
+                  const pillPending = document.querySelector('.changePill');
+                  pillPending.classList.remove('changePill');
 
-          // Increase the offset for the next fetch
-          offset += limit;
-          console.log(offset + '1')
-          // If reached the end of data, remove any more scroll
-          if (data.length < limit) {
-            document.getElementById('classDropDownMenu').removeEventListener('scroll', handleScroll);
-          }
-        })
-        .catch(error => console.error('Error:', error));
-    };
-
-    const handleScroll = (e) => {
-      const nearBottom = e.target.scrollHeight - e.target.scrollTop <= e.target.clientHeight + 5;
-      if (nearBottom) {
-        // Remove the scroll event listener to prevent multiple requests
-        classesDiv.removeEventListener('scroll', handleScroll);
-
-        // Fetch the next set of data
-        fetchClasses();
-      }
-    };
-
-    // Search event listener
-    searchBar.addEventListener('input', function () {
-      // Reset the offset and clear the classesDiv
-      offset = 0;
-      classesDiv.innerHTML = "";
-      // Add the loading message
-      const loadingMsgTemplate = document.getElementById("loadingMsgTemp").content.cloneNode(true);
-      classesDiv.appendChild(loadingMsgTemplate);
-
-      // Fetch the new search results
-      fetchClasses(searchBar.value.trim());
-
-      // Reattach the scroll event listener
-      // document.getElementById('classDropDownMenu').addEventListener('scroll', handleScroll);
-    });
-
-    // when dropdown is closed
-    classDropDown.addEventListener('hide.bs.dropdown', event => {
-      const loadingMsgTemplate = document.getElementById("loadingMsgTemp").content.cloneNode(true);
-      const classesDiv = document.getElementById('classesDiv');
-      searchBar.value = '';
-      classesDiv.innerHTML = '';
-      classesDiv.appendChild(loadingMsgTemplate);
-      document.getElementById('classDropDownMenu').removeEventListener('scroll', handleScroll);
-      offset = 0;
-      console.log(offset);
-    });
-
-    // Fetch the first set of data
-    fetchClasses();
-    document.getElementById('classDropDownMenu').addEventListener('scroll', handleScroll);
-  });
-
-
-  document.getElementById('schoolMenuButton').addEventListener('click', function () {
-    const exportBtnAll = document.querySelector('#export-btn-all');
-    if (exportBtnAll) {
-      exportBtnAll.remove();
-    }
-    const exportBtnSearch = document.querySelector('#export-btn-search');
-    if (exportBtnSearch) {
-      exportBtnSearch.remove();
-    }
-
-    if (exportBtnFilter) {
-      exportBtnFilter.style.display = 'none';
-    }
-    if (exportBtnFilterSchool) {
-      exportBtnFilterSchool.style.display = 'block';
-    }
-    if (exportBtnFilterCourseDate) {
-      exportBtnFilterCourseDate.style.display = 'none';
-    }
-    if (exportBtnFilterEligibility) {
-      exportBtnFilterEligibility.style.display = 'none';
-    }
-    const limit = 7;
-    let offset = 0;
-    const schoolsDiv = document.getElementById('schoolsDiv');
-    const searchBar = document.getElementById('schoolSearch');
-
-    const fetchSchools = (searchTerm = '') => {
-
-      fetch(`/getSchools?limit=${limit}&offset=${offset}&search=${searchTerm}`)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          return response.json();
-        })
-        .then(data => {
-          const loadingMsgDiv = schoolsDiv.querySelector('.loadingMsg');
-          if (loadingMsgDiv) {
-            loadingMsgDiv.remove();
-          }
-          //so that there is no duplicate divs when reselected
-          const existingDivs = schoolsDiv.querySelectorAll('.newDiv');
-          existingDivs.forEach(div => div.remove());
-          data.forEach(item => {
-            const newDiv = document.createElement('div');
-            newDiv.classList.add('newDiv');
-            const li = document.createElement('li');
-            li.textContent = item.school;
-            li.className = "m-3";
-            li.setAttribute("school-id", item.school);
-            li.style.cursor = "pointer"; // Set the cursor style
-            //Click function to filter by school
-            li.addEventListener('click', function () {
-              const schoolId = this.getAttribute('school-id');
-              axios.get(`${API_URL}/filter/school/${schoolId}`)
-                .then(response => {
-                  const configURL = response.config.url;
-                  const requestURL = response.request.responseURL;
-
-                  // Decode the URL-encoded strings
-                  const decodedConfigURL = decodeURIComponent(configURL);
-                  const decodedRequestURL = decodeURIComponent(requestURL);
-                  console.log(decodedConfigURL);
-                  console.log(decodedRequestURL);
-                  if (decodedConfigURL !== decodedRequestURL) {
-                    window.location.href = "/error?code=403";
-                    throw new Error("redirected");
-                  }
-                  //call function to update status count
-                  const formData = response.data;
-                  console.log(formData);
-                  updateFormCounts(formData);
-
-
-
-
-                  const successBtn = document.querySelector('.successBtn');
-                  const rejectBtn = document.querySelector('.rejectBtn');
-                  if (successBtn) {
-                    successBtn.addEventListener('click', function () {
-
-                      const pillPending = document.querySelector('.changePill');
-                      pillPending.classList.remove('changePill');
-
-                    });
-                  }
-                  if (rejectBtn) {
-                    rejectBtn.addEventListener('click', function () {
-                      const pillPending = document.querySelector('.changePill');
-                      pillPending.classList.remove('changePill');
-
-                    });
-                  }
-                  //call function to create export button for
-                  const exportIcon = createExportButtonAll(`export-icon-${schoolId}`);
-                  console.log(exportBtnFilterSchool)
-
-                  // Loop through the data and add it to the page
-                  for (i = 0; i < formData.length; i++) {
-                    //call function to format date
-                    const formattedDate = createFormattedDate(formData[i].courseDate);
-                    // Get references to the status container and template
-                    const getAllForms = document.querySelector('#getAllForms');
-                    const rowTemplate = document.querySelector('.row-table-template');
-
-                    //clear html content in getAllForms once since using template
-                    if (i === 0) {
-                      dataAll = [];  // Clear dataAll at the start of the loop
-                      getAllForms.innerHTML = "";
-                    }
-                    // Clone the template and append it to the status container
-                    const templateContent = rowTemplate.content;
-                    const clonedRowTemplate = document.importNode(templateContent, true);
-
-                    // Populate the cloned template function
-                    const {
-                      studentNRICCell,
-                      nameOfStudentCell,
-                      classCell,
-                      schoolCell,
-                      eligibilityCell,
-                      formattedDateCell,
-                      formStatusValue
-                    } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
-
-
-
-
-
-                    //call function to handle checkboxes
-                    handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, exportBtnFilterSchool, exportIcon, dataAll)
-
-
-
-                    //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
-                    handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData, i);
-                    ;
-
-
-                  }
-                  //Outside of for loop 
-                  //Export to Excel Bulk Once
-
-                  const exportBtnBulk = document.querySelector('#export-btn-filter-school');
-                  if (exportBtnBulk) {
-                    exportBtnBulk.addEventListener('click', function () {
-                      console.log(dataAll);
-                      exportToExcelBulk(dataAll);
-                    });
-                  }
-
-                })
-                .catch(function (error) {
-                  if (error && error.message !== "redirected") {
-                    console.log(error);
-                  }
-                  console.log(error);
                 });
+              }//create array to store all data for export to excel bulk
+
+              // Loop through the data and add it to the page
+              for (i = 0; i < formData.length; i++) {
+                //call function to format date
+                const formattedDate = createFormattedDate(formData[i].courseDate);
+                console.log(formattedDate);
+                // Get references to the status container and template
+                const getAllForms = document.querySelector('#getAllForms');
+                const rowTemplate = document.querySelector('.row-table-template');
+
+                //clear html content in getAllForms once since using template
+                if (i === 0) {
+                  dataAll = [];
+                  getAllForms.innerHTML = "";
+                }
+                // Clone the template and append it to the status container
+                const templateContent = rowTemplate.content;
+                const clonedRowTemplate = document.importNode(templateContent, true);
+
+                // Populate the cloned template function
+                const {
+                  studentNRICCell,
+                  nameOfStudentCell,
+                  classCell,
+                  schoolCell,
+                  eligibilityCell,
+                  formattedDateCell,
+                  formStatusValue
+                } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
+
+                //call function to handle checkboxes
+                handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, exportBtnBulkContainer, exportIcon, dataAll)
+
+
+
+                //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
+                handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData, i);
+                ;
+
+
+              }
+              //Outside of for loop 
+              //Export to Excel Bulk Once
+              const exportBtnBulk = document.querySelector('#export-btn-all');
+              exportBtnBulk.addEventListener('click', function () {
+                console.log(dataAll);
+                exportToExcelBulk(dataAll);
+              });
+            })
+            .catch(function (error) {
+              if (error && error.message !== "redirected") {
+                console.log(error);
+              }
+              console.log(error);
             });
-            newDiv.appendChild(li);
-            schoolsDiv.appendChild(newDiv);
-          });
-
-          // Increase the offset for the next fetch
-          offset += limit;
-
-          // Remove the loadingMsg div after the first fetch
-          if (offset === limit) {
-            const schoolsLoadingMsg = document.querySelector('#schoolDropDown .loadingMsg');
-            if (schoolsLoadingMsg) {
-              schoolsLoadingMsg.remove();
-            }
-          }
-
-          // If reached the end of data, remove any more scroll
-          if (data.length < limit) {
-            schoolsDiv.removeEventListener('scroll', handleScroll);
-          }
         })
-        .catch(error => console.error('Error:', error));
-    };
+      })
+    })
 
-    const handleScroll = (e) => {
-      const nearBottom = e.target.scrollHeight - e.target.scrollTop <= e.target.clientHeight + 5;
-      if (nearBottom) {
-        // Remove the scroll event listener to prevent multiple requests
-        schoolsDiv.removeEventListener('scroll', handleScroll);
 
-        // Fetch the next set of data
-        fetchSchools();
-      }
+  const handleScroll = (e) => {
+    const nearBottom = e.target.scrollHeight - e.target.scrollTop <= e.target.clientHeight + 5;
+    if (nearBottom) {
+      // Remove the scroll event listener to prevent multiple requests
+      classesDiv.removeEventListener('scroll', handleScroll);
 
-    };
-
-    // Search event listener
-    searchBar.addEventListener('input', function () {
-      offset = 0;
-      schoolsDiv.innerHTML = "";
-
-      // Add the loading message
-      const loadingMsgTemplate = document.getElementById("loadingMsgTemp").content.cloneNode(true);
-      schoolsDiv.appendChild(loadingMsgTemplate);
-
-      // Fetch the new search results
-      fetchSchools(searchBar.value.trim());
-
-      // Reattach the scroll event listener
-      //schoolsDiv.addEventListener('scroll', handleScroll);
-    });
-
-    schoolDropDown.addEventListener('hidden.bs.dropdown', event => {
-      const loadingMsgTemplate = document.getElementById("loadingMsgTemp").content.cloneNode(true);;
-      const schoolsDiv = document.getElementById('schoolsDiv');
-      searchBar.value = '';
-      schoolsDiv.innerHTML = "";
-      schoolsDiv.appendChild(loadingMsgTemplate);
-      document.getElementById('schoolDropDownMenu').removeEventListener('scroll', handleScroll);
-      offset = 0;
-    });
-    // Fetch the first set of data
-    fetchSchools();
-    document.getElementById('schoolDropDownMenu').addEventListener('scroll', handleScroll);
-  });
-
-  document.getElementById('courseDateMenuButton').addEventListener('click', function () {
-    const exportBtnAll = document.querySelector('#export-btn-all');
-    if (exportBtnAll) {
-      exportBtnAll.remove();
+      // Fetch the next set of data
+      // fetchClasses();
     }
-    const exportBtnSearch = document.querySelector('#export-btn-search');
-    if (exportBtnSearch) {
-      exportBtnSearch.remove();
-    }
-    if (exportBtnFilter) {
-      exportBtnFilter.style.display = 'none';
-    }
-    if (exportBtnFilterSchool) {
-      exportBtnFilterSchool.style.display = 'none';
-    }
-    if (exportBtnFilterCourseDate) {
-      exportBtnFilterCourseDate.style.display = 'block';
-    }
-    if (exportBtnFilterEligibility) {
-      exportBtnFilterEligibility.style.display = 'none';
-    }
+  };
 
-    const limit = 7;
-    let offset = 0;
-    const courseDatesDiv = document.getElementById('courseDatesDiv');
-    const searchBar = document.getElementById('courseDateSearch');
-
-    const fetchCourseDates = (searchTerm = '') => {
-
-      fetch(`/getCourseDates?limit=${limit}&offset=${offset}&search=${searchTerm}`)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          return response.json();
-        })
-        .then(data => {
-          const loadingMsgDiv = courseDatesDiv.querySelector('.loadingMsg');
-          if (loadingMsgDiv) {
-            loadingMsgDiv.remove();
-          }
-          //so that there is no duplicate divs when reselected
-          const existingDivs = courseDatesDiv.querySelectorAll('.newDiv');
-          existingDivs.forEach(div => div.remove());
-          data.forEach(item => {
-            const newDiv = document.createElement('div');
-            newDiv.classList.add('newDiv');
-            const li = document.createElement('li');
-            const courseDate = createFormattedDate(item.courseDate);
-            const courseDateDBFormat = courseDate.split('/').reverse().join('-');
-            li.textContent = courseDate;
-            li.className = "m-3";
-            li.setAttribute("course-date-id", courseDateDBFormat);
-            li.style.cursor = "pointer";
-            li.addEventListener('click', function () {
-              const courseDate = this.getAttribute('course-date-id');
-              axios.get(`${API_URL}/filter/courseDate/${courseDate}`)
-                .then(response => {
-                  const configURL = response.config.url;
-                  const requestURL = response.request.responseURL;
-
-                  // Decode the URL-encoded strings
-                  const decodedConfigURL = decodeURIComponent(configURL);
-                  const decodedRequestURL = decodeURIComponent(requestURL);
-                  console.log(decodedConfigURL);
-                  console.log(decodedRequestURL);
-                  if (decodedConfigURL !== decodedRequestURL) {
-                    window.location.href = "/error?code=403";
-                    throw new Error("redirected");
-                  }
-                  //call function to update status count
-                  const formData = response.data;
-                  console.log(response);
-                  updateFormCounts(formData);
-
-                  //call function to create export button for
-
-                  const exportIcon = createExportButtonAll(`export-icon-${courseDate}`)
-
-
-                  const successBtn = document.querySelector('.successBtn');
-                  const rejectBtn = document.querySelector('.rejectBtn');
-                  if (successBtn) {
-                    successBtn.addEventListener('click', function () {
-
-                      const pillPending = document.querySelector('.changePill');
-                      pillPending.classList.remove('changePill');
-
-                    });
-                  }
-                  if (rejectBtn) {
-                    rejectBtn.addEventListener('click', function () {
-                      const pillPending = document.querySelector('.changePill');
-                      pillPending.classList.remove('changePill');
-
-                    });
-                  }
-
-                  // Loop through the data and add it to the page
-                  for (i = 0; i < formData.length; i++) {
-                    //call function to format date
-                    const formattedDate = createFormattedDate(formData[i].courseDate);
-                    // Get references to the status container and template
-                    const getAllForms = document.querySelector('#getAllForms');
-                    const rowTemplate = document.querySelector('.row-table-template');
-
-                    //clear html content in getAllForms once since using template
-                    if (i === 0) {
-                      dataAll = [];
-                      getAllForms.innerHTML = "";
-                    }
-                    // Clone the template and append it to the status container
-                    const templateContent = rowTemplate.content;
-                    const clonedRowTemplate = document.importNode(templateContent, true);
-
-                    // Populate the cloned template function
-                    const {
-                      studentNRICCell,
-                      nameOfStudentCell,
-                      classCell,
-                      schoolCell,
-                      eligibilityCell,
-                      formattedDateCell,
-                      formStatusValue
-                    } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
-
-                    //call function to handle checkboxes
-                    handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, exportBtnFilterCourseDate, exportIcon, dataAll)
-
-
-
-                    //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
-                    handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData, i);
-                    ;
-
-
-                  }
-                  //Outside of for loop 
-                  //Export to Excel Bulk Once
-                  const exportBtnBulk = document.querySelector('#export-btn-filter-course-date');
-                  if (exportBtnBulk) {
-                    exportBtnBulk.addEventListener('click', function () {
-                      console.log(dataAll);
-                      exportToExcelBulk(dataAll);
-                    });
-                  }
-
-                })
-                .catch(function (error) {
-                  if (error && error.message !== "redirected") {
-                    console.log(error);
-                  }
-                  console.log(error);
-                });
-            });
-            newDiv.appendChild(li);
-            courseDatesDiv.appendChild(newDiv);
-          });
-
-          // Increase the offset for the next fetch
-          offset += limit;
-
-          // Remove the loadingMsg div after the first fetch
-          if (offset === limit) {
-            const courseDatesLoadingMsg = document.querySelector('#courseDateDropDown .loadingMsg');
-            if (courseDatesLoadingMsg) {
-              courseDatesLoadingMsg.remove();
-            }
-          }
-
-          // If reached the end of data, remove any more scroll
-          if (data.length < limit) {
-            courseDatesDiv.removeEventListener('scroll', handleScroll);
-          }
-        })
-        .catch(error => console.error('Error:', error));
-    };
-
-    const handleScroll = (e) => {
-      const nearBottom = e.target.scrollHeight - e.target.scrollTop <= e.target.clientHeight + 5;
-      if (nearBottom) {
-        // Remove the scroll event listener to prevent multiple requests
-        courseDatesDiv.removeEventListener('scroll', handleScroll);
-
-        // Fetch the next set of data
-        fetchCourseDates();
-      }
-    };
-    // Search event listener
-    searchBar.addEventListener('input', function () {
-      offset = 0;
-      courseDatesDiv.innerHTML = "";
-
-      // Add the loading message
-      const loadingMsgTemplate = document.getElementById("loadingMsgTemp").content.cloneNode(true);
-      courseDatesDiv.appendChild(loadingMsgTemplate);
-
-      // Fetch the new search results
-      fetchCourseDates(searchBar.value.trim());
-
-      // Reattach the scroll event listener
-      //courseDatesDiv.addEventListener('scroll', handleScroll);
-    });
-
-    courseDateDropDown.addEventListener('hidden.bs.dropdown', event => {
-      const loadingMsgTemplate = document.getElementById("loadingMsgTemp").content.cloneNode(true);;
-      const courseDatesDiv = document.getElementById('courseDatesDiv');
-      searchBar.value = '';
-      courseDatesDiv.innerHTML = "";
-      courseDatesDiv.appendChild(loadingMsgTemplate);
-      document.getElementById('courseDateDropDownMenu').removeEventListener('scroll', handleScroll);
-      offset = 0;
-      console.log(offset);
-    });
-
-    // Fetch the first set of data
-    fetchCourseDates();
-    document.getElementById('courseDateDropDownMenu').addEventListener('scroll', handleScroll);
-  });
-
-  document.getElementById('eligibilityMenuButton').addEventListener('click', function () {
-    const exportBtnAll = document.querySelector('#export-btn-all');
-    if (exportBtnAll) {
-      exportBtnAll.remove();
-    }
-    const exportBtnSearch = document.querySelector('#export-btn-search');
-    if (exportBtnSearch) {
-      exportBtnSearch.remove();
-    }
-    if (exportBtnFilter) {
-      exportBtnFilter.style.display = 'none';
-    }
-    if (exportBtnFilterSchool) {
-      exportBtnFilterSchool.style.display = 'none';
-    }
-    if (exportBtnFilterCourseDate) {
-      exportBtnFilterCourseDate.style.display = 'none';
-    }
-    if (exportBtnFilterEligibility) {
-      exportBtnFilterEligibility.style.display = 'block';
-    }
-
-    const limit = 7;
-    let offset = 0;
-    const eligibilityDiv = document.getElementById('eligibilityDiv');
-
-    const fetchEligibility = () => {
-
-      fetch(`/getEligibility?limit=${limit}&offset=${offset}`)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          return response.json();
-        })
-        .then(data => {
-          const loadingMsgDiv = eligibilityDiv.querySelector('.loadingMsg');
-          if (loadingMsgDiv) {
-            loadingMsgDiv.remove();
-          }
-          //so that there is no duplicate divs when reselected
-          const existingDivs = eligibilityDiv.querySelectorAll('.newDiv');
-          existingDivs.forEach(div => div.remove());
-          data.forEach(item => {
-            const newDiv = document.createElement('div');
-            newDiv.classList.add('newDiv');
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.setAttribute('eligibility-id', item.eligibility);
-            checkbox.name = 'status';
-            checkbox.value = item.eligibility;
-            const label = document.createElement('label');
-            label.classList.add('m-1');
-            label.textContent = item.eligibility;
-            newDiv.appendChild(checkbox);
-            newDiv.appendChild(label);
-            newDiv.appendChild(document.createElement('br'));
-            eligibilityDiv.appendChild(newDiv);
-          });
-
-          // Increase the offset for the next fetch
-          offset += limit;
-
-          // Remove the loadingMsg div after the first fetch
-          if (offset === limit) {
-            const eligibilityLoadingMsg = document.querySelector('#eligibilityDropDown .loadingMsg');
-            if (eligibilityLoadingMsg) {
-              eligibilityLoadingMsg.remove();
-            }
-          }
-        })
-        .catch(error => console.error('Error:', error));
-    };
-    eligibilityDropDown.addEventListener('hidden.bs.dropdown', event => {
-      const loadingMsgTemplate = document.getElementById("loadingMsgTemp").content.cloneNode(true);;
-      eligibilityDiv.innerHTML = "";
-      eligibilityDiv.appendChild(loadingMsgTemplate);
-      offset = 0;
-      console.log(offset);
-    });
-    // Fetch the first set of data
-    fetchEligibility();
-  });
-
-  document.getElementById('eligibilityDiv').addEventListener('click', function (event) {
-
-    if (event.target.type === 'checkbox') {
-      const eligibilityDiv = event.target.parentElement;
-      const checkboxList = eligibilityDiv.querySelectorAll('input[type="checkbox"][eligibility-id]:checked');
-      const eligibilityIds = Array.from(checkboxList).map(checkbox => checkbox.getAttribute('eligibility-id'));
-      // Check if both checkboxes are selected
-      if (checkboxList.length === 2) {
-        eligibilityIds.push("Fit", "Unfit");
-      }
-
-
-      const filter = eligibilityIds.join(',');
-      console.log(filter);
-      axios.get(`${API_URL}/filter/eligibility/${filter}`)
-        .then(response => {
-          const configURL = response.config.url;
-          const requestURL = response.request.responseURL;
-
-          // Decode the URL-encoded strings
-          const decodedConfigURL = decodeURIComponent(configURL);
-          const decodedRequestURL = decodeURIComponent(requestURL);
-          console.log(decodedConfigURL);
-          console.log(decodedRequestURL);
-          if (decodedConfigURL !== decodedRequestURL && document.getElementById('checkboxId').checked) {
-            window.location.href = "/error?code=403";
-            throw new Error("redirected");
-          }
-          //call function to update status count
-          const formData = response.data;
-          console.log(formData);
-          updateFormCounts(formData);
-
-          //call function to create export button for
-
-          const exportIcon = createExportButtonAll(`export-icon-${eligibilityIds}`)
-
-
-          const successBtn = document.querySelector('.successBtn');
-          const rejectBtn = document.querySelector('.rejectBtn');
-          if (successBtn) {
-            successBtn.addEventListener('click', function () {
-
-              const pillPending = document.querySelector('.changePill');
-              pillPending.classList.remove('changePill');
-
-            });
-          }
-          if (rejectBtn) {
-            rejectBtn.addEventListener('click', function () {
-              const pillPending = document.querySelector('.changePill');
-              pillPending.classList.remove('changePill');
-
-            });
-          }
-
-          // Loop through the data and add it to the page
-          for (i = 0; i < formData.length; i++) {
-            console.log("HHIIHHI")
-            console.log(formData)
-            //call function to format date
-            const formattedDate = createFormattedDate(formData[i].courseDate);
-            // Get references to the status container and template
-            const getAllForms = document.querySelector('#getAllForms');
-            const rowTemplate = document.querySelector('.row-table-template');
-
-            //clear html content in getAllForms once since using template
-            if (i === 0) {
-              dataAll = []
-              getAllForms.innerHTML = "";
-            }
-            // Clone the template and append it to the status container
-            const templateContent = rowTemplate.content;
-            const clonedRowTemplate = document.importNode(templateContent, true);
-
-            // Populate the cloned template function
-            const {
-              studentNRICCell,
-              nameOfStudentCell,
-              classCell,
-              schoolCell,
-              eligibilityCell,
-              formattedDateCell,
-              formStatusValue
-            } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
-
-            //call function to handle checkboxes
-            handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, exportBtnFilterEligibility, exportIcon, dataAll)
-
-
-            //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
-            handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData, i);
-            ;
-
-
-          }
-          //Outside of for loop 
-          //Export to Excel Bulk Once
-          const exportBtnBulk = document.querySelector('#export-btn-filter-eligibility');
-          if (exportBtnBulk) {
-            exportBtnBulk.addEventListener('click', function () {
-              console.log(dataAll);
-              exportToExcelBulk(dataAll);
-            });
-          }
-        })
-        .catch(function (error) {
-          if (error && error.message !== "redirected") {
-            console.log(error);
-          }
-          console.log(error);
-        });
-
-    }
-  });
-
-
-
+  document.getElementById('classDropDownMenu').addEventListener('scroll', handleScroll);
 });
 
