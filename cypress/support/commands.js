@@ -24,7 +24,7 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
-Cypress.Commands.add('login', (email, pass) => {
+Cypress.Commands.add('doctorlogin', (email, pass) => {
     cy.visit('http://localhost:3000/login');
     cy.get('input[id=login-email]').type(email);
     cy.get('input[id=login-password]').type(pass);
@@ -32,3 +32,18 @@ Cypress.Commands.add('login', (email, pass) => {
     cy.url().should('include', '/obs-form');
     cy.contains('Student Section');
 })
+
+Cypress.Commands.add('adminlogin', (email, pass) => {
+    cy.visit('http://localhost:3000/obs-admin/login');
+    cy.get('input[id=login-email]').type(email);
+    cy.get('input[id=login-password]').type(pass);
+    cy.get('button[id=login-button]').click();
+    cy.get('#header-bar').should('have.class', 'col-12');
+})
+
+Cypress.Commands.add('generateRandomValidPhoneNumber', () => {
+    const startingDigit = Math.random() < 0.5 ? '8' : '9';
+    const remainingDigits = Math.floor(Math.random() * 100000000).toString().padStart(7, '0');
+
+    return startingDigit + remainingDigits;
+});
