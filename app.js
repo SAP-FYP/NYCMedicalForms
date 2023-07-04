@@ -8,12 +8,9 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const elasticEmail = require('elasticemail');
 const cloudinary = require("cloudinary").v2;
-const {
-    UserNotFoundError
-} = require("./errors");
+const { UserNotFoundError } = require("./errors");
 const crypto = require('crypto');
 
-const { UserNotFoundError } = require("./errors");
 const key = Buffer.from(process.env.encryptKey, 'hex');
 const iv = Buffer.from(process.env.encryptIV, 'hex');
 
@@ -36,7 +33,7 @@ const JWT_SECRET = process.env.SECRETKEY;
 
 const twilioClient = require('twilio')(process.env.twilioSID, process.env.twilioToken);
 
-const elasticEmailClient = elasticEmail.createClient({ apiKey: process.env.elasticAPIKey});
+const elasticEmailClient = elasticEmail.createClient({ apiKey: process.env.elasticAPIKey });
 
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
