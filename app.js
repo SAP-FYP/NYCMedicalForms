@@ -8,11 +8,6 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const elasticEmail = require('elasticemail');
 const cloudinary = require("cloudinary").v2;
-cloudinary.config({
-    cloud_name: "sp-esde-2100030",
-    api_key: "189815745826899",
-    api_secret: "eAKSNgdEoKxTWu8kh__hUi3U7J0",
-});
 const {
     UserNotFoundError
 } = require("./errors");
