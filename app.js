@@ -1195,28 +1195,6 @@ app.get('/getClasses', (req, res, next) => {
         });
 });
 
-// get schools
-app.get('/getSchools', (req, res, next) => {
-    const limit = parseInt(req.query.limit);
-    const offset = parseInt(req.query.offset);
-    const search = req.query.search || '';
-
-    return doctorFormModel
-        .getSchools(limit, offset, search)
-        .then(data => {
-            const schoolLists = data[0];
-            console.log(schoolLists)
-            res.json(schoolLists);
-        })
-        .catch(err => {
-            if (error instanceof EMPTY_RESULT_ERROR) {
-                res.status(404).json({ message: error.message });
-            } else {
-                res.status(500).json({ message: 'Internal server error' });
-            }
-        });
-});
-
 // get course dates
 app.get('/getCourseDates', (req, res, next) => {
     const limit = parseInt(req.query.limit);

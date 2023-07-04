@@ -85,26 +85,6 @@ module.exports.getClasses = function getClasses(limit,offset,search){
   });
 };
 
-module.exports.getSchools = function getSchools(limit,offset,search){
-  const sql = `SELECT S.school, COUNT(*) AS count
-  FROM form F
-  JOIN student S ON F.studentId = S.studentId
-  JOIN parentAcknowledgement PA ON F.studentId = PA.studentId
-  JOIN doctor D ON F.doctorMCR = D.doctorMCR
-  WHERE S.school LIKE ?
-  GROUP BY S.school
-  ORDER BY S.school ASC
-  LIMIT ? OFFSET ?;`
-  return query(sql,[`%${search}%`,limit,offset]).then(function (result) {
-      const rows = result;
-      console.log(rows);
-      if (rows.length === 0) {
-          throw new EMPTY_RESULT_ERROR('No Schools Found');
-      }
-      return rows;
-  });
-};
-
 module.exports.getCourseDates = function getCourseDates(limit,offset,search){
   const sql = `SELECT F.courseDate, COUNT(*) AS count
   FROM form F
