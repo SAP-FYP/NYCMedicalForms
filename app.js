@@ -1039,6 +1039,19 @@ app.put('/parent/acknowledge', (req, res, next) => {
         })
 })
 
+app.post('/postAcknowledge', (req, res, next) => {
+    const {studentId, parentContactNo, parentEmail} = req.body;
+    // TODO ERROR HANDLING
+    return parentModel.postAcknowledgement(studentId,parentContactNo,parentEmail)
+        .then((result) => {
+            return res.json({ user: result });
+        }
+        ).catch((error) => {
+            console.log(error)
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+});
+
 /**
  * Form Routes
  */
