@@ -452,6 +452,7 @@ document.addEventListener('DOMContentLoaded', function () {
         commentsTextarea.value = '';
         studentNRIC = '';
         currentSchool = '';
+        acknowledgeCheckBox.checked = false;
 
         validities.isStudentNameValid = false;
         validities.isStudentNRICValid = false;
@@ -826,7 +827,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         // if checkbox, send email
                         if(acknowledgeCheckBox.checked){
                             const emailEntry ={
-                                email : parentEmail.value
+                                email : parentEmail.value,
+                                studentId : studentId
                             }
                             return sendEmail(emailEntry);
                         }
@@ -866,7 +868,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     loadingModal.show();
                     postStudentInfo(studentEntry)
                     .then(data => {
-                        formEntry.studentId = data[0].insertId;
+                        studentId = data[0].insertId;
+                        formEntry.studentId = studentId;
                         formEntry.doctorMCR = currentDoctor;
                         formEntry.comments = commentsTextarea.value;
                         return postFormInfo(formEntry);
@@ -875,7 +878,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         // if checkbox, send email
                         if(acknowledgeCheckBox.checked){
                             const emailEntry ={
-                                email : parentEmail.value
+                                email : parentEmail.value,
+                                studentId : studentId
                             }
                             return sendEmail(emailEntry);
                         }
