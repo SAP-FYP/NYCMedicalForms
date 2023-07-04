@@ -51,7 +51,11 @@ function createExportButtonAll(id) {
 // Function to populate row data
 function populateRowData(clonedRowTemplate, formData, index, formattedDate) {
   const studentNRICCell = clonedRowTemplate.querySelector('.studentNRIC');
-  studentNRICCell.textContent = `***${formData[index].studentNRIC}`;
+
+  // show last 4digits of NRIC
+  const studentNRIC = formData[index].studentNRIC;
+  const extractedNRIC = studentNRIC.substring(studentNRIC.length - 4);
+  studentNRICCell.textContent = `****${extractedNRIC}`;
 
   const nameOfStudentCell = clonedRowTemplate.querySelector('.studentName');
   nameOfStudentCell.textContent = formData[index].nameOfStudent;
@@ -237,14 +241,20 @@ function openModal(studentId) {
       const formattedDateOfBirth = `${datePartsDob[2]}-${datePartsDob[0]}-${datePartsDob[1]}`;
 
       //Format the dateOfAcknowledgement
-      const dateObjAckDate = new Date(formData.dateOfAcknowledgement);
-      const formatToLocal5 = dateObjAckDate.toLocaleDateString("en-US", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      });
-      const datePartsAckDate = formatToLocal5.split("/");
-      const formattedAckDate = `${datePartsAckDate[2]}-${datePartsAckDate[0]}-${datePartsAckDate[1]}`;
+      let formattedAckDate;
+
+      if (formData.dateOfAcknowledgement) {
+        const dateObjAckDate = new Date(formData.dateOfAcknowledgement);
+        const formatToLocal5 = dateObjAckDate.toLocaleDateString("en-US", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        });
+        const datePartsAckDate = formatToLocal5.split("/");
+        formattedAckDate = `${datePartsAckDate[2]}-${datePartsAckDate[0]}-${datePartsAckDate[1]}`;
+      } else {
+        formattedAckDate = null;
+      }
 
 
 
@@ -313,7 +323,7 @@ function openModal(studentId) {
       //     exportToExcel(applicantName, schoolOrg, classNo, courseDate, formStatus);
       //   }
 
-      displayFormModal(formData, userPermissions, formattedCourseDate, formattedVaccinationDate, formattedExamDate, formattedAckDate);
+      displayFormModal(formData, userPermissions, formattedCourseDate, formattedVaccinationDate, formattedExamDate, formattedAckDate, formattedDateOfBirth);
 
     })
     .catch(function (error) {
@@ -323,54 +333,104 @@ function openModal(studentId) {
 }
 
 //FUNCTION TO DSIPLAY FORM MODAL
-function displayFormModal(formData, userPermissions, formattedCourseDate, formattedVaccinationDate, formattedExamDate, formattedAckDate) {
+function displayFormModal(formData, userPermissions, formattedCourseDate, formattedVaccinationDate, formattedExamDate, formattedAckDate, formattedDateOfBirth) {
   const nameInput = document.querySelector('#applicantName');
   const schoolInput = document.querySelector('#schoolOrg');
+  const studentDOBInput = document.querySelector('#dateOfBirth');
   const nricInput = document.querySelector('#personalId');
   const classInput = document.querySelector('#designation');
   const courseDateInput = document.querySelector('#courseDate');
   const dateVacInput = document.querySelector('#tetanusVaccine');
-  const doctorReview = document.querySelector('#doctor-review');
+  const doctorComments = document.querySelector('#doctor-comments');
   const doctorNameInput = document.querySelector('#physicianName');
   const doctoMCRInput = document.querySelector('#mcrNo');
   const clinicNameInput = document.querySelector('#clinicName');
   const examDateInput = document.querySelector('#examDate');
   const doctorContactInput = document.querySelector('#contactNo');
   const clinicAddressInput = document.querySelector('#clinicAddress');
-  const doctorSignatureInput = document.querySelector('#signatureData');
   const parentName = document.querySelector('#parent-name');
-  const parentNRIC = document.querySelector('#parent-nric');
-  const parentEmail = document.querySelector('#parent-email');
-  const parentContact = document.querySelector('#parent-contact');
-  const parentDate = document.querySelector('#parent-date');
-  const parentSignature = document.querySelector('#parent-signature');
-  const mstComment = document.querySelector('#mst-comment');
+  const parentNRICInput = document.querySelector('#parent-nric');
+  const parentEmailInput = document.querySelector('#parent-email');
+  const parentContactInput = document.querySelector('#parent-contact');
+  const parentDateInput = document.querySelector('#parent-date');
+  const mstReview = document.querySelector('#mst-review');
 
+  //Doctor Signature
+  const doctorSignatureInput = document.querySelector('#doctor-signature');
+  const doctorSignatureURL = formData.signature
+  const doctorSignatureImg = doctorSignatureURL.split(';')[0];
 
+  doctorSignatureInput.setAttribute('src', doctorSignatureImg);
+
+  //Parent Signature
+  const parentSignatureInput = document.querySelector('#parent-signature');
+  const parentSignatureURL = formData.parentSignature;
+  const parentSignatureImg = typeof parentSignatureURL === 'string' ? parentSignatureURL.split(';')[0] : null;
+
+  const parentContainer = document.querySelector('#parent-signature-container');
+  const canvas = document.createElement('canvas');
+  if (parentSignatureImg) {
+    parentSignatureInput.setAttribute('src', parentSignatureImg);
+  } else {
+    // Hide the parentSignatureInput element
+   
+    parentSignatureInput.style.display = 'none';
+
+    
+    const ctx = canvas.getContext('2d');
+    // Style canvas
+    canvas.style.backgroundColor = 'white';
+    canvas.style.border = '1px solid #485EAB';
+    canvas.style.width = '302px';
+    canvas.style.height = '152px';
+
+    // Adjust the position as needed
+    const textX = canvas.width / 2;
+    const textY = canvas.height / 2;
+
+    // Draw the text on the canvas
+    ctx.font = '30px Arial';
+    ctx.textAlign = 'center'; // Set text alignment to center
+    ctx.textBaseline = 'middle'; // Set baseline alignment to middle
+    ctx.fillText('N/A', textX, textY);
+
+    // Append the canvas element to the container
+    parentContainer.appendChild(canvas);
+  }
+
+  // show last 4digits of NRIC
+  const studentNRIC = formData.studentNRIC;
+  const extractedNRIC = studentNRIC.substring(studentNRIC.length - 4);
+
+  //show last 4digits of parent NRIC
+  const parentNRIC = formData.parentNRIC;
+  let extractedParentNRIC = 'N/A';
+  if (parentNRIC) {
+    extractedParentNRIC = parentNRIC.substring(parentNRIC.length - 4);
+  }
 
   // Set input field values
-  nameInput.value = `${formData.nameOfStudent}`;
-  schoolInput.value = `${formData.school}`;
-  nricInput.value = `****${formData.studentNRIC}`;
-  classInput.value = `${formData.class}`;
-  courseDateInput.value = `${formattedCourseDate}`;
-  dateVacInput.value = `${formattedVaccinationDate}`;
-  doctorReview.value = `${formData.review}`;
-  doctorNameInput.value = `${formData.nameOfDoctor}`;
-  doctoMCRInput.value = `${formData.doctorMCR}`;
-  clinicNameInput.value = `${formData.nameOfClinic}`;
-  examDateInput.value = `${formattedExamDate}`;
-  doctorContactInput.value = `${formData.contactNo}`;
-  clinicAddressInput.value = `${formData.clinicAddress}`;
-  doctorSignatureInput.value = `${formData.signature}`;
-  parentName.value = `${formData.nameOfParent}`;
-  mstComment.value = `${formData.comments}`;
+  nameInput.value = `${formData.nameOfStudent || 'N/A'}`;
+  schoolInput.value = `${formData.school || 'N/A'}`;
+  nricInput.value = `****${formData.studentNRIC || 'N/A'}`;
+  studentDOBInput.value = `${formattedDateOfBirth || 'N/A'}`;
+  classInput.value = `${formData.class || 'N/A'}`;
+  courseDateInput.value = `${formattedCourseDate || 'N/A'}`;
+  dateVacInput.value = `${formattedVaccinationDate || 'N/A'}`;
+  doctorComments.value = `${formData.comments || 'N/A'} `;
+  doctorNameInput.value = `${formData.nameOfDoctor || 'N/A'}`;
+  doctoMCRInput.value = `${formData.doctorMCR || 'N/A'}`;
+  clinicNameInput.value = `${formData.nameOfClinic || 'N/A'}`;
+  examDateInput.value = `${formattedExamDate || 'N/A'}`;
+  doctorContactInput.value = `${formData.contactNo || 'N/A'}`;
+  clinicAddressInput.value = `${formData.clinicAddress || 'N/A'}`;
+  parentName.value = `${formData.nameOfParent || 'N/A'}`;
+  mstReview.value = `${formData.review || ''}`;
 
-  parentNRIC.value = `****${formData.parentNRIC}`;
-  parentEmail.value = `${formData.parentEmail}`;
-  parentContact.value = `${formData.parentContactNo}`;
-  parentDate.value = `${formattedAckDate}`;
-  parentSignature.value = `${formData.parentSignature}`;
+  parentNRICInput.value = `****${formData.parentNRIC || 'N/A'}`;
+  parentEmailInput.value = `${formData.parentEmail || 'N/A'}`;
+  parentContactInput.value = `${formData.parentContactNo || 'N/A'}`;
+  parentDateInput.value = `${formattedAckDate}`;
 
   // if (formData.formStatus === "Pending Parent") {
   //   const apprRejContainer = document.querySelector('#apprRejContainer');
@@ -435,14 +495,18 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
 
   }
 
+
   const closeBtn = document.querySelector('.closeBtn');
   closeBtn.addEventListener('click', function () {
     const apprRejContainer = document.querySelector('#apprRejContainer');
     apprRejContainer.innerHTML = ''
     const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
     pmtHeadingForm.innerHTML = ''
-    const textarea = document.getElementById("doctor-review");
+    const textarea = document.getElementById("doctor-comments");
     textarea.disabled = true;
+    if (canvas.parentElement === parentContainer) {
+      parentContainer.removeChild(canvas);
+    }
 
   });
 
@@ -505,9 +569,9 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
 
     });
 
-    const textarea = document.querySelector("#mst-comment");
+    const textarea = document.querySelector("#mst-review");
     const submitReview = document.querySelector('.submitReviewBtn');
-    const newComment = document.querySelector('#mst-comment');
+    const newReview = document.querySelector('#mst-review');
     if (userPermissions.includes(7)) {
       submitReview.classList.remove('d-none');
       textarea.disabled = false;
@@ -518,7 +582,7 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
         submitReview.setAttribute("data-bs-toggle", "modal");
         submitReview.setAttribute("data-bs-target", "#staticBackdropRev");
       }
-      editReview(formData, newComment)
+      editReview(formData, newReview)
     })
   }
 
@@ -615,13 +679,13 @@ function updateStatusReject(formData) {
     });
 }
 
-function editReview(formData, newComment) {
+function editReview(formData, newReview) {
   const submitReview = document.querySelector('.submitReviewBtn');
   const studentId = formData.studentId;
 
-  axios.put(`${API_URL_MST}/comment/${studentId}`,
+  axios.put(`${API_URL_MST}/review/${studentId}`,
     {
-      comments: newComment.value,
+      review: newReview.value,
     }
   )
     .then(function (response) {

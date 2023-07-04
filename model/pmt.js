@@ -2,9 +2,9 @@ const conn = require('../database');
 const { query } = conn;
 
 module.exports.retrieveAllSubmissions = function retrieveAllSubmissions() {
-    const sql = `SELECT *
-                 FROM form F
-                 Left JOIN student S ON F.studentId = S.studentId
+    const sql = `SELECT F.formId, S.studentId, S.studentNRIC, S.nameOfStudent, S.class, S.school, F.eligibility, F.courseDate, F.formStatus
+    FROM form F
+    LEFT JOIN student S ON F.studentId = S.studentId
                     ;`;
     return query(sql)
         .then((result) => {

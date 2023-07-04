@@ -255,7 +255,7 @@ margin-top: 1px;
     border: 2px solid #485eab !important;
     border-radius: 18px !important;
     /* max-height: calc(100vh - 480px);  */
-    min-height: 386px;
+    max-height: 686px;
 }
 table {
     border-collapse:separate !important;
@@ -345,12 +345,13 @@ td:first-child {
   
   }
   
-  .pillParent:hover,
+  /*.pillParent:hover,
   .pillParent:active {
-    max-height: none; /* show the full text */
-    white-space: normal; /* allow text to wrap */
-    text-overflow: clip; /* clip the text instead of showing ellipsis */
-  }
+    max-height: none; 
+    white-space: normal; 
+    text-overflow: clip; 
+  } */
+  
 /*ICONS*/
 
 

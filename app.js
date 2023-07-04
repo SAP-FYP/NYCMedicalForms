@@ -682,28 +682,40 @@ app.get('/obs-admin/pmt/all', authHelper.verifyToken, authHelper.checkIat, async
 //PMT Retrieve Submission By Student Name
 app.get('/obs-admin/pmt/:studentId', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
     const studentId = req.params.studentId;
-    // AUTHORIZATION CHECK - PMT, MST 
-    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
-        return res.redirect('/error?code=403')
+    // AUTHORIZATION CHECK - PMT, MST
+    if (req.decodedToken.role !== 2 && req.decodedToken.role !== 3) {
+        return res.redirect('/error?code=403');
     }
     // IF NO PERMISSIONS
     if (!req.decodedToken.permissions.includes(1)) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403');
     }
 
-    return pmtModel
-        .retrieveSubmission(studentId)
+    return pmtModel.retrieveSubmission(studentId)
         .then((result) => {
             if (result.length === 0) {
-                throw new Error(studentId + "'s submission not found");
+                throw new Error(`${studentId}'s submission not found`);
             }
+
+            const encryptedSignInfo = result[0][0].signature;
+            const key = Buffer.from('qW3eRt5yUiOpAsDfqW3eRt5yUiOpAsDf', 'utf8'); // must be 32 characters
+            const iv = Buffer.from('qW3eRt5yUiOpAsDf', 'utf8'); // must be 16 characters
+
+            // Create the decipher object
+            const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+            let decrypted = decipher.update(encryptedSignInfo, 'hex', 'utf8');
+            decrypted += decipher.final('utf8');
+
+            result[0][0].signature = decrypted;
             result[0].push(req.decodedToken.permissions);
             return res.json(result[0]);
         })
         .catch((error) => {
+            console.error('Error:', error);
             return res.status(error.status || 500).json({ error: error.message });
         });
 });
+
 
 //PMT Update Submission By Student ID
 app.put('/obs-admin/pmt/:studentId', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
@@ -935,7 +947,7 @@ app.get('/export-bulk', authHelper.verifyToken, authHelper.checkIat, (req, res) 
 });
 
 //MST Update Submission Comment
-app.put('/obs-admin/mst/comment/:studentId', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
+app.put('/obs-admin/mst/review/:studentId', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
     // AUTHORIZATION CHECK - PMT, MST 
     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
         return res.redirect('/error?code=403')
@@ -946,12 +958,12 @@ app.put('/obs-admin/mst/comment/:studentId', authHelper.verifyToken, authHelper.
     }
 
     const studentId = req.params.studentId;
-    const comment = req.body.comments;
+    const review = req.body.review;
 
     return mstModel
-        .updateSubmissionComment(comment, studentId)
+        .updateSubmissionComment(review, studentId)
         .then((result) => {
-            if (!studentId || !comment) {
+            if (!studentId || !review) {
                 return res.status(400).json({ error: "Comment cannot be empty" });
             }
             if (result.affectedRows === 0) {

@@ -404,8 +404,8 @@
                                                     </div>
                                                     
                                                  
-                                                        <textarea class="form-control mb-3" id="doctor-review"
-                                                            name="medical_text" rows="10" disabled></textarea>
+                                                        <textarea class="form-control mb-3" id="doctor-comments"
+                                                            name="doctor-comments" rows="10" disabled></textarea>
                                                   
                                                 </div>
                                             </div>
@@ -448,9 +448,8 @@
                                                 <h5>Signature</h5>
                                             </div>
                                             <div class="col-12 text-center">
-                                                <canvas id="signatureCanvas"
-                                                    style="border: 1px solid #485EAB; background-color: white;"></canvas>
-                                                <input type="hidden" id="signatureData" name="signatureData">
+                                                <img id="doctor-signature"
+                                                    style="border: 1px solid #485EAB; background-color: white;"></img>
                                             </div>
                                             <div class="col-12 text-center mb-5">
 
@@ -503,9 +502,10 @@
                                             <div class="col-xl-6 col-12 mb-3">
                                                 <div class="mb-3">
                                                     <label for="parents-signature" class="form-label">Signature:</label>
-                                                    <canvas id="signatureCanvas"
-                                                        style="border: 1px solid #485EAB; background-color: white;"></canvas>
-                                                    <input type="hidden" id="parent-signature" name="signatureData">
+                                                    <div id="parent-signature-container">
+                                                    <img id="parent-signature"
+                                                        style="border: 1px solid #485EAB; background-color: white;"></img>
+                                                    </div>
                                                 </div>
 
                                             </div>
@@ -536,9 +536,9 @@
                                             </div>
                                            
                                             <div class="editReviewBtn">
-                                                <label for="parents-signature" class="form-label">Comments:</label>
-                                                <textarea class="form-control mb-3" id="mst-comment"
-                                                    name="mst-comment" rows="6" disabled></textarea>
+                                                <label for="parents-signature" class="form-label">Review Notes:</label>
+                                                <textarea class="form-control mb-3" id="mst-review"
+                                                    name="mst-review" rows="6" disabled></textarea>
                                             </div>
                                              <div class="col-12 text-center mb-3">
                                                 <div class="btn btn-primary btn-sm submitReviewBtn d-none" >Submit

@@ -3,7 +3,7 @@ const { query } = conn;
 
 module.exports.updateSubmissionComment = function updateSubmissionComment(comment, studentId) {
     const sql = `UPDATE form 
-                 SET comments = ?
+                 SET review = ?
                  WHERE studentId = ?;`;
        return query(sql, [comment, studentId])
            .then((result) => {
