@@ -181,6 +181,21 @@ document.addEventListener('DOMContentLoaded', function () {
             return response.json();
         });
     }
+    const postAcknowledge = (formEntry) => {
+        return fetch('/postAcknowledge', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formEntry)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { throw err; });
+            }
+            return response.json();
+        });
+    }
     const sendEmail = (emailEntry) => {
         return fetch('/send-email', {
             method: 'POST',
@@ -452,6 +467,7 @@ document.addEventListener('DOMContentLoaded', function () {
         commentsTextarea.value = '';
         studentNRIC = '';
         currentSchool = '';
+        acknowledgeCheckBox.checked = false;
 
         validities.isStudentNameValid = false;
         validities.isStudentNRICValid = false;
@@ -826,9 +842,15 @@ document.addEventListener('DOMContentLoaded', function () {
                         // if checkbox, send email
                         if(acknowledgeCheckBox.checked){
                             const emailEntry ={
-                                email : parentEmail.value
+                                studentId : studentId,
+                                email : studentEntry.parentEmail
                             }
-                            return sendEmail(emailEntry);
+                            const acknowledgeEntry = {
+                                studentId : studentId,
+                                parentContactNo : studentEntry.parentContact,
+                                parentEmail : studentEntry.parentEmail
+                            }
+                            return Promise.all([sendEmail(emailEntry),postAcknowledge(acknowledgeEntry)]);
                         }
                         else{
                             return;
@@ -866,7 +888,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     loadingModal.show();
                     postStudentInfo(studentEntry)
                     .then(data => {
-                        formEntry.studentId = data[0].insertId;
+                        studentId = data[0].insertId;
+                        formEntry.studentId = studentId;
                         formEntry.doctorMCR = currentDoctor;
                         formEntry.comments = commentsTextarea.value;
                         return postFormInfo(formEntry);
@@ -875,9 +898,15 @@ document.addEventListener('DOMContentLoaded', function () {
                         // if checkbox, send email
                         if(acknowledgeCheckBox.checked){
                             const emailEntry ={
+                                studentId : studentId,
                                 email : parentEmail.value
                             }
-                            return sendEmail(emailEntry);
+                            const acknowledgeEntry = {
+                                studentId : studentId,
+                                parentContactNo : studentEntry.parentContact,
+                                parentEmail : studentEntry.parentEmail
+                            }
+                            return Promise.all([sendEmail(emailEntry),postAcknowledge(acknowledgeEntry)]);
                         }
                         else{
                             return;
