@@ -483,7 +483,7 @@ app.put('/user/updatepassword', authHelper.verifyResetToken, (req, res, next) =>
                             } else if (payload.role == 2 || payload.role == 3) {
                                 return res.redirect('/obs-admin/obs-management')
                             } else if (payload.role == 4) {
-                                return res.redirect('/docForm')
+                                return res.redirect('/obs-form')
                             } else {
                                 const error = new Error("Invalid user role");
                                 error.status = 500;

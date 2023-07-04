@@ -502,7 +502,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     error.status = response.status
                     throw error;
                 }
-                alertBox(`The password has been successfully reset. New password sent to ${email}`)
+                alertBox(`The password has been successfully reset. New password sent to ${email}`, 'success');
             })
             .catch(handleError)
     }
