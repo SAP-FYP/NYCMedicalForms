@@ -13,6 +13,7 @@ const {
 const crypto = require('crypto');
 const key = Buffer.from(process.env.encryptKey, 'hex');
 const iv = Buffer.from(process.env.encryptIV, 'hex');
+const XLSX = require('xlsx');
 
 const authHelper = require('./auth/userAuth')
 const userModel = require('./model/user')
@@ -21,6 +22,7 @@ const parentModel = require('./model/parent')
 const formModel = require('./model/form')
 const adminModel = require('./model/admin')
 const pmtModel = require('./model/pmt')
+const mstModel = require('./model/mst')
 
 
 const app = express();
@@ -185,7 +187,7 @@ app.post('/post-acknowledge', (req, res) => {
         )
 
 })
-    
+
 // Twilio SMS
 app.post('/send-sms', (req, res) => {
     const { contact } = req.body;
@@ -652,13 +654,24 @@ app.put('/obs-admin/disable/user/:email/:status', authHelper.verifyToken, authHe
  */
 
 //PMT Retrieve All Submissions
-app.get('/obs-admin/pmt/all', /*verifyUser,*/ async (req, res, next) => {
+app.get('/obs-admin/pmt/all', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+        return res.redirect('/error?code=403')
+    }
+    // IF NO PERMISSIONS
+    if (!req.decodedToken.permissions.includes(1)) {
+        return res.redirect('/error?code=403')
+    }
     return pmtModel
         .retrieveAllSubmissions()
         .then((result) => {
             if (result.length === 0) {
                 throw new Error("No submissions found");
             }
+
+
+            result[0].push(req.decodedToken.permissions);
             return res.json(result[0]);
         })
         .catch((error) => {
@@ -667,14 +680,24 @@ app.get('/obs-admin/pmt/all', /*verifyUser,*/ async (req, res, next) => {
 });
 
 //PMT Retrieve Submission By Student Name
-app.get('/obs-admin/pmt/:nameOfStudent', /*verifyUser,*/ async (req, res, next) => {
-    const nameOfStudent = req.params.nameOfStudent;
+app.get('/obs-admin/pmt/:studentId', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
+    const studentId = req.params.studentId;
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+        return res.redirect('/error?code=403')
+    }
+    // IF NO PERMISSIONS
+    if (!req.decodedToken.permissions.includes(1)) {
+        return res.redirect('/error?code=403')
+    }
+
     return pmtModel
-        .retrieveSubmission(nameOfStudent)
+        .retrieveSubmission(studentId)
         .then((result) => {
             if (result.length === 0) {
-                throw new Error(nameOfStudent + "'s submission not found");
+                throw new Error(studentId + "'s submission not found");
             }
+            result[0].push(req.decodedToken.permissions);
             return res.json(result[0]);
         })
         .catch((error) => {
@@ -683,9 +706,13 @@ app.get('/obs-admin/pmt/:nameOfStudent', /*verifyUser,*/ async (req, res, next) 
 });
 
 //PMT Update Submission By Student ID
-app.put('/obs-admin/pmt/:studentId', /*verifyUser,*/ async (req, res, next) => {
+app.put('/obs-admin/pmt/:studentId', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
     const studentId = req.params.studentId;
     const formStatus = req.body.formStatus;
+    // IF NO PERMISSIONS
+    if (!req.decodedToken.permissions.includes(2)) {
+        return res.redirect('/error?code=403')
+    }
     return pmtModel
         .updateSubmissionStatus(formStatus, studentId)
         .then((result) => {
@@ -705,6 +732,243 @@ app.put('/obs-admin/pmt/:studentId', /*verifyUser,*/ async (req, res, next) => {
             return res.status(error.status || 500).json({ error: error.message });
         });
 });
+
+//PMT Retrieve Submission By Student Name Search 
+app.get('/obs-admin/pmt/search/:search', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    const searchInput = req.params.search;
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+        return res.redirect('/error?code=403')
+    }
+
+    return pmtModel
+        .retrieveSubmissionBySearch(searchInput)
+        .then((result) => {
+            if (result.length === 0) {
+                throw new Error("No submission found");
+            }
+            return res.json(result[0]);
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+});
+
+//PMT Retrieve Submission By Filtering by school
+app.get('/obs-admin/pmt/filter/school/:filter', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    const filter = req.params.filter;
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+        return res.redirect('/error?code=403')
+    }
+
+    return pmtModel
+        .retrieveSubmissionBySchoolName(filter)
+        .then((result) => {
+            if (result.length === 0) {
+                throw new Error("No submission found");
+            }
+            return res.json(result[0]);
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+});
+
+//PMT Retrieve Submission By Filtering by class
+app.get('/obs-admin/pmt/filter/class/:filter', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    const filter = req.params.filter;
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 4) {
+        return res.redirect('/error?code=403')
+    }
+
+    return pmtModel
+        .retrieveSubmissionByClassName(filter)
+        .then((result) => {
+            if (result.length === 0) {
+                throw new Error("No submission found");
+            }
+            return res.json(result[0]);
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+});
+
+//PMT Retrieve Submission By Filtering by class
+app.get('/obs-admin/pmt/filter/courseDate/:filter', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    const filter = req.params.filter;
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 4) {
+        return res.redirect('/error?code=403')
+    }
+
+    return pmtModel
+        .retrieveSubmissionByCourseDate(filter)
+        .then((result) => {
+            if (result.length === 0) {
+                throw new Error("No submission found");
+            }
+            return res.json(result[0]);
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+});
+
+//PMT Retrieve Submission By Filtering by class
+app.get('/obs-admin/pmt/filter/eligibility/:filter', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    const filter = req.params.filter;
+
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 4) {
+        return res.redirect('/error?code=403')
+    }
+
+    const [eligibility1, eligibility2] = filter.split(',');
+
+    return pmtModel
+        .retrieveSubmissionByEligibility(eligibility1, eligibility2)
+        .then((result) => {
+            if (result.length === 0) {
+                throw new Error("No submission found");
+            }
+            return res.json(result[0]);
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        });
+});
+
+
+
+
+// Endpoint for exporting the Excel file
+app.get('/export', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
+    // AUTHORIZATION CHECK - PMT
+    if (req.decodedToken.role != 2) {
+        return res.redirect('/error?code=403')
+    }
+    // IF NO PERMISSIONS
+    if (!req.decodedToken.permissions.includes(5)) {
+        return res.redirect('/error?code=403')
+    }
+
+    // Extract the form data from the request
+    const { applicantName, schoolOrg, classNo, courseDate, formStatus } = req.query;
+    // Create a new workbook
+    const workbook = XLSX.utils.book_new();
+    // Create a new worksheet with the form data
+    const worksheet = XLSX.utils.json_to_sheet([
+        {
+            "Name of Applicant": applicantName,
+            "Organization/School": schoolOrg,
+            "Designation/Class": classNo,
+            "Course Date": courseDate,
+            "Form Status": formStatus,
+        },
+    ], {
+        header: [
+            "Name of Applicant",
+            "Organization/School",
+            "Designation/Class",
+            "Course Date",
+            "Form Status",
+        ],
+    });
+    // Add the worksheet to the workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Student Data");
+
+    // Generate the Excel file buffer
+    const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+
+    // Set the response headers for downloading the file
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="' + encodeURIComponent(applicantName) + '.xlsx"');
+
+    // Send the Excel file buffer as the response
+    res.send(excelBuffer);
+});
+
+// Endpoint for exporting the Excel file in bulk
+app.get('/export-bulk', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
+    // AUTHORIZATION CHECK - PMT
+    if (req.decodedToken.role != 2) {
+        return res.redirect('/error?code=403')
+    }
+    // IF NO PERMISSIONS
+    if (!req.decodedToken.permissions.includes(5)) {
+        return res.redirect('/error?code=403')
+    }
+
+    // Retrieve the bulk data from the request or pass it as a parameter
+    const data = req.query.data;
+
+    const dataArray = JSON.parse(data);
+
+    // Create a new worksheet with the formatted data
+    const worksheet = XLSX.utils.json_to_sheet(dataArray, {
+        header: [
+            "Name of Applicant",
+            "Organization/School",
+            "Designation/Class",
+            "Course Date",
+            "Form Status",
+        ],
+    });
+
+    // Create a new workbook and add the worksheet to it
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Bulk Data");
+
+    // Generate the Excel file buffer
+    const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+
+    // Set the response headers for downloading the file
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="exported-Bulk.xlsx"');
+
+
+    // Send the Excel file buffer as the response
+    res.send(excelBuffer);
+});
+
+//MST Update Submission Comment
+app.put('/obs-admin/mst/comment/:studentId', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+        return res.redirect('/error?code=403')
+    }
+    // IF NO PERMISSIONS
+    if (!req.decodedToken.permissions.includes(7)) {
+        return res.redirect('/error?code=403')
+    }
+
+    const studentId = req.params.studentId;
+    const comment = req.body.comments;
+
+    return mstModel
+        .updateSubmissionComment(comment, studentId)
+        .then((result) => {
+            if (!studentId || !comment) {
+                return res.status(400).json({ error: "Comment cannot be empty" });
+            }
+            if (result.affectedRows === 0) {
+                throw new Error("Submission not found");
+            }
+
+            return res.json(result);
+        })
+        .catch((error) => {
+            if (isNaN(studentId)) {
+                return res.status(400).json({ error: "Invalid student ID" });
+            }
+
+            return res.status(error.status || 500).json({ error: error.message });
+        });
+});
+
 
 /**
  * User: Parents
@@ -974,6 +1238,25 @@ app.get('/getCourseDates', (req, res, next) => {
         });
 });
 
+// get eligibility
+app.get('/getEligibility', (req, res, next) => {
+    const limit = parseInt(req.query.limit);
+    const offset = parseInt(req.query.offset);
+
+    return doctorFormModel
+        .getEligibility(limit, offset)
+        .then(data => {
+            const eligibilityLists = data[0];
+            res.json(eligibilityLists)
+        })
+        .catch(err => {
+            if (error instanceof EMPTY_RESULT_ERROR) {
+                res.status(404).json({ message: error.message });
+            } else {
+                res.status(500).json({ message: 'Internal server error' });
+            }
+        });
+});
 // Retrieve form details for parent acknowledgement- Used by Barry (for identification for merging)
 app.get('/form/:encrypted', (req, res, next) => {
     const encrypted = req.params.encrypted;
