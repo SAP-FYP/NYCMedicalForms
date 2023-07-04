@@ -2,6 +2,45 @@ const url = window.location
 const domain = url.protocol + "//" + url.host;
 API_URL = `${domain}/obs-admin/pmt`;
 API_URL_MST = `${domain}/obs-admin/mst`;
+
+// === ALERT BOX ===
+function alertBox(message, type)  {
+  const alertIcon = document.getElementById('alert-icon');
+  const alertMessage = document.getElementById('alert-message');
+  let alertColor;
+
+  if (type === 'danger') {
+      alertIcon.setAttribute('xlink:href', '#exclamation-triangle-fill');
+      alertColor = 'alert-danger';
+  } else if (type === 'success') {
+      alertIcon.setAttribute('xlink:href', '#check-circle-fill');
+      alertColor = 'alert-success';
+  } else if (type === 'warn') {
+      alertIcon.setAttribute('xlink:href', '#exclamation-triangle-fill');
+      alertColor = 'alert-warning';
+  } else if (type === 'info') {
+      alertIcon.setAttribute('xlink:href', '#info-fill');
+      alertColor = 'alert-primary';
+  }
+
+  alertMessage.textContent = message;
+  alertContainer.classList.add(alertColor)
+  alertContainer.classList.add('alert-visible');
+  alertContainer.classList.remove('alert-hidden');
+
+  setTimeout(() => {
+      alertContainer.classList.add('alert-hidden');
+      alertContainer.classList.remove('alert-visible');
+      alertContainer.classList.remove(alertColor);
+  }, 5000);
+};
+function handleError(error) {
+  if (error && error.message !== 'redirected') {
+      if (error.message !== "Failed to fetch") {
+          alertBox(error.message, 'danger');
+      }
+  }
+}
 //Function for status count
 function updateFormCounts(formData) {
   const formCounts = formData.reduce(
@@ -192,7 +231,7 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
 
 
 //FUNCTION TO OPEN MODAL VIA CLICKING ON THE TABLE ROW
-function openModal(studentId) {
+function openModal(studentId, modalBtns) {
   // Perform additional actions or make API requests using the studentId
   axios.get(`${API_URL}/${studentId}`)
     .then(function (response) {
@@ -323,17 +362,14 @@ function openModal(studentId) {
       //     exportToExcel(applicantName, schoolOrg, classNo, courseDate, formStatus);
       //   }
 
-      displayFormModal(formData, userPermissions, formattedCourseDate, formattedVaccinationDate, formattedExamDate, formattedAckDate, formattedDateOfBirth);
+      displayFormModal(formData, userPermissions, formattedCourseDate, formattedVaccinationDate, formattedExamDate, formattedAckDate, formattedDateOfBirth,modalBtns);
 
     })
-    .catch(function (error) {
-      // Handle errors
-      console.log(error);
-    });
+    .catch(handleError);
 }
 
 //FUNCTION TO DSIPLAY FORM MODAL
-function displayFormModal(formData, userPermissions, formattedCourseDate, formattedVaccinationDate, formattedExamDate, formattedAckDate, formattedDateOfBirth) {
+function displayFormModal(formData, userPermissions, formattedCourseDate, formattedVaccinationDate, formattedExamDate, formattedAckDate, formattedDateOfBirth,modalBtns) {
   const nameInput = document.querySelector('#applicantName');
   const schoolInput = document.querySelector('#schoolOrg');
   const studentDOBInput = document.querySelector('#dateOfBirth');
@@ -519,9 +555,13 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
       pillPending.classList.add('pillRejected');
 
       pillPending.textContent = 'Rejected';
+      modalBtns.forEach(modalBtn => {
+        modalBtn.setAttribute("data-bs-toggle", "modal");
+        modalBtn.setAttribute("data-bs-target", "#staticBackdropRej");
 
-      pillPending.setAttribute("data-bs-toggle", "modal");
-      pillPending.setAttribute("data-bs-target", "#staticBackdropRej");
+      })
+      // pillPending.setAttribute("data-bs-toggle", "modal");
+      // pillPending.setAttribute("data-bs-target", "#staticBackdropRej");
 
       const apprRejContainer = document.querySelector('#apprRejContainer');
       apprRejContainer.innerHTML = ''
@@ -550,8 +590,13 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
       pillPending.classList.add('pillApproved');
 
       pillPending.textContent = 'Approved';
-      pillPending.setAttribute("data-bs-toggle", "modal");
-      pillPending.setAttribute("data-bs-target", "#staticBackdropAppr");
+      modalBtns.forEach(modalBtn => {
+        modalBtn.setAttribute("data-bs-toggle", "modal");
+        modalBtn.setAttribute("data-bs-target", "#staticBackdropAppr");
+
+      })
+      // pillPending.setAttribute("data-bs-toggle", "modal");
+      // pillPending.setAttribute("data-bs-target", "#staticBackdropAppr");
 
       const apprRejContainer = document.querySelector('#apprRejContainer');
       apprRejContainer.innerHTML = ''
@@ -579,10 +624,12 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
     //click on submit button
     submitReview.addEventListener('mousedown', function (event) {
       if (userPermissions.includes(7)) {
-        submitReview.setAttribute("data-bs-toggle", "modal");
-        submitReview.setAttribute("data-bs-target", "#staticBackdropRev");
+        submitReview.setAttribute("data-bs-dismiss", "modal");
+        editReview(formData, newReview)
+      } else {
+        alertBox("You don't have permission to edit review!", 'danger');
       }
-      editReview(formData, newReview)
+      
     })
   }
 
@@ -660,7 +707,7 @@ function handleModalButtons(clonedRowTemplate, studentId, formData, index) {
   modalBtns.forEach(function (modalBtn) {
     modalBtn.addEventListener("mousedown", function () {
       modalBtn7.classList.add("changePill");
-      openModal(studentId);
+      openModal(studentId, modalBtns);
     });
   });
 }
@@ -689,18 +736,18 @@ function editReview(formData, newReview) {
     }
   )
     .then(function (response) {
-
-
+      if (response.status === 204) {
+        alertBox('Your review has been deleted or is empty.', 'warn');
+      } else {
+        alertBox('Review has been submitted.', 'success');
+      }
     })
     .catch(function (error) {
       // Handle error
-      console.log(error);
-
-
+        alertBox(error.message, 'danger');
+     
     })
-  // .finally(function () {
-  //   location.reload();
-  // });
+ 
 }
 
 //Function to export to excel individually
@@ -796,6 +843,7 @@ function exportToExcelBulk(data) {
     });
 }
 
+const alertContainer = document.getElementById('alertbox');
 let dataAll = [];
 document.addEventListener("DOMContentLoaded", function () {
 

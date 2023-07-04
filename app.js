@@ -1625,11 +1625,10 @@ app.put('/obs-admin/mst/review/:studentId', authHelper.verifyToken, authHelper.c
     return mstModel
         .updateSubmissionComment(review, studentId)
         .then((result) => {
-            if (!studentId || !review) {
-                return res.status(400).json({ error: "Comment cannot be empty" });
-            }
-            if (result.affectedRows === 0) {
-                throw new Error("Submission not found");
+
+            if (review === "") {
+                    
+                    return res.status(204).json({ message: "Your review has been deleted" });
             }
 
             return res.json(result);

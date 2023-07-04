@@ -21,9 +21,9 @@ module.exports.retrieveAllSubmissions = function retrieveAllSubmissions() {
 module.exports.retrieveSubmission = function retrieveSubmission(studentId) {
      const sql = `SELECT *
                   FROM form F
-                  LEFT JOIN student S ON F.studentId = S.studentId
                   LEFT JOIN parentAcknowledgement PA ON F.studentId = PA.studentId
-                  LEFT JOIN doctor D ON F.doctorMCR = D.doctorMCR
+                  LEFT JOIN student S ON F.studentId = S.studentId
+                  RIGHT JOIN doctor D ON F.doctorMCR = D.doctorMCR
                   WHERE S.studentId= ?;`;
         return query(sql, [studentId])
             .then((result) => {
