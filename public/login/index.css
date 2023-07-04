@@ -29,6 +29,7 @@ body {
 }
 
 #login-button {
+    margin-top: 3vh;
     font-size: 16px;
     border: none;
     border-radius: 100px;
@@ -46,4 +47,20 @@ body {
 
 .carousel-indicators {
     border: #485EAB 1px;
+}
+
+#err-message-container {
+    visibility: hidden;
+}
+
+#err-message {
+    color: #cd1414;
+    font-weight: 600;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+#err-message i {
+    margin-right: 10px;
 }

@@ -51,11 +51,17 @@ function createExportButtonAll(id) {
 // Function to populate row data
 function populateRowData(clonedRowTemplate, formData, index, formattedDate) {
   const studentNRICCell = clonedRowTemplate.querySelector('.studentNRIC');
-  studentNRICCell.textContent = `***${formData[index].studentNRIC}`;
+
+  // show last 4digits of NRIC
+  const studentNRIC = formData[index].studentNRIC;
+  const extractedNRIC = studentNRIC.substring(studentNRIC.length - 4);
+  studentNRICCell.textContent = `****${extractedNRIC}`;
 
   const nameOfStudentCell = clonedRowTemplate.querySelector('.studentName');
   nameOfStudentCell.textContent = formData[index].nameOfStudent;
   nameOfStudentCell.setAttribute("nameOfStudent", formData[index].nameOfStudent);
+  nameOfStudentCell.setAttribute("studentId", formData[index].studentId);
+  const studentId = formData[index].studentId;
 
   const classCell = clonedRowTemplate.querySelector('.studentClass');
   classCell.textContent = formData[index].class;
@@ -78,7 +84,8 @@ function populateRowData(clonedRowTemplate, formData, index, formattedDate) {
     schoolCell,
     eligibilityCell,
     formattedDateCell,
-    formStatusValue
+    formStatusValue,
+    studentId
   };
 }
 
@@ -99,6 +106,7 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
     }
   }
 
+  // Add event listener to each checkbox
   checkBoxes.forEach(function (checkbox) {
     checkbox.removeAttribute('disabled'); // Remove the disabled attribute
     checkbox.addEventListener('change', function () {
@@ -119,20 +127,27 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
       };
 
       if (isChecked) {
-        targetDataArray.push(data);
+        const index = targetDataArray.findIndex((item) => item["Name of Applicant"] === applicantName);
+        if (index === -1) {
+          targetDataArray.push(data);
+        }
         appendExportIcon();
       } else {
         const index = targetDataArray.findIndex((item) => item["Name of Applicant"] === applicantName);
         if (index !== -1) {
           targetDataArray.splice(index, 1);
         }
-        removeExportIcon();
+        if (targetDataArray.length === 0) {
+          removeExportIcon();
+        }
+
       }
 
       console.log(targetDataArray);
     });
   });
 
+  // Add event listener to top checkbox
   checkBoxTop.addEventListener('change', function () {
     const isChecked = checkBoxTop.checked;
     checkBoxes.forEach(function (checkbox) {
@@ -156,7 +171,10 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
       };
 
       if (checkbox.checked) {
-        targetDataArray.push(data);
+        const index = targetDataArray.findIndex((item) => item["Name of Applicant"] === applicantName);
+        if (index === -1) {
+          targetDataArray.push(data);
+        }
         appendExportIcon();
       } else {
         const index = targetDataArray.findIndex((item) => item["Name of Applicant"] === applicantName);
@@ -173,14 +191,15 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
 
 
 
-
-
 //FUNCTION TO OPEN MODAL VIA CLICKING ON THE TABLE ROW
-function openModal(studentName) {
-  // Perform additional actions or make API requests using the studentName
-  axios.get(`${API_URL}/${studentName}`)
+function openModal(studentId) {
+  // Perform additional actions or make API requests using the studentId
+  axios.get(`${API_URL}/${studentId}`)
     .then(function (response) {
       const formData = response.data[0];
+
+      const userPermissions = response.data[1];
+
       console.log(formData);
       const dateObjCourseDate = new Date(formData.courseDate);
       const formatToLocal = dateObjCourseDate.toLocaleDateString("en-US", {
@@ -222,22 +241,43 @@ function openModal(studentName) {
       const formattedDateOfBirth = `${datePartsDob[2]}-${datePartsDob[0]}-${datePartsDob[1]}`;
 
       //Format the dateOfAcknowledgement
-      const dateObjAckDate = new Date(formData.dateOfAcknowledgement);
-      const formatToLocal5 = dateObjAckDate.toLocaleDateString("en-US", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      });
-      const datePartsAckDate = formatToLocal5.split("/");
-      const formattedAckDate = `${datePartsAckDate[2]}-${datePartsAckDate[0]}-${datePartsAckDate[1]}`;
+      let formattedAckDate;
+
+      if (formData.dateOfAcknowledgement) {
+        const dateObjAckDate = new Date(formData.dateOfAcknowledgement);
+        const formatToLocal5 = dateObjAckDate.toLocaleDateString("en-US", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        });
+        const datePartsAckDate = formatToLocal5.split("/");
+        formattedAckDate = `${datePartsAckDate[2]}-${datePartsAckDate[0]}-${datePartsAckDate[1]}`;
+      } else {
+        formattedAckDate = null;
+      }
 
 
 
 
       //call exportToExcel function
+      const successBtn = document.querySelector(".successBtn");
+      const rejectBtn = document.querySelector(".rejectBtn");
+      const closeBtn = document.querySelector(".closeBtn");
       const exportBtns = document.querySelectorAll(".exportBtn");
       exportBtns.forEach((exportBtn) => {
-        exportBtn.addEventListener("click", handleExportClick);
+        if (userPermissions.includes(5)) {
+          exportBtn.classList.remove('d-none');
+          exportBtn.addEventListener("click", handleExportClick);
+          successBtn.addEventListener("click", function (e) {
+            exportBtn.removeEventListener("click", handleExportClick);
+          });
+          rejectBtn.addEventListener("click", function (e) {
+            exportBtn.removeEventListener("click", handleExportClick);
+          });
+          closeBtn.addEventListener("click", function (e) {
+            exportBtn.removeEventListener("click", handleExportClick);
+          });
+        }
       });
 
       function handleExportClick(e) {
@@ -258,8 +298,32 @@ function openModal(studentName) {
           exportBtn.removeEventListener("click", handleExportClick);
         });
       }
+      //   const exportBtns = document.querySelectorAll(".exportBtn");
+      //   const confirmBtn = document.querySelector(".successBtn");
+      //   const closeBtn = document.querySelector(".closeBtn");
+      //   exportBtns.forEach(function (exportBtn) {
+      //   if (userPermissions.includes(5)) {
+      //     exportBtn.classList.remove('d-none');
+      //     exportBtn.addEventListener("click", handleExportClick);
+      //     confirmBtn.addEventListener("click", function (e) {
+      //       exportBtn.removeEventListener("click", handleExportClick);
+      //     });
+      //     closeBtn.addEventListener("click", function (e) {
+      //       exportBtn.removeEventListener("click", handleExportClick);
+      //     });
+      //   }
+      // })
+      //   function handleExportClick() {
+      //     const applicantName = formData.nameOfStudent;
+      //     const schoolOrg = formData.school;
+      //     const classNo = formData.class;
+      //     const courseDate = formattedCourseDate;
+      //     const formStatus = formData.formStatus;
+      //     // Call the exportData function with the form data
+      //     exportToExcel(applicantName, schoolOrg, classNo, courseDate, formStatus);
+      //   }
 
-      displayFormModal(formData, formattedCourseDate, formattedVaccinationDate, formattedExamDate, formattedAckDate);
+      displayFormModal(formData, userPermissions, formattedCourseDate, formattedVaccinationDate, formattedExamDate, formattedAckDate, formattedDateOfBirth);
 
     })
     .catch(function (error) {
@@ -269,50 +333,104 @@ function openModal(studentName) {
 }
 
 //FUNCTION TO DSIPLAY FORM MODAL
-function displayFormModal(formData, formattedCourseDate, formattedVaccinationDate, formattedExamDate, formattedAckDate) {
+function displayFormModal(formData, userPermissions, formattedCourseDate, formattedVaccinationDate, formattedExamDate, formattedAckDate, formattedDateOfBirth) {
   const nameInput = document.querySelector('#applicantName');
   const schoolInput = document.querySelector('#schoolOrg');
+  const studentDOBInput = document.querySelector('#dateOfBirth');
   const nricInput = document.querySelector('#personalId');
   const classInput = document.querySelector('#designation');
   const courseDateInput = document.querySelector('#courseDate');
   const dateVacInput = document.querySelector('#tetanusVaccine');
-  const additonalInput = document.querySelector('#medicalText');
+  const doctorComments = document.querySelector('#doctor-comments');
   const doctorNameInput = document.querySelector('#physicianName');
   const doctoMCRInput = document.querySelector('#mcrNo');
   const clinicNameInput = document.querySelector('#clinicName');
   const examDateInput = document.querySelector('#examDate');
   const doctorContactInput = document.querySelector('#contactNo');
   const clinicAddressInput = document.querySelector('#clinicAddress');
-  const doctorSignatureInput = document.querySelector('#signatureData');
   const parentName = document.querySelector('#parent-name');
-  const parentNRIC = document.querySelector('#parent-nric');
-  const parentEmail = document.querySelector('#parent-email');
-  const parentContact = document.querySelector('#parent-contact');
-  const parentDate = document.querySelector('#parent-date');
-  const parentSignature = document.querySelector('#parent-signature');
+  const parentNRICInput = document.querySelector('#parent-nric');
+  const parentEmailInput = document.querySelector('#parent-email');
+  const parentContactInput = document.querySelector('#parent-contact');
+  const parentDateInput = document.querySelector('#parent-date');
+  const mstReview = document.querySelector('#mst-review');
+
+  //Doctor Signature
+  const doctorSignatureInput = document.querySelector('#doctor-signature');
+  const doctorSignatureURL = formData.signature
+  const doctorSignatureImg = doctorSignatureURL.split(';')[0];
+
+  doctorSignatureInput.setAttribute('src', doctorSignatureImg);
+
+  //Parent Signature
+  const parentSignatureInput = document.querySelector('#parent-signature');
+  const parentSignatureURL = formData.parentSignature;
+  const parentSignatureImg = typeof parentSignatureURL === 'string' ? parentSignatureURL.split(';')[0] : null;
+
+  const parentContainer = document.querySelector('#parent-signature-container');
+  const canvas = document.createElement('canvas');
+  if (parentSignatureImg) {
+    parentSignatureInput.setAttribute('src', parentSignatureImg);
+  } else {
+    // Hide the parentSignatureInput element
+   
+    parentSignatureInput.style.display = 'none';
+
+    
+    const ctx = canvas.getContext('2d');
+    // Style canvas
+    canvas.style.backgroundColor = 'white';
+    canvas.style.border = '1px solid #485EAB';
+    canvas.style.width = '302px';
+    canvas.style.height = '152px';
+
+    // Adjust the position as needed
+    const textX = canvas.width / 2;
+    const textY = canvas.height / 2;
+
+    // Draw the text on the canvas
+    ctx.font = '30px Arial';
+    ctx.textAlign = 'center'; // Set text alignment to center
+    ctx.textBaseline = 'middle'; // Set baseline alignment to middle
+    ctx.fillText('N/A', textX, textY);
+
+    // Append the canvas element to the container
+    parentContainer.appendChild(canvas);
+  }
+
+  // show last 4digits of NRIC
+  const studentNRIC = formData.studentNRIC;
+  const extractedNRIC = studentNRIC.substring(studentNRIC.length - 4);
+
+  //show last 4digits of parent NRIC
+  const parentNRIC = formData.parentNRIC;
+  let extractedParentNRIC = 'N/A';
+  if (parentNRIC) {
+    extractedParentNRIC = parentNRIC.substring(parentNRIC.length - 4);
+  }
 
   // Set input field values
-  nameInput.value = `${formData.nameOfStudent}`;
-  schoolInput.value = `${formData.school}`;
-  nricInput.value = `****${formData.studentNRIC}`;
-  classInput.value = `${formData.class}`;
-  courseDateInput.value = `${formattedCourseDate}`;
-  dateVacInput.value = `${formattedVaccinationDate}`;
-  additonalInput.value = `${formData.review}`;
-  doctorNameInput.value = `${formData.nameOfDoctor}`;
-  doctoMCRInput.value = `${formData.doctorMCR}`;
-  clinicNameInput.value = `${formData.nameOfClinic}`;
-  examDateInput.value = `${formattedExamDate}`;
-  doctorContactInput.value = `${formData.contactNo}`;
-  clinicAddressInput.value = `${formData.clinicAddress}`;
-  doctorSignatureInput.value = `${formData.signature}`;
-  parentName.value = `${formData.nameOfParent}`;
+  nameInput.value = `${formData.nameOfStudent || 'N/A'}`;
+  schoolInput.value = `${formData.school || 'N/A'}`;
+  nricInput.value = `****${formData.studentNRIC || 'N/A'}`;
+  studentDOBInput.value = `${formattedDateOfBirth || 'N/A'}`;
+  classInput.value = `${formData.class || 'N/A'}`;
+  courseDateInput.value = `${formattedCourseDate || 'N/A'}`;
+  dateVacInput.value = `${formattedVaccinationDate || 'N/A'}`;
+  doctorComments.value = `${formData.comments || 'N/A'} `;
+  doctorNameInput.value = `${formData.nameOfDoctor || 'N/A'}`;
+  doctoMCRInput.value = `${formData.doctorMCR || 'N/A'}`;
+  clinicNameInput.value = `${formData.nameOfClinic || 'N/A'}`;
+  examDateInput.value = `${formattedExamDate || 'N/A'}`;
+  doctorContactInput.value = `${formData.contactNo || 'N/A'}`;
+  clinicAddressInput.value = `${formData.clinicAddress || 'N/A'}`;
+  parentName.value = `${formData.nameOfParent || 'N/A'}`;
+  mstReview.value = `${formData.review || ''}`;
 
-  parentNRIC.value = `****${formData.parentNRIC}`;
-  parentEmail.value = `${formData.parentEmail}`;
-  parentContact.value = `${formData.parentContactNo}`;
-  parentDate.value = `${formattedAckDate}`;
-  parentSignature.value = `${formData.parentSignature}`;
+  parentNRICInput.value = `****${formData.parentNRIC || 'N/A'}`;
+  parentEmailInput.value = `${formData.parentEmail || 'N/A'}`;
+  parentContactInput.value = `${formData.parentContactNo || 'N/A'}`;
+  parentDateInput.value = `${formattedAckDate}`;
 
   // if (formData.formStatus === "Pending Parent") {
   //   const apprRejContainer = document.querySelector('#apprRejContainer');
@@ -377,14 +495,18 @@ function displayFormModal(formData, formattedCourseDate, formattedVaccinationDat
 
   }
 
+
   const closeBtn = document.querySelector('.closeBtn');
   closeBtn.addEventListener('click', function () {
     const apprRejContainer = document.querySelector('#apprRejContainer');
     apprRejContainer.innerHTML = ''
     const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
     pmtHeadingForm.innerHTML = ''
-    const textarea = document.getElementById("medicalText");
+    const textarea = document.getElementById("doctor-comments");
     textarea.disabled = true;
+    if (canvas.parentElement === parentContainer) {
+      parentContainer.removeChild(canvas);
+    }
 
   });
 
@@ -447,25 +569,23 @@ function displayFormModal(formData, formattedCourseDate, formattedVaccinationDat
 
     });
 
-    const editReviewBtn = document.querySelector('.editReviewBtn');
-    const textarea = document.querySelector("#medicalText");
-    editReviewBtn.addEventListener('click', function () {
-      const newReview = document.querySelector('#medicalText');
+    const textarea = document.querySelector("#mst-review");
+    const submitReview = document.querySelector('.submitReviewBtn');
+    const newReview = document.querySelector('#mst-review');
+    if (userPermissions.includes(7)) {
+      submitReview.classList.remove('d-none');
       textarea.disabled = false;
-      const submitReview = document.querySelector('.submitReviewBtn');
-      //click on submit button
-      submitReview.addEventListener('click', function () {
-        editReview(formData, newReview)
-        textarea.disabled = true;
-        // Show the modal
-
+    }
+    //click on submit button
+    submitReview.addEventListener('mousedown', function (event) {
+      if (userPermissions.includes(7)) {
         submitReview.setAttribute("data-bs-toggle", "modal");
         submitReview.setAttribute("data-bs-target", "#staticBackdropRev");
-
-
-      })
+      }
+      editReview(formData, newReview)
     })
   }
+
 
 
 
@@ -485,7 +605,7 @@ function updateStatusApprove(formData) {
     });
 }
 //FUNCTION TO HANDLE MODAL BUTTONS SO THAT THEY OPEN THE MODAL
-function handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData, index) {
+function handleModalButtons(clonedRowTemplate, studentId, formData, index) {
   const modalBtn1 = clonedRowTemplate.querySelector('.modalBtn1');
   const modalBtn2 = clonedRowTemplate.querySelector('.modalBtn2');
   const modalBtn3 = clonedRowTemplate.querySelector('.modalBtn3');
@@ -540,7 +660,7 @@ function handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData, inde
   modalBtns.forEach(function (modalBtn) {
     modalBtn.addEventListener("mousedown", function () {
       modalBtn7.classList.add("changePill");
-      openModal(nameOfStudentCell.getAttribute("nameOfStudent"));
+      openModal(studentId);
     });
   });
 }
@@ -560,7 +680,7 @@ function updateStatusReject(formData) {
 }
 
 function editReview(formData, newReview) {
-
+  const submitReview = document.querySelector('.submitReviewBtn');
   const studentId = formData.studentId;
 
   axios.put(`${API_URL_MST}/review/${studentId}`,
@@ -569,14 +689,18 @@ function editReview(formData, newReview) {
     }
   )
     .then(function (response) {
+
+
     })
     .catch(function (error) {
       // Handle error
       console.log(error);
-      alert('No Permission');
-      location.reload();
-      // Display an error message or handle the error as needed
-    });
+
+
+    })
+  // .finally(function () {
+  //   location.reload();
+  // });
 }
 
 //Function to export to excel individually
@@ -672,7 +796,7 @@ function exportToExcelBulk(data) {
     });
 }
 
-
+let dataAll = [];
 document.addEventListener("DOMContentLoaded", function () {
 
 
@@ -687,12 +811,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
       //call function to update status count
       const formData = response.data;
-      console.log(response);
+      console.log(response.data);
+
+      //remove user permission from array of data
+      const userPermission = response.data.pop();
+
       updateFormCounts(formData);
 
       //call function to create export button for
       const exportBtnBulkContainer = document.querySelector('#export-btn-all');
-      const exportIcon = createExportButtonAll();
+      const exportIcon = createExportButtonAll('export-icon-all');
 
 
       const successBtn = document.querySelector('.successBtn');
@@ -713,9 +841,10 @@ document.addEventListener("DOMContentLoaded", function () {
         });
       }
       //create array to store all data for export to excel bulk
-      const dataAll = [];
+
       // Loop through the data and add it to the page
       for (i = 0; i < formData.length; i++) {
+
         //call function to format date
         const formattedDate = createFormattedDate(formData[i].courseDate);
         console.log(formattedDate);
@@ -739,16 +868,25 @@ document.addEventListener("DOMContentLoaded", function () {
           schoolCell,
           eligibilityCell,
           formattedDateCell,
-          formStatusValue
+          formStatusValue,
+          studentId
         } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
 
         //call function to handle checkboxes
-        handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, exportBtnBulkContainer, exportIcon, dataAll)
-
+        if (userPermission.includes(5)) {
+          handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, exportBtnBulkContainer, exportIcon, dataAll)
+        } else {
+          const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
+          const checkBoxTop = document.querySelector('#checkBoxTop');
+          checkBoxes.forEach(function (checkBox) {
+            checkBox.classList.add('d-none');
+          });
+          checkBoxTop.classList.add('d-none');
+        }
 
 
         //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
-        handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData, i);
+        handleModalButtons(clonedRowTemplate, studentId, formData, i);
         ;
 
 
@@ -927,10 +1065,10 @@ searchClearBtn.onclick = () => {
 const filterIcons = document.querySelector('#filter-icon');
 const filterDropDowns = document.querySelector('.displayFilters');
 filterIcons.addEventListener('click', () => {
-  if (filterDropDowns.style.display === '' || filterDropDowns.style.display === 'none') {
-    filterDropDowns.style.display = 'block';
+  if (filterDropDowns.classList.contains('d-none')) {
+    filterDropDowns.classList.remove('d-none');
   } else {
-    filterDropDowns.style.display = 'none';
+    filterDropDowns.classList.add('d-none');
   }
 });
 

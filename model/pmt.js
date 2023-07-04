@@ -2,10 +2,9 @@ const conn = require("../database");
 const { query } = conn;
 
 module.exports.retrieveAllSubmissions = function retrieveAllSubmissions() {
-  const sql = `SELECT *
-                    FROM form F
-                    JOIN student S ON F.studentId = S.studentId
-                    JOIN parentAcknowledgement PA ON F.studentId = PA.studentId
+    const sql = `SELECT F.formId, S.studentId, S.studentNRIC, S.nameOfStudent, S.class, S.school, F.eligibility, F.courseDate, F.formStatus
+    FROM form F
+    LEFT JOIN student S ON F.studentId = S.studentId
                     ;`;
   return query(sql)
     .then((result) => {
@@ -19,23 +18,24 @@ module.exports.retrieveAllSubmissions = function retrieveAllSubmissions() {
     });
 };
 
-module.exports.retrieveSubmission = function retrieveSubmission(nameOfStudent) {
-  const sql = `SELECT *
+module.exports.retrieveSubmission = function retrieveSubmission(studentId) {
+     const sql = `SELECT *
                   FROM form F
-                  JOIN student S ON F.studentId = S.studentId
-                  JOIN parentAcknowledgement PA ON F.studentId = PA.studentId
-                  JOIN doctor D ON F.doctorMCR = D.doctorMCR
-                  WHERE S.nameOfStudent= ?;`;
-  return query(sql, [nameOfStudent])
-    .then((result) => {
-      if (result.length === 0) {
-        throw new Error(nameOfStudent + "'s submission not found");
-      }
-      return result;
-    })
-    .catch((error) => {
-      throw new Error(error);
-    });
+                  LEFT JOIN student S ON F.studentId = S.studentId
+                  LEFT JOIN parentAcknowledgement PA ON F.studentId = PA.studentId
+                  LEFT JOIN doctor D ON F.doctorMCR = D.doctorMCR
+                  WHERE S.studentId= ?;`;
+        return query(sql, [studentId])
+            .then((result) => {
+                if (result.length === 0) {
+                    throw new Error("Student Id: " + studentId + " submission not found");
+                }
+                return result;
+            }
+            )
+            .catch((error) => {
+                throw new Error(error);
+            });
 };
 
 module.exports.retrieveSubmissionBySearch = function retrieveSubmissionBySearch(

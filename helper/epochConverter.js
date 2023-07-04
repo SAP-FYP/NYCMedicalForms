@@ -18,3 +18,7 @@ module.exports.iatToLocale = function iatToLocale(iat) {
 module.exports.localeToIat = function locateToIat(datetime) {
     return moment.utc(datetime, 'YYYY-MM-DD HH:mm:ss').unix()
 }
+
+module.exports.utcToLocale = function utcToLocale(utc) {
+    return moment(utc).tz('Asia/Singapore');
+}
