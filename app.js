@@ -8,17 +8,9 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const elasticEmail = require('elasticemail');
 const cloudinary = require("cloudinary").v2;
-cloudinary.config({
-    cloud_name: "sp-esde-2100030",
-    api_key: "189815745826899",
-    api_secret: "eAKSNgdEoKxTWu8kh__hUi3U7J0",
-});
-const {
-    UserNotFoundError
-} = require("./errors");
+const { UserNotFoundError } = require("./errors");
 const crypto = require('crypto');
 
-const { UserNotFoundError } = require("./errors");
 const key = Buffer.from(process.env.encryptKey, 'hex');
 const iv = Buffer.from(process.env.encryptIV, 'hex');
 
@@ -41,7 +33,7 @@ const JWT_SECRET = process.env.SECRETKEY;
 
 const twilioClient = require('twilio')(process.env.twilioSID, process.env.twilioToken);
 
-const elasticEmailClient = elasticEmail.createClient({ apiKey: process.env.elasticAPIKey});
+const elasticEmailClient = elasticEmail.createClient({ apiKey: process.env.elasticAPIKey });
 
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
@@ -1603,11 +1595,10 @@ app.put('/obs-admin/mst/review/:studentId', authHelper.verifyToken, authHelper.c
     return mstModel
         .updateSubmissionComment(review, studentId)
         .then((result) => {
-            if (!studentId || !review) {
-                return res.status(400).json({ error: "Comment cannot be empty" });
-            }
-            if (result.affectedRows === 0) {
-                throw new Error("Submission not found");
+
+            if (review === "") {
+                    
+                    return res.status(204).json({ message: "Your review has been deleted" });
             }
 
             return res.json(result);
