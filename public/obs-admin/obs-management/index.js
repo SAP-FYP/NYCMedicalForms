@@ -4,23 +4,26 @@ API_URL = `${domain}/obs-admin/pmt`;
 API_URL_MST = `${domain}/obs-admin/mst`;
 
 // === ALERT BOX ===
-function alertBox(message, type)  {
+function alertBox(message, type) {
   const alertIcon = document.getElementById('alert-icon');
   const alertMessage = document.getElementById('alert-message');
   let alertColor;
 
   if (type === 'danger') {
-      alertIcon.setAttribute('xlink:href', '#exclamation-triangle-fill');
-      alertColor = 'alert-danger';
+    alertIcon.setAttribute('xlink:href', '#exclamation-triangle-fill');
+    alertColor = 'alert-danger';
   } else if (type === 'success') {
-      alertIcon.setAttribute('xlink:href', '#check-circle-fill');
-      alertColor = 'alert-success';
+    alertIcon.setAttribute('xlink:href', '#check-circle-fill');
+    alertColor = 'alert-success';
   } else if (type === 'warn') {
-      alertIcon.setAttribute('xlink:href', '#exclamation-triangle-fill');
-      alertColor = 'alert-warning';
+    alertIcon.setAttribute('xlink:href', '#exclamation-triangle-fill');
+    alertColor = 'alert-warning';
   } else if (type === 'info') {
-      alertIcon.setAttribute('xlink:href', '#info-fill');
-      alertColor = 'alert-primary';
+    alertIcon.setAttribute('xlink:href', '#info-fill');
+    alertColor = 'alert-primary';
+  } else if (type === 'rejected') {
+    alertIcon.setAttribute('xlink:href', '#exclamation-triangle-fill');
+    alertColor = 'alert-success';
   }
 
   alertMessage.textContent = message;
@@ -29,16 +32,16 @@ function alertBox(message, type)  {
   alertContainer.classList.remove('alert-hidden');
 
   setTimeout(() => {
-      alertContainer.classList.add('alert-hidden');
-      alertContainer.classList.remove('alert-visible');
-      alertContainer.classList.remove(alertColor);
+    alertContainer.classList.add('alert-hidden');
+    alertContainer.classList.remove('alert-visible');
+    alertContainer.classList.remove(alertColor);
   }, 5000);
 };
 function handleError(error) {
   if (error && error.message !== 'redirected') {
-      if (error.message !== "Failed to fetch") {
-          alertBox(error.message, 'danger');
-      }
+    if (error.message !== "Failed to fetch") {
+      alertBox(error.message, 'danger');
+    }
   }
 }
 //Function for status count
@@ -362,14 +365,14 @@ function openModal(studentId, modalBtns) {
       //     exportToExcel(applicantName, schoolOrg, classNo, courseDate, formStatus);
       //   }
 
-      displayFormModal(formData, userPermissions, formattedCourseDate, formattedVaccinationDate, formattedExamDate, formattedAckDate, formattedDateOfBirth,modalBtns);
+      displayFormModal(formData, userPermissions, formattedCourseDate, formattedVaccinationDate, formattedExamDate, formattedAckDate, formattedDateOfBirth, modalBtns);
 
     })
     .catch(handleError);
 }
 
 //FUNCTION TO DSIPLAY FORM MODAL
-function displayFormModal(formData, userPermissions, formattedCourseDate, formattedVaccinationDate, formattedExamDate, formattedAckDate, formattedDateOfBirth,modalBtns) {
+function displayFormModal(formData, userPermissions, formattedCourseDate, formattedVaccinationDate, formattedExamDate, formattedAckDate, formattedDateOfBirth, modalBtns) {
   const nameInput = document.querySelector('#applicantName');
   const schoolInput = document.querySelector('#schoolOrg');
   const studentDOBInput = document.querySelector('#dateOfBirth');
@@ -409,10 +412,10 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
     parentSignatureInput.setAttribute('src', parentSignatureImg);
   } else {
     // Hide the parentSignatureInput element
-   
+
     parentSignatureInput.style.display = 'none';
 
-    
+
     const ctx = canvas.getContext('2d');
     // Style canvas
     canvas.style.backgroundColor = 'white';
@@ -498,8 +501,9 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
     approveBtn.setAttribute('type', 'button');
     approveBtn.setAttribute('class', 'btn btn-secondary approve-btn');
     approveBtn.setAttribute('id', 'approveBtn');
-    approveBtn.setAttribute("data-bs-toggle", "modal");
-    approveBtn.setAttribute("data-bs-target", "#staticBackdropAppr");
+    approveBtn.setAttribute("data-bs-dismiss", "modal");
+    // approveBtn.setAttribute("data-bs-toggle", "modal");
+    // approveBtn.setAttribute("data-bs-target", "#staticBackdropAppr");
     approveBtn.textContent = 'Approve';
 
     // Create the vertical line
@@ -511,8 +515,9 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
     rejectBtn.setAttribute('type', 'button');
     rejectBtn.setAttribute('class', 'btn btn-secondary reject-btn');
     rejectBtn.setAttribute('id', 'rejectBtn');
-    rejectBtn.setAttribute("data-bs-toggle", "modal");
-    rejectBtn.setAttribute("data-bs-target", "#staticBackdropRej");
+    rejectBtn.setAttribute("data-bs-dismiss", "modal");
+    // rejectBtn.setAttribute("data-bs-toggle", "modal");
+    // rejectBtn.setAttribute("data-bs-target", "#staticBackdropRej");
     rejectBtn.textContent = 'Reject';
 
     // Create the container div for the buttons
@@ -530,7 +535,7 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
     apprRejContainer.appendChild(buttonContainerDiv);
 
   }
-
+  const pillPending = document.querySelector('.changePill');
 
   const closeBtn = document.querySelector('.closeBtn');
   closeBtn.addEventListener('click', function () {
@@ -543,6 +548,7 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
     if (canvas.parentElement === parentContainer) {
       parentContainer.removeChild(canvas);
     }
+    pillPending.classList.remove("changePill");
 
   });
 
@@ -551,13 +557,14 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
     rejectBtn.addEventListener('click', function () {
       // Update status to "rejected" in the database
       updateStatusReject(formData)
-      const pillPending = document.querySelector('.changePill');
+      
       pillPending.classList.add('pillRejected');
 
       pillPending.textContent = 'Rejected';
       modalBtns.forEach(modalBtn => {
-        modalBtn.setAttribute("data-bs-toggle", "modal");
-        modalBtn.setAttribute("data-bs-target", "#staticBackdropRej");
+        // modalBtn.setAttribute("data-bs-toggle", "modal");
+        // modalBtn.setAttribute("data-bs-target", "#staticBackdropRej");
+        alertBox("The form has been rejected!", 'rejected');
 
       })
       // pillPending.setAttribute("data-bs-toggle", "modal");
@@ -575,7 +582,9 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
       pendingAmt.textContent = parseInt(pendingAmt.textContent) - 1
 
       pillPending.classList.remove('changePill');
-
+      if (canvas.parentElement === parentContainer) {
+        parentContainer.removeChild(canvas);
+      }
     });
   }
 
@@ -591,13 +600,12 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
 
       pillPending.textContent = 'Approved';
       modalBtns.forEach(modalBtn => {
-        modalBtn.setAttribute("data-bs-toggle", "modal");
-        modalBtn.setAttribute("data-bs-target", "#staticBackdropAppr");
+        // modalBtn.setAttribute("data-bs-toggle", "modal");
+        // modalBtn.setAttribute("data-bs-target", "#staticBackdropAppr");
+        alertBox("The form has been approved!", 'success');
 
       })
-      // pillPending.setAttribute("data-bs-toggle", "modal");
-      // pillPending.setAttribute("data-bs-target", "#staticBackdropAppr");
-
+      
       const apprRejContainer = document.querySelector('#apprRejContainer');
       apprRejContainer.innerHTML = ''
       const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
@@ -610,7 +618,10 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
       pendingAmt.textContent = parseInt(pendingAmt.textContent) - 1
 
       pillPending.classList.remove('changePill');
-
+     
+      if (canvas.parentElement === parentContainer) {
+        parentContainer.removeChild(canvas);
+      }
 
     });
 
@@ -629,7 +640,7 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
       } else {
         alertBox("You don't have permission to edit review!", 'danger');
       }
-      
+
     })
   }
 
@@ -674,6 +685,7 @@ function handleModalButtons(clonedRowTemplate, studentId, formData, index) {
   } else if (formData[index].formStatus === "Rejected") {
     formStatusDiv.classList.add("pillRejected");
   } else if (formData[index].formStatus === "Approved") {
+    
     formStatusDiv.classList.add("pillApproved");
   } else if (formData[index].formStatus === "Pending Parent") {
     formStatusDiv.classList.add("pillParent");
@@ -683,33 +695,32 @@ function handleModalButtons(clonedRowTemplate, studentId, formData, index) {
 
   getAllForms.appendChild(clonedRowTemplate);
 
-  function handleFormClick(index) {
-    if (index >= 0 && index < formData.length) {
-      const formStatus = formData[index].formStatus;
-      modalBtns.forEach(function (modalBtn) {
+  if (index >= 0 && index < formData.length) {
+    const formStatus = formData[index].formStatus;
+    modalBtns.forEach(function (modalBtn) {
+      modalBtn.addEventListener("mousedown", function () {
         if (formStatus === "Pending") {
           modalBtn.setAttribute("data-bs-target", "#staticBackdrop");
         } else if (formStatus === "Approved") {
-          modalBtn.setAttribute("data-bs-target", "#staticBackdropAppr");
+          
+          modalBtn.setAttribute("data-bs-target", "#staticBackdrop");
+          alertBox(`Form already approved!`, 'danger');
         } else if (formStatus === "Rejected") {
-          modalBtn.setAttribute("data-bs-target", "#staticBackdropRej");
+          modalBtn.setAttribute("data-bs-target", "#staticBackdrop");
+          alertBox(`Form already rejected!`, 'rejected');
         } else if (formStatus === "Pending Parent") {
           modalBtn.setAttribute("data-bs-target", "#staticBackdrop");
         } else if (formStatus === "Need Review") {
           modalBtn.setAttribute("data-bs-target", "#staticBackdrop");
         }
+        modalBtn7.classList.add("changePill");
+        openModal(studentId, modalBtns);
       });
-    }
-  }
-
-  handleFormClick(index);
-
-  modalBtns.forEach(function (modalBtn) {
-    modalBtn.addEventListener("mousedown", function () {
-      modalBtn7.classList.add("changePill");
-      openModal(studentId, modalBtns);
     });
-  });
+  }
+  
+
+ 
 }
 
 //FUNCTION TO UPDATE STATUS OF FORM TO REJECTED
@@ -744,10 +755,10 @@ function editReview(formData, newReview) {
     })
     .catch(function (error) {
       // Handle error
-        alertBox(error.message, 'danger');
-     
+      alertBox(error.message, 'danger');
+
     })
- 
+
 }
 
 //Function to export to excel individually
@@ -877,15 +888,18 @@ document.addEventListener("DOMContentLoaded", function () {
         successBtn.addEventListener('click', function () {
 
           const pillPending = document.querySelector('.changePill');
+          if (pillPending) {
           pillPending.classList.remove('changePill');
+          }
 
         });
       }
       if (rejectBtn) {
         rejectBtn.addEventListener('click', function () {
           const pillPending = document.querySelector('.changePill');
+          if (pillPending) {
           pillPending.classList.remove('changePill');
-
+          }
         });
       }
       //create array to store all data for export to excel bulk
@@ -902,6 +916,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         //clear html content in getAllForms once since using template
         if (i === 0) {
+          dataAll=[];
           getAllForms.innerHTML = "";
         }
         // Clone the template and append it to the status container
@@ -1009,74 +1024,107 @@ function searchForms() {
     location.reload();
   } else {
     axios.get(`${API_URL}/search/${searchInput.value}`)
-      .then(function (response) {
-        const configURL = response.config.url;
-        const requestURL = response.request.responseURL;
-        if (configURL !== requestURL) {
-          window.location.href = "/error?code=403";
-          throw new Error("redirected");
-        }
-        const formData = response.data;
-        if (formData.length === 0) {
-          showAlert("Error: Search does not exist.");
-          location.reload();
+    .then(function (response) {
+      const configURL = response.config.url;
+      const requestURL = response.request.responseURL;
+      if (configURL !== requestURL) {
+        window.location.href = "/error?code=403";
+        throw new Error("redirected");
+      }
 
-        }
-        //call function to update status count
-        updateFormCounts(formData);
+      //call function to update status count
+      const formData = response.data;
+      console.log(response.data);
 
-        // Loop through the data and add it to the page
-        for (i = 0; i < formData.length; i++) {
-          //call function to format date
-          const formattedDate = createFormattedDate(formData[i].courseDate);
-          // Get references to the status container and template
-          const getAllForms = document.querySelector('#getAllForms');
-          const rowTemplate = document.querySelector('.row-table-template');
+      
 
-          //clear html content in getAllForms once since using template
-          if (i === 0) {
-            getAllForms.innerHTML = "";
+      updateFormCounts(formData);
+
+      //call function to create export button for
+      const exportBtnBulkContainer = document.querySelector('#export-btn-search');
+      const exportIcon = createExportButtonAll('export-icon-all');
+
+
+      const successBtn = document.querySelector('.successBtn');
+      const rejectBtn = document.querySelector('.rejectBtn');
+      if (successBtn) {
+        successBtn.addEventListener('click', function () {
+
+          const pillPending = document.querySelector('.changePill');
+          if (pillPending) {
+            pillPending.classList.remove('changePill');
           }
-          // Clone the template and append it to the status container
-          const templateContent = rowTemplate.content;
-          const clonedRowTemplate = document.importNode(templateContent, true);
+         
 
-          // Populate the cloned template function
-          const {
-            studentNRICCell,
-            nameOfStudentCell,
-            classCell,
-            schoolCell,
-            eligibilityCell,
-            formattedDateCell,
-            formStatusValue
-          } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
+        });
+      }
+      if (rejectBtn) {
+        rejectBtn.addEventListener('click', function () {
+          const pillPending = document.querySelector('.changePill');
+          pillPending.classList.remove('changePill');
 
-          //call function to handle checkboxes
-          handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, /*exportBtnBulkContainer, exportIcon, dataSearch*/)
+        });
+      }
+      //create array to store all data for export to excel bulk
 
+      // Loop through the data and add it to the page
+      for (i = 0; i < formData.length; i++) {
 
+        //call function to format date
+        const formattedDate = createFormattedDate(formData[i].courseDate);
+        console.log(formattedDate);
+        // Get references to the status container and template
+        const getAllForms = document.querySelector('#getAllForms');
+        const rowTemplate = document.querySelector('.row-table-template');
 
-          //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
-          handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData, i);
-          ;
-
+        //clear html content in getAllForms once since using template
+        if (i === 0) {
+          dataAll=[];
+          getAllForms.innerHTML = "";
         }
-        //Outside of for loop 
-        //Export to Excel Bulk Once
-        // const exportBtnBulk = document.querySelector('#export-btn-search');
-        // exportBtnBulk.addEventListener('click', function () {
-        //   console.log(dataSearch);
-        //   exportToExcelBulk(dataSearch);
+        // Clone the template and append it to the status container
+        const templateContent = rowTemplate.content;
+        const clonedRowTemplate = document.importNode(templateContent, true);
 
-        // });
-      })
-      .catch(function (error) {
-        if (error && error.message !== "redirected") {
-          console.log(error);
-        }
-        console.log(error);
+        // Populate the cloned template function
+        const {
+          studentNRICCell,
+          nameOfStudentCell,
+          classCell,
+          schoolCell,
+          eligibilityCell,
+          formattedDateCell,
+          formStatusValue,
+          studentId
+        } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
+
+        //call function to handle checkboxes
+      
+          handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, exportBtnBulkContainer, exportIcon, dataAll)
+        
+
+
+        //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
+        handleModalButtons(clonedRowTemplate, studentId, formData, i);
+        ;
+
+
+      }
+      //Outside of for loop 
+      //Export to Excel Bulk Once
+      const exportBtnBulk = document.querySelector('#export-btn-search');
+      exportBtnBulk.addEventListener('click', function () {
+        console.log(dataAll);
+        exportToExcelBulk(dataAll);
       });
+
+    })
+    .catch(function (error) {
+      if (error && error.message !== "redirected") {
+        console.log(error);
+      }
+      console.log(error);
+    });
   }
 
 }
