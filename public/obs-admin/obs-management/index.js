@@ -2,7 +2,6 @@ const url = window.location
 const domain = url.protocol + "//" + url.host;
 API_URL = `${domain}/obs-admin/pmt`;
 API_URL_MST = `${domain}/obs-admin/mst`;
-
 // === ALERT BOX ===
 function alertBox(message, type) {
   const alertIcon = document.getElementById('alert-icon');
@@ -137,7 +136,9 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
   const checkBoxTop = document.querySelector('#checkBoxTop');
 
   function appendExportIcon() {
+    console.log(!exportContainer.contains(exportIcon));
     if (!exportContainer.contains(exportIcon)) {
+      document.getElementById('export-icon-filter') ? document.getElementById('export-icon-filter').remove() : null;
       exportContainer.appendChild(exportIcon);
     }
   }
@@ -557,7 +558,7 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
     rejectBtn.addEventListener('click', function () {
       // Update status to "rejected" in the database
       updateStatusReject(formData)
-      
+
       pillPending.classList.add('pillRejected');
 
       pillPending.textContent = 'Rejected';
@@ -605,7 +606,7 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
         alertBox("The form has been approved!", 'success');
 
       })
-      
+
       const apprRejContainer = document.querySelector('#apprRejContainer');
       apprRejContainer.innerHTML = ''
       const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
@@ -618,7 +619,7 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
       pendingAmt.textContent = parseInt(pendingAmt.textContent) - 1
 
       pillPending.classList.remove('changePill');
-     
+
       if (canvas.parentElement === parentContainer) {
         parentContainer.removeChild(canvas);
       }
@@ -662,6 +663,7 @@ function updateStatusApprove(formData) {
       // Display an error message or handle the error as needed
     });
 }
+
 //FUNCTION TO HANDLE MODAL BUTTONS SO THAT THEY OPEN THE MODAL
 function handleModalButtons(clonedRowTemplate, studentId, formData, index) {
   const modalBtn1 = clonedRowTemplate.querySelector('.modalBtn1');
@@ -685,7 +687,7 @@ function handleModalButtons(clonedRowTemplate, studentId, formData, index) {
   } else if (formData[index].formStatus === "Rejected") {
     formStatusDiv.classList.add("pillRejected");
   } else if (formData[index].formStatus === "Approved") {
-    
+
     formStatusDiv.classList.add("pillApproved");
   } else if (formData[index].formStatus === "Pending Parent") {
     formStatusDiv.classList.add("pillParent");
@@ -702,7 +704,7 @@ function handleModalButtons(clonedRowTemplate, studentId, formData, index) {
         if (formStatus === "Pending") {
           modalBtn.setAttribute("data-bs-target", "#staticBackdrop");
         } else if (formStatus === "Approved") {
-          
+
           modalBtn.setAttribute("data-bs-target", "#staticBackdrop");
           // alertBox(`Form already approved!`, 'danger');
         } else if (formStatus === "Rejected") {
@@ -717,9 +719,9 @@ function handleModalButtons(clonedRowTemplate, studentId, formData, index) {
       });
     });
   }
-  
 
- 
+
+
 }
 
 //FUNCTION TO UPDATE STATUS OF FORM TO REJECTED
@@ -855,9 +857,8 @@ function exportToExcelBulk(data) {
 
 const alertContainer = document.getElementById('alertbox');
 let dataAll = [];
+
 document.addEventListener("DOMContentLoaded", function () {
-
-
   axios.get(`${API_URL}/all`)
     .then(function (response) {
       const configURL = response.config.url;
@@ -888,7 +889,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
           const pillPending = document.querySelector('.changePill');
           if (pillPending) {
-          pillPending.classList.remove('changePill');
+            pillPending.classList.remove('changePill');
           }
 
         });
@@ -897,7 +898,7 @@ document.addEventListener("DOMContentLoaded", function () {
         rejectBtn.addEventListener('click', function () {
           const pillPending = document.querySelector('.changePill');
           if (pillPending) {
-          pillPending.classList.remove('changePill');
+            pillPending.classList.remove('changePill');
           }
         });
       }
@@ -915,7 +916,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         //clear html content in getAllForms once since using template
         if (i === 0) {
-          dataAll=[];
+          dataAll = [];
           getAllForms.innerHTML = "";
         }
         // Clone the template and append it to the status container
@@ -980,11 +981,9 @@ function createExportButtonSearch() {
   return exportIcon;
 }
 
-
 const searchInput = document.querySelector("#searchInput");
 const searchBtn = document.querySelector('#search-button');
 const searchClearBtn = document.querySelector('#clear-button');
-
 
 function searchForms() {
   const exportBtnFilter = document.querySelector('#export-btn-filter');
@@ -1023,107 +1022,107 @@ function searchForms() {
     location.reload();
   } else {
     axios.get(`${API_URL}/search/${searchInput.value}`)
-    .then(function (response) {
-      const configURL = response.config.url;
-      const requestURL = response.request.responseURL;
-      if (configURL !== requestURL) {
-        window.location.href = "/error?code=403";
-        throw new Error("redirected");
-      }
-
-      //call function to update status count
-      const formData = response.data;
-      console.log(response.data);
-
-      
-
-      updateFormCounts(formData);
-
-      //call function to create export button for
-      const exportBtnBulkContainer = document.querySelector('#export-btn-search');
-      const exportIcon = createExportButtonAll('export-icon-all');
-
-
-      const successBtn = document.querySelector('.successBtn');
-      const rejectBtn = document.querySelector('.rejectBtn');
-      if (successBtn) {
-        successBtn.addEventListener('click', function () {
-
-          const pillPending = document.querySelector('.changePill');
-          if (pillPending) {
-            pillPending.classList.remove('changePill');
-          }
-         
-
-        });
-      }
-      if (rejectBtn) {
-        rejectBtn.addEventListener('click', function () {
-          const pillPending = document.querySelector('.changePill');
-          pillPending.classList.remove('changePill');
-
-        });
-      }
-      //create array to store all data for export to excel bulk
-
-      // Loop through the data and add it to the page
-      for (i = 0; i < formData.length; i++) {
-
-        //call function to format date
-        const formattedDate = createFormattedDate(formData[i].courseDate);
-        console.log(formattedDate);
-        // Get references to the status container and template
-        const getAllForms = document.querySelector('#getAllForms');
-        const rowTemplate = document.querySelector('.row-table-template');
-
-        //clear html content in getAllForms once since using template
-        if (i === 0) {
-          dataAll=[];
-          getAllForms.innerHTML = "";
+      .then(function (response) {
+        const configURL = response.config.url;
+        const requestURL = response.request.responseURL;
+        if (configURL !== requestURL) {
+          window.location.href = "/error?code=403";
+          throw new Error("redirected");
         }
-        // Clone the template and append it to the status container
-        const templateContent = rowTemplate.content;
-        const clonedRowTemplate = document.importNode(templateContent, true);
 
-        // Populate the cloned template function
-        const {
-          studentNRICCell,
-          nameOfStudentCell,
-          classCell,
-          schoolCell,
-          eligibilityCell,
-          formattedDateCell,
-          formStatusValue,
-          studentId
-        } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
+        //call function to update status count
+        const formData = response.data;
+        console.log(response.data);
 
-        //call function to handle checkboxes
-      
+
+
+        updateFormCounts(formData);
+
+        //call function to create export button for
+        const exportBtnBulkContainer = document.querySelector('#export-btn-search');
+        const exportIcon = createExportButtonAll('export-icon-all');
+
+
+        const successBtn = document.querySelector('.successBtn');
+        const rejectBtn = document.querySelector('.rejectBtn');
+        if (successBtn) {
+          successBtn.addEventListener('click', function () {
+
+            const pillPending = document.querySelector('.changePill');
+            if (pillPending) {
+              pillPending.classList.remove('changePill');
+            }
+
+
+          });
+        }
+        if (rejectBtn) {
+          rejectBtn.addEventListener('click', function () {
+            const pillPending = document.querySelector('.changePill');
+            pillPending.classList.remove('changePill');
+
+          });
+        }
+        //create array to store all data for export to excel bulk
+
+        // Loop through the data and add it to the page
+        for (i = 0; i < formData.length; i++) {
+
+          //call function to format date
+          const formattedDate = createFormattedDate(formData[i].courseDate);
+          console.log(formattedDate);
+          // Get references to the status container and template
+          const getAllForms = document.querySelector('#getAllForms');
+          const rowTemplate = document.querySelector('.row-table-template');
+
+          //clear html content in getAllForms once since using template
+          if (i === 0) {
+            dataAll = [];
+            getAllForms.innerHTML = "";
+          }
+          // Clone the template and append it to the status container
+          const templateContent = rowTemplate.content;
+          const clonedRowTemplate = document.importNode(templateContent, true);
+
+          // Populate the cloned template function
+          const {
+            studentNRICCell,
+            nameOfStudentCell,
+            classCell,
+            schoolCell,
+            eligibilityCell,
+            formattedDateCell,
+            formStatusValue,
+            studentId
+          } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
+
+          //call function to handle checkboxes
+
           handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, exportBtnBulkContainer, exportIcon, dataAll)
-        
 
 
-        //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
-        handleModalButtons(clonedRowTemplate, studentId, formData, i);
-        ;
+
+          //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
+          handleModalButtons(clonedRowTemplate, studentId, formData, i);
+          ;
 
 
-      }
-      //Outside of for loop 
-      //Export to Excel Bulk Once
-      const exportBtnBulk = document.querySelector('#export-btn-search');
-      exportBtnBulk.addEventListener('click', function () {
-        console.log(dataAll);
-        exportToExcelBulk(dataAll);
-      });
+        }
+        //Outside of for loop 
+        //Export to Excel Bulk Once
+        const exportBtnBulk = document.querySelector('#export-btn-search');
+        exportBtnBulk.addEventListener('click', function () {
+          console.log(dataAll);
+          exportToExcelBulk(dataAll);
+        });
 
-    })
-    .catch(function (error) {
-      if (error && error.message !== "redirected") {
+      })
+      .catch(function (error) {
+        if (error && error.message !== "redirected") {
+          console.log(error);
+        }
         console.log(error);
-      }
-      console.log(error);
-    });
+      });
   }
 
 }
@@ -1135,16 +1134,10 @@ searchBtn.addEventListener('click', () => {
   searchForms();
 });
 
-
-
 searchInput.addEventListener('keypress', event => {
   if (event.key === "Enter") {
-
-
     event.preventDefault();
     searchForms();
-
-
   }
 });
 
@@ -1166,13 +1159,6 @@ filterIcons.addEventListener('click', () => {
     filterDropDowns.classList.add('d-none');
   }
 });
-
-
-
-
-
-
-
 
 ////////////////////////////
 //Filters
@@ -1437,9 +1423,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
               updateFormCounts(formData);
 
               //call function to create export button for
-              const exportBtnBulkContainer = document.querySelector('#export-btn-all');
-              const exportIcon = createExportButtonAll('export-icon-all');
+              const exportBtnBulkContainer = document.querySelector('#export-btn-filter');
+              const exportIcon = createExportButtonAll('export-icon-filter');
 
+              const exportBtnAll = document.querySelector('#export-btn-all');
+              if (exportBtnAll) {
+                exportBtnAll.style.display = 'none';
+              }
 
               const successBtn = document.querySelector('.successBtn');
               const rejectBtn = document.querySelector('.rejectBtn');
@@ -1447,7 +1437,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 successBtn.addEventListener('click', function () {
 
                   const pillPending = document.querySelector('.changePill');
-                  pillPending.classList.remove('changePill');
+                  if (pillPending) {
+                    pillPending.classList.remove('changePill');
+                  }
+
 
                 });
               }
@@ -1457,10 +1450,12 @@ document.addEventListener('DOMContentLoaded', (event) => {
                   pillPending.classList.remove('changePill');
 
                 });
-              }//create array to store all data for export to excel bulk
+              }
+              //create array to store all data for export to excel bulk
 
               // Loop through the data and add it to the page
               for (i = 0; i < formData.length; i++) {
+
                 //call function to format date
                 const formattedDate = createFormattedDate(formData[i].courseDate);
                 console.log(formattedDate);
@@ -1485,27 +1480,28 @@ document.addEventListener('DOMContentLoaded', (event) => {
                   schoolCell,
                   eligibilityCell,
                   formattedDateCell,
-                  formStatusValue
+                  formStatusValue,
+                  studentId
                 } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
 
                 //call function to handle checkboxes
+
                 handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, exportBtnBulkContainer, exportIcon, dataAll)
 
 
 
                 //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
-                handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData, i);
+                handleModalButtons(clonedRowTemplate, studentId, formData, i);
                 ;
 
 
               }
               //Outside of for loop 
               //Export to Excel Bulk Once
-              const exportBtnBulk = document.querySelector('#export-btn-all');
-              exportBtnBulk.addEventListener('click', function () {
-                console.log(dataAll);
-                exportToExcelBulk(dataAll);
-              });
+              const exportBtnBulk = document.querySelector('#export-btn-filter');
+              exportBtnBulk.removeEventListener('click', exportButtonHandler);
+              exportBtnBulk.addEventListener('click', exportButtonHandler);
+              // Remove exportIcon if filter checkbox is pressed
             })
             .catch(function (error) {
               if (error && error.message !== "redirected") {
@@ -1515,9 +1511,12 @@ document.addEventListener('DOMContentLoaded', (event) => {
             });
         })
       })
-    })
+    })  
 
-
+    const exportButtonHandler = () => {
+      console.log(dataAll);
+      exportToExcelBulk(dataAll);
+    }
   const handleScroll = (e) => {
     const nearBottom = e.target.scrollHeight - e.target.scrollTop <= e.target.clientHeight + 5;
     if (nearBottom) {
