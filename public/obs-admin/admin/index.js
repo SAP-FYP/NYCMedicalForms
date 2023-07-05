@@ -222,7 +222,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
         users.forEach(i => {
             const content = template.content.cloneNode(true);
-            templateContainer.setAttribute('value', i.email);
 
             content.querySelector(".item-border").setAttribute('id', `item-${i.email}`)
             content.querySelector(".profile-button").setAttribute('id', `profile-button-${i.email}`);
