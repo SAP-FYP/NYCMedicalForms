@@ -704,10 +704,9 @@ function handleModalButtons(clonedRowTemplate, studentId, formData, index) {
         } else if (formStatus === "Approved") {
           
           modalBtn.setAttribute("data-bs-target", "#staticBackdrop");
-          alertBox(`Form already approved!`, 'danger');
+          // alertBox(`Form already approved!`, 'danger');
         } else if (formStatus === "Rejected") {
           modalBtn.setAttribute("data-bs-target", "#staticBackdrop");
-          alertBox(`Form already rejected!`, 'rejected');
         } else if (formStatus === "Pending Parent") {
           modalBtn.setAttribute("data-bs-target", "#staticBackdrop");
         } else if (formStatus === "Need Review") {
