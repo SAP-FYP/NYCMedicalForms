@@ -192,7 +192,6 @@ app.post('/login', (req, res, next) => {
             })
         })
         .catch((error) => {
-            console.log(error)
             return res.status(error.status || 500).json({ error: error.message });
         });
 });
@@ -775,7 +774,7 @@ app.post('/obs-admin/newuser', authHelper.verifyToken, authHelper.checkIat, (req
             })
             .catch((error) => {
                 if (error.code == "ER_DUP_ENTRY") {
-                    return res.status(422).json({ error: "Email or contact already exists" });
+                    return res.status(422).json({ error: "Email already exists" });
                 }
                 return res.status(error.status || 500).json({ error: error.message });
             })

@@ -40,10 +40,3 @@ Cypress.Commands.add('adminlogin', (email, pass) => {
     cy.get('button[id=login-button]').click();
     cy.get('#header-bar').should('have.class', 'col-12');
 })
-
-Cypress.Commands.add('generateRandomValidPhoneNumber', () => {
-    const startingDigit = Math.random() < 0.5 ? '8' : '9';
-    const remainingDigits = Math.floor(Math.random() * 100000000).toString().padStart(7, '0');
-
-    return startingDigit + remainingDigits;
-});

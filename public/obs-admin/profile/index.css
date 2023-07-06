@@ -230,8 +230,8 @@ body {
 /* ALERT BOX */
 
 .alert {
+    z-index: 999999 !important;
     position: fixed !important;
-    z-index: 999;
     left: 0;
     right: 0;
     margin-left: auto;

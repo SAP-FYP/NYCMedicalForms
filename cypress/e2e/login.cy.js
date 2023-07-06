@@ -22,7 +22,6 @@ describe('Login (Doctor)', () => {
   })
 })
 
-
 describe('Login (Admin)', () => {
 
   it('should login with the correct credentials', () => {
@@ -41,7 +40,6 @@ describe('Login (Admin)', () => {
     cy.get('#err-message-container').should('be.visible');
   })
 })
-
 
 describe('Login (Doctor on Admin - Admin on Doctor)', () => {
 
