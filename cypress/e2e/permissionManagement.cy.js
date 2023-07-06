@@ -30,6 +30,21 @@ describe('Permission Creation', () => {
         cy.get('input[id=confirm-permission-icon]').click();
         cy.get('.alert-success').should('be.visible');
     })
+
+    it('should not allow creation of permission with duplicated name', () => {
+        cy.get('button[id=open-modal-button]').click();
+        cy.get('input[id=name-input]').click().type(name);
+        cy.get('input[id=checkbox_1]').should('be.disabled');
+
+        cy.get('input[id=confirm-permission-icon]').click();
+        cy.get('.alert-danger').should('be.visible').contains("Permission group already exists.");
+    })
+
+    it('should show error messages and prevent submission of form', () => {
+        cy.get('button[id=open-modal-button]').click();
+        cy.get('input[id=confirm-permission-icon]').click();
+        cy.get('.alert-danger').should('be.visible').contains("Please fill in all fields and select at least 1 permission.");
+    })
 })
 
 describe('Permission Group Filtering', () => {
@@ -58,3 +73,5 @@ describe('Permission Group Editing', () => {
         cy.get('.alert-success').should('be.visible').contains('Permission group updated successfully.');
     })
 })
+
+// permission group deleteion
