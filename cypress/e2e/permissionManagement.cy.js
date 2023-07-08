@@ -74,4 +74,16 @@ describe('Permission Group Editing', () => {
     })
 })
 
-// permission group deleteion
+describe('Permission Group Deletion', () => {
+
+    it('should delete the permisison group successfully', () => {
+        cy.get('input[id=search-input]').type(name);
+        cy.get('button[id=search-button]').wait(1000).click();
+        cy.get('div[id=insert-permission-group-template]').should('contain', name);
+        cy.get('.more-button-icon').first().click();
+        cy.get('.dropdown-delete').click({ force: true });
+
+        cy.get('button[id=confirmation-delete-button]').click();
+        cy.get('.alert-success').should('be.visible').contains('Permission group deleted successfully.');
+    })
+})
