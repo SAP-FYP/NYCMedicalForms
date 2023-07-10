@@ -31,9 +31,9 @@ describe('Update user profile', () => {
         cy.get('.alert-success').should('be.visible').contains('Successfully updated profile.').wait(1000);
         cy.getCookie('jwt').then((cookie) => {
             authToken = cookie.value;
-            cy.setCookie('jwt', authToken);
         }).wait(1000);
 
+        cy.setCookie('jwt', authToken).wait(1000);
         cy.visit('http://localhost:3000/obs-admin/profile');
         cy.get('input[id=input-number]').should('have.value', number);
     })
