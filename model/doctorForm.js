@@ -64,6 +64,21 @@ module.exports.postFormInfo = function postFormInfo(studentId, courseDate,doctor
     });
 };
 
+module.exports.updateFormStatus = function updateFormStatus(studentId) {
+  const sql = `UPDATE form SET formStatus = 'Pending Parent' WHERE studentId = ?`;
+  return query(sql, [studentId])
+  .catch(function (error) {
+      console.error('Error in postFormInfo:', error);
+      if (error.code === 'ER_DUP_ENTRY') {
+        // Handle duplicate entry error
+        throw new DUPLICATE_ENTRY_ERROR('Form Duplicate entry');
+      } else {
+        // Internal Server Error
+        throw new Error('Database error');
+      }
+  });
+};
+
 module.exports.getClasses = function getClasses(){
   const sql = `SELECT S.class
   FROM form F
