@@ -56,7 +56,7 @@ describe('Update user password', () => {
         cy.get('input[id=new-input]').type('Password2!');
         cy.get('input[id=confirm-input]').type('Password2!');
         cy.get('input[id=confirm-password-icon]').click();
-        cy.get('.alert-success').should('be.visible').contains('Password updated successfully.');
+        cy.get('.alert-success').should('be.visible').contains('Password updated successfully.').wait(1000);
         cy.getCookie('jwt').then((cookie) => {
             authToken = cookie.value;
         }).wait(1000);
@@ -70,8 +70,5 @@ describe('Update user password', () => {
         cy.get('input[id=confirm-input]').type('Password1!');
         cy.get('input[id=confirm-password-icon]').click();
         cy.get('.alert-success').should('be.visible').contains('Password updated successfully.');
-        cy.getCookie('jwt').then((cookie) => {
-            authToken = cookie.value;
-        }).wait(1000);
     })
 })
