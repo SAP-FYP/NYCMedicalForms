@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const elasticEmail = require('elasticemail');
 const cloudinary = require("cloudinary").v2;
-const { UserNotFoundError } = require("./errors");
+const { UserNotFoundError,DUPLICATE_ENTRY_ERROR } = require("./errors");
 const crypto = require('crypto');
 
 const key = Buffer.from(process.env.encryptKey, 'hex');
@@ -1595,11 +1595,10 @@ app.put('/obs-admin/mst/review/:studentId', authHelper.verifyToken, authHelper.c
     return mstModel
         .updateSubmissionComment(review, studentId)
         .then((result) => {
-            if (!studentId || !review) {
-                return res.status(400).json({ error: "Comment cannot be empty" });
-            }
-            if (result.affectedRows === 0) {
-                throw new Error("Submission not found");
+
+            if (review === "") {
+                    
+                    return res.status(204).json({ message: "Your review has been deleted" });
             }
 
             return res.json(result);
@@ -1684,7 +1683,10 @@ app.put('/parent/acknowledge', (req, res, next) => {
         })
 })
 
-app.post('/postAcknowledge', (req, res, next) => {
+app.post('/postAcknowledge', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    if (req.decodedToken.role != 4) {
+        return res.redirect('/error?code=403');
+    }
     const { studentId, parentContactNo, parentEmail } = req.body;
     // TODO ERROR HANDLING
     return parentModel.postAcknowledgement(studentId, parentContactNo, parentEmail)
@@ -1698,18 +1700,31 @@ app.post('/postAcknowledge', (req, res, next) => {
 });
 
 /**
- * Form Routes
+ * Obs-form APIs
  */
 
-/**
- * HAJIN 
- */
+cloudinary.config({
+    cloud_name: process.env.cloudinary_name,
+    api_key: process.env.cloudinary_api_key,
+    api_secret: process.env.cloudinary_api_secret,
+});
 
+// Check Doctor Auth
+app.get('/obs-form/auth', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 4) {
+        return res.redirect('/error?code=403');
+    }
+    return res.sendStatus(200);
+});
 
 //upload image to cloudinary
-app.post('/uploadSign', (req, res) => {
+app.post('/uploadSign', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
+    if (req.decodedToken.role != 4) {
+        return res.redirect('/error?code=403');
+    }
+
     const file = req.body.signature;
-    //console.log(file)
     cloudinary.uploader.upload(file, { resource_type: 'image', format: 'png' }, (err, result) => {
         if (err) {
             console.error(err);
@@ -1720,7 +1735,11 @@ app.post('/uploadSign', (req, res) => {
 });
 
 // upload doctor informtaion
-app.post('/postDoctorInfo', (req, res, next) => {
+app.post('/postDoctorInfo',authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    if (req.decodedToken.role != 4) {
+        return res.redirect('/error?code=403');
+    }
+
     const { doctorMCR, physicianName, signatureData, clinicName, clinicAddress, doctorContact } = req.body;
     try {
         // encryption part
@@ -1754,7 +1773,11 @@ app.post('/postDoctorInfo', (req, res, next) => {
 });
 
 //upload student information
-app.post('/postStudentInfo', (req, res, next) => {
+app.post('/postStudentInfo',authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    if (req.decodedToken.role != 4) {
+        return res.redirect('/error?code=403');
+    }
+
     const { studentName, schoolName, dateOfBirth, studentNRIC, studentClass, dateOfVaccine } = req.body;
     return doctorFormModel
         .postStudentInfo(studentNRIC, studentName, dateOfBirth, studentClass, schoolName, dateOfVaccine)
@@ -1772,7 +1795,11 @@ app.post('/postStudentInfo', (req, res, next) => {
 });
 
 //upload form information
-app.post('/postFormInfo', (req, res, next) => {
+app.post('/postFormInfo',authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    if (req.decodedToken.role != 4) {
+        return res.redirect('/error?code=403');
+    }
+
     const { studentId, courseDate, doctorMCR, eligibility, comments, date } = req.body;
     return doctorFormModel
         .postFormInfo(studentId, courseDate, doctorMCR, eligibility, comments, date)
@@ -1790,7 +1817,11 @@ app.post('/postFormInfo', (req, res, next) => {
 });
 
 // check doctor mcr
-app.post('/checkDoctorMCR', (req, res, next) => {
+app.post('/checkDoctorMCR', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    if (req.decodedToken.role != 4) {
+        return res.redirect('/error?code=403');
+    }
+
     //retrieve doctorMCR here...
     const { doctorMCR } = req.body;
     //continue to database...
@@ -1822,6 +1853,28 @@ app.post('/checkDoctorMCR', (req, res, next) => {
             } else {
                 // unknown internal error(system failure)
                 res.status(500).json({ message: 'Unknown error occurred.' });
+            }
+        });
+});
+
+app.put('/updateFormStatus', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    if (req.decodedToken.role != 4) {
+        return res.redirect('/error?code=403');
+    }
+
+    const studentId = req.query.studentId;
+    //continue to database...
+    return doctorFormModel
+        .updateFormStatus(studentId)
+        .then(data => {
+            res.json(data)
+        })
+        .catch(error => {
+            console.error(error);
+            if (error instanceof DUPLICATE_ENTRY_ERROR) {
+                res.status(409).json({ message: error.message });
+            } else {
+                res.status(500).json({ message: 'Internal server error' });
             }
         });
 });

@@ -5,6 +5,9 @@ html {
 
 #container {
     background-image: url('../assets/background.png');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
     min-height: 100vh;
 }
 
@@ -67,4 +70,27 @@ html {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+}
+
+.alert {
+    position: fixed !important;
+    z-index: 999;
+    left: 0;
+    right: 0;
+    margin-left: 40%;
+    margin-top: 2vh;
+    width: 40vw;
+    min-width: 200px;
+}
+
+.alert-hidden {
+    visibility: hidden;
+    transform: translate(0px, -99px);
+    transition: ease-in-out 400ms;
+}
+
+.alert-visible {
+    visibility: visible;
+    transform: translate(0);
+    transition: ease-in-out 400ms;
 }

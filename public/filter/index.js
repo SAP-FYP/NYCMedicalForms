@@ -272,5 +272,4 @@ document.addEventListener('DOMContentLoaded', (event) => {
         fetchCourseDates();
         document.getElementById('courseDateDropDownMenu').addEventListener('scroll', handleScroll);
     });
-    
 });
