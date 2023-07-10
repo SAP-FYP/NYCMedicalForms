@@ -47,4 +47,16 @@ jobs:
             twilioToken: ${{ secrets.CYPRESS_TWILIOTOKEN }}
             TZ: Asia/Singapore
 
+  deploy:
+    name: Deploy
+    needs: [Cypress-Test]
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Deploy to production
+        uses: johnbeynon/render-deploy-action
+        with:
+          service-id: ${{ secrets.SERVICE_ID }}
+          api-key: ${{ secrets.RENDER_API_KEY }}
+
         
