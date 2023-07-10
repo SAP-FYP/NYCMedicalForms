@@ -24,12 +24,6 @@ jobs:
       - name: Build Project
         run: npm run build --if-present
 
-      - name: Start Server
-        run: npm run start
-
-      - name: Wait for Server to Start
-        run: sleep 1s
-
       - name: Set up Environment Variables
         run: |
           echo "CYPRESS_API_KEY=${{ secrets.CYPRESS_API_KEY }}" >> $GITHUB_ENV
@@ -52,6 +46,12 @@ jobs:
           echo "CYPRESS_twilioSID: ${{ secrets.CYPRESS_TWILIOSID }}" >> $GITHUB_ENV
           echo "CYPRESS_twilioToken: ${{ secrets.CYPRESS_TWILIOTOKEN }}" >> $GITHUB_ENV
 
+      - name: Start Server
+        run: npm run start
+
+      - name: Wait for Server to Start
+        run: sleep 1s
+        
       - name: Run Cypress Tests
         uses: cypress-io/github-action@v5
         with:
