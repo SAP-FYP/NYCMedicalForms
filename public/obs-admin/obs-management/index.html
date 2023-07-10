@@ -148,6 +148,28 @@
                             </div>
                             <div class="displayFilters d-none">
                                 <div class="row custom-row">
+
+                                    <div class="col-auto dropdown" id="schoolDropDown">
+                                        <div class="custom-column dropdown-toggle" id="schoolMenuButton"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                            School
+                                        </div> 
+                                        <div class="dropdown-menu custom-menu dropdown-menu-stay"
+                                            id="schoolDropDownMenu">
+                                            <div class="searchBarDiv">
+                                                <input type="search" class="searchBarFilter m-2" id="schoolSearch"
+                                                    placeholder="Search">
+                                                <div class="listContainer mb-4" id="schoolsDiv">
+                                                    <div class="loadingMsg m-3">
+                                                        <span class="spinner-border spinner-border-sm" role="status"
+                                                            aria-hidden="true"></span>
+                                                        Loading...
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="dropdown col-auto " id="classDropDown">
                                         <div class="custom-column dropdown-toggle" id="classMenuButton"
                                             data-bs-toggle="dropdown" aria-expanded="false">
@@ -169,17 +191,17 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-auto dropdown" id="schoolDropDown">
-                                        <div class="custom-column dropdown-toggle" id="schoolMenuButton"
+                                    <div class="col-auto dropdown" id="courseDateDropDown">
+                                        <div class="custom-column dropdown-toggle" id="courseDateMenuButton"
                                             data-bs-toggle="dropdown" aria-expanded="false">
-                                            School
-                                        </div> 
+                                            Course Date
+                                        </div>
                                         <div class="dropdown-menu custom-menu dropdown-menu-stay"
-                                            id="schoolDropDownMenu">
+                                            id="courseDateDropDownMenu">
                                             <div class="searchBarDiv">
-                                                <input type="search" class="searchBarFilter m-2" id="schoolSearch"
+                                                <input type="search" class="searchBarFilter m-2" id="courseDateSearch"
                                                     placeholder="Search">
-                                                <div class="listContainer mb-4" id="schoolsDiv">
+                                                <div class="listContainer" id="courseDatesDiv">
                                                     <div class="loadingMsg m-3">
                                                         <span class="spinner-border spinner-border-sm" role="status"
                                                             aria-hidden="true"></span>
@@ -217,26 +239,6 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-auto dropdown" id="courseDateDropDown">
-                                        <div class="custom-column dropdown-toggle" id="courseDateMenuButton"
-                                            data-bs-toggle="dropdown" aria-expanded="false">
-                                            Course Date
-                                        </div>
-                                        <div class="dropdown-menu custom-menu dropdown-menu-stay"
-                                            id="courseDateDropDownMenu">
-                                            <div class="searchBarDiv">
-                                                <input type="search" class="searchBarFilter m-2" id="courseDateSearch"
-                                                    placeholder="Search">
-                                                <div class="listContainer" id="courseDatesDiv">
-                                                    <div class="loadingMsg m-3">
-                                                        <span class="spinner-border spinner-border-sm" role="status"
-                                                            aria-hidden="true"></span>
-                                                        Loading...
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
 
                                 </div>
                             </div>
