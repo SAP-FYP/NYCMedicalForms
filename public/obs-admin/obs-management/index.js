@@ -1203,7 +1203,53 @@ document.addEventListener('DOMContentLoaded', (event) => {
   let courseDatesArray = [];
   let eligibilityArray = [];
 
-  let fetchClasses = fetch(`/getClasses?limit=${limit}&offset=${offset}`)
+  let fetchSchools = fetch(`/get-school-filter?limit=${limit}&offset=${offset}`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      const loadingMsgDiv = schoolsDiv.querySelector('.loadingMsg');
+      if (loadingMsgDiv) {
+        loadingMsgDiv.remove();
+      }
+
+      data.forEach(item => {
+        // Create a new <li> element with checkbox floating right
+        const newDiv = document.createElement('div');
+        newDiv.classList.add('filter-div');
+        const li = document.createElement('li');
+        li.textContent = item.school;
+        li.className = "m-3";
+        // Align checkbox to most right of li
+        const checkbox = document.createElement('input');
+        checkbox.type = "checkbox";
+        checkbox.name = "school";
+        checkbox.value = item.school;
+
+        checkbox.style.float = "right";
+        checkbox.style.margin = "3px";
+        checkbox.style.width = "15px";
+        checkbox.style.height = "15px";
+        checkbox.style.borderRadius = "50%";
+        checkbox.style.border = "1px solid #000";
+        checkbox.style.cursor = "pointer";
+
+        li.appendChild(checkbox);
+        newDiv.appendChild(li);
+        schoolsDiv.appendChild(newDiv);
+      });
+    })
+    .catch(function (error) {
+      if (error && error.message !== "redirected") {
+        console.log(error);
+      }
+      console.log(error);
+    });
+
+    let fetchClasses = fetch(`/getClasses?limit=${limit}&offset=${offset}`)
     .then(response => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -1219,7 +1265,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
       data.forEach(item => {
         // Create a new <li> element with checkbox floating right
         const newDiv = document.createElement('div');
-        newDiv.classList.add('newDiv');
+        newDiv.classList.add('filter-div');
         const li = document.createElement('li');
         li.textContent = item.class;
         li.className = "m-3";
@@ -1250,52 +1296,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
       console.log(error);
     });
 
-  let fetchSchools = fetch(`/getSchools?limit=${limit}&offset=${offset}`)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then(data => {
-      const loadingMsgDiv = schoolsDiv.querySelector('.loadingMsg');
-      if (loadingMsgDiv) {
-        loadingMsgDiv.remove();
-      }
-
-      data.forEach(item => {
-        // Create a new <li> element with checkbox floating right
-        const newDiv = document.createElement('div');
-        newDiv.classList.add('newDiv');
-        const li = document.createElement('li');
-        li.textContent = item.school;
-        li.className = "m-3";
-        // Align checkbox to most right of li
-        const checkbox = document.createElement('input');
-        checkbox.type = "checkbox";
-        checkbox.name = "school";
-        checkbox.value = item.school;
-
-        checkbox.style.float = "right";
-        checkbox.style.margin = "3px";
-        checkbox.style.width = "15px";
-        checkbox.style.height = "15px";
-        checkbox.style.borderRadius = "50%";
-        checkbox.style.border = "1px solid #000";
-        checkbox.style.cursor = "pointer";
-
-        li.appendChild(checkbox);
-        newDiv.appendChild(li);
-        schoolsDiv.appendChild(newDiv);
-      });
-    })
-    .catch(function (error) {
-      if (error && error.message !== "redirected") {
-        console.log(error);
-      }
-      console.log(error);
-    });
-
   let fetchCourseDates = fetch(`/getCourseDates?limit=${limit}&offset=${offset}`)
     .then(response => {
       if (!response.ok) {
@@ -1312,7 +1312,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
       data.forEach(item => {
         // Create a new <li> element with checkbox floating right
         const newDiv = document.createElement('div');
-        newDiv.classList.add('newDiv');
+        newDiv.classList.add('filter-div');
         const li = document.createElement('li');
         // Change date to singapore format, no time
         li.textContent = new Date(item.courseDate).toLocaleDateString('en-SG');
@@ -1359,7 +1359,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
       data.forEach(item => {
         // Create a new <li> element with checkbox floating right
         const newDiv = document.createElement('div');
-        newDiv.classList.add('newDiv');
+        newDiv.classList.add('filter-div');
         const li = document.createElement('li');
         li.textContent = item.eligibility;
         li.className = "m-3";
@@ -1389,19 +1389,32 @@ document.addEventListener('DOMContentLoaded', (event) => {
       console.log(error);
     });
 
-  Promise.all([fetchClasses, fetchSchools, fetchCourseDates, fetchEligiblity])
+  Promise.all([fetchSchools, fetchClasses, fetchCourseDates, fetchEligiblity])
     // For each of the filters, add event listener to each checkbox
     .then(() => {
       // For all the checkbox, add event listener then every on click, fetch the data again
-      const allCheckBoxes = document.querySelectorAll('.newDiv input[type="checkbox"]');
+      const allCheckBoxes = document.querySelectorAll('.filter-div input[type="checkbox"]');
       allCheckBoxes.forEach(checkbox => {
         checkbox.addEventListener('change', (event) => {
           // If checkbox is checked, add to array
           if (checkbox.checked) {
-            if (checkbox.name === "class") {
-              classesArray.push(checkbox.value);
-            } else if (checkbox.name === "school") {
+            if (checkbox.name === "school") {
               schoolsArray.push(checkbox.value);
+              // If school is checked, uncheck all classes
+              const allClassesCheckBoxes = document.querySelectorAll('.filter-div input[name="class"]');
+              allClassesCheckBoxes.forEach(classCheckBox => {
+                classCheckBox.checked = false;
+              });
+              classesArray = [];
+              // If school is checked, uncheck all course dates
+              const allCourseDatesCheckBoxes = document.querySelectorAll('.filter-div input[name="course-date"]');
+              allCourseDatesCheckBoxes.forEach(courseDateCheckBox => {
+                courseDateCheckBox.checked = false;
+              });
+              courseDatesArray = [];
+
+            } else if (checkbox.name === "class") {
+              classesArray.push(checkbox.value);
             } else if (checkbox.name === "course-date") {
               courseDatesArray.push(checkbox.value);
             } else if (checkbox.name === "eligibility") {
@@ -1409,10 +1422,26 @@ document.addEventListener('DOMContentLoaded', (event) => {
             }
           } else {
             // If checkbox is unchecked, remove from array
-            if (checkbox.name === "class") {
-              classesArray = classesArray.filter(item => item !== checkbox.value);
-            } else if (checkbox.name === "school") {
+            if (checkbox.name === "school") {
               schoolsArray = schoolsArray.filter(item => item !== checkbox.value);
+
+              // If school is unchecked, uncheck all classes
+              const allClassesCheckBoxes = document.querySelectorAll('.filter-div input[name="class"]');
+              allClassesCheckBoxes.forEach(classCheckBox => {
+                classCheckBox.checked = false;
+              });
+              classesArray = [];
+
+              // If school is unchecked, uncheck all course dates
+              const allCourseDatesCheckBoxes = document.querySelectorAll('.filter-div input[name="course-date"]');
+              allCourseDatesCheckBoxes.forEach(courseDateCheckBox => {
+                courseDateCheckBox.checked = false;
+              });
+              courseDatesArray = [];
+
+
+            } else if (checkbox.name === "class") {
+              classesArray = classesArray.filter(item => item !== checkbox.value);
             } else if (checkbox.name === "course-date") {
               courseDatesArray = courseDatesArray.filter(item => item !== checkbox.value);
             } else if (checkbox.name === "eligibility") {
@@ -1429,7 +1458,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
           })
             .then(response => {
               formData = response.data;
-              console.log(formData);
               if (formData.length === 0) {
                 const getAllForms = document.querySelector('#getAllForms');
                 getAllForms.innerHTML = "";
@@ -1457,7 +1485,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
                   pillPending.classList.remove('changePill');
 
                 });
-              }//create array to store all data for export to excel bulk
+              }
+              //create array to store all data for export to excel bulk
 
               // Loop through the data and add it to the page
               for (i = 0; i < formData.length; i++) {
@@ -1495,7 +1524,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
                 //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
                 handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData, i);
-                ;
 
 
               }
@@ -1516,19 +1544,32 @@ document.addEventListener('DOMContentLoaded', (event) => {
         })
       })
     })
+    .catch(function (error) {
+      if (error && error.message !== "redirected") {
+        console.log(error);
+      }
+    });
 
 
-  const handleScroll = (e) => {
-    const nearBottom = e.target.scrollHeight - e.target.scrollTop <= e.target.clientHeight + 5;
-    if (nearBottom) {
-      // Remove the scroll event listener to prevent multiple requests
-      classesDiv.removeEventListener('scroll', handleScroll);
 
-      // Fetch the next set of data
-      // fetchClasses();
-    }
-  };
 
-  document.getElementById('classDropDownMenu').addEventListener('scroll', handleScroll);
+    // Search bar to search for filters in the respective .filter-div
+    const filterSearch = document.querySelectorAll('.searchBarFilter')
+    filterSearch.forEach(search => {
+      search.addEventListener('keyup', function () {
+        const filter = search.value.toUpperCase();
+        const filterDiv = search.parentElement;
+        const filterDivItems = filterDiv.querySelectorAll('li');
+        filterDivItems.forEach(item => {
+          const textValue = item.textContent || item.innerText;
+          if (textValue.toUpperCase().indexOf(filter) > -1) {
+            item.style.display = "";
+          } else {
+            item.style.display = "none";
+          }
+        })
+      })
+    })
+
 });
 
