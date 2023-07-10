@@ -1442,6 +1442,7 @@ app.get('/obs-admin/pmt/search/:search', authHelper.verifyToken, authHelper.chec
             if (result.length === 0) {
                 throw new Error("No submission found");
             }
+            result[0].push(req.decodedToken.permissions);
             return res.json(result[0]);
         })
         .catch((error) => {
