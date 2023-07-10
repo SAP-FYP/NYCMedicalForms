@@ -20,39 +20,29 @@ jobs:
 
       - name: Install Dependencies
         run: npm install
-
-      - name: Build Project
-        run: npm run build --if-present
-
-      - name: Set up Environment Variables
-        run: |
-          echo "CYPRESS_API_KEY=${{ secrets.CYPRESS_API_KEY }}" >> $GITHUB_ENV
-          echo "CYPRESS_USERNAME=${{ secrets.CYPRESS_USERNAME }}" >> $GITHUB_ENV
-          echo "CYPRESS_cloudinary_api_secret: ${{ secrets.CYPRESS_CLOUDINARY_API_KEY }}" >> $GITHUB_ENV
-          echo "CYPRESS_cloudinary_api_key: ${{ secrets.CYPRESS_CLOUDINARY_API_SECRET }}" >> $GITHUB_ENV
-          echo "CYPRESS_cloudinary_name: ${{ secrets.CYPRESS_CLOUDINARY_NAME }}" >> $GITHUB_ENV
-          echo "CYPRESS_DB_CONNECTION_LIMIT: ${{ secrets.CYPRESS_DB_CONNECTION_LIMIT }}" >> $GITHUB_ENV
-          echo "CYPRESS_DB_DATABASE: ${{ secrets.CYPRESS_DB_DATABASE }}" >> $GITHUB_ENV
-          echo "CYPRESS_DB_HOST: ${{ secrets.CYPRESS_DB_HOST }}" >> $GITHUB_ENV
-          echo "CYPRESS_DB_PASSWORD: ${{ secrets.CYPRESS_DB_PASSWORD }}" >> $GITHUB_ENV
-          echo "CYPRESS_DB_USER: ${{ secrets.CYPRESS_DB_USER }}" >> $GITHUB_ENV
-          echo "CYPRESS_elasticAPIKey: ${{ secrets.CYPRESS_ELASTICAPIKEY }}" >> $GITHUB_ENV
-          echo "CYPRESS_elasticEmail: ${{ secrets.CYPRESS_ELASTICEMAIL }}" >> $GITHUB_ENV
-          echo "CYPRESS_encryptIV: ${{ secrets.CYPRESS_ENCRYPTIV }}" >> $GITHUB_ENV
-          echo "CYPRESS_encryptKey: ${{ secrets.CYPRESS_ENCRYPTKEY }}" >> $GITHUB_ENV
-          echo "CYPRESS_PORT: ${{ secrets.CYPRESS_PORT }}" >> $GITHUB_ENV
-          echo "CYPRESS_SECRETKEY: ${{ secrets.CYPRESS_SECRETKEY }}" >> $GITHUB_ENV
-          echo "CYPRESS_twilioNumber: ${{ secrets.CYPRESS_TWILIONUMBER }}" >> $GITHUB_ENV
-          echo "CYPRESS_twilioSID: ${{ secrets.CYPRESS_TWILIOSID }}" >> $GITHUB_ENV
-          echo "CYPRESS_twilioToken: ${{ secrets.CYPRESS_TWILIOTOKEN }}" >> $GITHUB_ENV
-
-      - name: Start Server
-        run: npm run start
-
-      - name: Wait for Server to Start
-        run: sleep 1s
-        
+          
       - name: Run Cypress Tests
         uses: cypress-io/github-action@v5
         with:
           browser: chrome
+          env:
+            CYPRESS_cloudinary_api_secret: ${{ secrets.CYPRESS_CLOUDINARY_API_KEY }}
+            CYPRESS_cloudinary_api_key: ${{ secrets.CYPRESS_CLOUDINARY_API_SECRET }}
+            CYPRESS_cloudinary_name: ${{ secrets.CYPRESS_CLOUDINARY_NAME }}
+            CYPRESS_DB_CONNECTION_LIMIT: ${{ secrets.CYPRESS_DB_CONNECTION_LIMIT }}
+            CYPRESS_DB_DATABASE: ${{ secrets.CYPRESS_DB_DATABASE }}
+            CYPRESS_DB_HOST: ${{ secrets.CYPRESS_DB_HOST }}
+            CYPRESS_DB_PASSWORD: ${{ secrets.CYPRESS_DB_PASSWORD }}
+            CYPRESS_DB_USER: ${{ secrets.CYPRESS_DB_USER }}
+            CYPRESS_elasticAPIKey: ${{ secrets.CYPRESS_ELASTICAPIKEY }}
+            CYPRESS_elasticEmail: ${{ secrets.CYPRESS_ELASTICEMAIL }}
+            CYPRESS_encryptIV: ${{ secrets.CYPRESS_ENCRYPTIV }}
+            CYPRESS_encryptKey: ${{ secrets.CYPRESS_ENCRYPTKEY }}
+            CYPRESS_PORT: ${{ secrets.CYPRESS_PORT }}
+            CYPRESS_SECRETKEY: ${{ secrets.CYPRESS_SECRETKEY }}
+            CYPRESS_twilioNumber: ${{ secrets.CYPRESS_TWILIONUMBER }}
+            CYPRESS_twilioSID: ${{ secrets.CYPRESS_TWILIOSID }}
+            CYPRESS_twilioToken: ${{ secrets.CYPRESS_TWILIOTOKEN }}
+          start: npm start
+          wait-on: "http://localhost:3000"
+        
