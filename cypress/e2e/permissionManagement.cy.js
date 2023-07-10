@@ -24,7 +24,7 @@ describe('Permission Creation', () => {
 
     it('should create a new permission with valid data', () => {
         cy.get('button[id=open-modal-button]').click();
-        cy.get('input[id=name-input]').click().type(name);
+        cy.get('input[id=name-input]').clear().wait(200).type(name);
         cy.get('input[id=checkbox_1]').should('be.disabled');
 
         cy.get('input[id=confirm-permission-icon]').click();
@@ -33,8 +33,7 @@ describe('Permission Creation', () => {
 
     it('should not allow creation of permission with duplicated name', () => {
         cy.get('button[id=open-modal-button]').click();
-
-        cy.get('input[id=name-input]').click().clear().type(name, { delay: 100 });
+        cy.get('input[id=name-input]').clear().wait(200).type(name);
         cy.get('input[id=checkbox_1]').should('be.disabled');
 
         cy.get('input[id=confirm-permission-icon]').click();

@@ -9,7 +9,7 @@ let authToken;
 before(() => {
     const emailLogin = 'cypresstest@gmail.com';
     const passLogin = 'Password1!';
-    cy.adminlogin(emailLogin, passLogin);
+    cy.adminlogin(emailLogin, passLogin).wait(2000);
     cy.getCookie('jwt').then((cookie) => {
         authToken = cookie.value;
     })
