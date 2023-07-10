@@ -3,6 +3,10 @@
 import Chance from 'chance';
 const chance = new Chance();
 
+after(() => {
+  cy.then(Cypress.session.clearAllSavedSessions);
+})
+
 describe('Login (Doctor)', () => {
 
   it('should login with the correct credentials', () => {

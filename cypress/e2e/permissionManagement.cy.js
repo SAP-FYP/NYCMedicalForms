@@ -4,20 +4,16 @@ import Chance from 'chance';
 const chance = new Chance();
 
 const name = chance.string({ length: 10 });
-let authToken;
 
-before(() => {
+beforeEach(() => {
     const emailLogin = 'admin@gmail.com';
     const passLogin = 'password';
     cy.adminlogin(emailLogin, passLogin);
-    cy.getCookie('jwt').then((cookie) => {
-        authToken = cookie.value;
-    })
+    cy.visit('http://localhost:3000/obs-admin/admin/permissions');
 })
 
-beforeEach(() => {
-    cy.setCookie('jwt', authToken);
-    cy.visit('http://localhost:3000/obs-admin/admin/permissions');
+after(() => {
+    cy.then(Cypress.session.clearAllSavedSessions);
 })
 
 describe('Permission Creation', () => {
