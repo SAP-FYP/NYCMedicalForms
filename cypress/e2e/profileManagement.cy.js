@@ -7,10 +7,9 @@ const number = chance.integer({ min: 8, max: 9 }) + chance.string({ length: 7, p
 let authToken;
 
 before(() => {
-    cy.clearCookie('jwt');
     const emailLogin = 'cypresstest@gmail.com';
     const passLogin = 'Password1!';
-    cy.adminlogin(emailLogin, passLogin);
+    cy.adminlogin(emailLogin, passLogin).wait(1000);
     cy.getCookie('jwt').then((cookie) => {
         authToken = cookie.value;
     })
