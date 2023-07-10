@@ -8,7 +8,6 @@ This file includes validation of form values and send data to APIs to save data 
 */
 
 document.addEventListener('DOMContentLoaded', function () {
-    
     let schools = [];
     let currentSchool;
     let currentDoctor;
@@ -43,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const loadingModal = new bootstrap.Modal('#loadingModal', {
         keyboard: false
     });
-
+    const alertContainer = document.getElementById('alertbox');
     // Section divs
     const sectionOneContainer = document.getElementById('sectionOneContainer');
     const sectionTwoContainer = document.getElementById('sectionTwoContainer');
@@ -121,25 +120,78 @@ document.addEventListener('DOMContentLoaded', function () {
                 commentsTextarea.value = '';
                 commentsTextarea.disabled = true;
                 validities.isCommentValid = true;
-            } else if(this.value === 'Unfit'){
+                acknowledgeCheckBox.disabled = true;
+            } 
+            else if(this.value === 'Unfit'){
                 if(commentsTextarea.value === ''){
                     commentsTextarea.classList.add('is-invalid');
                     validities.isCommentValid = false;
                 }
                 commentsTextarea.disabled = false;
+                acknowledgeCheckBox.disabled = false;
             }
             else{
                 if(commentsTextarea.classList.contains('is-invalid')){
                     commentsTextarea.classList.remove('is-invalid');
                 }
                 commentsTextarea.disabled = false;
+                acknowledgeCheckBox.disabled = false;
                 validities.isCommentValid = true;
             }
             console.log(validities)
         });
     }
+    // === ALERT BOX ===
+    const alertBox = (message, type) => {
+        const alertIcon = document.getElementById('alert-icon');
+        const alertMessage = document.getElementById('alert-message');
+        let alertColor;
+
+        if (type === 'danger') {
+            alertIcon.setAttribute('xlink:href', '#exclamation-triangle-fill');
+            alertColor = 'alert-danger';
+        } else if (type === 'success') {
+            alertIcon.setAttribute('xlink:href', '#check-circle-fill');
+            alertColor = 'alert-success';
+        } else if (type === 'warn') {
+            alertIcon.setAttribute('xlink:href', '#exclamation-triangle-fill');
+            alertColor = 'alert-warning';
+        } else if (type === 'info') {
+            alertIcon.setAttribute('xlink:href', '#info-fill');
+            alertColor = 'alert-primary';
+        }
+
+        alertMessage.textContent = message;
+        alertContainer.classList.add(alertColor)
+        alertContainer.classList.add('alert-visible');
+        alertContainer.classList.remove('alert-hidden');
+
+        setTimeout(() => {
+            alertContainer.classList.add('alert-hidden');
+            alertContainer.classList.remove('alert-visible');
+            alertContainer.classList.remove(alertColor);
+        }, 5000);
+    };
 
     // Fetch functions
+    const validateAuth = () => {
+        return fetch('/obs-form/auth')
+        .then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
+                throw new Error('redirected');
+            }
+    
+            if (response.status !== 200 && response.status !== 404) {
+                const error = new Error('An unknown error occured.');
+                error.status = 500;
+                throw error;
+            }
+    
+            return response.json();
+        })
+        .catch(error => {})
+    };
     const postDoctorInfo = (doctorEntry) => {
         return fetch('/postDoctorInfo', {
             method: 'POST',
@@ -195,6 +247,20 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             return response.json();
         });
+    }
+    const updateFormStatus = (studentId) => {
+        return fetch(`/updateFormStatus?studentId=${studentId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { throw err; });
+            }
+            return response.json();
+        })
     }
     const sendEmail = (emailEntry) => {
         return fetch('/send-email', {
@@ -334,10 +400,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 // check signature
                 if(key === "signatureData"){
                     if (signaturePad.isEmpty()) {
-                        if(!document.getElementById('signatureMsg')){
-                            signatureMsg.textContent = 'Please provide your signature';
-                            signatureMsg.className = 'text-danger';
-                            validities.isSignatureValid = false;
+                        signatureMsg.textContent = 'Please provide your signature';
+                        signatureMsg.className = 'text-danger';
+                        validities.isSignatureValid = false;
+                        if(document.getElementById('signatureMsg')){
+                            validities.isSignatureValid = true;
+                            signatureMsg.textContent = '';
                         }
                     }
                 }
@@ -369,7 +437,9 @@ document.addEventListener('DOMContentLoaded', function () {
     };
     const validateValidities = (validities) => {
         let foundFalse = false;
-
+        if (isAvailabilityBtn === false) {
+            availabilityBtn.classList.add('is-invalid');
+        }
         for(const key in validities){
             const value = validities[key];
             if(!value){
@@ -490,6 +560,28 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     };
+    const removeInvalidTooltips = () => {
+        doctorNameInput.classList.remove('is-invalid')
+        doctorcontactNoInput.classList.remove('is-invalid')
+        clinicNameInput.classList.remove('is-invalid')
+        clinicAddressInput.classList.remove('is-invalid')
+        dateInput.classList.remove('is-invalid')
+        
+        const signatureMsg = document.getElementById('signatureMsg');
+        signatureMsg.textContent = '';
+        signatureMsg.className = '';
+        validities.isSignatureValid = true;
+    };
+    const isCheckBoxClicked = () => {
+        if(!acknowledgeCheckBox.checked){
+            validities.isParentContactValid = true;
+            validities.isParentEmailValid = true;
+            return false;
+        }
+        else{
+            return true;
+        }
+    };
 
     // sections div click event
     sectionOneContainer.addEventListener('click',(event)=>{
@@ -498,7 +590,23 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     sectionTwoContainer.addEventListener('click',(event)=>{
         form.style.display = 'block';
-        document.getElementById('infoDiv').style.display = 'none'
+        document.getElementById('infoDiv').style.display = 'none';
+    });
+
+    // checkbox onclick
+    acknowledgeCheckBox.addEventListener('change',(event)=>{
+        if(acknowledgeCheckBox.checked){
+            document.getElementById('parentsInfoDiv').style.display = 'block';
+            if(document.getElementById('checkBoxContainer').classList.contains('mb-5')){
+                document.getElementById('checkBoxContainer').classList.remove('mb-5')
+            }
+        }
+        else{
+            document.getElementById('parentsInfoDiv').style.display = 'none';
+            if(!document.getElementById('checkBoxContainer').classList.contains('mb-5')){
+                document.getElementById('checkBoxContainer').classList.add('mb-5')
+            }
+        }
     });
 
     // Input Validation event listners:
@@ -688,43 +796,43 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: JSON.stringify({ doctorMCR: doctorMCRInput.value })
         })
-            .then(response => {
-                if (response.status === 404) {
-                    // Doctor was not found
-                    throw new Error('DoctorNotFound');
-                }
-                else if (response.status === 500) {
-                    // Server error
-                    alert('An error occurred. Please try again later.');
-                    throw new Error('ServerError');
-                }
-                return response.json();
-            })
-            .then(data => {
-                const { doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo } = data[0];
-                doctorAutoFill(doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo);
-                
-                validities.isDoctorMCRValid = true;
-                validities.isDoctorNameValid = true;
-                validities.isDoctorContactValid = true;
-                validities.isClinicNameValid = true;
-                validities.isClinicAddressValid = true;
-                validities.isDateValid = true;
-                validities.isSignatureValid = true;
-            })
-            .catch(err => {
-                if (err.message == 'DoctorNotFound') {
-                    // if doctor is new and available
-                    availabilityBtn.disabled = true;
-                    availabilityBtn.textContent = `You are new!`
-                    availabilityBtn.className = 'btn btn-success'
-                    isAvailabilityBtn = true;
-                }
-                else {
-                    // internal server error
-                    alert("internal server error" + err.message);
-                }
-            });
+        .then(response => {
+            if (response.status === 404) {
+                // Doctor was not found
+                throw new Error('DoctorNotFound');
+            }
+            else if (response.status === 500) {
+                // Server error
+                alert('An error occurred. Please try again later.');
+                throw new Error('ServerError');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const { doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo } = data[0];
+            doctorAutoFill(doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo);
+            removeInvalidTooltips();
+            validities.isDoctorMCRValid = true;
+            validities.isDoctorNameValid = true;
+            validities.isDoctorContactValid = true;
+            validities.isClinicNameValid = true;
+            validities.isClinicAddressValid = true;
+            validities.isDateValid = true;
+            validities.isSignatureValid = true;
+        })
+        .catch(err => {
+            if (err.message == 'DoctorNotFound') {
+                // if doctor is new and available
+                availabilityBtn.disabled = true;
+                availabilityBtn.textContent = `You are new!`
+                availabilityBtn.className = 'btn btn-success'
+                isAvailabilityBtn = true;
+            }
+            else {
+                // internal server error
+                alert("internal server error" + err.message);
+            }
+        });
     });
     // drop down handlers
     schoolDropDown.addEventListener('show.bs.dropdown',(event) => {
@@ -805,147 +913,143 @@ document.addEventListener('DOMContentLoaded', function () {
             signatureData: signatureData
         }
         const allEntry = { ...studentEntry, ...formEntry, ...doctorEntry };
-
-        // Empty value validation
+        const isChecked = isCheckBoxClicked();
         validateEmptyValue(allEntry);
         console.log(validities)
         // Proceed submission
         if (validateValidities(validities)) {
-            // Availability button validation
-            console.log('in')
-            if (isAvailabilityBtn === false) {
-                availabilityBtn.classList.add('is-invalid');
+            if (isDoctorNew === true) {
+                const data = {
+                    signature: signatureData
+                };
+                let signatureCredentials,studentId;
+                
+                // show loading modal
+                loadingModal.show();
+                uploadSignature(data)
+                .then(data => {
+                    signatureCredentials = `${data.url};${today};${doctorNameInput.value}`;
+                    doctorEntry.signatureData = signatureCredentials;
+
+                    return Promise.all([postDoctorInfo(doctorEntry), postStudentInfo(studentEntry)]);
+                })
+                .then(([doctorResponse, studentResponse]) => {
+                    studentId = studentResponse[0].insertId;
+                    formEntry.studentId = studentId;
+                    formEntry.doctorMCR = doctorMCRInput.value;
+                    return postFormInfo(formEntry);
+                })
+                .then(data => {
+                    // if checkbox, send email
+                    if(isChecked){
+                        const emailEntry ={
+                            studentId : studentId,
+                            email : studentEntry.parentEmail
+                        }
+                        const acknowledgeEntry = {
+                            studentId : studentId,
+                            parentContactNo : studentEntry.parentContact,
+                            parentEmail : studentEntry.parentEmail
+                        }
+                        return Promise.all([sendEmail(emailEntry),postAcknowledge(acknowledgeEntry),updateFormStatus(studentId)]);
+                    }
+                    else{
+                        return;
+                    }
+                })
+                .then(data => {
+                    loadingModal.hide();
+                    emptyOutStudentInputs();
+                    alertBox('Submit Succesful', 'success');
+
+                    let scrollableDiv = document.getElementById("formDiv");
+                    scrollableDiv.scrollTop = 0;
+                    doctorAutoFill(doctorMCRInput.value, doctorNameInput.value, signatureCredentials, clinicNameInput.value, clinicAddressInput.value, doctorcontactNoInput.value);
+                })
+                .catch(error => {
+                    if (error.message === 'Upload failed') {
+                        alert('Signature Upload Failed');
+                    } else if (error.message === 'Doctor Duplicate entry') {
+                        alert('Doctor already exists');
+                    } else if (error.message === 'Student Duplicate entry') {
+                        alert('Student already exists');
+                    } else if (error.message === 'Form Duplicate entry') {
+                        alert('Form already exists');
+                    } else if (error.message === 'Internal server error') {
+                        alert('Server error');
+                    } else if (error.message === 'Encryption Error') {
+                        alert('Encryption Error');
+                    } else {
+                        console.error('Error:', error);
+                    }
+                });
+
             }
-            else {
-                if (isDoctorNew === true) {
-                    const data = {
-                        signature: signatureData
-                    };
-                    let signatureCredentials,studentId;
+            else if (isDoctorNew === false) {
+                // show loading modal
+                loadingModal.show();
+                postStudentInfo(studentEntry)
+                .then(data => {
+                    studentId = data[0].insertId;
+                    formEntry.studentId = studentId;
+                    formEntry.doctorMCR = currentDoctor;
+                    formEntry.comments = commentsTextarea.value;
+                    return postFormInfo(formEntry);
+                })
+                .then(data => {
+                    // if checkbox, send email
+                    if(isChecked){
+                        const emailEntry ={
+                            studentId : studentId,
+                            email : parentEmail.value
+                        }
+                        const acknowledgeEntry = {
+                            studentId : studentId,
+                            parentContactNo : studentEntry.parentContact,
+                            parentEmail : studentEntry.parentEmail
+                        }
+                        return Promise.all([sendEmail(emailEntry),postAcknowledge(acknowledgeEntry),updateFormStatus(studentId)]);
+                    }
+                    else{
+                        return;
+                    }
+                })
+                .then(data => {
+                    // hide loading modal
+                    loadingModal.hide();
+                    emptyOutStudentInputs();
+                    alertBox('Submit Succesful', 'success');
+
+                    for (let i = 0; i < eligibilityRadios.length; i++) {
+                        eligibilityRadios[i].checked = false;
+                    }
+                    commentsTextarea.value = '';
                     
-                    // show loading modal
-                    loadingModal.show();
-                    uploadSignature(data)
-                    .then(data => {
-                        signatureCredentials = `${data.url};${today};${doctorNameInput.value}`;
-                        doctorEntry.signatureData = signatureCredentials;
-
-                        return Promise.all([postDoctorInfo(doctorEntry), postStudentInfo(studentEntry)]);
-                    })
-                    .then(([doctorResponse, studentResponse]) => {
-                        studentId = studentResponse[0].insertId;
-                        formEntry.studentId = studentId;
-                        formEntry.doctorMCR = doctorMCRInput.value;
-                        return postFormInfo(formEntry);
-                    })
-                    .then(data => {
-                        // if checkbox, send email
-                        if(acknowledgeCheckBox.checked){
-                            const emailEntry ={
-                                studentId : studentId,
-                                email : studentEntry.parentEmail
-                            }
-                            const acknowledgeEntry = {
-                                studentId : studentId,
-                                parentContactNo : studentEntry.parentContact,
-                                parentEmail : studentEntry.parentEmail
-                            }
-                            return Promise.all([sendEmail(emailEntry),postAcknowledge(acknowledgeEntry)]);
-                        }
-                        else{
-                            return;
-                        }
-                    })
-                    .then(data => {
-                        loadingModal.hide();
-                        emptyOutStudentInputs();
-
-                        let scrollableDiv = document.getElementById("formDiv");
-                        scrollableDiv.scrollTop = 0;
-                        doctorAutoFill(doctorMCRInput.value, doctorNameInput.value, signatureCredentials, clinicNameInput.value, clinicAddressInput.value, doctorcontactNoInput.value);
-                    })
-                    .catch(error => {
-                        if (error.message === 'Upload failed') {
-                            alert('Signature Upload Failed');
-                        } else if (error.message === 'Doctor Duplicate entry') {
-                            alert('Doctor already exists');
-                        } else if (error.message === 'Student Duplicate entry') {
-                            alert('Student already exists');
-                        } else if (error.message === 'Form Duplicate entry') {
-                            alert('Form already exists');
-                        } else if (error.message === 'Internal server error') {
-                            alert('Server error');
-                        } else if (error.message === 'Encryption Error') {
-                            alert('Encryption Error');
-                        } else {
-                            console.error('Error:', error);
-                        }
-                    });
-
-                }
-                else if (isDoctorNew === false) {
-                    // show loading modal
-                    loadingModal.show();
-                    postStudentInfo(studentEntry)
-                    .then(data => {
-                        studentId = data[0].insertId;
-                        formEntry.studentId = studentId;
-                        formEntry.doctorMCR = currentDoctor;
-                        formEntry.comments = commentsTextarea.value;
-                        return postFormInfo(formEntry);
-                    })
-                    .then(data => {
-                        // if checkbox, send email
-                        if(acknowledgeCheckBox.checked){
-                            const emailEntry ={
-                                studentId : studentId,
-                                email : parentEmail.value
-                            }
-                            const acknowledgeEntry = {
-                                studentId : studentId,
-                                parentContactNo : studentEntry.parentContact,
-                                parentEmail : studentEntry.parentEmail
-                            }
-                            return Promise.all([sendEmail(emailEntry),postAcknowledge(acknowledgeEntry)]);
-                        }
-                        else{
-                            return;
-                        }
-                    })
-                    .then(data => {
-                        // hide loading modal
-                        loadingModal.hide();
-                        emptyOutStudentInputs();
-
-                        for (let i = 0; i < eligibilityRadios.length; i++) {
-                            eligibilityRadios[i].checked = false;
-                        }
-                        commentsTextarea.value = '';
-                        
-                        let scrollableDiv = document.getElementById("formDiv");
-                        scrollableDiv.scrollTop = 0;
-                    })
-                    .catch(error => {
-                        if (error.message === 'Student Duplicate entry') {
-                            alert('Student already exists');
-                        } else if (error.message === 'Form Duplicate entry') {
-                            alert('Form already exists');
-                        } else if (error.message === 'Internal server error') {
-                            alert('Server error');
-                        } else {
-                            console.error('Error:', error);
-                        }
-                    });
-                }
+                    let scrollableDiv = document.getElementById("formDiv");
+                    scrollableDiv.scrollTop = 0;
+                })
+                .catch(error => {
+                    if (error.message === 'Student Duplicate entry') {
+                        alert('Student already exists');
+                    } else if (error.message === 'Form Duplicate entry') {
+                        alert('Form already exists');
+                    } else if (error.message === 'Internal server error') {
+                        alert('Server error');
+                    } else {
+                        console.error('Error:', error);
+                    }
+                });
             }
         }
         else{
             const firstInvalidElement = document.querySelector('.is-invalid');
-
             if (firstInvalidElement) {
             // Scroll to the top of the first invalid element
             firstInvalidElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
     });
+    
+    //validate user
+    validateAuth();
 });
