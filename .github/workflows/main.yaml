@@ -18,6 +18,7 @@ jobs:
         with:
           browser: chrome
           start: npm start
+          headed: true
         env:
             cloudinary_api_secret: ${{ secrets.CYPRESS_CLOUDINARY_API_KEY }}
             cloudinary_api_key: ${{ secrets.CYPRESS_CLOUDINARY_API_SECRET }}
