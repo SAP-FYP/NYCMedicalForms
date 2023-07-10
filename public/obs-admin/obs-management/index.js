@@ -1540,6 +1540,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             });
         })
       })
+    })  
     })
     .catch(function (error) {
       if (error && error.message !== "redirected") {
@@ -1571,5 +1572,5 @@ document.addEventListener('DOMContentLoaded', (event) => {
       })
     })
 
-});
+
 

@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const elasticEmail = require('elasticemail');
 const cloudinary = require("cloudinary").v2;
-const { UserNotFoundError,DUPLICATE_ENTRY_ERROR } = require("./errors");
+const { UserNotFoundError, DUPLICATE_ENTRY_ERROR } = require("./errors");
 const crypto = require('crypto');
 
 const key = Buffer.from(process.env.encryptKey, 'hex');
@@ -868,6 +868,7 @@ app.put('/parent/acknowledge', parentAuthHelper.verifyToken, parentAuthHelper.va
 })
 
 app.post('/postAcknowledge', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    const { studentId, parentContactNo, parentEmail } = req.body;
     if (req.decodedToken.role != 4) {
         return res.redirect('/error?code=403');
     }
@@ -1837,7 +1838,7 @@ app.post('/uploadSign', authHelper.verifyToken, authHelper.checkIat, (req, res) 
 });
 
 // upload doctor informtaion
-app.post('/postDoctorInfo',authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+app.post('/postDoctorInfo', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
     if (req.decodedToken.role != 4) {
         return res.redirect('/error?code=403');
     }
@@ -1874,7 +1875,7 @@ app.post('/postDoctorInfo',authHelper.verifyToken, authHelper.checkIat, (req, re
 });
 
 //upload student information
-app.post('/postStudentInfo',authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+app.post('/postStudentInfo', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
     if (req.decodedToken.role != 4) {
         return res.redirect('/error?code=403');
     }
@@ -1895,7 +1896,7 @@ app.post('/postStudentInfo',authHelper.verifyToken, authHelper.checkIat, (req, r
 });
 
 //upload form information
-app.post('/postFormInfo',authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+app.post('/postFormInfo', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
     if (req.decodedToken.role != 4) {
         return res.redirect('/error?code=403');
     }
