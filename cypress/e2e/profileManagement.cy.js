@@ -9,14 +9,14 @@ let authToken;
 before(() => {
     const emailLogin = 'cypresstest@gmail.com';
     const passLogin = 'Password1!';
-    cy.adminlogin(emailLogin, passLogin).wait(2000);
+    cy.adminlogin(emailLogin, passLogin);
     cy.getCookie('jwt').then((cookie) => {
         authToken = cookie.value;
     })
 })
 
 beforeEach(() => {
-    cy.setCookie('jwt', authToken).wait(500);
+    cy.setCookie('jwt', authToken);
     cy.visit('http://localhost:3000/obs-admin/profile');
 })
 
@@ -74,5 +74,4 @@ describe('Update user password', () => {
             authToken = cookie.value;
         }).wait(1000);
     })
-
 })
