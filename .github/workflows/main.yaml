@@ -13,13 +13,21 @@ jobs:
       - name: Checkout GitCode
         uses: actions/checkout@v3
           
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+
       - name: Run Cypress Tests
         uses: cypress-io/github-action@v5
         with:
           browser: chrome
           start: npm start
-          headed: true
+          wait-on: 'http://localhost:3000'
+          record: true
         env:
+            CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             cloudinary_api_secret: ${{ secrets.CYPRESS_CLOUDINARY_API_KEY }}
             cloudinary_api_key: ${{ secrets.CYPRESS_CLOUDINARY_API_SECRET }}
             cloudinary_name: ${{ secrets.CYPRESS_CLOUDINARY_NAME }}
