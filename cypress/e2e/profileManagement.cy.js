@@ -9,14 +9,14 @@ let authToken;
 before(() => {
     const emailLogin = 'cypresstest@gmail.com';
     const passLogin = 'Password1!';
-    cy.adminlogin(emailLogin, passLogin).wait(1000);
-    cy.getCookie('jwt').then((cookie) => {
+    cy.adminlogin(emailLogin, passLogin);
+    cy.getCookie('jwt').wait(1000).then((cookie) => {
         authToken = cookie.value;
     })
 })
 
 beforeEach(() => {
-    cy.setCookie('jwt', authToken);
+    cy.setCookie('jwt', authToken).wait(1000);
     cy.visit('http://localhost:3000/obs-admin/profile');
 })
 
