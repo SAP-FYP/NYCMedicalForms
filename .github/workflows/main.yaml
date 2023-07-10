@@ -11,18 +11,14 @@ jobs:
 
     steps:
       - name: Checkout GitCode
-        uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16.x'
-
-      - name: Install Dependencies
-        run: npm install
+        uses: actions/checkout@v3
           
       - name: Run Cypress Tests
         uses: cypress-io/github-action@v5
+        with:
+          browser: chrome
+          start: npm start
+          wait-on: "http://localhost:3000"
         env:
             CYPRESS_cloudinary_api_secret: ${{ secrets.CYPRESS_CLOUDINARY_API_KEY }}
             CYPRESS_cloudinary_api_key: ${{ secrets.CYPRESS_CLOUDINARY_API_SECRET }}
@@ -41,8 +37,4 @@ jobs:
             CYPRESS_twilioNumber: ${{ secrets.CYPRESS_TWILIONUMBER }}
             CYPRESS_twilioSID: ${{ secrets.CYPRESS_TWILIOSID }}
             CYPRESS_twilioToken: ${{ secrets.CYPRESS_TWILIOTOKEN }}
-        with:
-          browser: chrome
-          start: npm start
-          wait-on: "http://localhost:3000"
         
