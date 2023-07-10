@@ -23,9 +23,7 @@ jobs:
           
       - name: Run Cypress Tests
         uses: cypress-io/github-action@v5
-        with:
-          browser: chrome
-          env:
+        env:
             CYPRESS_cloudinary_api_secret: ${{ secrets.CYPRESS_CLOUDINARY_API_KEY }}
             CYPRESS_cloudinary_api_key: ${{ secrets.CYPRESS_CLOUDINARY_API_SECRET }}
             CYPRESS_cloudinary_name: ${{ secrets.CYPRESS_CLOUDINARY_NAME }}
@@ -43,6 +41,8 @@ jobs:
             CYPRESS_twilioNumber: ${{ secrets.CYPRESS_TWILIONUMBER }}
             CYPRESS_twilioSID: ${{ secrets.CYPRESS_TWILIOSID }}
             CYPRESS_twilioToken: ${{ secrets.CYPRESS_TWILIOTOKEN }}
+        with:
+          browser: chrome
           start: npm start
           wait-on: "http://localhost:3000"
         
