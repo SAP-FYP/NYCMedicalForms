@@ -28,7 +28,7 @@ describe('Update user profile', () => {
         cy.get('input[id=input-number]').type(number);
         cy.get('input[id=input-password]').type('Password1!');
         cy.get('button[id=save-changes-button]').click();
-        cy.get('.alert-success').should('be.visible').contains('Successfully updated profile.');
+        cy.get('.alert-success').should('be.visible').contains('Successfully updated profile.').wait(1000);
         cy.getCookie('jwt').then((cookie) => {
             authToken = cookie.value;
         }).wait(1000);
