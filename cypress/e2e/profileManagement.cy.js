@@ -16,7 +16,7 @@ before(() => {
 })
 
 beforeEach(() => {
-    cy.setCookie('jwt', authToken);
+    cy.setCookie('jwt', authToken).wait(1000);
     cy.visit('http://localhost:3000/obs-admin/profile');
 })
 
