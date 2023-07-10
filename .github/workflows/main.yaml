@@ -6,13 +6,31 @@ on:
       - isaac
 
 jobs:
- Cypress-Test:
-   runs-on: ubuntu-latest
-   steps:
-     - name: Checkout GitCode
-       uses: actions/checkout@v2
+  Cypress-Test:
+    runs-on: ubuntu-latest
 
-     - name: Run Cypress Test
-       uses: cypress-io/github-action@v5
-       with:
-         browser: chrome
+    steps:
+      - name: Checkout GitCode
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Project
+        run: npm run build
+
+      - name: Start Server
+        run: npm run start
+
+      - name: Wait for Server to Start
+        run: sleep 5s
+
+      - name: Run Cypress Tests
+        uses: cypress-io/github-action@v5
+        with:
+          browser: chrome

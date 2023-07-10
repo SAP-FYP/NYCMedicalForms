@@ -21,3 +21,6 @@ lerna-debug.log*
 
 # Videos
 cypress/videos
+
+# Screenshots
+cypress/Screenshots
