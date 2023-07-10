@@ -27,3 +27,22 @@ module.exports.uploadImage = function uploadImage(image) {
         }
     });
 }
+
+// Signature Upload 
+module.exports.uploadSignature = function uploadSignature(file) {
+    return new Promise((resolve, reject) => {
+        if (file) {
+            cloudinary.uploader.upload(file, { resource_type: 'image', format: 'png' }, (err, result) => {
+                if (err) {
+                    console.log(err);
+                    reject(new Error('Signature upload failed'));
+                } else {
+                    resolve(result.secure_url);
+                }
+            }
+            );
+        } else {
+            resolve(null);
+        }
+    });
+}

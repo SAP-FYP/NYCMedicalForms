@@ -15,6 +15,7 @@ const key = Buffer.from(process.env.encryptKey, 'hex');
 const iv = Buffer.from(process.env.encryptIV, 'hex');
 
 const authHelper = require('./auth/userAuth');
+const parentAuthHelper = require('./auth/parentAuth');
 const userModel = require('./model/user');
 const doctorFormModel = require('./model/doctorForm');
 const parentModel = require('./model/parent');
@@ -618,16 +619,53 @@ app.get('/logout', (req, res, next) => {
  * User: Parent
  */
 
+// Retrieve form details for parent acknowledgement- Used by Barry (for identification for merging) // ! TO BE CHANGED WHEN MERGED
+app.get('/form/:encrypted', parentAuthHelper.verifyToken, parentAuthHelper.validateUser, (req, res, next) => {
+    const encrypted = req.params.encrypted;
 
-app.post('/parent-sign-upload', (req, res) => {
+    // Decrypt studentID
+    const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+    const studentID = decipher.update(encrypted, 'hex', 'utf8') + decipher.final('utf8');
+
+    return formModel
+        .getFormDetails(studentID)
+        .then((result) => {
+            // Decrypt signature data
+            const encryptedSignInfo = result.signature
+            const key = Buffer.from('qW3eRt5yUiOpAsDfqW3eRt5yUiOpAsDf'); //must be 32 characters
+            const iv = Buffer.from('qW3eRt5yUiOpAsDf'); //must be 16 characters
+            try {
+                // Create the decipher object
+                const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+                let decrypted = decipher.update(encryptedSignInfo, 'hex', 'utf8');
+                decrypted += decipher.final('utf8');
+                result.signature = decrypted.split(';')[0];
+            } catch (error) {
+                // Decrypt Error
+                console.error('Decryption Error:', error);
+                res.status(500).json({ message: 'Decryption Error' });
+            }
+
+            return res.json({ form: result });
+        })
+        .catch((error) => {
+            // TODO ERROR HANDLING
+            console.log(error)
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+});
+app.post('/parent-sign-upload', parentAuthHelper.verifyToken, (req, res) => {
     const file = req.body.parentSignature;
-    cloudinary.uploader.upload(file, { resource_type: 'image', format: 'png' }, (err, result) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ message: "Upload failed" });
+    cloudinaryModel.uploadSignature(file)
+        .then((result) => {
+            return res.status(200).send({ 'message': 'Signature uploaded successfully', 'url': result });
         }
-        return res.json({ url: result.secure_url });
-    });
+        )
+        .catch((error) => {
+            console.log(error)
+            return res.status(error.status || 500).json({ error: error.message });
+        }
+        )
 });
 
 // Twilio SMS
@@ -660,7 +698,7 @@ National Youth Council in affiliation with Outward Bound Singapore`
 })
 
 // Email test
-app.post('/send-email', (req, res) => {
+app.post('/send-email', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
     const { email, studentId } = req.body;
     // Make studentId into a string
     const parsedStudentId = studentId.toString();
@@ -697,7 +735,7 @@ app.post('/send-email', (req, res) => {
 });
 
 // Update formStatus after parent acknowledges
-app.put('/parent/status', (req, res, next) => {
+app.put('/parent/status', parentAuthHelper.verifyToken, parentAuthHelper.validateUser, (req, res, next) => {
 
     const encrypted = req.body.encrypted;
 
@@ -712,7 +750,7 @@ app.put('/parent/status', (req, res, next) => {
         return res.status(400).json({ error: 'Invalid URL' });
     }
 
-    
+
     return parentModel.updateFormStatus(studentID)
         .then((result) => {
             return res.json(result);
@@ -758,7 +796,28 @@ app.post('/parent/login/', (req, res, next) => {
                 throw error;
             }
 
-            return res.json({ user: result });
+            let payload = {
+                encrypted: req.body.encrypted,
+            }
+
+            console.log(payload);
+
+            let tokenConfig = {
+                expiresIn: '1h',
+                algorithm: 'HS256'
+            }
+
+            // Generate JWT token
+            jwt.sign(payload, JWT_SECRET, tokenConfig, (err, token) => {
+                if (err) {
+                    console.error('Failed to sign JWT token:', err);
+                    error.status = 500;
+                    throw error;
+                };
+                res.cookie('parentJWT', token, { httpOnly: true, secure: false, sameSite: 'strict' });
+                return res.json({ key: result });
+            })
+
 
         })
         .catch((error) => {
@@ -768,7 +827,7 @@ app.post('/parent/login/', (req, res, next) => {
 })
 
 // Update parent's acknowledgement
-app.put('/parent/acknowledge', (req, res, next) => {
+app.put('/parent/acknowledge', parentAuthHelper.verifyToken, parentAuthHelper.validateUser, (req, res, next) => {
 
     const encrypted = req.body.encrypted;
 
@@ -794,6 +853,7 @@ app.put('/parent/acknowledge', (req, res, next) => {
 
     // If any of the fields are empty
     if (!data.studentID || !data.parentNRIC || !data.nameOfParent || !data.parentSignature || !data.dateOfAcknowledgement) {
+        console.log("One of the fields are empty")
         return res.status(400).json({ error: 'Invalid fields' });
     }
 
@@ -807,7 +867,7 @@ app.put('/parent/acknowledge', (req, res, next) => {
         })
 })
 
-app.post('/postAcknowledge', (req, res, next) => {
+app.post('/postAcknowledge', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
     const { studentId, parentContactNo, parentEmail } = req.body;
     // TODO ERROR HANDLING
     return parentModel.postAcknowledgement(studentId, parentContactNo, parentEmail)
@@ -1875,8 +1935,8 @@ app.get('/getClasses', (req, res, next) => {
             res.json(classLists);
         })
         .catch(err => {
-                res.status(500).json({ message: 'Internal server error' });
-            })
+            res.status(500).json({ message: 'Internal server error' });
+        })
 });
 
 // get course dates
@@ -1910,43 +1970,6 @@ app.get('/getSchools', (req, res, next) => {
                 res.status(500).json({ message: 'Internal server error' });
             }
         });
-});
-
-// Retrieve form details for parent acknowledgement- Used by Barry (for identification for merging)
-app.get('/form/:encrypted', (req, res, next) => {
-    const encrypted = req.params.encrypted;
-
-    // Decrypt studentID
-    const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
-    const studentID = decipher.update(encrypted, 'hex', 'utf8') + decipher.final('utf8');
-
-    return formModel
-        .getFormDetails(studentID)
-        .then((result) => {
-            // Decrypt signature data
-            const encryptedSignInfo = result.signature
-            const key = Buffer.from('qW3eRt5yUiOpAsDfqW3eRt5yUiOpAsDf'); //must be 32 characters
-            const iv = Buffer.from('qW3eRt5yUiOpAsDf'); //must be 16 characters
-            try {
-                // Create the decipher object
-                const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
-                let decrypted = decipher.update(encryptedSignInfo, 'hex', 'utf8');
-                decrypted += decipher.final('utf8');
-                result.signature = decrypted.split(';')[0];
-                ;
-            } catch (error) {
-                // Decrypt Error
-                console.error('Decryption Error:', error);
-                res.status(500).json({ message: 'Decryption Error' });
-            }
-
-            return res.json({ form: result });
-        })
-        .catch((error) => {
-            // TODO ERROR HANDLING
-            console.log(error)
-            return res.status(error.status || 500).json({ error: error.message });
-        })
 });
 
 /**
