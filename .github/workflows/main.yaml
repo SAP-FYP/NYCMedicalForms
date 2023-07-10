@@ -45,4 +45,5 @@ jobs:
             twilioNumber: ${{ secrets.CYPRESS_TWILIONUMBER }}
             twilioSID: ${{ secrets.CYPRESS_TWILIOSID }}
             twilioToken: ${{ secrets.CYPRESS_TWILIOTOKEN }}
+            TZ: Asia/Singapore
         
