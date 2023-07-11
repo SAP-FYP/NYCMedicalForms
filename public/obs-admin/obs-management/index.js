@@ -63,7 +63,7 @@ function updateFormCounts(formData) {
     },
     { pendingParent: 0, pending: 0, approved: 0, rejected: 0, needReview: 0 }
   );
-  console.log(formCounts); // Log the formCounts object to the console
+  // console.log(formCounts); // Log the formCounts object to the console
   const pendingParentAmtElement = document.querySelector('.pendingParentAmt');
   const pendingAmtElement = document.querySelector('.pendingAmt');
   const apprAmtElement = document.querySelector('.apprAmt');
@@ -183,8 +183,6 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
           removeExportIcon();
         }
       }
-
-      console.log(targetDataArray);
     });
   });
 
@@ -225,7 +223,6 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
       }
     });
 
-    console.log(targetDataArray);
   });
 }
 
@@ -238,7 +235,6 @@ function openModal(studentId, modalBtns) {
 
       const userPermissions = response.data[1];
 
-      console.log(formData);
       const dateObjCourseDate = new Date(formData.courseDate);
       const formatToLocal = dateObjCourseDate.toLocaleDateString("en-US", {
         day: "2-digit",
@@ -857,7 +853,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
       //call function to update status count
       const formData = response.data;
-      console.log(response.data);
 
       //remove user permission from array of data
       const userPermission = response.data.pop();
@@ -896,7 +891,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         //call function to format date
         const formattedDate = createFormattedDate(formData[i].courseDate);
-        console.log(formattedDate);
         // Get references to the status container and template
         const getAllForms = document.querySelector('#getAllForms');
         const rowTemplate = document.querySelector('.row-table-template');
@@ -1012,7 +1006,6 @@ function searchForms() {
 
         //call function to update status count
         const formData = response.data;
-        console.log(response.data);
         const userPermission = response.data.pop();
 
 
@@ -1050,7 +1043,7 @@ function searchForms() {
 
           //call function to format date
           const formattedDate = createFormattedDate(formData[i].courseDate);
-          console.log(formattedDate);
+
           // Get references to the status container and template
           const getAllForms = document.querySelector('#getAllForms');
           const rowTemplate = document.querySelector('.row-table-template');
@@ -1305,7 +1298,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
         const [day, month, year] = createFormattedDate(item.courseDate).split("/");
         const formattedCourseDateISO = `${year}-${month}-${day}`;
         checkbox.value = formattedCourseDateISO
-        console.log(checkbox.value);
 
         checkbox.style.float = "right";
         checkbox.style.margin = "3px";
