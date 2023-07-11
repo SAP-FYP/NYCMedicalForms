@@ -132,9 +132,9 @@ function populateRowData(clonedRowTemplate, formData, index, formattedDate) {
 }
 
 // Function to handle checkboxes
-function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, exportContainer, exportIcon, targetDataArray,i,formData) {
+function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, exportContainer, exportIcon, targetDataArray, i, formData) {
   const formId = formData[i].formId;
-  const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox'); 
+  const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
   const checkBoxTop = document.querySelector('#checkBoxTop');
 
   function appendExportIcon() {
@@ -152,7 +152,7 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
 
   // Add event listener to each checkbox
   checkBoxes.forEach(function (checkbox) {
-    checkbox.setAttribute('class', 'checkBox-formid-'+formId)
+    checkbox.setAttribute('class', 'checkBox-formid-' + formId)
     checkbox.removeAttribute('disabled'); // Remove the disabled attribute
     checkbox.addEventListener('change', function () {
       const isChecked = this.checked;
@@ -338,7 +338,7 @@ function openModal(studentId, modalBtns) {
           exportBtn.removeEventListener("click", handleExportClick);
         });
       }
-     
+
 
       displayFormModal(formData, userPermissions, formattedCourseDate, formattedVaccinationDate, formattedExamDate, formattedAckDate, formattedDateOfBirth, modalBtns, studentId);
 
@@ -475,7 +475,7 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
     const approveBtn = document.createElement('button');
     approveBtn.setAttribute('type', 'button');
     approveBtn.setAttribute('class', 'btn btn-secondary approve-btn');
-     //cypress testing id
+    //cypress testing id
     approveBtn.setAttribute('id', 'approveBtn');
     approveBtn.setAttribute("data-bs-dismiss", "modal");
     // approveBtn.setAttribute("data-bs-toggle", "modal");
@@ -547,9 +547,9 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
   });
 
   const rejectBtn = document.querySelector('#rejectBtn');
- 
+
   if (rejectBtn) {
-    rejectBtn.setAttribute('id', 'rejectBtn-studentid-'+studentId);
+    rejectBtn.setAttribute('id', 'rejectBtn-studentid-' + studentId);
     rejectBtn.addEventListener('click', function () {
       // Update status to "rejected" in the database
       updateStatusReject(formData)
@@ -575,14 +575,14 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
         parentContainer.removeChild(canvas);
       }
     });
-    
+
   }
 
 
 
   const approveBtn = document.querySelector('#approveBtn');
   if (approveBtn) {
-    approveBtn.setAttribute('id', 'approveBtn-studentid-'+studentId);
+    approveBtn.setAttribute('id', 'approveBtn-studentid-' + studentId);
     approveBtn.addEventListener('click', function () {
       // Update status to "approved" in the database
       updateStatusApprove(formData)
@@ -661,7 +661,7 @@ function handleModalButtons(clonedRowTemplate, studentId, formData, index) {
 
   modalBtns.forEach(function (modalBtn) {
     //for cypress
-    modalBtn.setAttribute("id","modalBtn-studentId-" + studentId);
+    modalBtn.setAttribute("id", "modalBtn-studentId-" + studentId);
     modalBtn.setAttribute("data-bs-toggle", "modal");
   });
 
@@ -700,7 +700,7 @@ function handleModalButtons(clonedRowTemplate, studentId, formData, index) {
         } else if (formStatus === "Pending Parent") {
           modalBtn.setAttribute("data-bs-target", "#staticBackdrop");
           alertBox(`Form is pending for parent's acknowledgement!`, 'warn');
-        } 
+        }
         modalBtn7.classList.add("changePill");
         openModal(studentId, modalBtns);
       });
@@ -1000,7 +1000,7 @@ function searchForms() {
   if (searchInput.value.trim() === '') {
     location.reload();
   } else {
-    const encodedSearchInput = encodeURIComponent(searchInput.value); 
+    const encodedSearchInput = encodeURIComponent(searchInput.value);
     axios.get(`${API_URL}/search/${encodedSearchInput}`)
       .then(function (response) {
         const configURL = response.config.url;
@@ -1054,7 +1054,7 @@ function searchForms() {
           // Get references to the status container and template
           const getAllForms = document.querySelector('#getAllForms');
           const rowTemplate = document.querySelector('.row-table-template');
-  
+
           //clear html content in getAllForms once since using template
           if (i === 0) {
             dataAll = [];
@@ -1063,7 +1063,7 @@ function searchForms() {
           // Clone the template and append it to the status container
           const templateContent = rowTemplate.content;
           const clonedRowTemplate = document.importNode(templateContent, true);
-  
+
           // Populate the cloned template function
           const {
             studentNRICCell,
@@ -1075,7 +1075,7 @@ function searchForms() {
             formStatusValue,
             studentId
           } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
-  
+
           //call function to handle checkboxes
           if (userPermission.includes(5)) {
             handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
@@ -1087,13 +1087,13 @@ function searchForms() {
             });
             checkBoxTop.classList.add('d-none');
           }
-  
-  
+
+
           //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
           handleModalButtons(clonedRowTemplate, studentId, formData, i);
           ;
-  
-  
+
+
         }
         //Outside of for loop 
         //Export to Excel Bulk Once
@@ -1225,7 +1225,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
       console.log(error);
     });
 
-    let fetchClasses = fetch(`/getClasses`)
+  let fetchClasses = fetch(`/getClasses`)
     .then(response => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -1291,13 +1291,21 @@ document.addEventListener('DOMContentLoaded', (event) => {
         newDiv.classList.add('filter-div');
         const li = document.createElement('li');
         // Change date to singapore format, no time
-        li.textContent = new Date(item.courseDate).toLocaleDateString('en-SG');
+        li.textContent = createFormattedDate(item.courseDate);
+
         li.className = "m-3";
         // Align checkbox to most right of li
         const checkbox = document.createElement('input');
         checkbox.type = "checkbox";
         checkbox.name = "course-date";
-        checkbox.value = new Date(item.courseDate).toLocaleDateString('en-SG');
+       
+        //to cross check with database date format
+        //data format in website is dd-mm-yyyy
+        //database reads yyyy-mm-dd
+        const [day, month, year] = createFormattedDate(item.courseDate).split("/");
+        const formattedCourseDateISO = `${year}-${month}-${day}`;
+        checkbox.value = formattedCourseDateISO
+        console.log(checkbox.value);
 
         checkbox.style.float = "right";
         checkbox.style.margin = "3px";
@@ -1333,7 +1341,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
       }
 
       data.forEach(item => {
-       
+
         // Create a new <li> element with checkbox floating right
         const newDiv = document.createElement('div');
         newDiv.classList.add('filter-div');
@@ -1435,7 +1443,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
           })
             .then(response => {
               formData = response.data;
-      
+
               //remove user permission from array of data
               const userPermission = response.data.pop();
               if (formData.length === 0) {
@@ -1480,11 +1488,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
                 //call function to format date
                 const formattedDate = createFormattedDate(formData[i].courseDate);
-                console.log(formattedDate);
                 // Get references to the status container and template
                 const getAllForms = document.querySelector('#getAllForms');
                 const rowTemplate = document.querySelector('.row-table-template');
-        
+
                 //clear html content in getAllForms once since using template
                 if (i === 0) {
                   dataAll = [];
@@ -1493,7 +1500,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 // Clone the template and append it to the status container
                 const templateContent = rowTemplate.content;
                 const clonedRowTemplate = document.importNode(templateContent, true);
-        
+
                 // Populate the cloned template function
                 const {
                   studentNRICCell,
@@ -1505,7 +1512,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                   formStatusValue,
                   studentId
                 } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
-        
+
                 //call function to handle checkboxes
                 if (userPermission.includes(5)) {
                   handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
@@ -1517,10 +1524,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
                   });
                   checkBoxTop.classList.add('d-none');
                 }
-        
-        
+
+
                 //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
-                handleModalButtons(clonedRowTemplate, nameOfStudentCell, formData, i);
+                handleModalButtons(clonedRowTemplate, studentId, formData, i);
                 ;
 
 
@@ -1540,38 +1547,38 @@ document.addEventListener('DOMContentLoaded', (event) => {
             });
         })
       })
-    })  
+    })
     .catch(function (error) {
       if (error && error.message !== "redirected") {
         console.log(error);
       }
     });
 
-    const exportButtonHandler = () => {
-      console.log(dataAll);
-      exportToExcelBulk(dataAll);
-      alertBox("You have successfully exported the data to excel!", "success")
-    }
+  const exportButtonHandler = () => {
+    console.log(dataAll);
+    exportToExcelBulk(dataAll);
+    alertBox("You have successfully exported the data to excel!", "success")
+  }
 
 
 
-    // Search bar to search for filters in the respective .filter-div
-    const filterSearch = document.querySelectorAll('.searchBarFilter')
-    filterSearch.forEach(search => {
-      search.addEventListener('keyup', function () {
-        const filter = search.value.toUpperCase();
-        const filterDiv = search.parentElement;
-        const filterDivItems = filterDiv.querySelectorAll('li');
-        filterDivItems.forEach(item => {
-          const textValue = item.textContent || item.innerText;
-          if (textValue.toUpperCase().indexOf(filter) > -1) {
-            item.style.display = "";
-          } else {
-            item.style.display = "none";
-          }
-        })
+  // Search bar to search for filters in the respective .filter-div
+  const filterSearch = document.querySelectorAll('.searchBarFilter')
+  filterSearch.forEach(search => {
+    search.addEventListener('keyup', function () {
+      const filter = search.value.toUpperCase();
+      const filterDiv = search.parentElement;
+      const filterDivItems = filterDiv.querySelectorAll('li');
+      filterDivItems.forEach(item => {
+        const textValue = item.textContent || item.innerText;
+        if (textValue.toUpperCase().indexOf(filter) > -1) {
+          item.style.display = "";
+        } else {
+          item.style.display = "none";
+        }
       })
     })
+  })
 
 });
 
