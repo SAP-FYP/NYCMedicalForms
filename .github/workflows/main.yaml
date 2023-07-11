@@ -1,0 +1,77 @@
+name: Cypress Tests
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  Cypress-Test:
+    name: Cypress E2E Testing
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout GitCode
+        uses: actions/checkout@v3
+          
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+
+      - name: Run Cypress Tests
+        uses: cypress-io/github-action@v5
+        with:
+          browser: chrome
+          start: npm start
+          wait-on: 'http://localhost:3000'
+          record: false
+        env:
+            CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            cloudinary_api_secret: ${{ secrets.CYPRESS_CLOUDINARY_API_KEY }}
+            cloudinary_api_key: ${{ secrets.CYPRESS_CLOUDINARY_API_SECRET }}
+            cloudinary_name: ${{ secrets.CYPRESS_CLOUDINARY_NAME }}
+            DB_CONNECTION_LIMIT: ${{ secrets.CYPRESS_DB_CONNECTION_LIMIT }}
+            DB_DATABASE: ${{ secrets.CYPRESS_DB_DATABASE }}
+            DB_HOST: ${{ secrets.CYPRESS_DB_HOST }}
+            DB_PASSWORD: ${{ secrets.CYPRESS_DB_PASSWORD }}
+            DB_USER: ${{ secrets.CYPRESS_DB_USER }}
+            elasticAPIKey: ${{ secrets.CYPRESS_ELASTICAPIKEY }}
+            elasticEmail: ${{ secrets.CYPRESS_ELASTICEMAIL }}
+            encryptIV: ${{ secrets.CYPRESS_ENCRYPTIV }}
+            encryptKey: ${{ secrets.CYPRESS_ENCRYPTKEY }}
+            PORT: ${{ secrets.CYPRESS_PORT }}
+            SECRETKEY: ${{ secrets.CYPRESS_SECRETKEY }}
+            twilioNumber: ${{ secrets.CYPRESS_TWILIONUMBER }}
+            twilioSID: ${{ secrets.CYPRESS_TWILIOSID }}
+            twilioToken: ${{ secrets.CYPRESS_TWILIOTOKEN }}
+            TZ: Asia/Singapore
+
+      - name: Upload Screenshots
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+          if-no-files-found: ignore
+
+      - name: Upload Videos
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: cypress-videos
+          path: cypress/videos
+          if-no-files-found: ignore
+
+  deploy:
+    name: Deploy
+    needs: [Cypress-Test]
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Deploy to production
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.SERVICE_ID }}
+          api-key: ${{ secrets.RENDER_API_KEY }}

@@ -179,6 +179,21 @@ window.addEventListener("DOMContentLoaded", function () {
       alert("Please enter a valid NRIC/FIN");
       return;
     }
+    
+    let updateParentAcknowledgement = axios
+    .put("/parent/acknowledge", {
+      encrypted: encrypted,
+      parentNRIC: parentNRIC.value.slice(-4),
+      nameOfParent: parentName.value,
+      dateOfAcknowledgement: date,
+      parentSignature: parentSignature
+    });
+
+    let updateFormStatus = axios.put("/parent/status", {
+      encrypted: encrypted,
+    });
+
+    // Verification if signature is empty
 
     let parentSignature = "";
     console.log(signaturePad.toDataURL());
@@ -186,14 +201,7 @@ window.addEventListener("DOMContentLoaded", function () {
       parentSignature: signaturePad.toDataURL(),
     }).then((response) => {
       parentSignature = `${response.data.url};${today};${parentName.value}`;
-      axios
-        .put("/parent/acknowledge", {
-          encrypted: encrypted,
-          parentNRIC: parentNRIC.value.slice(-4),
-          nameOfParent: parentName.value,
-          dateOfAcknowledgement: date,
-          parentSignature: parentSignature
-        })
+      Promise.all([updateParentAcknowledgement, updateFormStatus])
         .then((response) => {
           // window.location.href = "/acknowledgement/success";
           alert("Acknowledgement successful");

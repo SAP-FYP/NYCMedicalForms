@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const elasticEmail = require('elasticemail');
 const cloudinary = require("cloudinary").v2;
-const { UserNotFoundError,DUPLICATE_ENTRY_ERROR } = require("./errors");
+const { UserNotFoundError,DUPLICATE_ENTRY_ERROR,EMPTY_RESULT_ERROR } = require("./errors");
 const crypto = require('crypto');
 
 const key = Buffer.from(process.env.encryptKey, 'hex');
@@ -26,6 +26,7 @@ const cloudinaryModel = require('./model/cloudinary');
 const passwordGenerator = require('./helper/passwordGenerator');
 const momentHelper = require('./helper/epochConverter');
 const cronJob = require('./helper/cron');
+const { env } = require("process");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -193,7 +194,6 @@ app.post('/login', (req, res, next) => {
             })
         })
         .catch((error) => {
-            console.log(error)
             return res.status(error.status || 500).json({ error: error.message });
         });
 });
@@ -484,7 +484,7 @@ app.put('/user/updatepassword', authHelper.verifyResetToken, (req, res, next) =>
                             } else if (payload.role == 2 || payload.role == 3) {
                                 return res.redirect('/obs-admin/obs-management')
                             } else if (payload.role == 4) {
-                                return res.redirect('/docForm')
+                                return res.redirect('/obs-form')
                             } else {
                                 const error = new Error("Invalid user role");
                                 error.status = 500;
@@ -630,32 +630,6 @@ app.post('/parent-sign-upload', (req, res) => {
     });
 });
 
-// Setting parent's acknowledgement
-app.post('/post-acknowledge', (req, res) => {
-    const parentEmail = req.body.parentEntry.parentEmail;
-    const studentId = req.body.parentEntry.studentId;
-    const parentContact = req.body.parentEntry.parentContact;
-
-    const data = {
-        parentEmail: parentEmail,
-        studentId: studentId,
-        parentContact: parentContact
-    }
-
-    return parentModel
-        .setParentsAcknowledgement(data)
-        .then((result) => {
-            return res.status(200).send({ 'message': 'Parent Acknowledgement Successful' });
-        }
-        )
-        .catch((error) => {
-            console.log(error)
-            return res.status(error.status || 500).json({ error: error.message });
-        }
-        )
-
-})
-
 // Twilio SMS
 app.post('/send-sms', (req, res) => {
     const { contact } = req.body;
@@ -676,7 +650,6 @@ National Youth Council in affiliation with Outward Bound Singapore`
     // Send sms
     twilioClient.messages.create(smsParams)
         .then((message) => {
-            console.log(message.sid)
             return res.status(200).send({ 'message': 'SMS sent successfully' });
         })
         // TODO NEED TO DO ERROR HANDLING FOR INCORRECT PHONE NUMBER)
@@ -718,10 +691,133 @@ app.post('/send-email', (req, res) => {
             console.error('Failed to send email:', err);
             res.status(500).send('Failed to send email');
         } else {
-            console.log('Email sent successfully:', result);
             return res.status(200).json({ message: 'Email sent successfully:' });
         }
     });
+});
+
+// Update formStatus after parent acknowledges
+app.put('/parent/status', (req, res, next) => {
+
+    const encrypted = req.body.encrypted;
+
+    if (encrypted.length != 32) {
+        return res.status(400).json({ error: 'Invalid URL' });
+    }
+    // Decrypt
+    const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+    const studentID = decipher.update(encrypted, 'hex', 'utf8') + decipher.final('utf8');
+
+    if (!studentID) {
+        return res.status(400).json({ error: 'Invalid URL' });
+    }
+
+    
+    return parentModel.updateFormStatus(studentID)
+        .then((result) => {
+            return res.json(result);
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        }
+        );
+
+
+
+});
+
+// ! Make sure parents are unable to login if already acknowledged.
+app.post('/parent/login/', (req, res, next) => {
+    // Get encrypted studentID from body
+    const encrypted = req.body.encrypted;
+    // Get password from body
+    const password = req.body.password;
+
+    // Check if encrypted StudentID is valid
+    if (encrypted.length != 32) {
+        return res.status(400).json({ error: 'Invalid URL' });
+    }
+
+    // Decrypt studentID
+    const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+    const studentID = decipher.update(encrypted, 'hex', 'utf8') + decipher.final('utf8');
+
+    if (!studentID || !password) {
+        return res.status(400).json({ error: 'Invalid URL or password' });
+    }
+
+    return userModel
+        .parentLogin(studentID)
+        .then((result) => {
+            // Convert dateofbirth to DD/MM/YYYY (Singapore format)
+            result.dateOfBirth = new Date(result.dateOfBirth).toLocaleDateString('en-SG').replace(/\//g, '');
+            // Check if password entered is == to DOB + NRIC (password) in database
+            if (password != result.dateOfBirth + result.studentNRIC) {
+                const error = new Error("Invalid URL or password");
+                error.status = 401;
+                throw error;
+            }
+
+            return res.json({ user: result });
+
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        }
+        );
+})
+
+// Update parent's acknowledgement
+app.put('/parent/acknowledge', (req, res, next) => {
+
+    const encrypted = req.body.encrypted;
+
+    if (encrypted.length != 32) {
+        return res.status(400).json({ error: 'Invalid URL' });
+    }
+
+    // Decrypt studentID
+    const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+    const studentID = decipher.update(encrypted, 'hex', 'utf8') + decipher.final('utf8');
+
+    if (!studentID) {
+        return res.status(400).json({ error: 'Invalid URL' });
+    }
+
+    const data = {
+        studentID: studentID,
+        parentNRIC: req.body.parentNRIC,
+        nameOfParent: req.body.nameOfParent,
+        parentSignature: req.body.parentSignature,
+        dateOfAcknowledgement: req.body.dateOfAcknowledgement,
+    };
+
+    // If any of the fields are empty
+    if (!data.studentID || !data.parentNRIC || !data.nameOfParent || !data.parentSignature || !data.dateOfAcknowledgement) {
+        return res.status(400).json({ error: 'Invalid fields' });
+    }
+
+    return parentModel.updateAcknowledgement(data)
+        .then((result) => {
+            return res.json({ user: result });
+        }
+        ).catch((error) => {
+            console.log(error)
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+})
+
+app.post('/postAcknowledge', (req, res, next) => {
+    const { studentId, parentContactNo, parentEmail } = req.body;
+    // TODO ERROR HANDLING
+    return parentModel.postAcknowledgement(studentId, parentContactNo, parentEmail)
+        .then((result) => {
+            return res.json({ user: result });
+        }
+        ).catch((error) => {
+            console.log(error)
+            return res.status(error.status || 500).json({ error: error.message });
+        })
 });
 
 /**
@@ -796,7 +892,7 @@ app.post('/obs-admin/newuser', authHelper.verifyToken, authHelper.checkIat, (req
             })
             .catch((error) => {
                 if (error.code == "ER_DUP_ENTRY") {
-                    return res.status(422).json({ error: "Email or contact already exists" });
+                    return res.status(422).json({ error: "Email already exists" });
                 }
                 return res.status(error.status || 500).json({ error: error.message });
             })
@@ -1442,6 +1538,7 @@ app.get('/obs-admin/pmt/search/:search', authHelper.verifyToken, authHelper.chec
             if (result.length === 0) {
                 throw new Error("No submission found");
             }
+            result[0].push(req.decodedToken.permissions);
             return res.json(result[0]);
         })
         .catch((error) => {
@@ -1449,10 +1546,53 @@ app.get('/obs-admin/pmt/search/:search', authHelper.verifyToken, authHelper.chec
         })
 });
 
+app.get('/get-school-filter',authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+     // AUTHORIZATION CHECK - PMT, MST 
+     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+        return res.redirect('/error?code=403')
+    }
+    return doctorFormModel
+        .getSchoolsFilter()
+        .then(data => {
+            const schoolLists = data[0];
+            data[0].push(req.decodedToken.permissions);
+            res.json(schoolLists);
+        })
+        .catch(err => {
+            if (error instanceof EMPTY_RESULT_ERROR) {
+                res.status(404).json({ message: error.message });
+            } else {
+                res.status(500).json({ message: 'Internal server error' });
+            }
+        });
+});
+
+app.get('/getEligibility',authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+     // AUTHORIZATION CHECK - PMT, MST 
+     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+        return res.redirect('/error?code=403')
+    }
+    return doctorFormModel
+        .getEligibility()
+        .then(data => {
+            const eligibilityLists = data[0];
+            res.json(eligibilityLists)
+        })
+        .catch(err => {
+            if (error instanceof EMPTY_RESULT_ERROR) {
+                res.status(404).json({ message: error.message });
+            } else {
+                res.status(500).json({ message: 'Internal server error' });
+            }
+        });
+});
 
 // PMT Retrieve submissions by filtering (School, Class, Eligibility, CourseDate
-app.post('/obs-admin/pmt/filter/', (req, res, next) => {
-
+app.post('/obs-admin/pmt/filter/', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+// AUTHORIZATION CHECK - PMT, MST 
+if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+    return res.redirect('/error?code=403')
+}
     let school = req.body.school
     let stuClass = req.body.class
     let eligibility = req.body.eligibility
@@ -1480,6 +1620,7 @@ app.post('/obs-admin/pmt/filter/', (req, res, next) => {
             if (result.length === 0) {
                 throw new Error("No submission found");
             }
+            result[0].push(req.decodedToken.permissions);
             return res.json(result[0]);
         })
         .catch((error) => {
@@ -1597,8 +1738,8 @@ app.put('/obs-admin/mst/review/:studentId', authHelper.verifyToken, authHelper.c
         .then((result) => {
 
             if (review === "") {
-                    
-                    return res.status(204).json({ message: "Your review has been deleted" });
+
+                return res.status(204).json({ message: "Your review has been deleted" });
             }
 
             return res.json(result);
@@ -1755,7 +1896,6 @@ app.post('/postDoctorInfo',authHelper.verifyToken, authHelper.checkIat, (req, re
         return doctorFormModel
             .postDoctorInfo(doctorMCR, physicianName, encryptedsignatureInfo, clinicName, clinicAddress, doctorContact)
             .then(data => {
-                console.log(data)
                 res.json(data);
             })
             .catch(error => {
@@ -1782,7 +1922,6 @@ app.post('/postStudentInfo',authHelper.verifyToken, authHelper.checkIat, (req, r
     return doctorFormModel
         .postStudentInfo(studentNRIC, studentName, dateOfBirth, studentClass, schoolName, dateOfVaccine)
         .then(data => {
-            console.log(data)
             res.json(data);
         })
         .catch(error => {
@@ -1804,7 +1943,6 @@ app.post('/postFormInfo',authHelper.verifyToken, authHelper.checkIat, (req, res,
     return doctorFormModel
         .postFormInfo(studentId, courseDate, doctorMCR, eligibility, comments, date)
         .then(data => {
-            console.log(data)
             res.json(data);
         })
         .catch(error => {
@@ -1829,8 +1967,8 @@ app.post('/checkDoctorMCR', authHelper.verifyToken, authHelper.checkIat, (req, r
         .matchDoctorInfo(doctorMCR)
         .then(data => {
             const encryptedSignInfo = data[0].signature
-            const key = Buffer.from('qW3eRt5yUiOpAsDfqW3eRt5yUiOpAsDf'); //must be 32 characters
-            const iv = Buffer.from('qW3eRt5yUiOpAsDf'); //must be 16 characters
+            const key = Buffer.from(process.env.signatureKey); //must be 32 characters
+            const iv = Buffer.from(process.env.signatureIV); //must be 16 characters
             try {
                 // Create the decipher object
                 const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
@@ -1880,41 +2018,36 @@ app.put('/updateFormStatus', authHelper.verifyToken, authHelper.checkIat, (req, 
 });
 
 // get classes
-app.get('/getClasses', (req, res, next) => {
-    const limit = parseInt(req.query.limit);
-    const offset = parseInt(req.query.offset);
-    const search = req.query.search || '';
-    console.log(search)
+app.get('/getClasses', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+     // AUTHORIZATION CHECK - PMT, MST 
+     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+        return res.redirect('/error?code=403')
+    }
     return doctorFormModel
-        .getClasses(limit, offset, search)
+        .getClasses()
         .then(data => {
             const classLists = data[0];
-            console.log(classLists)
             res.json(classLists);
         })
         .catch(err => {
-            if (error instanceof EMPTY_RESULT_ERROR) {
-                res.status(404).json({ message: error.message });
-            } else {
                 res.status(500).json({ message: 'Internal server error' });
-            }
-        });
+            })
 });
 
 // get course dates
-app.get('/getCourseDates', (req, res, next) => {
-    const limit = parseInt(req.query.limit);
-    const offset = parseInt(req.query.offset);
-    const search = req.query.search || '';
-
+app.get('/getCourseDates', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+     // AUTHORIZATION CHECK - PMT, MST 
+     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+        return res.redirect('/error?code=403')
+    }
     return doctorFormModel
-        .getCourseDates(limit, offset, search)
+        .getCourseDates()
         .then(data => {
             const courseDateLists = data[0];
             res.json(courseDateLists)
         })
         .catch(err => {
-            if (error instanceof EMPTY_RESULT_ERROR) {
+            if (err instanceof EMPTY_RESULT_ERROR) {
                 res.status(404).json({ message: error.message });
             } else {
                 res.status(500).json({ message: 'Internal server error' });
@@ -1951,8 +2084,8 @@ app.get('/form/:encrypted', (req, res, next) => {
         .then((result) => {
             // Decrypt signature data
             const encryptedSignInfo = result.signature
-            const key = Buffer.from('qW3eRt5yUiOpAsDfqW3eRt5yUiOpAsDf'); //must be 32 characters
-            const iv = Buffer.from('qW3eRt5yUiOpAsDf'); //must be 16 characters
+            const key = Buffer.from(process.env.signatureKey); //must be 32 characters
+            const iv = Buffer.from(process.env.signatureIV); //must be 16 characters
             try {
                 // Create the decipher object
                 const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
@@ -1974,7 +2107,55 @@ app.get('/form/:encrypted', (req, res, next) => {
             return res.status(error.status || 500).json({ error: error.message });
         })
 });
+// check student NRIC
+app.post('/checkStudentNRIC', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
 
+    if (req.decodedToken.role != 4) {
+        return res.redirect('/error?code=403');
+    }
+    //retrieve doctorMCR here...
+    const { studentNRIC } = req.body;
+    //continue to database...
+    return doctorFormModel
+        .getStudents(studentNRIC)
+        .then(data => {
+            console.log(data);
+            res.json(data);
+        })
+        .catch(err => {
+            console.error(err);
+            if (err instanceof EMPTY_RESULT_ERROR) {
+                // user is not found
+                res.status(404).json({ message: 'Student Not Found' });
+            } else {
+                // unknown internal error(system failure)
+                res.status(500).json({ message: 'Internal Server Error' });
+            }
+        });
+});
+// delete duplicated student
+app.delete('/deleteStudentForm',  authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    if (req.decodedToken.role != 4) {
+        return res.redirect('/error?code=403');
+    }
+    const {studentIds} = req.body;
+    console.log(studentIds)
+    return doctorFormModel
+        .deleteStudentForm(studentIds)
+        .then((result) => {
+            console.log(result)
+            if (!result) {
+                const error = new Error("Unable to delete students and forms")
+                error.status = 500;
+                throw error;
+            }
+            return res.sendStatus(200);
+        })
+        .catch((error) => {
+            console.log(error)
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+})
 /**
  * Error handling
  */
