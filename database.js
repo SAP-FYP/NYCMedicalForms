@@ -17,6 +17,7 @@ module.exports = {
   query: async function (sql, params) {
     // Get a connection from the connection pool
     const conn = await pool.getConnection();
+
     try {
       // Execute the query using the connection and parameters
       const rows = await conn.query(sql, params);

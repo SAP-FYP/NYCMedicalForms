@@ -194,7 +194,6 @@ app.post('/login', (req, res, next) => {
             })
         })
         .catch((error) => {
-            console.log(error)
             return res.status(error.status || 500).json({ error: error.message });
         });
 });
@@ -485,7 +484,7 @@ app.put('/user/updatepassword', authHelper.verifyResetToken, (req, res, next) =>
                             } else if (payload.role == 2 || payload.role == 3) {
                                 return res.redirect('/obs-admin/obs-management')
                             } else if (payload.role == 4) {
-                                return res.redirect('/docForm')
+                                return res.redirect('/obs-form')
                             } else {
                                 const error = new Error("Invalid user role");
                                 error.status = 500;
@@ -893,7 +892,7 @@ app.post('/obs-admin/newuser', authHelper.verifyToken, authHelper.checkIat, (req
             })
             .catch((error) => {
                 if (error.code == "ER_DUP_ENTRY") {
-                    return res.status(422).json({ error: "Email or contact already exists" });
+                    return res.status(422).json({ error: "Email already exists" });
                 }
                 return res.status(error.status || 500).json({ error: error.message });
             })

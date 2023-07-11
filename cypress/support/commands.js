@@ -24,7 +24,7 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
-Cypress.Commands.add('login', (email, pass) => {
+Cypress.Commands.add('doctorlogin', (email, pass) => {
     cy.visit('http://localhost:3000/login');
     cy.get('input[id=login-email]').type(email);
     cy.get('input[id=login-password]').type(pass);
@@ -47,11 +47,29 @@ Cypress.Commands.add('checkMCR', (doctorMCR) => {
     cy.get('button[id=availabilityBtn]').click();
 });
 
-Cypress.Commands.add('fillInForm', (studentName,dateOfBirth,randomNumber,randomNRIC) => {
-  console.log(dateOfBirth)
-  cy.get('input[id=studentName]').type(studentName);
-  cy.get('input[id=dateOfBirth]').type(dateOfBirth);
-  cy.get('button[id=schoolName]').click();
-  cy.get(`li[id=school${randomNumber}]`).click();
-  cy.get('input[id=studentNRIC]').type(randomNRIC);
+Cypress.Commands.add('fillInForm', (studentName, dateOfBirth, randomNumber, randomNRIC) => {
+    console.log(dateOfBirth)
+    cy.get('input[id=studentName]').type(studentName);
+    cy.get('input[id=dateOfBirth]').type(dateOfBirth);
+    cy.get('button[id=schoolName]').click();
+    cy.get(`li[id=school${randomNumber}]`).click();
+    cy.get('input[id=studentNRIC]').type(randomNRIC);
 });
+
+Cypress.Commands.add('adminlogin', (email, pass) => {
+    cy.session(
+        [email, pass],
+        () => {
+            cy.visit('http://localhost:3000/obs-admin/login');
+            cy.get('input[id=login-email]').type(email);
+            cy.get('input[id=login-password]').type(pass);
+            cy.get('button[id=login-button]').click();
+            cy.get('#header-bar').should('have.class', 'col-12');
+        },
+        {
+            validate() {
+                cy.getCookie('jwt').should('exist');
+            }
+        }
+    )
+})

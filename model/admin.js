@@ -1,4 +1,3 @@
-const { locale } = require('moment');
 const conn = require('../database');
 const { query, pool } = conn;
 
