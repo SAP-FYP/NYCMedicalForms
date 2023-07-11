@@ -43,23 +43,15 @@ Cypress.Commands.add('managementLogin', (email, pass) => {
 })
 
 Cypress.Commands.add('checkMCR', (doctorMCR) => {
-    cy.visit('http://localhost:3000/obs-form');
     cy.get('input[id=doctorMCR]').type(doctorMCR);
     cy.get('button[id=availabilityBtn]').click();
-    cy.url().should('include', '/obs-form');
-    cy.contains('Student Section');
-})
-
-let LOCAL_STORAGE_MEMORY = {};
-
-Cypress.Commands.add("saveLocalStorage", () => {
-  Object.keys(localStorage).forEach(key => {
-    LOCAL_STORAGE_MEMORY[key] = localStorage[key];
-  });
 });
 
-Cypress.Commands.add("restoreLocalStorage", () => {
-  Object.keys(LOCAL_STORAGE_MEMORY).forEach(key => {
-    localStorage.setItem(key, LOCAL_STORAGE_MEMORY[key]);
-  });
+Cypress.Commands.add('fillInForm', (studentName,dateOfBirth,randomNumber,randomNRIC) => {
+  console.log(dateOfBirth)
+  cy.get('input[id=studentName]').type(studentName);
+  cy.get('input[id=dateOfBirth]').type(dateOfBirth);
+  cy.get('button[id=schoolName]').click();
+  cy.get(`li[id=school${randomNumber}]`).click();
+  cy.get('input[id=studentNRIC]').type(randomNRIC);
 });
