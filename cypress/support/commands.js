@@ -32,3 +32,12 @@ Cypress.Commands.add('login', (email, pass) => {
     cy.url().should('include', '/obs-form');
     cy.contains('Student Section');
 })
+
+Cypress.Commands.add('managementLogin', (email, pass) => {
+    cy.visit('http://localhost:3000/obs-admin/login');
+    cy.get('input[id=login-email]').type(email);
+    cy.get('input[id=login-password]').type(pass);
+    cy.get('button[id=login-button]').click();
+    cy.url().should('include', '/obs-management');
+    cy.contains('Overview');
+})
