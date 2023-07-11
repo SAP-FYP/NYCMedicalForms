@@ -1473,6 +1473,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
                 });
               }
+              
               //create array to store all data for export to excel bulk
 
               // Loop through the data and add it to the page
@@ -1572,5 +1573,5 @@ document.addEventListener('DOMContentLoaded', (event) => {
     })
   })
 
-});
+
 
