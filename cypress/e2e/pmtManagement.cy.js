@@ -18,11 +18,25 @@ beforeEach(() => {
     cy.viewport(1669, 937);
     cy.setCookie('jwt', authToken);
     cy.visit('http://localhost:3000/obs-admin/obs-management/');
+    cy.request({
+        method: 'PUT',
+        url: '/obs-admin/pmt/4',
+        body: {
+            formStatus: 'Pending'
+        }
+    })
+    cy.request({
+        method: 'PUT',
+        url: '/obs-admin/pmt/3',
+        body: {
+            formStatus: 'Pending'
+        }
+    })
 })
 
 describe('Forms Bulk Export', () => {
     it('should export all forms when selected top checkbox', () => {
-        cy.wait(1300);
+        cy.wait(1500);
         cy.get('input[id=checkBoxTop]').click();
         cy.get('img[id=export-icon]').click()
         cy.get('.alert-success').should('be.visible');
