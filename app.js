@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const elasticEmail = require('elasticemail');
 const cloudinary = require("cloudinary").v2;
-const { UserNotFoundError,DUPLICATE_ENTRY_ERROR } = require("./errors");
+const { UserNotFoundError,DUPLICATE_ENTRY_ERROR,EMPTY_RESULT_ERROR } = require("./errors");
 const crypto = require('crypto');
 
 const key = Buffer.from(process.env.encryptKey, 'hex');
@@ -26,6 +26,7 @@ const cloudinaryModel = require('./model/cloudinary');
 const passwordGenerator = require('./helper/passwordGenerator');
 const momentHelper = require('./helper/epochConverter');
 const cronJob = require('./helper/cron');
+const { env } = require("process");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -1829,8 +1830,8 @@ app.post('/checkDoctorMCR', authHelper.verifyToken, authHelper.checkIat, (req, r
         .matchDoctorInfo(doctorMCR)
         .then(data => {
             const encryptedSignInfo = data[0].signature
-            const key = Buffer.from('qW3eRt5yUiOpAsDfqW3eRt5yUiOpAsDf'); //must be 32 characters
-            const iv = Buffer.from('qW3eRt5yUiOpAsDf'); //must be 16 characters
+            const key = Buffer.from(process.env.signatureKey); //must be 32 characters
+            const iv = Buffer.from(process.env.signatureIV); //must be 16 characters
             try {
                 // Create the decipher object
                 const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
@@ -1951,8 +1952,8 @@ app.get('/form/:encrypted', (req, res, next) => {
         .then((result) => {
             // Decrypt signature data
             const encryptedSignInfo = result.signature
-            const key = Buffer.from('qW3eRt5yUiOpAsDfqW3eRt5yUiOpAsDf'); //must be 32 characters
-            const iv = Buffer.from('qW3eRt5yUiOpAsDf'); //must be 16 characters
+            const key = Buffer.from(process.env.signatureKey); //must be 32 characters
+            const iv = Buffer.from(process.env.signatureIV); //must be 16 characters
             try {
                 // Create the decipher object
                 const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
@@ -1974,7 +1975,55 @@ app.get('/form/:encrypted', (req, res, next) => {
             return res.status(error.status || 500).json({ error: error.message });
         })
 });
+// check student NRIC
+app.post('/checkStudentNRIC', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
 
+    if (req.decodedToken.role != 4) {
+        return res.redirect('/error?code=403');
+    }
+    //retrieve doctorMCR here...
+    const { studentNRIC } = req.body;
+    //continue to database...
+    return doctorFormModel
+        .getStudents(studentNRIC)
+        .then(data => {
+            console.log(data);
+            res.json(data);
+        })
+        .catch(err => {
+            console.error(err);
+            if (err instanceof EMPTY_RESULT_ERROR) {
+                // user is not found
+                res.status(404).json({ message: 'Student Not Found' });
+            } else {
+                // unknown internal error(system failure)
+                res.status(500).json({ message: 'Internal Server Error' });
+            }
+        });
+});
+// delete duplicated student
+app.delete('/deleteStudentForm',  authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    if (req.decodedToken.role != 4) {
+        return res.redirect('/error?code=403');
+    }
+    const {studentIds} = req.body;
+    console.log(studentIds)
+    return doctorFormModel
+        .deleteStudentForm(studentIds)
+        .then((result) => {
+            console.log(result)
+            if (!result) {
+                const error = new Error("Unable to delete students and forms")
+                error.status = 500;
+                throw error;
+            }
+            return res.sendStatus(200);
+        })
+        .catch((error) => {
+            console.log(error)
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+})
 /**
  * Error handling
  */
