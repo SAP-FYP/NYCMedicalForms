@@ -121,6 +121,12 @@ body {
     transition: ease-in-out 150ms;
 }
 
+#profile-container img {
+    height: 40px;
+    width: 40px;
+    border-radius: 60px;
+}
+
 #profile-container:hover {
     background-color: #dfdfdf;
 }
