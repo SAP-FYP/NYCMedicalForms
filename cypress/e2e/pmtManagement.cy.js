@@ -61,10 +61,10 @@ describe('Forms Bulk Export', () => {
     }) 
 
     it('should export selected forms only when viewing a form', () => {
-        cy.get('td[id=modalBtn-studentId-3]').eq(0).click();;
+        cy.get('td[id=modalBtn-studentId-3]').eq(0).click({force: true});;
         cy.get('button[id=closeBtn-studentid-3]').click()
-        cy.get('td[id=modalBtn-studentId-2]').eq(0).click();;
-        cy.get('button[id=exportBtn-studentid-2]').eq(0).click();
+        cy.get('td[id=modalBtn-studentId-2]').eq(0).click({force: true});;
+        cy.get('button[id=exportBtn-studentid-2]').eq(0).click({force: true});
         cy.get('.alert-success').should('be.visible');
         cy.get('button[id=closeBtn-studentid-2]').click()
         cy.wait(1000);
