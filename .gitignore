@@ -24,3 +24,6 @@ cypress/videos
 
 # Screenshots
 cypress/Screenshots
+
+# Downloads
+cypress/downloads
