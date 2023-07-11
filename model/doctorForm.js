@@ -149,7 +149,6 @@ module.exports.deleteStudentForm = async function deleteStudentForm(studentIdArr
   const connection = await pool.getConnection();
   try{
     await connection.beginTransaction();
-    console.log("aaaaa" + studentIdArr)
     //delete students with id inside arr 
     const sql1 = `DELETE FROM student WHERE studentId IN (?)`;
     const result1 = await connection.query(sql1,[studentIdArr])

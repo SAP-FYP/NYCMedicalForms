@@ -1745,8 +1745,8 @@ app.post('/postDoctorInfo',authHelper.verifyToken, authHelper.checkIat, (req, re
     try {
         // encryption part
         const algorithm = 'aes-256-cbc'; // encryption algorithm
-        const key = Buffer.from('qW3eRt5yUiOpAsDfqW3eRt5yUiOpAsDf'); //must be 32 characters
-        const iv = Buffer.from('qW3eRt5yUiOpAsDf'); // the initialization vector(), recommended to create randombytes and store safely crypto.randomBytes(16)
+        const key = Buffer.from(process.env.signatureKey); //must be 32 characters
+        const iv = Buffer.from(process.env.signatureIV); // the initialization vector(), recommended to create randombytes and store safely crypto.randomBytes(16)
 
         const cipher = crypto.createCipheriv(algorithm, key, iv);//create cipher iv first,
         let encryptedsignatureInfo = cipher.update(signatureData, 'utf8', 'hex'); //and encrypt the data with it
