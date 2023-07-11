@@ -38,14 +38,17 @@ module.exports.postAcknowledgement = function postAcknowledgement(studentID, par
     });
 };
 
-module.exports.setParentsAcknowledgement = function setParentsAcknowledgement(data) {
-    const sql = "INSERT INTO parentAcknowledgement (studentId, parentContactNo, parentEmail) VALUES (?, ?, ?)";
-    return query(sql, [data.studentId, data.parentContact, data.parentEmail])
-        .then((result) => {
-            return result;
-        })
-        .catch((error) => {
+module.exports.updateFormStatus = function updateFormStatus(studentID) {
+    const sql = `UPDATE form SET formStatus = "Pending" WHERE studentId = ?`;
+        return query(sql, [studentID])
+    .then((result) => {
+        const row = result[0];
+        if (row.length === 0) {
+            // TODO ERROR HANDLING
+            const error = new Error("Invalid URL");
+            error.status = 401;
             throw error;
         }
-        )
-}
+        return row[0];
+    })
+};

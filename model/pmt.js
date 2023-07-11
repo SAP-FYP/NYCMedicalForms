@@ -38,14 +38,12 @@ module.exports.retrieveSubmission = function retrieveSubmission(studentId) {
             });
 };
 
-module.exports.retrieveSubmissionBySearch = function retrieveSubmissionBySearch(
-  searchInput
-) {
+module.exports.retrieveSubmissionBySearch = function retrieveSubmissionBySearch(searchInput) {
   const sql = `SELECT *
     FROM form F
-    JOIN student S ON F.studentId = S.studentId
-    JOIN parentAcknowledgement PA ON F.studentId = PA.studentId
-    JOIN doctor D ON F.doctorMCR = D.doctorMCR
+    LEFT JOIN student S ON F.studentId = S.studentId
+    LEFT JOIN parentAcknowledgement PA ON F.studentId = PA.studentId
+    RIGHT JOIN doctor D ON F.doctorMCR = D.doctorMCR
     WHERE S.nameOfStudent LIKE ?`;
   return query(sql, `%${searchInput}%`)
     .then((result) => {

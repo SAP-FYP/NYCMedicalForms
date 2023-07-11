@@ -79,20 +79,17 @@ module.exports.updateFormStatus = function updateFormStatus(studentId) {
   });
 };
 
-module.exports.getClasses = function getClasses(limit,offset,search){
-  const sql = `SELECT S.class, COUNT(*) AS count
+module.exports.getClasses = function getClasses(){
+  const sql = `SELECT S.class
   FROM form F
   JOIN student S ON F.studentId = S.studentId
-  JOIN parentAcknowledgement PA ON F.studentId = PA.studentId
   JOIN doctor D ON F.doctorMCR = D.doctorMCR
-  WHERE S.class LIKE ?
   GROUP BY S.class
-  ORDER BY S.class ASC
-  LIMIT ? OFFSET ?;
+  ORDER BY S.class ASC;
   `;
-  return query(sql,[`%${search}%`,limit,offset]).then(function (result) {
+  return query(sql).then(function (result) {
       const rows = result;
-      console.log(rows[0])
+      console.log(result);
       if (rows.length === 0) {
           throw new EMPTY_RESULT_ERROR('No Classes Found');
       }
@@ -100,20 +97,16 @@ module.exports.getClasses = function getClasses(limit,offset,search){
   });
 };
 
-module.exports.getCourseDates = function getCourseDates(limit,offset,search){
-  const sql = `SELECT F.courseDate, COUNT(*) AS count
+module.exports.getCourseDates = function getCourseDates(){
+  const sql = `SELECT F.courseDate
   FROM form F
   JOIN student S ON F.studentId = S.studentId
-  JOIN parentAcknowledgement PA ON F.studentId = PA.studentId
   JOIN doctor D ON F.doctorMCR = D.doctorMCR
-  WHERE F.courseDate LIKE ?
   GROUP BY F.courseDate
-  ORDER BY F.courseDate ASC
-  LIMIT ? OFFSET ?;
+  ORDER BY F.courseDate ASC;
   `;
-  return query(sql,[`%${search}%`,limit,offset]).then(function (result) {
+  return query(sql).then(function (result) {
       const rows = result;
-      console.log(rows);
       if (rows.length === 0) {
           throw new EMPTY_RESULT_ERROR('No Course Dates Found');
       }
@@ -125,10 +118,154 @@ module.exports.getSchools = function getSchools(){
   const sql = `SELECT schoolName FROM school`;
   return query(sql).then(function (result) {
       const rows = result;
-      console.log(rows);
       if (rows.length === 0) {
           throw new EMPTY_RESULT_ERROR('No Schools Found');
       }
       return rows;
   });
 };
+
+module.exports.getSchoolsFilter = function getSchoolsFilter(limit,offset){
+  const sql = `SELECT S.school
+  FROM form F
+  JOIN student S ON F.studentId = S.studentId
+  JOIN doctor D ON F.doctorMCR = D.doctorMCR
+  GROUP BY S.school
+  ORDER BY S.school ASC;`
+  return query(sql).then(function (result) {
+      const rows = result;
+      if (rows.length === 0) {
+          throw new EMPTY_RESULT_ERROR('No Schools Found');
+      }
+      return rows;
+  });
+};
+
+module.exports.getEligibility = function getEligibility(limit,offset){
+  const sql = `SELECT F.eligibility
+  FROM form F
+  JOIN student S ON F.studentId = S.studentId
+  JOIN doctor D ON F.doctorMCR = D.doctorMCR
+  GROUP BY F.eligibility
+  ORDER BY F.eligibility ASC;
+  `;
+  return query(sql).then(function (result) {
+      const rows = result;
+      if (rows.length === 0) {
+          throw new EMPTY_RESULT_ERROR('No Course Dates Found');
+      }
+      return rows;
+  });
+};
+
+module.exports.getClassFilterBySchool = function getClassFilterBySchool(schoolName){
+  const sql = `SELECT S.class
+  FROM form F
+  JOIN student S ON F.studentId = S.studentId
+  JOIN doctor D ON F.doctorMCR = D.doctorMCR
+  WHERE S.school = ?
+  GROUP BY S.class
+  ORDER BY S.class ASC;
+  `;
+  return query(sql,[schoolName]).then(function (result) {
+      const rows = result;
+      if (rows.length === 0) {
+          throw new EMPTY_RESULT_ERROR('No Course Dates Found');
+      }
+      return rows;
+  });
+}
+
+module.exports.getCourseDateBySchool = function getCourseDateBySchool(schoolName){
+  const sql = `SELECT F.courseDate
+  FROM form F
+  JOIN student S ON F.studentId = S.studentId
+  JOIN doctor D ON F.doctorMCR = D.doctorMCR
+  WHERE S.school = ?
+  GROUP BY F.courseDate
+  ORDER BY F.courseDate ASC;
+  `;
+  return query(sql,[schoolName]).then(function (result) {
+      const rows = result;
+      if (rows.length === 0) {
+          throw new EMPTY_RESULT_ERROR('No Course Dates Found');
+      }
+      return rows;
+  });
+}
+
+module.exports.getCourseDateBySchoolAndClass = function getCourseDateBySchoolAndClass(schoolName,className){
+  const sql = `SELECT F.courseDate
+  FROM form F
+  JOIN student S ON F.studentId = S.studentId
+  JOIN doctor D ON F.doctorMCR = D.doctorMCR
+  WHERE S.school = ? AND S.class = ?
+  GROUP BY F.courseDate
+  ORDER BY F.courseDate ASC;
+  `;
+  return query(sql,[schoolName,className]).then(function (result) {
+      const rows = result;
+      if (rows.length === 0) {
+          throw new EMPTY_RESULT_ERROR('No Course Dates Found');
+      }
+      return rows;
+  });
+}
+
+module.exports.getSchoolsByClass = function getSchoolsByClass(className){
+  const sql = `SELECT S.school
+  FROM form F
+  JOIN student S ON F.studentId = S.studentId
+  JOIN doctor D ON F.doctorMCR = D.doctorMCR
+  WHERE S.class = ?
+  GROUP BY S.school
+  ORDER BY S.school ASC;
+  `;
+  return query(sql,[className]).then(function (result) {
+      const rows = result;
+      if (rows.length === 0) {
+          throw new EMPTY_RESULT_ERROR('No Course Dates Found');
+      }
+      return rows;
+  });
+}
+
+module.exports.getSchoolsByCourseDate = function getSchoolsByCourseDate(courseDate){
+  const sql = `SELECT S.school
+  FROM form F
+  JOIN student S ON F.studentId = S.studentId
+  JOIN doctor D ON F.doctorMCR = D.doctorMCR
+  WHERE F.courseDate = ?
+  GROUP BY S.school
+  ORDER BY S.school ASC;
+  `;
+  return query(sql,[courseDate]).then(function (result) {
+      const rows = result;
+      if (rows.length === 0) {
+          throw new EMPTY_RESULT_ERROR('No Course Dates Found');
+      }
+      return rows;
+  }
+  );
+}
+
+module.exports.getSchoolsByCourseDateAndClass = function getSchoolsByCourseDateAndClass(courseDate,className){
+  const sql = `SELECT S.school
+  FROM form F
+  JOIN student S ON F.studentId = S.studentId
+  JOIN doctor D ON F.doctorMCR = D.doctorMCR
+  WHERE F.courseDate = ? AND S.class = ?
+  GROUP BY S.school
+  ORDER BY S.school ASC;
+  `;
+  return query(sql,[courseDate,className]).then(function (result) {
+      const rows = result;
+      if (rows.length === 0) {
+          throw new EMPTY_RESULT_ERROR('No Course Dates Found');
+      }
+      return rows;
+  }
+  );
+}
+
+
