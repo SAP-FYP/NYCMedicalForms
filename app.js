@@ -1546,11 +1546,16 @@ app.get('/obs-admin/pmt/search/:search', authHelper.verifyToken, authHelper.chec
         })
 });
 
-app.get('/get-school-filter', (req, res, next) => {
+app.get('/get-school-filter',authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+     // AUTHORIZATION CHECK - PMT, MST 
+     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+        return res.redirect('/error?code=403')
+    }
     return doctorFormModel
         .getSchoolsFilter()
         .then(data => {
             const schoolLists = data[0];
+            data[0].push(req.decodedToken.permissions);
             res.json(schoolLists);
         })
         .catch(err => {
@@ -1562,7 +1567,11 @@ app.get('/get-school-filter', (req, res, next) => {
         });
 });
 
-app.get('/getEligibility', (req, res, next) => {
+app.get('/getEligibility',authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+     // AUTHORIZATION CHECK - PMT, MST 
+     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+        return res.redirect('/error?code=403')
+    }
     return doctorFormModel
         .getEligibility()
         .then(data => {
@@ -1579,8 +1588,11 @@ app.get('/getEligibility', (req, res, next) => {
 });
 
 // PMT Retrieve submissions by filtering (School, Class, Eligibility, CourseDate
-app.post('/obs-admin/pmt/filter/', (req, res, next) => {
-
+app.post('/obs-admin/pmt/filter/', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+// AUTHORIZATION CHECK - PMT, MST 
+if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+    return res.redirect('/error?code=403')
+}
     let school = req.body.school
     let stuClass = req.body.class
     let eligibility = req.body.eligibility
@@ -1608,6 +1620,7 @@ app.post('/obs-admin/pmt/filter/', (req, res, next) => {
             if (result.length === 0) {
                 throw new Error("No submission found");
             }
+            result[0].push(req.decodedToken.permissions);
             return res.json(result[0]);
         })
         .catch((error) => {
@@ -1868,7 +1881,11 @@ app.post('/checkDoctorMCR', (req, res, next) => {
 });
 
 // get classes
-app.get('/getClasses', (req, res, next) => {
+app.get('/getClasses', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+     // AUTHORIZATION CHECK - PMT, MST 
+     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+        return res.redirect('/error?code=403')
+    }
     return doctorFormModel
         .getClasses()
         .then(data => {
@@ -1881,7 +1898,11 @@ app.get('/getClasses', (req, res, next) => {
 });
 
 // get course dates
-app.get('/getCourseDates', (req, res, next) => {
+app.get('/getCourseDates', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+     // AUTHORIZATION CHECK - PMT, MST 
+     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+        return res.redirect('/error?code=403')
+    }
     return doctorFormModel
         .getCourseDates()
         .then(data => {

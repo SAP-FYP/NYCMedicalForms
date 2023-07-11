@@ -172,10 +172,7 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
       };
 
       if (isChecked) {
-        const index = targetDataArray.findIndex((item) => item["Name of Applicant"] === applicantName);
-        if (index === -1) {
-          targetDataArray.push(data);
-        }
+        targetDataArray.push(data);
         appendExportIcon();
       } else {
         const index = targetDataArray.findIndex((item) => item["Name of Applicant"] === applicantName);
@@ -185,7 +182,6 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
         if (targetDataArray.length === 0) {
           removeExportIcon();
         }
-
       }
 
       console.log(targetDataArray);
@@ -216,17 +212,16 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
       };
 
       if (checkbox.checked) {
-        const index = targetDataArray.findIndex((item) => item["Name of Applicant"] === applicantName);
-        if (index === -1) {
-          targetDataArray.push(data);
-        }
+        targetDataArray.push(data);
         appendExportIcon();
       } else {
         const index = targetDataArray.findIndex((item) => item["Name of Applicant"] === applicantName);
         if (index !== -1) {
           targetDataArray.splice(index, 1);
         }
-        removeExportIcon();
+        if (targetDataArray.length === 0) {
+          removeExportIcon();
+        }
       }
     });
 
@@ -1005,7 +1000,8 @@ function searchForms() {
   if (searchInput.value.trim() === '') {
     location.reload();
   } else {
-    axios.get(`${API_URL}/search/${searchInput.value}`)
+    const encodedSearchInput = encodeURIComponent(searchInput.value); 
+    axios.get(`${API_URL}/search/${encodedSearchInput}`)
       .then(function (response) {
         const configURL = response.config.url;
         const requestURL = response.request.responseURL;
@@ -1183,7 +1179,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
   let courseDatesArray = [];
   let eligibilityArray = [];
 
-  let fetchSchools = fetch(`/get-school-filter?limit=${limit}&offset=${offset}`)
+  let fetchSchools = fetch(`/get-school-filter`)
     .then(response => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -1229,7 +1225,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
       console.log(error);
     });
 
-    let fetchClasses = fetch(`/getClasses?limit=${limit}&offset=${offset}`)
+    let fetchClasses = fetch(`/getClasses`)
     .then(response => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -1276,7 +1272,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
       console.log(error);
     });
 
-  let fetchCourseDates = fetch(`/getCourseDates?limit=${limit}&offset=${offset}`)
+  let fetchCourseDates = fetch(`/getCourseDates`)
     .then(response => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -1323,7 +1319,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
       console.log(error);
     });
 
-  let fetchEligiblity = fetch(`/getEligibility?limit=${limit}&offset=${offset}`)
+  let fetchEligiblity = fetch(`/getEligibility`)
     .then(response => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -1337,6 +1333,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
       }
 
       data.forEach(item => {
+       
         // Create a new <li> element with checkbox floating right
         const newDiv = document.createElement('div');
         newDiv.classList.add('filter-div');
@@ -1438,6 +1435,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
           })
             .then(response => {
               formData = response.data;
+      
+              //remove user permission from array of data
+              const userPermission = response.data.pop();
               if (formData.length === 0) {
                 const getAllForms = document.querySelector('#getAllForms');
                 getAllForms.innerHTML = "";
@@ -1507,16 +1507,16 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
         
                 //call function to handle checkboxes
-                // if (userPermission.includes(5)) {
+                if (userPermission.includes(5)) {
                   handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
-                // } else {
-                //   const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
-                //   const checkBoxTop = document.querySelector('#checkBoxTop');
-                //   checkBoxes.forEach(function (checkBox) {
-                //     checkBox.classList.add('d-none');
-                //   });
-                //   checkBoxTop.classList.add('d-none');
-                // }
+                } else {
+                  const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
+                  const checkBoxTop = document.querySelector('#checkBoxTop');
+                  checkBoxes.forEach(function (checkBox) {
+                    checkBox.classList.add('d-none');
+                  });
+                  checkBoxTop.classList.add('d-none');
+                }
         
         
                 //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
