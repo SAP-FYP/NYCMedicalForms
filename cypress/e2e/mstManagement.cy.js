@@ -31,6 +31,7 @@ describe('Reviewing forms', () => {
     }) 
 
     it('should delete a review', () => {
+        cy.wait(1300)
         cy.get('td[id=modalBtn-studentId-1]').eq(0).click();
         cy.get('textarea[id=mst-review]').click().type('{selectall}{backspace}');
         cy.get('div[class="btn btn-primary btn-sm submitReviewBtn"]').contains('Submit Review').click()
