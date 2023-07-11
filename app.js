@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const elasticEmail = require('elasticemail');
 const cloudinary = require("cloudinary").v2;
-const { UserNotFoundError,DUPLICATE_ENTRY_ERROR,EMPTY_RESULT_ERROR } = require("./errors");
+const { UserNotFoundError, DUPLICATE_ENTRY_ERROR, EMPTY_RESULT_ERROR } = require("./errors");
 const crypto = require('crypto');
 
 const key = Buffer.from(process.env.encryptKey, 'hex');
@@ -712,7 +712,7 @@ app.put('/parent/status', (req, res, next) => {
         return res.status(400).json({ error: 'Invalid URL' });
     }
 
-    
+
     return parentModel.updateFormStatus(studentID)
         .then((result) => {
             return res.json(result);
@@ -1546,9 +1546,9 @@ app.get('/obs-admin/pmt/search/:search', authHelper.verifyToken, authHelper.chec
         })
 });
 
-app.get('/get-school-filter',authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
-     // AUTHORIZATION CHECK - PMT, MST 
-     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+app.get('/get-school-filter', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
         return res.redirect('/error?code=403')
     }
     return doctorFormModel
@@ -1567,9 +1567,9 @@ app.get('/get-school-filter',authHelper.verifyToken, authHelper.checkIat, (req, 
         });
 });
 
-app.get('/getEligibility',authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
-     // AUTHORIZATION CHECK - PMT, MST 
-     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+app.get('/getEligibility', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
         return res.redirect('/error?code=403')
     }
     return doctorFormModel
@@ -1589,10 +1589,10 @@ app.get('/getEligibility',authHelper.verifyToken, authHelper.checkIat, (req, res
 
 // PMT Retrieve submissions by filtering (School, Class, Eligibility, CourseDate
 app.post('/obs-admin/pmt/filter/', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
-// AUTHORIZATION CHECK - PMT, MST 
-if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
-    return res.redirect('/error?code=403')
-}
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+        return res.redirect('/error?code=403')
+    }
     let school = req.body.school
     let stuClass = req.body.class
     let eligibility = req.body.eligibility
@@ -1876,7 +1876,7 @@ app.post('/uploadSign', authHelper.verifyToken, authHelper.checkIat, (req, res) 
 });
 
 // upload doctor informtaion
-app.post('/postDoctorInfo',authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+app.post('/postDoctorInfo', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
     if (req.decodedToken.role != 4) {
         return res.redirect('/error?code=403');
     }
@@ -1913,7 +1913,7 @@ app.post('/postDoctorInfo',authHelper.verifyToken, authHelper.checkIat, (req, re
 });
 
 //upload student information
-app.post('/postStudentInfo',authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+app.post('/postStudentInfo', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
     if (req.decodedToken.role != 4) {
         return res.redirect('/error?code=403');
     }
@@ -1934,7 +1934,7 @@ app.post('/postStudentInfo',authHelper.verifyToken, authHelper.checkIat, (req, r
 });
 
 //upload form information
-app.post('/postFormInfo',authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+app.post('/postFormInfo', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
     if (req.decodedToken.role != 4) {
         return res.redirect('/error?code=403');
     }
@@ -2019,8 +2019,8 @@ app.put('/updateFormStatus', authHelper.verifyToken, authHelper.checkIat, (req, 
 
 // get classes
 app.get('/getClasses', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
-     // AUTHORIZATION CHECK - PMT, MST 
-     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
         return res.redirect('/error?code=403')
     }
     return doctorFormModel
@@ -2030,14 +2030,14 @@ app.get('/getClasses', authHelper.verifyToken, authHelper.checkIat, (req, res, n
             res.json(classLists);
         })
         .catch(err => {
-                res.status(500).json({ message: 'Internal server error' });
-            })
+            res.status(500).json({ message: 'Internal server error' });
+        })
 });
 
 // get course dates
 app.get('/getCourseDates', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
-     // AUTHORIZATION CHECK - PMT, MST 
-     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
         return res.redirect('/error?code=403')
     }
     return doctorFormModel
@@ -2134,11 +2134,11 @@ app.post('/checkStudentNRIC', authHelper.verifyToken, authHelper.checkIat, (req,
         });
 });
 // delete duplicated student
-app.delete('/deleteStudentForm',  authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+app.delete('/deleteStudentForm', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
     if (req.decodedToken.role != 4) {
         return res.redirect('/error?code=403');
     }
-    const {studentIds} = req.body;
+    const { studentIds } = req.body;
     console.log(studentIds)
     return doctorFormModel
         .deleteStudentForm(studentIds)
