@@ -229,6 +229,21 @@ a {
     box-shadow: 7px 7px 7px 0px rgba(0, 0, 0, 0.2);
 }
 
+#eligibilityDropDownMenu,
+#courseDateDropDownMenu,
+#classDropDownMenu,
+#schoolDropDownMenu {
+    border: 2px solid #485EAB;
+    color: #485EAB;
+    overflow-x: hidden;
+    background-color: #C7D3EF !important;
+    background-clip: border-box !important;
+}
+
+
+#eligibilityDropDownMenu {
+    width: 250px;
+}
 
 
 .displayFilters {
@@ -269,6 +284,7 @@ margin-top: 1px;
 .dropDownLists {
     margin: 10px;
 }
+
 
 
 
