@@ -24,7 +24,7 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
-Cypress.Commands.add('login', (email, pass) => {
+Cypress.Commands.add('doctorlogin', (email, pass) => {
     cy.visit('http://localhost:3000/login');
     cy.get('input[id=login-email]').type(email);
     cy.get('input[id=login-password]').type(pass);
@@ -33,24 +33,43 @@ Cypress.Commands.add('login', (email, pass) => {
     cy.contains('Student Section');
 })
 
-Cypress.Commands.add('checkMCR', (doctorMCR) => {
-    cy.visit('http://localhost:3000/obs-form');
-    cy.get('input[id=doctorMCR]').type(doctorMCR);
-    cy.get('button[id=availabilityBtn]').click();
-    cy.url().should('include', '/obs-form');
-    cy.contains('Student Section');
+Cypress.Commands.add('managementLogin', (email, pass) => {
+    cy.visit('http://localhost:3000/obs-admin/login');
+    cy.get('input[id=login-email]').type(email);
+    cy.get('input[id=login-password]').type(pass);
+    cy.get('button[id=login-button]').click();
+    cy.url().should('include', '/obs-management');
+    cy.contains('Overview');
 })
 
-let LOCAL_STORAGE_MEMORY = {};
-
-Cypress.Commands.add("saveLocalStorage", () => {
-  Object.keys(localStorage).forEach(key => {
-    LOCAL_STORAGE_MEMORY[key] = localStorage[key];
-  });
+Cypress.Commands.add('checkMCR', (doctorMCR) => {
+    cy.get('input[id=doctorMCR]').type(doctorMCR);
+    cy.get('button[id=availabilityBtn]').click();
 });
 
-Cypress.Commands.add("restoreLocalStorage", () => {
-  Object.keys(LOCAL_STORAGE_MEMORY).forEach(key => {
-    localStorage.setItem(key, LOCAL_STORAGE_MEMORY[key]);
-  });
+Cypress.Commands.add('fillInForm', (studentName, dateOfBirth, randomNumber, randomNRIC) => {
+    console.log(dateOfBirth)
+    cy.get('input[id=studentName]').type(studentName);
+    cy.get('input[id=dateOfBirth]').type(dateOfBirth);
+    cy.get('button[id=schoolName]').click();
+    cy.get(`li[id=school${randomNumber}]`).click();
+    cy.get('input[id=studentNRIC]').type(randomNRIC);
 });
+
+Cypress.Commands.add('adminlogin', (email, pass) => {
+    cy.session(
+        [email, pass],
+        () => {
+            cy.visit('http://localhost:3000/obs-admin/login');
+            cy.get('input[id=login-email]').type(email);
+            cy.get('input[id=login-password]').type(pass);
+            cy.get('button[id=login-button]').click();
+            cy.get('#header-bar').should('have.class', 'col-12');
+        },
+        {
+            validate() {
+                cy.getCookie('jwt').should('exist');
+            }
+        }
+    )
+})

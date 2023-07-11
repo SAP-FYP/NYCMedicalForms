@@ -1,5 +1,5 @@
 const conn = require('../database');
-const { query } = conn;
+const { query, pool } = conn;
 
 const {
     UserNotFoundError,
@@ -269,3 +269,53 @@ module.exports.getSchoolsByCourseDateAndClass = function getSchoolsByCourseDateA
 }
 
 
+
+
+module.exports.getStudents = function getStudents(studentNRIC){
+  const sql = `SELECT studentId FROM student WHERE studentNRIC = ?`;
+  return query(sql,[studentNRIC]).then(function (result) {
+      const rows = result[0];
+      console.log(rows);
+      if (rows.length === 0) {
+          throw new EMPTY_RESULT_ERROR('No students Found');
+      }
+      return rows;
+  });
+}
+
+module.exports.deleteStudentForm = async function deleteStudentForm(studentIdArr){
+  const connection = await pool.getConnection();
+  try{
+    await connection.beginTransaction();
+    console.log("aaaaa" + studentIdArr)
+    //delete students with id inside arr 
+    const sql1 = `DELETE FROM student WHERE studentId IN (?)`;
+    const result1 = await connection.query(sql1,[studentIdArr])
+    const affectedRows1 = result1[0].affectedRows;
+    console.log(affectedRows1)
+    console.log(studentIdArr.length)
+    if(affectedRows1 != studentIdArr.length){
+      throw new Error('Unable to delete students');
+    }
+
+    // delete form with student id in arr
+    const sql2 = `DELETE FROM form WHERE studentId IN (?)`;
+    const result2 = await connection.query(sql2,[studentIdArr])
+    const affectedRows2 = result2[0].affectedRows;
+    console.log(affectedRows2)
+    console.log(studentIdArr.length)
+    if(affectedRows2 != studentIdArr.length){
+      throw new Error('Unable to delete forms');
+    }
+
+    await connection.commit();
+    return affectedRows2;
+  }
+  catch(error){
+    await connection.rollback();
+    throw error;
+  } 
+  finally{
+    connection.release();
+  };
+};

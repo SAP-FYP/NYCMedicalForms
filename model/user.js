@@ -35,9 +35,11 @@ module.exports.loginUser = async function loginUser(email) {
             userData[0].permissions = userPermission;
         }
 
+        await connection.commit();
         return userData[0];
 
     } catch (error) {
+        await connection.rollback();
         throw error;
     } finally {
         connection.release();

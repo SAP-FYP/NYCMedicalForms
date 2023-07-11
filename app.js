@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const elasticEmail = require('elasticemail');
 const cloudinary = require("cloudinary").v2;
-const { UserNotFoundError, DUPLICATE_ENTRY_ERROR } = require("./errors");
+const { UserNotFoundError,DUPLICATE_ENTRY_ERROR,EMPTY_RESULT_ERROR } = require("./errors");
 const crypto = require('crypto');
 
 const key = Buffer.from(process.env.encryptKey, 'hex');
@@ -27,6 +27,7 @@ const cloudinaryModel = require('./model/cloudinary');
 const passwordGenerator = require('./helper/passwordGenerator');
 const momentHelper = require('./helper/epochConverter');
 const cronJob = require('./helper/cron');
+const { env } = require("process");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -194,7 +195,6 @@ app.post('/login', (req, res, next) => {
             })
         })
         .catch((error) => {
-            console.log(error)
             return res.status(error.status || 500).json({ error: error.message });
         });
 });
@@ -485,7 +485,7 @@ app.put('/user/updatepassword', authHelper.verifyResetToken, (req, res, next) =>
                             } else if (payload.role == 2 || payload.role == 3) {
                                 return res.redirect('/obs-admin/obs-management')
                             } else if (payload.role == 4) {
-                                return res.redirect('/docForm')
+                                return res.redirect('/obs-form')
                             } else {
                                 const error = new Error("Invalid user role");
                                 error.status = 500;
@@ -632,8 +632,8 @@ app.get('/form/:encrypted', parentAuthHelper.verifyToken, parentAuthHelper.valid
         .then((result) => {
             // Decrypt signature data
             const encryptedSignInfo = result.signature
-            const key = Buffer.from('qW3eRt5yUiOpAsDfqW3eRt5yUiOpAsDf'); //must be 32 characters
-            const iv = Buffer.from('qW3eRt5yUiOpAsDf'); //must be 16 characters
+            const key = Buffer.from(process.env.signatureKey);
+            const iv = Buffer.from(process.env.signatureIV);
             try {
                 // Create the decipher object
                 const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
@@ -954,7 +954,7 @@ app.post('/obs-admin/newuser', authHelper.verifyToken, authHelper.checkIat, (req
             })
             .catch((error) => {
                 if (error.code == "ER_DUP_ENTRY") {
-                    return res.status(422).json({ error: "Email or contact already exists" });
+                    return res.status(422).json({ error: "Email already exists" });
                 }
                 return res.status(error.status || 500).json({ error: error.message });
             })
@@ -1600,6 +1600,7 @@ app.get('/obs-admin/pmt/search/:search', authHelper.verifyToken, authHelper.chec
             if (result.length === 0) {
                 throw new Error("No submission found");
             }
+            result[0].push(req.decodedToken.permissions);
             return res.json(result[0]);
         })
         .catch((error) => {
@@ -1607,11 +1608,16 @@ app.get('/obs-admin/pmt/search/:search', authHelper.verifyToken, authHelper.chec
         })
 });
 
-app.get('/get-school-filter', (req, res, next) => {
+app.get('/get-school-filter',authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+     // AUTHORIZATION CHECK - PMT, MST 
+     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+        return res.redirect('/error?code=403')
+    }
     return doctorFormModel
         .getSchoolsFilter()
         .then(data => {
             const schoolLists = data[0];
+            data[0].push(req.decodedToken.permissions);
             res.json(schoolLists);
         })
         .catch(err => {
@@ -1623,7 +1629,11 @@ app.get('/get-school-filter', (req, res, next) => {
         });
 });
 
-app.get('/getEligibility', (req, res, next) => {
+app.get('/getEligibility',authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+     // AUTHORIZATION CHECK - PMT, MST 
+     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+        return res.redirect('/error?code=403')
+    }
     return doctorFormModel
         .getEligibility()
         .then(data => {
@@ -1640,8 +1650,11 @@ app.get('/getEligibility', (req, res, next) => {
 });
 
 // PMT Retrieve submissions by filtering (School, Class, Eligibility, CourseDate
-app.post('/obs-admin/pmt/filter/', (req, res, next) => {
-
+app.post('/obs-admin/pmt/filter/', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+// AUTHORIZATION CHECK - PMT, MST 
+if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+    return res.redirect('/error?code=403')
+}
     let school = req.body.school
     let stuClass = req.body.class
     let eligibility = req.body.eligibility
@@ -1669,6 +1682,7 @@ app.post('/obs-admin/pmt/filter/', (req, res, next) => {
             if (result.length === 0) {
                 throw new Error("No submission found");
             }
+            result[0].push(req.decodedToken.permissions);
             return res.json(result[0]);
         })
         .catch((error) => {
@@ -1929,8 +1943,8 @@ app.post('/checkDoctorMCR', authHelper.verifyToken, authHelper.checkIat, (req, r
         .matchDoctorInfo(doctorMCR)
         .then(data => {
             const encryptedSignInfo = data[0].signature
-            const key = Buffer.from('qW3eRt5yUiOpAsDfqW3eRt5yUiOpAsDf'); //must be 32 characters
-            const iv = Buffer.from('qW3eRt5yUiOpAsDf'); //must be 16 characters
+            const key = Buffer.from(process.env.signatureKey); //must be 32 characters
+            const iv = Buffer.from(process.env.signatureIV); //must be 16 characters
             try {
                 // Create the decipher object
                 const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
@@ -1980,7 +1994,11 @@ app.put('/updateFormStatus', authHelper.verifyToken, authHelper.checkIat, (req, 
 });
 
 // get classes
-app.get('/getClasses', (req, res, next) => {
+app.get('/getClasses', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+     // AUTHORIZATION CHECK - PMT, MST 
+     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+        return res.redirect('/error?code=403')
+    }
     return doctorFormModel
         .getClasses()
         .then(data => {
@@ -1993,7 +2011,11 @@ app.get('/getClasses', (req, res, next) => {
 });
 
 // get course dates
-app.get('/getCourseDates', (req, res, next) => {
+app.get('/getCourseDates', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+     // AUTHORIZATION CHECK - PMT, MST 
+     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+        return res.redirect('/error?code=403')
+    }
     return doctorFormModel
         .getCourseDates()
         .then(data => {
@@ -2025,6 +2047,55 @@ app.get('/getSchools', (req, res, next) => {
         });
 });
 
+// check student NRIC
+app.post('/checkStudentNRIC', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+
+    if (req.decodedToken.role != 4) {
+        return res.redirect('/error?code=403');
+    }
+    //retrieve doctorMCR here...
+    const { studentNRIC } = req.body;
+    //continue to database...
+    return doctorFormModel
+        .getStudents(studentNRIC)
+        .then(data => {
+            console.log(data);
+            res.json(data);
+        })
+        .catch(err => {
+            console.error(err);
+            if (err instanceof EMPTY_RESULT_ERROR) {
+                // user is not found
+                res.status(404).json({ message: 'Student Not Found' });
+            } else {
+                // unknown internal error(system failure)
+                res.status(500).json({ message: 'Internal Server Error' });
+            }
+        });
+});
+// delete duplicated student
+app.delete('/deleteStudentForm',  authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    if (req.decodedToken.role != 4) {
+        return res.redirect('/error?code=403');
+    }
+    const {studentIds} = req.body;
+    console.log(studentIds)
+    return doctorFormModel
+        .deleteStudentForm(studentIds)
+        .then((result) => {
+            console.log(result)
+            if (!result) {
+                const error = new Error("Unable to delete students and forms")
+                error.status = 500;
+                throw error;
+            }
+            return res.sendStatus(200);
+        })
+        .catch((error) => {
+            console.log(error)
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+})
 /**
  * Error handling
  */

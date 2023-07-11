@@ -477,7 +477,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // SEARCH BAR 'ENTER' KEY
     searchInput.addEventListener('keydown', event => {
         if (event.key === 'Enter') {
-            searchFilter = searchInput.value.trim();
+            searchFilter = encodeURIComponent(searchInput.value.trim());
             eof = false;
             offset = 0;
             document.getElementById('bulk-action').style.visibility = 'hidden';
@@ -495,7 +495,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // SEARCH BAR SUBMIT BUTTON
     searchBtn.onclick = () => {
-        searchFilter = searchInput.value.trim();
+        searchFilter = encodeURIComponent(searchInput.value.trim());
         eof = false;
         offset = 0;
         container.removeEventListener('scroll', defaultScroll)
