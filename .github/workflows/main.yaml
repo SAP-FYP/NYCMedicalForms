@@ -47,12 +47,7 @@ jobs:
             twilioSID: ${{ secrets.CYPRESS_TWILIOSID }}
             twilioToken: ${{ secrets.CYPRESS_TWILIOTOKEN }}
             TZ: Asia/Singapore
-  
-  Cypress-Artifacts:
-    name: Cypress Test Artifacts
-    runs-on: ubuntu-latest
 
-    steps:
       - name: Upload Screenshots
         uses: actions/upload-artifact@v3
         if: failure()
