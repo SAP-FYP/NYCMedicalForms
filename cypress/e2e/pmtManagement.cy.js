@@ -95,22 +95,45 @@ describe('Export by filtering', () => {
     }) 
 })
 
+// use cy.intercept to intercept the request and return a response
 describe('Approving and rejecting of forms', () => {
+    //use cy.intercept
     it('should approve the selected form', () => {
         cy.get('td[id=modalBtn-studentId-3]').eq(0).click();
         cy.get('button[id=approveBtn-studentid-3]').eq(0).click()
         cy.get('.alert-success').should('be.visible');
         cy.get('td[id=modalBtn-studentId-3]').eq(0).click();
         cy.get('.alert-success').should('be.visible');
-    }) 
+
+        // Put form status back to pending
+        cy.request({
+            method: 'PUT',
+            url: '/obs-admin/pmt/3',
+            body: {
+                formStatus: 'Pending'
+            }
+        })
+    })
 
     it('should reject the selected form', () => {
+    
         cy.get('td[id=modalBtn-studentId-4]').eq(0).click();
         cy.get('button[id=rejectBtn-studentid-4]').eq(0).click()
         cy.get('.alert-success').should('be.visible');
         cy.get('td[id=modalBtn-studentId-4]').eq(0).click();
         cy.get('.alert-success').should('be.visible');
         cy.get('button[id=closeBtn-studentid-4]').click()
-    }) 
+
+        // Put form status back to pending
+        cy.request({
+            method: 'PUT',
+            url: '/obs-admin/pmt/4',
+            body: {
+                formStatus: 'Pending'
+            }
+        })
+
+    })
 })
+
 

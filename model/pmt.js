@@ -160,8 +160,8 @@ module.exports.retrieveSubmissionByFilter = function retrieveSubmissionByFilter(
                     JOIN student S ON F.studentId = S.studentId
                     JOIN doctor D ON F.doctorMCR = D.doctorMCR
                     WHERE ${conditions}`;
-  console.log(sql);
-  console.log(values);
+  // console.log(sql);
+  // console.log(values);
   return query(sql, values)
     .then((result) => {
       if (result.length === 0) {
