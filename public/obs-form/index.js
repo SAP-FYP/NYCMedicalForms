@@ -327,30 +327,6 @@ document.addEventListener('DOMContentLoaded', function () {
             alert(error.message);
         });
     }
-    const deleteStudentDuplication = (studentIdArr) => {
-        return fetch('/deleteStudentForm', {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ studentNRIC: studentNRIC })
-        })
-        .then(response => {
-            if (response.status === 404) {
-                // student was not found
-                return { data: false, deleteStudent: false };
-            }
-            else if (response.status === 500) {
-                // Server error
-                throw new Error('ServerError');
-            }
-            return response.json().then(data => ({ data, deleteStudent: true }));
-        })
-        .catch(error => {
-            alert(error.message);
-        });
-    }
-
 
     // Validation functions
     const validatePhone = (inputElement, feedbackElement, value) => {
@@ -1016,7 +992,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             })
             .then(() => {
-                //all the fetches
                 if (isDoctorNew === true) {
                     const data = {
                         signature: signatureData
