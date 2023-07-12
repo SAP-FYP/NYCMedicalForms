@@ -328,7 +328,7 @@ function openModal(studentId, modalBtns) {
 
         // Call the exportData function with the form data
         exportToExcel(applicantName, schoolOrg, classNo, courseDate, formStatus);
-        alertBox("You have successfully exported the data to excel!", "success")
+       
         // Remove the event listener to avoid repeated downloads
         exportBtns.forEach((exportBtn) => {
           exportBtn.removeEventListener("click", handleExportClick);
@@ -769,44 +769,17 @@ function exportToExcel(applicantName, schoolOrg, classNo, courseDate, formStatus
         link.click();
         URL.revokeObjectURL(url);
         link.remove();
+        alertBox("You have successfully exported the data to excel!", "success")
       } else {
         console.error("Invalid file format received:", contentType);
-        alert("No Permission");
+        alertBox("You do not have permission to export!", "danger")
         location.reload();
       }
     })
     .catch(error => {
       console.error("Export request failed:", error);
     });
-  // .then(response => {
-  //   if (response.status === 200) {
-  //     // Create a blob object from the response
-  //     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 
-  //     // Create a temporary URL for the blob object
-  //     const url = URL.createObjectURL(blob);
-
-  //     // Create a link element and set its attributes
-  //     const link = document.createElement('a');
-  //     link.href = url;
-  //     link.download = `${applicantName}.xlsx`; // Set the desired file name
-
-  //     // Append the link element to the document body
-  //     document.body.appendChild(link);
-
-  //     // Programmatically click the link to trigger the download
-  //     link.click();
-
-  //     // Clean up the temporary URL and remove the link element
-  //     URL.revokeObjectURL(url);
-  //     link.remove();
-  //   } else {
-  //     console.error('Export request failed with status: ' + response.status);
-  //   }
-  // })
-  // .catch(error => {
-  //   console.error('Export request failed:', error);
-  // });
 }
 
 //Function to export to excel bulk
@@ -828,9 +801,10 @@ function exportToExcelBulk(data) {
         link.click();
         URL.revokeObjectURL(url);
         link.remove();
+        alertBox("You have successfully exported the data to excel!", "success")
       } else {
         console.error("Invalid file format received:", contentType);
-        alert("No Permission");
+        alertBox("You do not have permission to export!", "danger")
         location.reload();
       }
     })
@@ -936,12 +910,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
       }
       //Outside of for loop 
-      //Export to Excel Bulk Once
+      //Export to Excel Bulk Once alertBox("You do not have permission to export!", "danger")
       const exportBtnBulk = document.querySelector('#export-btn-all');
       exportBtnBulk.addEventListener('click', function () {
         console.log(dataAll);
         exportToExcelBulk(dataAll);
-        alertBox("You have successfully exported the data to excel!", "success")
       });
 
     })
@@ -1111,9 +1084,9 @@ const exportButtonHandler = () => {
   alertBox("You have successfully exported the data to excel!", "success")
 }
 
-function showAlert(message) {
-  alert(message);
-}
+// function showAlert(message) {
+//   alert(message);
+// }
 
 searchBtn.addEventListener('click', () => {
   searchForms();
