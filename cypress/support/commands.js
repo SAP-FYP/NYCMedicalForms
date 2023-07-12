@@ -23,7 +23,6 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-import signature_pad from 'signature_pad';
 Cypress.Commands.add('login', (email, pass) => {
     cy.visit('http://localhost:3000/login');
     cy.get('input[id=login-email]').type(email);

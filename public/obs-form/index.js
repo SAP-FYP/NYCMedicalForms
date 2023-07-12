@@ -647,12 +647,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .then(response => {
                     if(!response.ok){
-                        reject( new Error('Deletion failed'));
+                        const error = new Error("Unable to delete students and forms")
+                        error.status = 500;
+                        reject(error);
                     }
                     resolve();
-                })
-                .catch(error => {
-                    reject(error);
                 })
             });
             cancelBtn.addEventListener('click', () => {
@@ -1109,6 +1108,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             })
             .catch(error => {
+                if(error.message === "User Canceled updating student"){
+                    alertBox('Canceled','danger');
+                }
                 relocateToErrorPage(error.status);
             });
         }

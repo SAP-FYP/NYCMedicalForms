@@ -39,10 +39,6 @@ beforeEach(() => {
     const emailLogin = 'rltk4545@gomail.com';
     const passLogin = 'PASSword1*';
     cy.login(emailLogin, passLogin);
-    // cy.getCookie('jwt').then((cookie) => {
-    //     authToken = cookie.value;
-    // })
-    // cy.setCookie('jwt', authToken);
     cy.visit('http://localhost:3000/obs-form');
 });
 
@@ -98,9 +94,9 @@ describe('Filling in all the form details', () => {
     cy.get('input[name="eligibility"][value="Fit"]').check();
 
     cy.get('button[id=submitBtn]').click();
-    cy.wait(1000);
+    cy.wait(1500);
     cy.get('#deleteStudentModal').should('be.visible').contains('Student Already exists. Update student information?');
-    cy.wait(1000);
+    cy.wait(1500);
     cy.get('button[id=updateStudentBtn]').click();
     cy.wait(7000);
     cy.get('.alert-success').should('be.visible').contains('Submit Succesful');

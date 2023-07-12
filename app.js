@@ -2006,7 +2006,7 @@ app.put('/updateFormStatus', authHelper.verifyToken, authHelper.checkIat, (req, 
     return doctorFormModel
         .updateFormStatus(studentId)
         .then(data => {
-            res.json(data)
+            res.json(data);
         })
         .catch(error => {
             console.error(error);
@@ -2153,7 +2153,6 @@ app.delete('/deleteStudentForm',  authHelper.verifyToken, authHelper.checkIat, (
             return res.sendStatus(200);
         })
         .catch((error) => {
-            console.log(error)
             return res.status(error.status || 500).json({ error: error.message });
         })
 })
