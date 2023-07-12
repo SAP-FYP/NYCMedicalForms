@@ -6,7 +6,7 @@ const moment = require("moment");
 module.exports.dataRetentionJob = function dataRetentionJob() {
 
     // EVERY 5 SECOND - TESTING PURPOSES
-    // cron.schedule("*/5 * * * * *", async function () {
+    // cron.schedule("*/2 * * * * *", async function () {
     //     const today = moment().tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss');
     //     const interval = '1 YEAR';
     //     console.log(`CRON: Cron job executed at: SGT ${today}`)

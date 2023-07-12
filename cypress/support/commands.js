@@ -23,7 +23,7 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-Cypress.Commands.add('login', (email, pass) => {
+Cypress.Commands.add('doctorlogin', (email, pass) => {
     cy.visit('http://localhost:3000/login');
     cy.get('input[id=login-email]').type(email);
     cy.get('input[id=login-password]').type(pass);
@@ -41,11 +41,6 @@ Cypress.Commands.add('managementLogin', (email, pass) => {
     cy.contains('Overview');
 })
 
-Cypress.Commands.add('checkMCR', (doctorMCR) => {
-    cy.get('input[id=doctorMCR]').type(doctorMCR);
-    cy.get('button[id=availabilityBtn]').click();
-});
-
 Cypress.Commands.add('generateRandomNRIC', () => {
     const startingChars = ['S', 'T', 'G', 'F'];
     const randomStartingChar = startingChars[Math.floor(Math.random() * startingChars.length)];
@@ -62,3 +57,21 @@ Cypress.Commands.add('generateRandomContact', () => {
 
     return randomStartingChar + randomDigits;
 });
+
+Cypress.Commands.add('adminlogin', (email, pass) => {
+    cy.session(
+        [email, pass],
+        () => {
+            cy.visit('http://localhost:3000/obs-admin/login');
+            cy.get('input[id=login-email]').type(email);
+            cy.get('input[id=login-password]').type(pass);
+            cy.get('button[id=login-button]').click();
+            cy.get('#header-bar').should('have.class', 'col-12');
+        },
+        {
+            validate() {
+                cy.getCookie('jwt').should('exist');
+            }
+        }
+    )
+})

@@ -89,7 +89,7 @@ module.exports.getClasses = function getClasses(){
   `;
   return query(sql).then(function (result) {
       const rows = result;
-      console.log(result);
+      // console.log(result);
       if (rows.length === 0) {
           throw new EMPTY_RESULT_ERROR('No Classes Found');
       }

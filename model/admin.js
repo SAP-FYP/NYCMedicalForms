@@ -1,4 +1,3 @@
-const { locale } = require('moment');
 const conn = require('../database');
 const { query, pool } = conn;
 
@@ -123,7 +122,7 @@ module.exports.createPermGroup = async function createPermGroup(newPermGroup) {
     }
 }
 
-module.exports.editPermGroup = async function createPermGroup(permGroup) {
+module.exports.editPermGroup = async function createPermGroup(permGroup, invalidationDate) {
     const connection = await pool.getConnection();
 
     try {
@@ -162,6 +161,16 @@ module.exports.editPermGroup = async function createPermGroup(permGroup) {
         const affectedRows3 = result3[0].affectedRows;
 
         if (affectedRows3 == 0) {
+            const error = new Error("Unable to edit permission group");
+            error.status = 500;
+            throw error;
+        }
+
+        // Invalidate users belonging to the group
+        const sql4 = 'UPDATE user SET invalidationDate = ? WHERE groupId = ?';
+        await connection.query(sql4, [invalidationDate, permGroup.permGroupId]);
+
+        if (affectedRows2 == 0) {
             const error = new Error("Unable to edit permission group");
             error.status = 500;
             throw error;

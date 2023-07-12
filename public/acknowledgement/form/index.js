@@ -1,11 +1,51 @@
 window.addEventListener("DOMContentLoaded", function () {
+  const alertContainer = document.getElementById('alertbox');
+  
+  function alertBox(message, type) {
+    const alertIcon = document.getElementById('alert-icon');
+    const alertMessage = document.getElementById('alert-message');
+    let alertColor;
+  
+    if (type === 'danger') {
+      alertIcon.setAttribute('xlink:href', '#exclamation-triangle-fill');
+      alertColor = 'alert-danger';
+    } else if (type === 'success') {
+      alertIcon.setAttribute('xlink:href', '#check-circle-fill');
+      alertColor = 'alert-success';
+    } else if (type === 'warn') {
+      alertIcon.setAttribute('xlink:href', '#exclamation-triangle-fill');
+      alertColor = 'alert-warning';
+    } else if (type === 'info') {
+      alertIcon.setAttribute('xlink:href', '#info-fill');
+      alertColor = 'alert-primary';
+    } else if (type === 'rejected') {
+      alertIcon.setAttribute('xlink:href', '#exclamation-triangle-fill');
+      alertColor = 'alert-success';
+    }
+  
+    alertMessage.textContent = message;
+    alertContainer.classList.add(alertColor)
+    alertContainer.classList.add('alert-visible');
+    alertContainer.classList.remove('alert-hidden');
+    alertContainer.style.zIndex = 99999;
+  
+    setTimeout(() => {
+      alertContainer.classList.add('alert-hidden');
+      alertContainer.classList.remove('alert-visible');
+      alertContainer.classList.remove(alertColor);
+    }, 4000);
+  };
+
   // Check if URL contains encrypted StudentID
   const urlParams = new URLSearchParams(window.location.search);
   const encrypted = urlParams.get("encrypted");
   const today = new Date()
+  const user = JSON.parse(localStorage.getItem("user"));
+  const baseURL = window.location.origin;
 
+  // Validation
   if (!encrypted || encrypted.length !== 32) {
-    window.location.href = "/acknowledgement";
+    window.location.href = "";
   }
 
   // Signature Pad
@@ -45,6 +85,12 @@ window.addEventListener("DOMContentLoaded", function () {
   axios
     .get("/form/" + encrypted)
     .then((response) => {
+      const configURL = baseURL + response.config.url;
+      const requestURL = response.request.responseURL;
+      if (configURL !== requestURL) {
+        window.location.href = requestURL;
+        throw new Error("redirected");
+      }
       const data = response.data.form;
       // Student
       studentName.value = data.nameOfStudent;
@@ -91,12 +137,6 @@ window.addEventListener("DOMContentLoaded", function () {
 
       parentContactNo.value = data.parentContactNo;
       parentEmail.value = data.parentEmail;
-
-      // Check if Key matches with StudentID
-      const key = JSON.parse(localStorage.getItem("key"));
-      if (key !== new Date(data.dateOfBirth).toLocaleDateString('en-SG').replace(/\//g, '') + data.studentNRIC) {
-        window.location.href = "/acknowledgement?encrypted=" + encrypted;
-      }
     })
     .catch((error) => {
       console.log(error);
@@ -174,41 +214,59 @@ window.addEventListener("DOMContentLoaded", function () {
     const lastLetter = parentNRIC.value.charAt(parentNRIC.value.length - 1).toUpperCase();
     const checkTable = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'Z', 'J'];
     if (lastLetter !== checkTable[checkDigit]) {
-      // TODO PROPER ERROR HANDLING
-
       alert("Please enter a valid NRIC/FIN");
       return;
     }
-    
-    let updateParentAcknowledgement = axios
-    .put("/parent/acknowledge", {
-      encrypted: encrypted,
-      parentNRIC: parentNRIC.value.slice(-4),
-      nameOfParent: parentName.value,
-      dateOfAcknowledgement: date,
-      parentSignature: parentSignature
-    });
 
-    let updateFormStatus = axios.put("/parent/status", {
-      encrypted: encrypted,
-    });
 
     // Verification if signature is empty
+    if (signaturePad.isEmpty()) {
+      alert("Please sign the form");
+      return;
+    }
 
-    let parentSignature = "";
-    console.log(signaturePad.toDataURL());
     axios.post("/parent-sign-upload", {
       parentSignature: signaturePad.toDataURL(),
     }).then((response) => {
-      parentSignature = `${response.data.url};${today};${parentName.value}`;
+      const configURL = baseURL + response.config.url;
+      const requestURL = response.request.responseURL;
+      if (configURL !== requestURL) {
+        window.location.href = requestURL;
+        throw new Error("redirected");
+      }
+
+      parentSignature = `${response.data.url}`;
+
+      let updateParentAcknowledgement = axios
+        .put("/parent/acknowledge", {
+          encrypted: encrypted,
+          parentNRIC: parentNRIC.value.slice(-4),
+          nameOfParent: parentName.value,
+          dateOfAcknowledgement: date,
+          parentSignature: parentSignature
+        });
+
+      let updateFormStatus = axios
+        .put("/parent/status", {
+          encrypted: encrypted,
+        });
+
       Promise.all([updateParentAcknowledgement, updateFormStatus])
         .then((response) => {
-          // window.location.href = "/acknowledgement/success";
-          alert("Acknowledgement successful");
+          response.forEach((res) => {
+            const configURL = baseURL + res.config.url;
+            const requestURL = res.request.responseURL;
+            if (configURL !== requestURL) {
+              window.location.href = requestURL;
+              throw new Error("redirected");
+            }
+          });
+
+          alertBox("Acknowledgement successful", "success");
         })
         .catch((error) => {
           // TODO Add error handling
-          alert("Acknowledgement unsuccessful");
+          alertBox("Acknowledgement unsuccessful", "danger");
           console.log(error);
         });
     });
