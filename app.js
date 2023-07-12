@@ -1146,8 +1146,10 @@ app.put('/obs-admin/permission/groups', authHelper.verifyToken, authHelper.check
         throw error;
     }
 
+    const invalidationDate = moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss');
+
     return adminModel
-        .editPermGroup(permGroup)
+        .editPermGroup(permGroup, invalidationDate)
         .then((result) => {
             if (!result) {
                 const error = new Error("Unable to update permission group")
