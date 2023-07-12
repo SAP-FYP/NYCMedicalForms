@@ -6,7 +6,7 @@ const chance = new Chance();
 let authToken;
 
 before(() => {
-    const emailLogin = 'pmt2@gmail.com';
+    const emailLogin = 'cypressPmt@gmail.com';
     const passLogin = 'Password1!';
     cy.managementLogin(emailLogin, passLogin);
     cy.getCookie('jwt').then((cookie) => {
