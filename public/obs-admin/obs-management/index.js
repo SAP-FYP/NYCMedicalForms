@@ -448,7 +448,7 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
   //   const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
   //   pmtHeadingForm.innerHTML = ''
   // }
-  
+
   const pillPending = document.querySelector('.changePill');
   //if theres permission
   if (userPermissions.includes(2) || userPermissions.includes(3)) {
@@ -916,7 +916,6 @@ document.addEventListener("DOMContentLoaded", function () {
           formStatusValue,
           studentId
         } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
-        console.log(userPermission)
         //call function to handle checkboxes
         if (userPermission.includes(5)) {
           handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
