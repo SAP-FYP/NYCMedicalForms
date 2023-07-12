@@ -448,83 +448,149 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
   //   const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
   //   pmtHeadingForm.innerHTML = ''
   // }
-  if (formData.formStatus === "Pending") {
-    const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
-    // Create the h4 element
-    const h4 = document.createElement('h4');
-    h4.textContent = 'Partnership Management Team:';
-    pmtHeadingForm.appendChild(h4);
-
-    const apprRejContainer = document.querySelector('#apprRejContainer');
-    // Create the label element
-    const label = document.createElement('label');
-    label.setAttribute('for', 'medical_check');
-    label.setAttribute('class', 'text-center mx-auto w-75');
-    label.textContent = "I, the undersigned, have assessed the Applicant's Registration Form, examined the Applicant & approve him/her to be (please tick):";
-
-    // Create the container div
-    const containerDiv = document.createElement('div');
-    containerDiv.setAttribute('class', 'col-12 text-center mb-4');
-    containerDiv.appendChild(label);
-
-    // Create the Approve button
-    const approveBtn = document.createElement('button');
-    approveBtn.setAttribute('type', 'button');
-    approveBtn.setAttribute('class', 'btn btn-secondary approve-btn');
-    //cypress testing id
-    approveBtn.setAttribute('id', 'approveBtn');
-    approveBtn.setAttribute("data-bs-dismiss", "modal");
-    // approveBtn.setAttribute("data-bs-toggle", "modal");
-    // approveBtn.setAttribute("data-bs-target", "#staticBackdropAppr");
-    approveBtn.textContent = 'Approve';
-
-    // Create the vertical line
-    const verticalLine = document.createElement('div');
-    verticalLine.setAttribute('class', 'verticalLine mx-3');
-
-    // Create the Reject button
-    const rejectBtn = document.createElement('button');
-    rejectBtn.setAttribute('type', 'button');
-    rejectBtn.setAttribute('class', 'btn btn-secondary reject-btn');
-    //cypress testing id
-    rejectBtn.setAttribute('id', 'rejectBtn');
-    rejectBtn.setAttribute("data-bs-dismiss", "modal");
-    // rejectBtn.setAttribute("data-bs-toggle", "modal");
-    // rejectBtn.setAttribute("data-bs-target", "#staticBackdropRej");
-    rejectBtn.textContent = 'Reject';
-
-    // Create the container div for the buttons
-    const buttonContainerDiv = document.createElement('div');
-    buttonContainerDiv.setAttribute('class', 'col-12 text-center mb-3 d-flex justify-content-center align-items-center mt-3');
-    buttonContainerDiv.setAttribute('id', 'appr-rej-container');
-    buttonContainerDiv.appendChild(approveBtn);
-    buttonContainerDiv.appendChild(verticalLine);
-    buttonContainerDiv.appendChild(rejectBtn);
-
-
-
-    // Add the elements to the parent element
-    apprRejContainer.appendChild(containerDiv);
-    apprRejContainer.appendChild(buttonContainerDiv);
-
-  }
+  
   const pillPending = document.querySelector('.changePill');
+  //if theres permission
+  if (userPermissions.includes(2) || userPermissions.includes(3)) {
+    //if Pending create heading and approve/reject buttons
+    if (formData.formStatus === "Pending") {
+      const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
+      // Create the h4 element
+      const h4 = document.createElement('h4');
+      h4.textContent = 'Partnership Management Team:';
+      pmtHeadingForm.appendChild(h4);
 
-  //check if form is rejected
-  if (pillPending.textContent === 'Rejected') {
-    modalBtns.forEach(modalBtn => {
-      alertBox("Form already rejected!", 'rejected');
+      const apprRejContainer = document.querySelector('#apprRejContainer');
+      // Create the label element
+      const label = document.createElement('label');
+      label.setAttribute('for', 'medical_check');
+      label.setAttribute('class', 'text-center mx-auto w-75');
+      label.textContent = "I, the undersigned, have assessed the Applicant's Registration Form, examined the Applicant & approve him/her to be (please tick):";
 
-    })
+      // Create the container div
+      const containerDiv = document.createElement('div');
+      containerDiv.setAttribute('class', 'col-12 text-center mb-4');
+      containerDiv.appendChild(label);
+
+      // Create the Approve button
+      const approveBtn = document.createElement('button');
+      approveBtn.setAttribute('type', 'button');
+      approveBtn.setAttribute('class', 'btn btn-secondary approve-btn');
+      //cypress testing id
+      approveBtn.setAttribute('id', 'approveBtn');
+      approveBtn.setAttribute("data-bs-dismiss", "modal");
+      // approveBtn.setAttribute("data-bs-toggle", "modal");
+      // approveBtn.setAttribute("data-bs-target", "#staticBackdropAppr");
+      approveBtn.textContent = 'Approve';
+
+      // Create the vertical line
+      const verticalLine = document.createElement('div');
+      verticalLine.setAttribute('class', 'verticalLine mx-3');
+
+      // Create the Reject button
+      const rejectBtn = document.createElement('button');
+      rejectBtn.setAttribute('type', 'button');
+      rejectBtn.setAttribute('class', 'btn btn-secondary reject-btn');
+      //cypress testing id
+      rejectBtn.setAttribute('id', 'rejectBtn');
+      rejectBtn.setAttribute("data-bs-dismiss", "modal");
+      // rejectBtn.setAttribute("data-bs-toggle", "modal");
+      // rejectBtn.setAttribute("data-bs-target", "#staticBackdropRej");
+      rejectBtn.textContent = 'Reject';
+
+      // Create the container div for the buttons
+      const buttonContainerDiv = document.createElement('div');
+      buttonContainerDiv.setAttribute('class', 'col-12 text-center mb-3 d-flex justify-content-center align-items-center mt-3');
+      buttonContainerDiv.setAttribute('id', 'appr-rej-container');
+      buttonContainerDiv.appendChild(approveBtn);
+      buttonContainerDiv.appendChild(verticalLine);
+      buttonContainerDiv.appendChild(rejectBtn);
+
+
+
+      // Add the elements to the parent element
+      apprRejContainer.appendChild(containerDiv);
+      apprRejContainer.appendChild(buttonContainerDiv);
+
+    }
+    
+    //check if form is rejected
+    if (pillPending.textContent === 'Rejected') {
+      modalBtns.forEach(modalBtn => {
+        alertBox("Form already rejected!", 'rejected');
+
+      })
+    }
+    //check if form is approved
+    if (pillPending.textContent === 'Approved') {
+      modalBtns.forEach(modalBtn => {
+        alertBox("Form already approved!", 'rejected');
+
+      })
+    }
+
+    const rejectBtn = document.querySelector('#rejectBtn');
+    if (rejectBtn) {
+      rejectBtn.setAttribute('id', 'rejectBtn-studentid-' + studentId);
+      rejectBtn.addEventListener('click', function () {
+        // Update status to "rejected" in the database
+        updateStatusReject(formData)
+
+        pillPending.classList.add('pillRejected');
+
+        pillPending.textContent = 'Rejected';
+        alertBox("The form is rejected", 'success');
+
+        const apprRejContainer = document.querySelector('#apprRejContainer');
+        apprRejContainer.innerHTML = ''
+        const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
+        pmtHeadingForm.innerHTML = ''
+
+        const apprAmt = document.querySelector('.rejAmt');
+        apprAmt.textContent = parseInt(apprAmt.textContent) + 1
+
+        const pendingAmt = document.querySelector('.pendingAmt');
+        pendingAmt.textContent = parseInt(pendingAmt.textContent) - 1
+
+        pillPending.classList.remove('changePill');
+        if (canvas.parentElement === parentContainer) {
+          parentContainer.removeChild(canvas);
+        }
+      });
+
+    }
+
+    const approveBtn = document.querySelector('#approveBtn');
+    if (approveBtn) {
+      approveBtn.setAttribute('id', 'approveBtn-studentid-' + studentId);
+      approveBtn.addEventListener('click', function () {
+        // Update status to "approved" in the database
+        updateStatusApprove(formData)
+        const pillPending = document.querySelector('.changePill');
+        pillPending.classList.add('pillApproved');
+
+        pillPending.textContent = 'Approved';
+        alertBox("The form is aproved!", 'success');
+        const apprRejContainer = document.querySelector('#apprRejContainer');
+        apprRejContainer.innerHTML = ''
+        const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
+        pmtHeadingForm.innerHTML = ''
+
+        const apprAmt = document.querySelector('.apprAmt');
+        apprAmt.textContent = parseInt(apprAmt.textContent) + 1
+
+        const pendingAmt = document.querySelector('.pendingAmt');
+        pendingAmt.textContent = parseInt(pendingAmt.textContent) - 1
+
+        pillPending.classList.remove('changePill');
+
+        if (canvas.parentElement === parentContainer) {
+          parentContainer.removeChild(canvas);
+        }
+
+      });
+    }
   }
-  //check if form is approved
-  if (pillPending.textContent === 'Approved') {
-    modalBtns.forEach(modalBtn => {
-      alertBox("Form already approved!", 'rejected');
-
-    })
-  }
-
 
   const closeBtn = document.querySelector('.closeBtn');
   closeBtn.setAttribute("id", "closeBtn-studentid-" + studentId)
@@ -541,89 +607,24 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
     pillPending.classList.remove("changePill");
 
   });
-
-  const rejectBtn = document.querySelector('#rejectBtn');
-
-  if (rejectBtn) {
-    rejectBtn.setAttribute('id', 'rejectBtn-studentid-' + studentId);
-    rejectBtn.addEventListener('click', function () {
-      // Update status to "rejected" in the database
-      updateStatusReject(formData)
-
-      pillPending.classList.add('pillRejected');
-
-      pillPending.textContent = 'Rejected';
-      alertBox("The form is rejected", 'success');
-
-      const apprRejContainer = document.querySelector('#apprRejContainer');
-      apprRejContainer.innerHTML = ''
-      const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
-      pmtHeadingForm.innerHTML = ''
-
-      const apprAmt = document.querySelector('.rejAmt');
-      apprAmt.textContent = parseInt(apprAmt.textContent) + 1
-
-      const pendingAmt = document.querySelector('.pendingAmt');
-      pendingAmt.textContent = parseInt(pendingAmt.textContent) - 1
-
-      pillPending.classList.remove('changePill');
-      if (canvas.parentElement === parentContainer) {
-        parentContainer.removeChild(canvas);
-      }
-    });
-
+  const textarea = document.querySelector("#mst-review");
+  const submitReview = document.querySelector('.submitReviewBtn');
+  const newReview = document.querySelector('#mst-review');
+  if (userPermissions.includes(7)) {
+    submitReview.classList.remove('d-none');
+    textarea.disabled = false;
   }
-
-
-
-  const approveBtn = document.querySelector('#approveBtn');
-  if (approveBtn) {
-    approveBtn.setAttribute('id', 'approveBtn-studentid-' + studentId);
-    approveBtn.addEventListener('click', function () {
-      // Update status to "approved" in the database
-      updateStatusApprove(formData)
-      const pillPending = document.querySelector('.changePill');
-      pillPending.classList.add('pillApproved');
-
-      pillPending.textContent = 'Approved';
-      alertBox("The form is aproved!", 'success');
-      const apprRejContainer = document.querySelector('#apprRejContainer');
-      apprRejContainer.innerHTML = ''
-      const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
-      pmtHeadingForm.innerHTML = ''
-
-      const apprAmt = document.querySelector('.apprAmt');
-      apprAmt.textContent = parseInt(apprAmt.textContent) + 1
-
-      const pendingAmt = document.querySelector('.pendingAmt');
-      pendingAmt.textContent = parseInt(pendingAmt.textContent) - 1
-
-      pillPending.classList.remove('changePill');
-
-      if (canvas.parentElement === parentContainer) {
-        parentContainer.removeChild(canvas);
-      }
-
-    });
-
-    const textarea = document.querySelector("#mst-review");
-    const submitReview = document.querySelector('.submitReviewBtn');
-    const newReview = document.querySelector('#mst-review');
+  //click on submit button
+  submitReview.addEventListener('mousedown', function (event) {
     if (userPermissions.includes(7)) {
-      submitReview.classList.remove('d-none');
-      textarea.disabled = false;
+      submitReview.setAttribute("data-bs-dismiss", "modal");
+      editReview(formData, newReview)
+    } else {
+      alertBox("You don't have permission to edit review!", 'danger');
     }
-    //click on submit button
-    submitReview.addEventListener('mousedown', function (event) {
-      if (userPermissions.includes(7)) {
-        submitReview.setAttribute("data-bs-dismiss", "modal");
-        editReview(formData, newReview)
-      } else {
-        alertBox("You don't have permission to edit review!", 'danger');
-      }
 
-    })
-  }
+  })
+
 
 
 
@@ -915,7 +916,7 @@ document.addEventListener("DOMContentLoaded", function () {
           formStatusValue,
           studentId
         } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
-
+        console.log(userPermission)
         //call function to handle checkboxes
         if (userPermission.includes(5)) {
           handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
@@ -1291,7 +1292,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         const checkbox = document.createElement('input');
         checkbox.type = "checkbox";
         checkbox.name = "course-date";
-       
+
         //to cross check with database date format
         //data format in website is dd-mm-yyyy
         //database reads yyyy-mm-dd
@@ -1473,7 +1474,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
                 });
               }
-              
+
               //create array to store all data for export to excel bulk
 
               // Loop through the data and add it to the page
