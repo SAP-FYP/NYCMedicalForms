@@ -23,7 +23,7 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-
+import signature_pad from 'signature_pad';
 Cypress.Commands.add('login', (email, pass) => {
     cy.visit('http://localhost:3000/login');
     cy.get('input[id=login-email]').type(email);
@@ -47,11 +47,19 @@ Cypress.Commands.add('checkMCR', (doctorMCR) => {
     cy.get('button[id=availabilityBtn]').click();
 });
 
-Cypress.Commands.add('fillInForm', (studentName,dateOfBirth,randomNumber,randomNRIC) => {
-  console.log(dateOfBirth)
-  cy.get('input[id=studentName]').type(studentName);
-  cy.get('input[id=dateOfBirth]').type(dateOfBirth);
-  cy.get('button[id=schoolName]').click();
-  cy.get(`li[id=school${randomNumber}]`).click();
-  cy.get('input[id=studentNRIC]').type(randomNRIC);
+Cypress.Commands.add('generateRandomNRIC', () => {
+    const startingChars = ['S', 'T', 'G', 'F'];
+    const randomStartingChar = startingChars[Math.floor(Math.random() * startingChars.length)];
+    const randomDigits = Math.floor(Math.random() * 10000000).toString().padStart(7, '0');
+    const randomEndingChar = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+
+    return randomStartingChar + randomDigits + randomEndingChar;
+});
+
+Cypress.Commands.add('generateRandomContact', () => {
+    const startingNo = ['8', '9'];
+    const randomStartingChar = startingNo[Math.floor(Math.random() * startingNo.length)];
+    const randomDigits = Math.floor(Math.random() * 10000000).toString().padStart(7, '0');
+
+    return randomStartingChar + randomDigits;
 });

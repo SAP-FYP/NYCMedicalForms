@@ -18,3 +18,12 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
+
+# Videos
+cypress/videos
+
+# Screenshots
+cypress/Screenshots
+
+# Downloads
+cypress/downloads

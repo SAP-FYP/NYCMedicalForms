@@ -2064,7 +2064,7 @@ app.get('/getSchools', (req, res, next) => {
             res.json(courseDateLists)
         })
         .catch(err => {
-            if (error instanceof EMPTY_RESULT_ERROR) {
+            if (err instanceof EMPTY_RESULT_ERROR) {
                 res.status(404).json({ message: error.message });
             } else {
                 res.status(500).json({ message: 'Internal server error' });

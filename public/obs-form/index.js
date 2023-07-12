@@ -436,20 +436,19 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
     const validateEmptyValue = (allEntry) => {
-        const signatureMsg = document.getElementById('signatureMsg');
         for (const key in allEntry) {
             // double check if the entry have the key
             if (allEntry.hasOwnProperty(key)) {
                 const value = allEntry[key];
-                
                 console.log(key+'-----'+value)
                 // check signature
                 if(key === "signatureData"){
                     if (signaturePad.isEmpty()) {
+                        const signatureMsg = document.getElementById('signatureMsg');
                         signatureMsg.textContent = 'Please provide your signature';
                         signatureMsg.className = 'text-danger';
                         validities.isSignatureValid = false;
-                        if(document.getElementById('signatureMsg')){
+                        if(document.getElementById('signatureImg')){
                             validities.isSignatureValid = true;
                             signatureMsg.textContent = '';
                         }
@@ -851,70 +850,71 @@ document.addEventListener('DOMContentLoaded', function () {
     //Check MCR Availablability
     availabilityBtn.addEventListener('click', (event) => {2
         event.preventDefault();
+        if(validities.isDoctorMCRValid){
+            // check if doctorMCR input is empty or not
+            if (!doctorMCRInput.value) {
+                doctorMCRInput.classList.add('is-invalid');
+                doctorMCRFeedback.style.display = 'block';
+                doctorMCRFeedback.textContent = 'Please enter a value';
+                return; // return early from the event handler if doctorMCR is empty
+            } else {
+                doctorMCRInput.classList.remove('is-invalid');
+                doctorMCRInput.classList.add('is-valid');
+                doctorMCRFeedback.style.display = 'none';
+            }
 
-        // check if doctorMCR input is empty or not
-        if (!doctorMCRInput.value) {
-            doctorMCRInput.classList.add('is-invalid');
-            doctorMCRFeedback.style.display = 'block';
-            doctorMCRFeedback.textContent = 'Please enter a value';
-            return; // return early from the event handler if doctorMCR is empty
-        } else {
-            doctorMCRInput.classList.remove('is-invalid');
-            doctorMCRInput.classList.add('is-valid');
-            doctorMCRFeedback.style.display = 'none';
+            const template = document.getElementById('loadingTemplate');
+            const clone = template.content.cloneNode(true);
+            availabilityBtn.innerHTML = '';
+            availabilityBtn.className = 'btn btn-primary'
+            availabilityBtn.appendChild(clone);
+
+            fetch('/checkDoctorMCR', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ doctorMCR: doctorMCRInput.value })
+            })
+            .then(response => {
+                if (response.status === 404) {
+                    // Doctor was not found
+                    throw new Error('DoctorNotFound');
+                }
+                else if (response.status === 500) {
+                    // Server error
+                    alert('An error occurred. Please try again later.');
+                    throw new Error('ServerError');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const { doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo } = data[0];
+                doctorAutoFill(doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo);
+                removeInvalidTooltips();
+                validities.isDoctorMCRValid = true;
+                validities.isDoctorNameValid = true;
+                validities.isDoctorContactValid = true;
+                validities.isClinicNameValid = true;
+                validities.isClinicAddressValid = true;
+                validities.isDateValid = true;
+                validities.isSignatureValid = true;
+            })
+            .catch(err => {
+                if (err.message == 'DoctorNotFound') {
+                    // if doctor is new and available
+                    availabilityBtn.disabled = true;
+                    availabilityBtn.textContent = `You are new!`
+                    availabilityBtn.className = 'btn btn-success'
+                    isAvailabilityBtn = true;
+                }
+                else {
+                    // internal server error
+                    alert("internal server error" + err.message);
+                }
+            });
         }
-
-        const template = document.getElementById('loadingTemplate');
-        const clone = template.content.cloneNode(true);
-        availabilityBtn.innerHTML = '';
-        availabilityBtn.className = 'btn btn-primary'
-        availabilityBtn.appendChild(clone);
-
-        // using POST method since doctorMCR is sensitive information so that it can be protected
-        fetch('/checkDoctorMCR', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ doctorMCR: doctorMCRInput.value })
-        })
-        .then(response => {
-            if (response.status === 404) {
-                // Doctor was not found
-                throw new Error('DoctorNotFound');
-            }
-            else if (response.status === 500) {
-                // Server error
-                alert('An error occurred. Please try again later.');
-                throw new Error('ServerError');
-            }
-            return response.json();
-        })
-        .then(data => {
-            const { doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo } = data[0];
-            doctorAutoFill(doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo);
-            removeInvalidTooltips();
-            validities.isDoctorMCRValid = true;
-            validities.isDoctorNameValid = true;
-            validities.isDoctorContactValid = true;
-            validities.isClinicNameValid = true;
-            validities.isClinicAddressValid = true;
-            validities.isDateValid = true;
-            validities.isSignatureValid = true;
-        })
-        .catch(err => {
-            if (err.message == 'DoctorNotFound') {
-                // if doctor is new and available
-                availabilityBtn.disabled = true;
-                availabilityBtn.textContent = `You are new!`
-                availabilityBtn.className = 'btn btn-success'
-                isAvailabilityBtn = true;
-            }
-            else {
-                // internal server error
-                alert("internal server error" + err.message);
-            }
-        });
+        
     });
     // drop down handlers
     schoolDropDown.addEventListener('show.bs.dropdown',(event) => {
@@ -1022,11 +1022,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     
                     // show loading modal
                     loadingModal.show();
+
                     uploadSignature(data)
                     .then(data => {
                         signatureCredentials = `${data.url};${today};${doctorNameInput.value}`;
                         doctorEntry.signatureData = signatureCredentials;
-
                         return Promise.all([postDoctorInfo(doctorEntry), postStudentInfo(studentEntry)]);
                     })
                     .then(([doctorResponse, studentResponse]) => {
