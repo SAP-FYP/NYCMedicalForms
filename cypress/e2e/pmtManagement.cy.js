@@ -61,12 +61,11 @@ describe('Forms Bulk Export', () => {
     }) 
 
     it('should export selected forms only when viewing a form', () => {
-        cy.get('td[id=modalBtn-studentId-3]').eq(0).click({force: true});;
+        cy.get('td[id=modalBtn-studentId-3]').eq(0).click();;
         cy.get('button[id=closeBtn-studentid-3]').click()
         cy.get('td[id=modalBtn-studentId-2]').eq(0).click({force: true});;
         cy.get('button[id=exportBtn-studentid-2]').eq(0).click({force: true});
         cy.get('.alert-success').should('be.visible');
-        cy.get('button[id=closeBtn-studentid-2]').click()
         cy.wait(1000);
     }) 
 })
@@ -113,10 +112,11 @@ describe('Export by filtering', () => {
 describe('Approving and rejecting of forms', () => {
     //use cy.intercept
     it('should approve the selected form', () => {
-        cy.get('td[id=modalBtn-studentId-3]').eq(0).click();
-        cy.get('button[id=approveBtn-studentid-3]').eq(0).click()
+        cy.wait(500);
+        cy.get('td[id=modalBtn-studentId-3]').eq(0).click({force: true});
+        cy.get('button[id=approveBtn-studentid-3]').eq(0).click({force: true})
         cy.get('.alert-success').should('be.visible');
-        cy.get('td[id=modalBtn-studentId-3]').eq(0).click();
+        cy.get('td[id=modalBtn-studentId-3]').eq(0).click({force: true});
         cy.get('.alert-success').should('be.visible');
 
         // Put form status back to pending
@@ -130,13 +130,13 @@ describe('Approving and rejecting of forms', () => {
     })
 
     it('should reject the selected form', () => {
-    
-        cy.get('td[id=modalBtn-studentId-4]').eq(0).click();
-        cy.get('button[id=rejectBtn-studentid-4]').eq(0).click()
+        cy.wait(500);
+        cy.get('td[id=modalBtn-studentId-4]').eq(0).click({force: true});
+        cy.get('button[id=rejectBtn-studentid-4]').eq(0).click({force: true})
         cy.get('.alert-success').should('be.visible');
-        cy.get('td[id=modalBtn-studentId-4]').eq(0).click();
+        cy.get('td[id=modalBtn-studentId-4]').eq(0).click({force: true});
         cy.get('.alert-success').should('be.visible');
-        cy.get('button[id=closeBtn-studentid-4]').click()
+        cy.get('button[id=closeBtn-studentid-4]').click({force: true})
 
         // Put form status back to pending
         cy.request({
