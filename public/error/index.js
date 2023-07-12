@@ -12,10 +12,13 @@ window.addEventListener('DOMContentLoaded', () => {
         actionBtn.textContent = text;
         actionBtn.style.display = display;
 
-        // TODO if login / or go back
         actionBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            type ? window.location.replace(`/${type}/login`) : window.location.replace(`/login`);
+            if (code == 401) {
+                type ? window.location.replace(`/${type}/login`) : window.location.replace(`/login`);
+            } else {
+                history.back();
+            }
         })
     }
 
