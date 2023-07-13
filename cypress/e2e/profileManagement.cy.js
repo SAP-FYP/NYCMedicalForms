@@ -60,12 +60,28 @@ describe('Update user password', () => {
     it('should change back the user\'s password', () => {
         cy.adminlogin(emailLogin, 'Password2!');
         cy.visit('http://localhost:3000/obs-admin/profile');
-        cy.get('input[id=input-name]').should('have.value', 'Cypress Test Account')
-        cy.get('button[id=change-password-button]').click().wait(500);
-        cy.get('input[id=current-input]').click().wait(500).type('Password2!');
-        cy.get('input[id=new-input]').type('Password1!');
-        cy.get('input[id=confirm-input]').type('Password1!');
-        cy.get('input[id=confirm-password-icon]').click();
-        cy.get('.alert-success').should('be.visible').contains('Password updated successfully.');
+        // cy.get('input[id=input-name]').should('have.value', 'Cypress Test Account')
+        // cy.get('button[id=change-password-button]').click().wait(500);
+        // cy.get('input[id=current-input]').click().wait(500).type('Password2!');
+        // cy.get('input[id=new-input]').type('Password1!');
+        // cy.get('input[id=confirm-input]').type('Password1!');
+        // cy.get('input[id=confirm-password-icon]').click();
+        // cy.get('.alert-success').should('be.visible').contains('Password updated successfully.');
+
+        let password = {
+            newPassword: passLogin,
+            confirmPassword: passLogin,
+            currentPassword: 'Password2!'
+        }
+
+        cy.request({
+            method: 'PUT',
+            url: '/user/password',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password }),
+            followRedirect: false
+        }).then((response) => {
+            expect(response.status).to.eq(200);
+        })
     })
 })

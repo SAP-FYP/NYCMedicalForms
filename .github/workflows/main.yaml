@@ -47,19 +47,23 @@ jobs:
             twilioSID: ${{ secrets.CYPRESS_TWILIOSID }}
             twilioToken: ${{ secrets.CYPRESS_TWILIOTOKEN }}
             TZ: Asia/Singapore
-        
+
       - name: Upload Screenshots
         uses: actions/upload-artifact@v3
+        if: failure()
         with:
           name: cypress-screenshots
           path: cypress/screenshots
+          retention-days: 5
           if-no-files-found: ignore
 
       - name: Upload Videos
         uses: actions/upload-artifact@v3
+        if: always()
         with:
           name: cypress-videos
           path: cypress/videos
+          retention-days: 5
           if-no-files-found: ignore
 
   deploy:

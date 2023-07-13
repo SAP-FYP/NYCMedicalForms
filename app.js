@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const elasticEmail = require('elasticemail');
 const cloudinary = require("cloudinary").v2;
-const { UserNotFoundError,DUPLICATE_ENTRY_ERROR,EMPTY_RESULT_ERROR } = require("./errors");
+const { UserNotFoundError, DUPLICATE_ENTRY_ERROR, EMPTY_RESULT_ERROR } = require("./errors");
 const crypto = require('crypto');
 
 const key = Buffer.from(process.env.encryptKey, 'hex');
@@ -1226,8 +1226,10 @@ app.put('/obs-admin/permission/groups', authHelper.verifyToken, authHelper.check
         throw error;
     }
 
+    const invalidationDate = moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss');
+
     return adminModel
-        .editPermGroup(permGroup)
+        .editPermGroup(permGroup, invalidationDate)
         .then((result) => {
             if (!result) {
                 const error = new Error("Unable to update permission group")
@@ -1688,9 +1690,9 @@ app.get('/obs-admin/pmt/search/:search', authHelper.verifyToken, authHelper.chec
         })
 });
 
-app.get('/get-school-filter',authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
-     // AUTHORIZATION CHECK - PMT, MST 
-     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+app.get('/get-school-filter', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
         return res.redirect('/error?code=403')
     }
     return doctorFormModel
@@ -1709,9 +1711,9 @@ app.get('/get-school-filter',authHelper.verifyToken, authHelper.checkIat, (req, 
         });
 });
 
-app.get('/getEligibility',authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
-     // AUTHORIZATION CHECK - PMT, MST 
-     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+app.get('/getEligibility', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
         return res.redirect('/error?code=403')
     }
     return doctorFormModel
@@ -1731,10 +1733,10 @@ app.get('/getEligibility',authHelper.verifyToken, authHelper.checkIat, (req, res
 
 // PMT Retrieve submissions by filtering (School, Class, Eligibility, CourseDate
 app.post('/obs-admin/pmt/filter/', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
-// AUTHORIZATION CHECK - PMT, MST 
-if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
-    return res.redirect('/error?code=403')
-}
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+        return res.redirect('/error?code=403')
+    }
     let school = req.body.school
     let stuClass = req.body.class
     let eligibility = req.body.eligibility
@@ -2075,8 +2077,8 @@ app.put('/updateFormStatus', authHelper.verifyToken, authHelper.checkIat, (req, 
 
 // get classes
 app.get('/getClasses', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
-     // AUTHORIZATION CHECK - PMT, MST 
-     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
         return res.redirect('/error?code=403')
     }
     return doctorFormModel
@@ -2092,8 +2094,8 @@ app.get('/getClasses', authHelper.verifyToken, authHelper.checkIat, (req, res, n
 
 // get course dates
 app.get('/getCourseDates', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
-     // AUTHORIZATION CHECK - PMT, MST 
-     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
         return res.redirect('/error?code=403')
     }
     return doctorFormModel
@@ -2154,11 +2156,11 @@ app.post('/checkStudentNRIC', authHelper.verifyToken, authHelper.checkIat, (req,
         });
 });
 // delete duplicated student
-app.delete('/deleteStudentForm',  authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+app.delete('/deleteStudentForm', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
     if (req.decodedToken.role != 4) {
         return res.redirect('/error?code=403');
     }
-    const {studentIds} = req.body;
+    const { studentIds } = req.body;
     console.log(studentIds)
     return doctorFormModel
         .deleteStudentForm(studentIds)
