@@ -44,8 +44,12 @@ function generateNRIC() {
     // Combine the generated values to form the NRIC
     const generatedNRIC = firstLetter + randomDigits + lastLetter;
 
+    // Return only last 4 character of the NRIC
     return generatedNRIC;
 }
+
+// Doctor MCR generator
+const randomMCR = chance.integer({ min: 100000, max: 999999 });
 
 
 const randomSecondarySchool = chance.pickone([
@@ -66,7 +70,13 @@ const randomNumber = chance.integer({ min: 1, max: 147 });
 const minDate = new Date('2005-01-01'); // Define the minimum date
 const maxDate = new Date('2010-12-31'); // Define the maximum date
 
+// Generate random Singapore date
 const randomDate = chance.date({ min: minDate, max: maxDate });
+/// Format Like
+let dd = String(randomDate.getDate()).padStart(2, '0');
+let mm = String(randomDate.getMonth() + 1).padStart(2, '0'); //January is 0!
+let yyyy = randomDate.getFullYear();
+const randomSGDate = yyyy + '-' + mm + '-' + dd;
 
 // Random vaccination date generator
 const minVaccinationDate = new Date('2011-01-01'); // Define the minimum date
@@ -76,27 +86,20 @@ const randomVaccinationDate = chance.date({ min: minVaccinationDate, max: maxVac
 const formattedDate = randomVaccinationDate.toISOString().substring(0, 10);
 // Random email generator
 const randomEmail = chance.email();
-
-// Random phone number that starts with 8-9, 8 digits
-const randomPhone = chance.phone({ formatted: false, country: 'sg' });
-
+const phone = "97873648"
 after(() => {
     cy.then(Cypress.session.clearAllSavedSessions);
 })
 
 // Before test, create a form that requires parent acknowledgement
 before(() => {
-    let studentID;
-    let encrypted;
-    let studentNRIC = generateNRIC();
-    let authToken;
-
+    const studentNRIC = generateNRIC().slice(-4);
     const emailLogin = 'rltk4545@gomail.com';
     const passLogin = 'PASSword1*';
 
     cy.doctorlogin(emailLogin, passLogin);
     cy.getCookie('jwt').then((cookie) => {
-        authToken = cookie.value;
+        const authToken = cookie.value;
         cy.setCookie('jwt', authToken);
     })
 
@@ -107,51 +110,83 @@ before(() => {
         body: JSON.stringify({
             studentName: randomName,
             schoolName: randomSecondarySchool,
-            dateOfBirth: randomDate.toISOString().substring(0, 10),
+            dateOfBirth: randomSGDate,
             studentNRIC: studentNRIC,
             studentClass: randomNumber,
             dateOfVaccine: formattedDate,
         }),
-        followRedirect: false
     }).then((response) => {
-        // Print everything in response
-        
-    cy.request({
-        method: 'POST',
-        url: '/postAcknowledge',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            studentId: studentID,
-            parentContactNo: randomPhone,
-            parentEmail: randomEmail,
-        }),
-        followRedirect: false
+        const studentID = response.body[0].insertId;
+        cy.request({
+            method: 'POST',
+            url: '/postAcknowledge',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                studentId: studentID,
+                parentContactNo: phone,
+                parentEmail: randomEmail,
+            }),
+        })
+
+        cy.request({
+            method: 'POST',
+            url: 'postFormInfo',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                studentId: studentID,
+                courseDate: formattedDate,
+                doctorMCR: randomMCR,
+                doctorName: 'Dr. Test',
+                eligibility: 'Fit',
+                comments: 'Test',
+                date: new Date().toISOString().slice(0, 10),
+            })
+        })
+
+        cy.request({
+            method: 'POST',
+            url: '/postDoctorInfo',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                doctorMCR: randomMCR,
+                physicianName: 'Dr. Test',
+                signatureData: 'https://res.cloudinary.com/sp-esde-2100030/image/upload/v1686067397/lgbqfojafyafrzavrcev.png',
+                clinicName: 'Test Clinic',
+                clinicAddress: 'Test Clinic Address',
+                doctorContact: '98275648',
+            })
+        })
+
+        cy.request({
+            method: 'POST',
+            url: '/parent/cypress/encrypt',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                studentID: studentID,
+            })
+        }).then((response) => {
+            const encrypted = response.body.encrypted;
+            // Password = DDMMYYYY of student's birthdate + last 4 digits of student's NRIC
+            const password = randomDate.getDate().toString().padStart(2, '0') + (randomDate.getMonth() + 1).toString().padStart(2, '0') + randomDate.getFullYear().toString() + studentNRIC.slice(-4);
+            cy.parentLogin(encrypted, password);
+        })
     })
-})
-
-    cy.request('POST', '/parent/cypress/encrypt', {
-        studentid: studentID,
-    }).then((response) => {
-        encrypted = response.body.encrypted;
-    });
-
-    // Password = DDMMYYYY of student's birthdate + last 4 digits of student's NRIC
-    const password = randomDate.getDate().toString().padStart(2, '0') + (randomDate.getMonth() + 1).toString().padStart(2, '0') + randomDate.getFullYear().toString() + studentNRIC.slice(-4);
-
-    cy.parentLogin(encrypted, password);
-    cy.getCookie('parentJWT').then((cookie) => {
-        parentToken = cookie.value;
-    })
-});
-
-beforeEach(() => {
-    cy.setCookie('parentJWT', parentToken);
 })
 
 describe('parent acknowledge', () => {
-    it('should be able to view the form', () => {
-        cy.visit('http://localhost:3000/acknowledgement/form?encrypted' + encrypted);
-        cy.contains('Parent Section:')
-    }
-    )
+    it('Fill the form', () => {
+        const parentName = chance.name();
+        const parentNRIC = generateNRIC();
+        cy.fillInParentForm(parentName, parentNRIC)
+        cy.get("canvas[id=parent-signature-canvas]").trigger('mousedown', 'center')
+            .click({ release: false })
+            .trigger('mousemove', { clientX: 200, clientY: 300 })
+            .trigger('mouseup', 5, 5)
+            .trigger('mouseleave');
+        // Click acknowledge button
+        cy.get('button[id=acknowledge-button]').click();
+        cy.get('button[id=acknowledge-button]').should('not.exist');
+        cy.get('.alert-success').should('be.visible');
+
+    })
 })
