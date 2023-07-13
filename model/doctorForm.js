@@ -1,3 +1,4 @@
+const { response } = require('../app');
 const conn = require('../database');
 const { query, pool } = conn;
 
@@ -67,16 +68,15 @@ module.exports.postFormInfo = function postFormInfo(studentId, courseDate,doctor
 module.exports.updateFormStatus = function updateFormStatus(studentId) {
   const sql = `UPDATE form SET formStatus = 'Pending Parent' WHERE studentId = ?`;
   return query(sql, [studentId])
-  .catch(function (error) {
-      console.error('Error in postFormInfo:', error);
-      if (error.code === 'ER_DUP_ENTRY') {
-        // Handle duplicate entry error
-        throw new DUPLICATE_ENTRY_ERROR('Form Duplicate entry');
-      } else {
-        // Internal Server Error
-        throw new Error('Database error');
-      }
-  });
+  .then(function (result) {
+    const affectedRows = result[0];
+    if (affectedRows === 0) {
+        throw new EMPTY_RESULT_ERROR('Unable to update formStatus');
+    }
+    return affectedRows;
+  }).catch((error) => {
+    throw error;
+  })
 };
 
 module.exports.getClasses = function getClasses(){
@@ -287,7 +287,6 @@ module.exports.deleteStudentForm = async function deleteStudentForm(studentIdArr
   const connection = await pool.getConnection();
   try{
     await connection.beginTransaction();
-    console.log("aaaaa" + studentIdArr)
     //delete students with id inside arr 
     const sql1 = `DELETE FROM student WHERE studentId IN (?)`;
     const result1 = await connection.query(sql1,[studentIdArr])

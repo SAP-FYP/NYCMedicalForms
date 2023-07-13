@@ -1863,8 +1863,8 @@ app.post('/postDoctorInfo', authHelper.verifyToken, authHelper.checkIat, (req, r
     try {
         // encryption part
         const algorithm = 'aes-256-cbc'; // encryption algorithm
-        const key = Buffer.from('qW3eRt5yUiOpAsDfqW3eRt5yUiOpAsDf'); //must be 32 characters
-        const iv = Buffer.from('qW3eRt5yUiOpAsDf'); // the initialization vector(), recommended to create randombytes and store safely crypto.randomBytes(16)
+        const key = Buffer.from(process.env.signatureKey); //must be 32 characters
+        const iv = Buffer.from(process.env.signatureIV); // the initialization vector(), recommended to create randombytes and store safely crypto.randomBytes(16)
 
         const cipher = crypto.createCipheriv(algorithm, key, iv);//create cipher iv first,
         let encryptedsignatureInfo = cipher.update(signatureData, 'utf8', 'hex'); //and encrypt the data with it
@@ -1983,7 +1983,7 @@ app.put('/updateFormStatus', authHelper.verifyToken, authHelper.checkIat, (req, 
     return doctorFormModel
         .updateFormStatus(studentId)
         .then(data => {
-            res.json(data)
+            res.json(data);
         })
         .catch(error => {
             console.error(error);
@@ -2041,7 +2041,7 @@ app.get('/getSchools', (req, res, next) => {
             res.json(courseDateLists)
         })
         .catch(err => {
-            if (error instanceof EMPTY_RESULT_ERROR) {
+            if (err instanceof EMPTY_RESULT_ERROR) {
                 res.status(404).json({ message: error.message });
             } else {
                 res.status(500).json({ message: 'Internal server error' });
@@ -2094,7 +2094,6 @@ app.delete('/deleteStudentForm', authHelper.verifyToken, authHelper.checkIat, (r
             return res.sendStatus(200);
         })
         .catch((error) => {
-            console.log(error)
             return res.status(error.status || 500).json({ error: error.message });
         })
 })
