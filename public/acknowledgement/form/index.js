@@ -399,6 +399,7 @@ window.addEventListener("DOMContentLoaded", function () {
         img.alt = "Parent Signature";
         img.className = "img-fluid";
         img.height = "210";
+        img.id = "parent-signature-img";
         canvas.replaceWith(img);
       })
       .catch((error) => {

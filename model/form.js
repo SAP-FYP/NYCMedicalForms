@@ -16,7 +16,6 @@ module.exports.getFormDetails = function getFormDetails(studentID) {
         .then((result) => {
             const row = result[0];
             if (row.length === 0) {
-                // TODO ERROR HANDLING
                 const error = new Error("Invalid URL");
                 error.status = 401;
                 throw error;
