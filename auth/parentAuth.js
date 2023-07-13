@@ -33,9 +33,7 @@ module.exports.verifyToken = function verifyToken(req, res, next) {
 
 // Validate if the correct user is accessing the resource
 module.exports.validateUser = function validateUser(req, res, next) {
-    // Check if encrypted, studentNRIC and dateOfBirth is the same as the one in the token
     const encrypted = req.params.encrypted || req.body.encrypted;
-
     if (!encrypted) {
         // NO ENCRYPTED
         const error = new Error("No encrypted found! Reason(Empty encrypted)");
@@ -51,4 +49,9 @@ module.exports.validateUser = function validateUser(req, res, next) {
         return next(error);
     }
     next();
+}
+
+module.exports.validateIfAcknowledged = function validateIfAcknowledged(req, res, next) {
+    
+
 }

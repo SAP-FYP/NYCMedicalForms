@@ -42,6 +42,19 @@ Cypress.Commands.add('managementLogin', (email, pass) => {
     cy.contains('Overview');
 })
 
+Cypress.Commands.add('parentlogin', (encrypted, pass) => {
+    cy.visit(`http://localhost:3000/acknowledgement?encrypted=${encrypted}`)
+    cy.get('input[id=login-password]').type(pass);
+    cy.get('button[id=login-button]').click();
+    cy.url().should('include', `/form?encrypted=${encrypted}`);
+    cy.contains('Parent Section:');
+})
+
+Cypress.Commands.add('fillInParentForm', (parentName, parentNRIC, ) => {
+    cy.get('input[id=parentName]').type(parentName);
+    cy.get('input[id=parentNRIC]').type(parentNRIC);
+})
+
 Cypress.Commands.add('checkMCR', (doctorMCR) => {
     cy.get('input[id=doctorMCR]').type(doctorMCR);
     cy.get('button[id=availabilityBtn]').click();
