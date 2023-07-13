@@ -2,42 +2,102 @@
 
 import Chance from 'chance';
 const chance = new Chance();
-const randomName = chance.name()
-const minDate = new Date('2005-01-01'); // Define the minimum date
-const maxDate = new Date('2022-12-31'); // Define the maximum date
+const today = new Date();
+const minDate = new Date('2005-01-01');
+const maxDate = new Date('2022-12-31');
+// form input values
+const studentName = chance.name();
+const doctorName = chance.name();
+const clinicAddress = chance.address();
+const comment = chance.sentence();
+const className = `Class ${chance.integer({ min: 1, max: 10 })}`
+const schoolNumber = chance.integer({ min: 1, max: 147 });
+const clinicName = `Clinic ${chance.word()}`
+const doctorMCR = `CYPRESSMCR${chance.integer({ min: 1, max: 200 })}`
 
-const randomDate = chance.date({ min: minDate, max: maxDate });
-const formattedDate = randomDate.toISOString().substring(0, 10);
-const randomNumber = chance.integer({ min: 1, max: 147 });
-const nricPattern = /^[STFG]\d{7}[A-Z]$/i;
-let randomNRIC;
-do {
-  randomNRIC = chance.string({ length: 9, alpha: true, numeric: true }).toUpperCase();
-} while (!nricPattern.test(randomNRIC));
+let studentNRIC;
+let doctorContact;
+
+const dateOfBirth = chance.date({min: minDate, max: maxDate}).toISOString().substring(0, 10);
+const courseDate = chance.date({min: minDate, max: maxDate}).toISOString().substring(0, 10);
+const newCourseDate = chance.date({min: minDate, max: maxDate}).toISOString().substring(0, 10);
+const vaccineDate = chance.date({min: minDate, max: maxDate}).toISOString().substring(0, 10);
+const todayDate = today.toISOString().substring(0, 10);
 
 let authToken;
 
 before(() => {
-  const emailLogin = 'rltk4545@gomail.com';
-  const passLogin = 'PASSword1*';
-  cy.doctorlogin(emailLogin, passLogin);
-  cy.getCookie('jwt').then((cookie) => {
-    authToken = cookie.value;
-  })
+  cy.generateRandomNRIC().then((generatedNRIC) => {
+    studentNRIC = generatedNRIC; // Assign the generated NRIC to the global variable
+  });
+  cy.generateRandomContact().then((generatedContact) => {
+    doctorContact = generatedContact; // Assign the generated NRIC to the global variable
+  });
 });
 
 beforeEach(() => {
-  cy.setCookie('jwt', authToken);
-  cy.visit('http://localhost:3000/obs-form');
+  const emailLogin = 'rltk4545@gomail.com';
+    const passLogin = 'PASSword1*';
+    cy.doctorlogin(emailLogin, passLogin);
 });
 
-describe('fill in the form', () => {
-  // it('fill in the form information', () => {
-  //   const doctorMCR = 'MCR Value1111';
-  //   cy.checkMCR(doctorMCR);
-  // })
+describe('Filling in all the form details', () => {
+  it('should submit the form successfully', () => {
+      const parentEmail = 'rltk4545@gmail.com';
+      const parentContact = '89490850';
+      cy.get('input[id=studentName]').type(studentName);
+      cy.get('input[id=dateOfBirth]').type(dateOfBirth);
+      cy.get('button[id=schoolName]').click();
+      cy.get(`li[id=school${schoolNumber}]`).click();
+      cy.get('input[id=studentNRIC]').type(studentNRIC);
+      cy.get('input[id=studentClass]').type(className);
+      cy.get('input[id=courseDate]').type(courseDate);
+      cy.get('input[id=dateOfVaccine]').type(vaccineDate);
+      cy.get('input[name="eligibility"][value="Fit With Condition"]').check();
+      cy.get('textarea[id=comment]').type(comment);
+      cy.get('#acknowledgeCheckBox').check();
+      cy.get('input[id=parentEmail]').type(parentEmail);
+      cy.get('input[id=parentContact]').type(parentContact);
+      cy.get('input[id=doctorMCR]').type(doctorMCR);
+      cy.get('button[id=availabilityBtn]').click();
+      cy.get('input[id=physicianName]').type(doctorName);
+      cy.get('input[id=clinicName]').type(clinicName);
+      cy.get('input[id=date]').type(todayDate);
+      cy.get('input[id=doctorContact]').type(doctorContact);
+      cy.get('input[id=clinicAddress]').type(clinicAddress);
 
-  it('should retrieve the correct doctor information', () => {
-    cy.fillInForm(randomName, formattedDate, randomNumber, randomNRIC);
-  })
+      cy.get("canvas[id=signatureCanvas]").trigger('mousedown','center')
+          .click({release:false})
+          .trigger('mousemove',{ clientX: 200, clientY: 300 })
+          .trigger('mouseup',5,5)
+          .trigger('mouseleave');
+
+      cy.get('button[id=submitBtn]').click();
+      cy.wait(7000);
+      cy.get('.alert-success').should('be.visible').contains('Submit Succesful');
+      cy.wait(1000);
+    })
+
+  it('should update the student and form successfully', () => {
+    cy.get('input[id=doctorMCR]').type(doctorMCR);
+    cy.get('button[id=availabilityBtn]').click();
+    cy.wait(1000);
+    cy.get('input[id=studentName]').type(studentName);
+    cy.get('input[id=dateOfBirth]').type(dateOfBirth);
+    cy.get('button[id=schoolName]').click();
+    cy.get(`li[id=school${schoolNumber}]`).click();
+    cy.get('input[id=studentNRIC]').type(studentNRIC);
+    cy.get('input[id=studentClass]').type(className);
+    cy.get('input[id=courseDate]').type(courseDate);
+    cy.get('input[id=dateOfVaccine]').type(vaccineDate);
+    cy.get('input[name="eligibility"][value="Fit"]').check();
+
+    cy.get('button[id=submitBtn]').click();
+    cy.wait(1000);
+    cy.get('#deleteStudentModal').should('be.visible').contains('Student Already exists. Update student information?');
+    cy.wait(1000);
+    cy.get('button[id=updateStudentBtn]').click();
+    cy.wait(7000);
+    cy.get('.alert-success').should('be.visible').contains('Submit Succesful');
+  });
 });
