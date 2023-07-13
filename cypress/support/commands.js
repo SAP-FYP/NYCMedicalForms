@@ -67,6 +67,15 @@ Cypress.Commands.add('generateRandomContact', () => {
     return randomStartingChar + randomDigits;
 });
 
+Cypress.Commands.add('generateRandomNRIC', () => {
+    const startingChars = ['S', 'T', 'G', 'F'];
+    const randomStartingChar = startingChars[Math.floor(Math.random() * startingChars.length)];
+    const randomDigits = Math.floor(Math.random() * 10000000).toString().padStart(7, '0');
+    const randomEndingChar = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+
+    return randomStartingChar + randomDigits + randomEndingChar;
+});
+
 Cypress.Commands.add('adminlogin', (email, pass) => {
     cy.session(
         [email, pass],

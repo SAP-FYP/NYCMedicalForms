@@ -792,17 +792,17 @@ app.post('/parent/login-verify', (req, res, next) => {
     if (encrypted.length != 32 || !encrypted) {
         return res.status(400).json({ error: 'Invalid URL' });
     }
-    
+
     // Decrypt studentID
     const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
     const studentID = decipher.update(encrypted, 'hex', 'utf8') + decipher.final('utf8');
-    
+
     if (!studentID) {
         return res.status(400).json({ error: 'Invalid URL' });
     }
 
     return parentModel
-    .verifyIfAcknowledged(studentID)
+        .verifyIfAcknowledged(studentID)
         .then((result) => {
             return res.json(result);
         })
@@ -947,7 +947,7 @@ app.post('/parent/acknowledged', parentAuthHelper.verifyToken, parentAuthHelper.
     // Decrypt studentID
     const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
     const studentID = decipher.update(encrypted, 'hex', 'utf8') + decipher.final('utf8');
-    
+
     if (!studentID) {
         return res.status(400).json({ error: 'Invalid URL' });
     }
@@ -1911,12 +1911,6 @@ app.put('/obs-admin/mst/review/:studentId', authHelper.verifyToken, authHelper.c
  * Obs-form APIs
  */
 
-cloudinary.config({
-    cloud_name: process.env.cloudinary_name,
-    api_key: process.env.cloudinary_api_key,
-    api_secret: process.env.cloudinary_api_secret,
-});
-
 // Check Doctor Auth
 app.get('/obs-form/auth', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
     // AUTHORIZATION CHECK - PMT, MST 
@@ -1933,13 +1927,25 @@ app.post('/uploadSign', authHelper.verifyToken, authHelper.checkIat, (req, res) 
     }
 
     const file = req.body.signature;
-    cloudinary.uploader.upload(file, { resource_type: 'image', format: 'png' }, (err, result) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ message: "Upload failed" });
-        }
-        return res.json({ url: result.secure_url });
-    });
+    try {
+
+        cloudinary.config({
+            cloud_name: process.env.cloudinary_name,
+            api_key: process.env.cloudinary_api_key,
+            api_secret: process.env.cloudinary_api_secret,
+        });
+
+        cloudinary.uploader.upload(file, { resource_type: 'image', format: 'png' }, (err, result) => {
+            if (err) {
+                console.log(err)
+                return res.status(500).json({ message: "Upload failed" });
+            }
+            return res.json({ url: result.secure_url });
+        });
+    } catch (error) {
+        console.log(error)
+    }
+
 });
 
 // upload doctor informtaion

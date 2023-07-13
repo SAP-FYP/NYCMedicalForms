@@ -14,24 +14,24 @@ document.addEventListener('DOMContentLoaded', function () {
     let isDoctorNew = true;
     let studentNRIC = '';
     const validities = {
-        isStudentNameValid : false,
-        isStudentNRICValid : false,
-        isDateOfBirthValid : false,
-        isClassValid : false,
-        isSchoolValid : false,
-        isCourseDateValid : false,
-        isVaccineValid : false,
-        isParentEmailValid : false,
-        isParentContactValid : false,
-        isEligibilityValid : false,
-        isCommentValid : false,
+        isStudentNameValid: false,
+        isStudentNRICValid: false,
+        isDateOfBirthValid: false,
+        isClassValid: false,
+        isSchoolValid: false,
+        isCourseDateValid: false,
+        isVaccineValid: false,
+        isParentEmailValid: false,
+        isParentContactValid: false,
+        isEligibilityValid: false,
+        isCommentValid: false,
         isDoctorMCRValid: false,
-        isDoctorNameValid : false,
-        isDoctorContactValid : false,
-        isClinicNameValid : false,
-        isClinicAddressValid : false,
-        isDateValid : false,
-        isSignatureValid : false
+        isDoctorNameValid: false,
+        isDoctorContactValid: false,
+        isClinicNameValid: false,
+        isClinicAddressValid: false,
+        isDateValid: false,
+        isSignatureValid: false
     }
     let isAvailabilityBtn = false;
     let form = document.querySelector('form');
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
     let yyyy = today.getFullYear();
     today = yyyy + '-' + mm + '-' + dd;
-    
+
     //prevent users from submitting future date
     document.getElementById("dateOfBirth").setAttribute("max", today);
     document.getElementById("courseDate").setAttribute("min", today);
@@ -114,50 +114,50 @@ document.addEventListener('DOMContentLoaded', function () {
             validities.isEligibilityValid = true;
             parentEmail.value = '';
             parentContact.value = '';
-            if(parentEmail.classList.contains('is-valid') || parentContact.classList.contains('is-valid')){
+            if (parentEmail.classList.contains('is-valid') || parentContact.classList.contains('is-valid')) {
                 parentEmail.classList.remove('is-valid');
                 parentContact.classList.remove('is-valid');
             }
 
             const checkContainer = document.getElementById('checkContainer');
-            if(checkContainer.classList.contains('is-invalid')){
+            if (checkContainer.classList.contains('is-invalid')) {
                 checkContainer.classList.remove('is-invalid');
             }
 
             if (this.value === 'Fit' || this.value === 'Fit With Condition') {
                 validities.isCommentValid = true;
 
-                if(commentsTextarea.classList.contains('is-invalid')){
+                if (commentsTextarea.classList.contains('is-invalid')) {
                     commentsTextarea.classList.remove('is-invalid');
                 }
-                
-                if(acknowledgeCheckBox.checked){
+
+                if (acknowledgeCheckBox.checked) {
                     acknowledgeCheckBox.checked = false;
-                    if(parentsInfoDiv.style.display == 'block'){
+                    if (parentsInfoDiv.style.display == 'block') {
                         parentsInfoDiv.style.display = 'none'
-                        if(!document.getElementById('checkBoxContainer').classList.contains('mb-5')){
+                        if (!document.getElementById('checkBoxContainer').classList.contains('mb-5')) {
                             document.getElementById('checkBoxContainer').classList.add('mb-5')
                         }
                     }
                 }
 
-                if (this.value === 'Fit'){
+                if (this.value === 'Fit') {
                     commentsTextarea.value = '';
                     commentsTextarea.disabled = true;
                     acknowledgeCheckBox.disabled = true;
                 }
-                else if(this.value === 'Fit With Condition'){
+                else if (this.value === 'Fit With Condition') {
                     commentsTextarea.disabled = false;
                     acknowledgeCheckBox.disabled = false;
                 }
             }
-            else if(this.value === 'Unfit'){
-                if(commentsTextarea.value === ''){
+            else if (this.value === 'Unfit') {
+                if (commentsTextarea.value === '') {
                     commentsTextarea.classList.add('is-invalid');
                     validities.isCommentValid = false;
                 }
 
-                if(parentsInfoDiv.disabled){
+                if (parentsInfoDiv.disabled) {
                     parentsInfoDiv.disabled = false;
                 }
 
@@ -202,21 +202,21 @@ document.addEventListener('DOMContentLoaded', function () {
     // Fetch functions
     const validateAuth = () => {
         return fetch('/obs-form/auth')
-        .then(response => {
-            if (response.redirected) {
-                window.location.href = response.url;
-                throw new Error('redirected');
-            }
-    
-            if (response.status !== 200 && response.status !== 404) {
-                const error = new Error('An unknown error occured.');
-                error.status = 500;
-                throw error;
-            }
-    
-            return response.json();
-        })
-        .catch(error => {})
+            .then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url;
+                    throw new Error('redirected');
+                }
+
+                if (response.status !== 200 && response.status !== 404) {
+                    const error = new Error('An unknown error occured.');
+                    error.status = 500;
+                    throw error;
+                }
+
+                return response.json();
+            })
+            .catch(error => { })
     };
     const postDoctorInfo = (doctorEntry) => {
         return fetch('/postDoctorInfo', {
@@ -224,12 +224,12 @@ document.addEventListener('DOMContentLoaded', function () {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(doctorEntry)
         })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(err => { throw err; });
-            }
-            return response.json();
-        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw err; });
+                }
+                return response.json();
+            })
     }
     const postStudentInfo = (studentEntry) => {
         return fetch('/postStudentInfo', {
@@ -237,12 +237,12 @@ document.addEventListener('DOMContentLoaded', function () {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(studentEntry)
         })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(err => { throw err; });
-            }
-            return response.json();
-        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw err; });
+                }
+                return response.json();
+            })
     }
     const postFormInfo = (formEntry) => {
         return fetch('/postFormInfo', {
@@ -252,12 +252,12 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: JSON.stringify(formEntry)
         })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(err => { throw err; });
-            }
-            return response.json();
-        });
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw err; });
+                }
+                return response.json();
+            });
     }
     const postAcknowledge = (formEntry) => {
         return fetch('/postAcknowledge', {
@@ -267,12 +267,12 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: JSON.stringify(formEntry)
         })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(err => { throw err; });
-            }
-            return response.json();
-        });
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw err; });
+                }
+                return response.json();
+            });
     }
     const updateFormStatus = (studentId) => {
         return fetch(`/updateFormStatus?studentId=${studentId}`, {
@@ -281,12 +281,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 'Content-Type': 'application/json'
             }
         })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(err => { throw err; });
-            }
-            return response.json();
-        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw err; });
+                }
+                return response.json();
+            })
     }
     const sendEmail = (emailEntry) => {
         return fetch('/send-email', {
@@ -296,21 +296,21 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: JSON.stringify(emailEntry)
         })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(err => { throw err; });
-            }
-            return response.json();
-        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw err; });
+                }
+                return response.json();
+            })
     }
     const getSchools = () => {
         return fetch(`/getSchools`)
-        .then((response) => {
-            if(!response.ok){
-                throw new Error('Fetching school failed')
-            }
-            return response.json();
-        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Fetching school failed')
+                }
+                return response.json();
+            })
     }
     const uploadSignature = (data) => {
         return fetch('/uploadSign', {
@@ -320,12 +320,15 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: JSON.stringify(data)
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Upload failed');
-            }
-            return response.json();
-        })
+            .then(response => {
+                console.log(response)
+                if (!response.ok) {
+                    console.log('not ok')
+                    throw new Error('Upload failed');
+                }
+                console.log('ok')
+                return response.json();
+            })
     }
     const checkStudentDuplication = (studentNRIC) => {
         return fetch('/checkStudentNRIC', {
@@ -335,17 +338,17 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: JSON.stringify({ studentNRIC: studentNRIC })
         })
-        .then(response => {
-            if (response.status === 404) {
-                // student was not found
-                return { studentIdArr: false, deleteStudent: false };
-            }
-            else if (response.status === 500) {
-                // Server error
-                throw new Error('ServerError');
-            }
-            return response.json().then(data => ({ studentIdArr: data, deleteStudent: true }));
-        });
+            .then(response => {
+                if (response.status === 404) {
+                    // student was not found
+                    return { studentIdArr: false, deleteStudent: false };
+                }
+                else if (response.status === 500) {
+                    // Server error
+                    throw new Error('ServerError');
+                }
+                return response.json().then(data => ({ studentIdArr: data, deleteStudent: true }));
+            });
     }
 
     // Validation functions
@@ -356,7 +359,7 @@ document.addEventListener('DOMContentLoaded', function () {
             feedbackElement.textContent = 'Please enter 8 digits starting with 8/9';
             return false;
         }
-        else{
+        else {
             inputElement.classList.remove('is-invalid');
             inputElement.classList.add('is-valid');
             return true;
@@ -369,7 +372,7 @@ document.addEventListener('DOMContentLoaded', function () {
             feedbackElement.textContent = 'Please enter valid name';
             return false;
         }
-        else{
+        else {
             inputElement.classList.remove('is-invalid');
             inputElement.classList.add('is-valid');
             return true;
@@ -382,7 +385,7 @@ document.addEventListener('DOMContentLoaded', function () {
             parentEmailFeedback.textContent = 'Please enter a valid email address';
             return false;
         }
-        else{
+        else {
             inputElement.classList.remove('is-invalid');
             inputElement.classList.add('is-valid');
             return true;
@@ -395,7 +398,7 @@ document.addEventListener('DOMContentLoaded', function () {
             studentNRICFeedback.textContent = 'Please enter a valid NRIC';
             return false;
         }
-        else{
+        else {
             inputElement.classList.remove('is-invalid');
             inputElement.classList.add('is-valid');
             return true;
@@ -415,7 +418,7 @@ document.addEventListener('DOMContentLoaded', function () {
             feedbackElement.textContent = 'Please enter a valid date';
             return false;
         }
-        else{
+        else {
             inputElement.classList.remove('is-invalid');
             inputElement.classList.add('is-valid');
             return true;
@@ -429,7 +432,7 @@ document.addEventListener('DOMContentLoaded', function () {
             doctorMCRFeedback.textContent = 'Please enter a valid MCR';
             return false;
         }
-        else{
+        else {
             inputElement.classList.remove('is-invalid');
             inputElement.classList.add('is-valid');
             return true;
@@ -440,64 +443,64 @@ document.addEventListener('DOMContentLoaded', function () {
             // double check if the entry have the key
             if (allEntry.hasOwnProperty(key)) {
                 const value = allEntry[key];
-                console.log(key+'-----'+value)
+                console.log(key + '-----' + value)
                 // check signature
-                if(key === "signatureData"){
+                if (key === "signatureData") {
                     if (signaturePad.isEmpty()) {
                         const signatureMsg = document.getElementById('signatureMsg');
                         signatureMsg.textContent = 'Please provide your signature';
                         signatureMsg.className = 'text-danger';
                         validities.isSignatureValid = false;
-                        if(document.getElementById('signatureImg')){
+                        if (document.getElementById('signatureImg')) {
                             validities.isSignatureValid = true;
                             signatureMsg.textContent = '';
                         }
                     }
                 }
-                else if(key === "schoolName"){
+                else if (key === "schoolName") {
                     console.log(value)
                 }
                 // show error message
-                if(value === "" || value === undefined || value === null){
-                    if(key === "eligibility"){
+                if (value === "" || value === undefined || value === null) {
+                    if (key === "eligibility") {
                         console.log(value)
                         document.getElementById("checkContainer").classList.add('is-invalid');
                         validities.isCommentValid = false;
                     }
-                    else if(key === "comment"){
-                        if(allEntry.eligibility.value === "Fit" || allEntry.eligibility.value === "Fit With Condition"){
-                            if(document.getElementById(key).classList.contains('is-invalid')){
+                    else if (key === "comment") {
+                        if (allEntry.eligibility.value === "Fit" || allEntry.eligibility.value === "Fit With Condition") {
+                            if (document.getElementById(key).classList.contains('is-invalid')) {
                                 document.getElementById(key).classList.remove('is-invalid');
                             }
                             validities.isCommentValid = false;
                         }
                     }
-                    else{
+                    else {
                         document.getElementById(key).classList.add('is-invalid');
                     }
                 }
             }
         }
-        
+
     };
     const validateValidities = (validities) => {
         let foundFalse = false;
         if (isAvailabilityBtn === false) {
             availabilityBtn.classList.add('is-invalid');
         }
-        for(const key in validities){
+        for (const key in validities) {
             const value = validities[key];
-            if(!value){
+            if (!value) {
                 console.log(key + "--------" + value);
                 foundFalse = true;
                 break;
             }
         }
 
-        if(foundFalse){
+        if (foundFalse) {
             return false;
         }
-        else{
+        else {
             return true;
         }
     }
@@ -540,16 +543,16 @@ document.addEventListener('DOMContentLoaded', function () {
         isDoctorNew = false;
         currentDoctor = doctorMCR;
     };
-    const createListElement = (school,index) => {
+    const createListElement = (school, index) => {
         const li = document.createElement('li');
         li.textContent = school;
         li.className = "p-3";
-        if(index){
-            li.setAttribute('id',`school${index}`)
+        if (index) {
+            li.setAttribute('id', `school${index}`)
         }
 
         li.addEventListener('mouseover', (event) => {
-            event.target.style.backgroundColor = "#f3f3f3"; 
+            event.target.style.backgroundColor = "#f3f3f3";
         });
 
         li.addEventListener('mouseout', (event) => {
@@ -560,11 +563,11 @@ document.addEventListener('DOMContentLoaded', function () {
         li.addEventListener('click', (event) => {
             schoolName.textContent = event.target.textContent;
             currentSchool = event.target.textContent;
-            if(schoolName.classList.contains('is-invalid')){
+            if (schoolName.classList.contains('is-invalid')) {
                 schoolName.classList.remove('is-invalid');
                 schoolName.classList.add('is-valid');
             }
-            if(!schoolName.classList.contains('is-valid')){
+            if (!schoolName.classList.contains('is-valid')) {
                 schoolName.classList.add('is-valid');
             }
             validities.isSchoolValid = true;
@@ -614,19 +617,19 @@ document.addEventListener('DOMContentLoaded', function () {
         clinicNameInput.classList.remove('is-invalid')
         clinicAddressInput.classList.remove('is-invalid')
         dateInput.classList.remove('is-invalid')
-        
+
         const signatureMsg = document.getElementById('signatureMsg');
         signatureMsg.textContent = '';
         signatureMsg.className = '';
         validities.isSignatureValid = true;
     };
     const isCheckBoxClicked = () => {
-        if(!acknowledgeCheckBox.checked){
+        if (!acknowledgeCheckBox.checked) {
             validities.isParentContactValid = true;
             validities.isParentEmailValid = true;
             return false;
         }
-        else{
+        else {
             return true;
         }
     };
@@ -645,14 +648,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     },
                     body: JSON.stringify(studentIdsArr)
                 })
-                .then(response => {
-                    if(!response.ok){
-                        const error = new Error("Unable to delete students and forms")
-                        error.status = 500;
-                        reject(error);
-                    }
-                    resolve();
-                })
+                    .then(response => {
+                        if (!response.ok) {
+                            const error = new Error("Unable to delete students and forms")
+                            error.status = 500;
+                            reject(error);
+                        }
+                        resolve();
+                    })
             });
             cancelBtn.addEventListener('click', () => {
                 reject(new Error('User Canceled updating student'));
@@ -664,14 +667,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // sections div click event
-    sectionOneContainer.addEventListener('click',(event)=>{
+    sectionOneContainer.addEventListener('click', (event) => {
         form.style.display = 'none';
         document.getElementById('infoDiv').style.display = 'block';
         console.log(form.style.display);
         console.log(document.getElementById('infoDiv').style.display);
     });
 
-    sectionTwoContainer.addEventListener('click',(event)=>{
+    sectionTwoContainer.addEventListener('click', (event) => {
         form.style.display = 'block';
         document.getElementById('infoDiv').style.display = 'none';
         console.log(form.style.display);
@@ -679,161 +682,161 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // checkbox onclick
-    acknowledgeCheckBox.addEventListener('change',(event)=>{
-        if(acknowledgeCheckBox.checked){
+    acknowledgeCheckBox.addEventListener('change', (event) => {
+        if (acknowledgeCheckBox.checked) {
             parentsInfoDiv.style.display = 'block';
-            if(document.getElementById('checkBoxContainer').classList.contains('mb-5')){
+            if (document.getElementById('checkBoxContainer').classList.contains('mb-5')) {
                 document.getElementById('checkBoxContainer').classList.remove('mb-5')
             }
         }
-        else{
+        else {
             parentsInfoDiv.style.display = 'none';
-            if(!document.getElementById('checkBoxContainer').classList.contains('mb-5')){
+            if (!document.getElementById('checkBoxContainer').classList.contains('mb-5')) {
                 document.getElementById('checkBoxContainer').classList.add('mb-5')
             }
         }
     });
 
     // Input Validation event listners:
-    studentNameInput.addEventListener('input',(event)=>{
-        if(validateName(studentNameInput,studentNameFeedback,event.target.value)){
+    studentNameInput.addEventListener('input', (event) => {
+        if (validateName(studentNameInput, studentNameFeedback, event.target.value)) {
             validities.isStudentNameValid = true;
         }
-        else{
+        else {
             validities.isStudentNameValid = false;
         }
     });
-    studentNRICInput.addEventListener('input',(event)=>{
+    studentNRICInput.addEventListener('input', (event) => {
         const nric = event.target.value;
-        if(studentNRIC.length < nric.length){
-            studentNRIC += nric[nric.length-1];
+        if (studentNRIC.length < nric.length) {
+            studentNRIC += nric[nric.length - 1];
         }
-        else if(studentNRIC.length > nric.length){
+        else if (studentNRIC.length > nric.length) {
             const difference = studentNRIC.length - nric.length;
-            studentNRIC = studentNRIC.substring(0,studentNRIC.length - difference);
+            studentNRIC = studentNRIC.substring(0, studentNRIC.length - difference);
         }
         if (nric.length > 4) {
             event.target.value = '*'.repeat(4) + nric.slice(4);
         } else {
             event.target.value = '*'.repeat(nric.length);
         }
-        if(validateNRIC(studentNRICInput,studentNRIC)){
+        if (validateNRIC(studentNRICInput, studentNRIC)) {
             validities.isStudentNRICValid = true;
         }
-        else{
+        else {
             validities.isStudentNRICValid = false;
         }
     });
-    dateOfBirth.addEventListener('input',(event)=>{
-        if(validateDate(dateOfBirth,dateOfBirthFeedback,event.target.value)){
+    dateOfBirth.addEventListener('input', (event) => {
+        if (validateDate(dateOfBirth, dateOfBirthFeedback, event.target.value)) {
             validities.isDateOfBirthValid = true;
         }
-        else{
+        else {
             validities.isDateOfBirthValid = false;
         }
     });
-    studentClassInput.addEventListener('input',(event)=>{
-        if(event.target.value == '' || event.target.value == undefined){
+    studentClassInput.addEventListener('input', (event) => {
+        if (event.target.value == '' || event.target.value == undefined) {
             studentClassInput.classList.add('is-invalid');
             studentClassFeedback.textContent = 'Please enter value';
             validities.isClassValid = false;
         }
-        else{
+        else {
             studentClassInput.classList.remove('is-invalid');
             studentClassInput.classList.add('is-valid');
             validities.isClassValid = true;
         }
     });
-    courseDateInput.addEventListener('input',(event)=>{
-        if(validateDate(courseDateInput,courseDateFeedback,event.target.value)){
+    courseDateInput.addEventListener('input', (event) => {
+        if (validateDate(courseDateInput, courseDateFeedback, event.target.value)) {
             validities.isCourseDateValid = true;
         }
-        else{
+        else {
             validities.isCourseDateValid = false;
         }
     });
-    dateOfVaccineInput.addEventListener('input',(event)=>{
-        if(validateDate(dateOfVaccineInput,dateOfVaccineFeedback,event.target.value)){
+    dateOfVaccineInput.addEventListener('input', (event) => {
+        if (validateDate(dateOfVaccineInput, dateOfVaccineFeedback, event.target.value)) {
             validities.isVaccineValid = true;
         }
-        else{
+        else {
             validities.isVaccineValid = false;
         }
     });
-    parentEmail.addEventListener('input',(event)=>{
-        if(validateEmail(parentEmail,event.target.value)){
+    parentEmail.addEventListener('input', (event) => {
+        if (validateEmail(parentEmail, event.target.value)) {
             validities.isParentEmailValid = true;
         }
-        else{
+        else {
             validities.isParentEmailValid = false;
         }
     });
-    parentContact.addEventListener('input',(event)=>{
-        if(validatePhone(parentContact,parentContactFeedback,event.target.value)){
+    parentContact.addEventListener('input', (event) => {
+        if (validatePhone(parentContact, parentContactFeedback, event.target.value)) {
             validities.isParentContactValid = true;
         }
-        else{
+        else {
             validities.isParentContactValid = false;
         }
     });
-    doctorMCRInput.addEventListener('input',(event)=>{
-        if(validateMCR(doctorMCRInput,event.target.value)){
+    doctorMCRInput.addEventListener('input', (event) => {
+        if (validateMCR(doctorMCRInput, event.target.value)) {
             validities.isDoctorMCRValid = true;
         }
-        else{
+        else {
             validities.isDoctorMCRValid = false;
         }
     });
-    doctorNameInput.addEventListener('input',(event)=>{
-        if(validateName(doctorNameInput,physicianNameFeedback,event.target.value)){
+    doctorNameInput.addEventListener('input', (event) => {
+        if (validateName(doctorNameInput, physicianNameFeedback, event.target.value)) {
             validities.isDoctorNameValid = true;
         }
-        else{
+        else {
             validities.isDoctorNameValid = false;
         }
     });
-    doctorcontactNoInput.addEventListener('input',(event)=>{
-        if(validatePhone(doctorcontactNoInput,doctorContactFeedback,event.target.value)){
+    doctorcontactNoInput.addEventListener('input', (event) => {
+        if (validatePhone(doctorcontactNoInput, doctorContactFeedback, event.target.value)) {
             validities.isDoctorContactValid = true;
         }
-        else{
+        else {
             validities.isDoctorContactValid = false;
         }
     });
-    clinicNameInput.addEventListener('input',(event)=>{
-        if(event.target.value == '' || event.target.value == undefined){
+    clinicNameInput.addEventListener('input', (event) => {
+        if (event.target.value == '' || event.target.value == undefined) {
             clinicNameInput.classList.add('is-invalid');
             clinicNameFeedback.textContent = 'Please enter value';
             validities.isClinicNameValid = false;
         }
-        else{
+        else {
             clinicNameInput.classList.remove('is-invalid');
             clinicNameInput.classList.add('is-valid');
             validities.isClinicNameValid = true;
         }
     });
-    clinicAddressInput.addEventListener('input',(event)=>{
-        if(event.target.value == '' || event.target.value == undefined){
+    clinicAddressInput.addEventListener('input', (event) => {
+        if (event.target.value == '' || event.target.value == undefined) {
             clinicAddressInput.classList.add('is-invalid');
             clinicAddressFeedback.textContent = 'Please enter value';
             validities.isClinicAddressValid = false;
         }
-        else{
+        else {
             clinicAddressInput.classList.remove('is-invalid');
             clinicAddressInput.classList.add('is-valid');
             validities.isClinicAddressValid = true;
         }
     });
-    dateInput.addEventListener('input',(event)=>{
-        if(validateDate(dateInput,dateFeedback,event.target.value)){
+    dateInput.addEventListener('input', (event) => {
+        if (validateDate(dateInput, dateFeedback, event.target.value)) {
             validities.isDateValid = true;
         }
-        else{
+        else {
             validities.isDateValid = false;
         }
     });
-    commentsTextarea.addEventListener('input',(event)=>{
-        if(commentsTextarea.classList.contains('is-invalid')){
+    commentsTextarea.addEventListener('input', (event) => {
+        if (commentsTextarea.classList.contains('is-invalid')) {
             commentsTextarea.classList.remove('is-invalid');
             commentsTextarea.classList.add('is-valid');
             validities.isCommentValid = true;
@@ -852,9 +855,10 @@ document.addEventListener('DOMContentLoaded', function () {
         signaturePad.clear();
     });
     //Check MCR Availablability
-    availabilityBtn.addEventListener('click', (event) => {2
+    availabilityBtn.addEventListener('click', (event) => {
+        2
         event.preventDefault();
-        if(validities.isDoctorMCRValid){
+        if (validities.isDoctorMCRValid) {
             // check if doctorMCR input is empty or not
             if (!doctorMCRInput.value) {
                 doctorMCRInput.classList.add('is-invalid');
@@ -880,90 +884,90 @@ document.addEventListener('DOMContentLoaded', function () {
                 },
                 body: JSON.stringify({ doctorMCR: doctorMCRInput.value })
             })
-            .then(response => {
-                if (response.status === 404) {
-                    // Doctor was not found
-                    throw new Error('DoctorNotFound');
-                }
-                else if (response.status === 500) {
-                    // Server error
-                    alert('An error occurred. Please try again later.');
-                    throw new Error('ServerError');
-                }
-                return response.json();
-            })
-            .then(data => {
-                const { doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo } = data[0];
-                doctorAutoFill(doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo);
-                removeInvalidTooltips();
-                validities.isDoctorMCRValid = true;
-                validities.isDoctorNameValid = true;
-                validities.isDoctorContactValid = true;
-                validities.isClinicNameValid = true;
-                validities.isClinicAddressValid = true;
-                validities.isDateValid = true;
-                validities.isSignatureValid = true;
-            })
-            .catch(err => {
-                if (err.message == 'DoctorNotFound') {
-                    // if doctor is new and available
-                    doctorMCRInput.disabled = true;
-                    availabilityBtn.disabled = true;
-                    availabilityBtn.textContent = `You are new!`
-                    availabilityBtn.className = 'btn btn-success'
-                    isAvailabilityBtn = true;
-                }
-                else {
-                    // internal server error
-                    alert("internal server error" + err.message);
-                }
-            });
+                .then(response => {
+                    if (response.status === 404) {
+                        // Doctor was not found
+                        throw new Error('DoctorNotFound');
+                    }
+                    else if (response.status === 500) {
+                        // Server error
+                        alert('An error occurred. Please try again later.');
+                        throw new Error('ServerError');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const { doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo } = data[0];
+                    doctorAutoFill(doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo);
+                    removeInvalidTooltips();
+                    validities.isDoctorMCRValid = true;
+                    validities.isDoctorNameValid = true;
+                    validities.isDoctorContactValid = true;
+                    validities.isClinicNameValid = true;
+                    validities.isClinicAddressValid = true;
+                    validities.isDateValid = true;
+                    validities.isSignatureValid = true;
+                })
+                .catch(err => {
+                    if (err.message == 'DoctorNotFound') {
+                        // if doctor is new and available
+                        doctorMCRInput.disabled = true;
+                        availabilityBtn.disabled = true;
+                        availabilityBtn.textContent = `You are new!`
+                        availabilityBtn.className = 'btn btn-success'
+                        isAvailabilityBtn = true;
+                    }
+                    else {
+                        // internal server error
+                        alert("internal server error" + err.message);
+                    }
+                });
         }
-        
+
     });
     // drop down handlers
-    schoolDropDown.addEventListener('show.bs.dropdown',(event) => {
+    schoolDropDown.addEventListener('show.bs.dropdown', (event) => {
         getSchools()
-        .then(data => {
-            const loadingMsgDiv = schoolDropDownMenu.querySelector('.loadingMsg');
-            if(loadingMsgDiv){
-                loadingMsgDiv.remove();
-            }
-            let isFirstIteration = true;
-            data.forEach((school,index) => {
-                schools.push(school.schoolName);
-                if (isFirstIteration) {
-                    const schoolSearchTemplate = document.getElementById('schoolSearchTemplate');
-                    const clone = schoolSearchTemplate.content.cloneNode(true);
-                    const schoolSearch = clone.querySelector('#schoolSearch');
-                    
-                    schoolSearch.addEventListener('input', (event) => {
-                        let schoolSearchValue = event.target.value;
-                        let matchingSchools = schools.filter(school => school.toLowerCase().includes(schoolSearchValue.toLowerCase()));
-                        let lis = schoolDropDownMenu.querySelectorAll('li');
-                        lis.forEach(li => {
-                            li.remove();
-                        });
-                        matchingSchools.forEach(school => {
-                            schoolDropDownMenu.appendChild(createListElement(school));
-                        });
-                    });
-
-                    schoolDropDownMenu.appendChild(clone);
-                    isFirstIteration = false;
+            .then(data => {
+                const loadingMsgDiv = schoolDropDownMenu.querySelector('.loadingMsg');
+                if (loadingMsgDiv) {
+                    loadingMsgDiv.remove();
                 }
-                schoolDropDownMenu.appendChild(createListElement(school.schoolName,index));
-            }); 
-        })
+                let isFirstIteration = true;
+                data.forEach((school, index) => {
+                    schools.push(school.schoolName);
+                    if (isFirstIteration) {
+                        const schoolSearchTemplate = document.getElementById('schoolSearchTemplate');
+                        const clone = schoolSearchTemplate.content.cloneNode(true);
+                        const schoolSearch = clone.querySelector('#schoolSearch');
+
+                        schoolSearch.addEventListener('input', (event) => {
+                            let schoolSearchValue = event.target.value;
+                            let matchingSchools = schools.filter(school => school.toLowerCase().includes(schoolSearchValue.toLowerCase()));
+                            let lis = schoolDropDownMenu.querySelectorAll('li');
+                            lis.forEach(li => {
+                                li.remove();
+                            });
+                            matchingSchools.forEach(school => {
+                                schoolDropDownMenu.appendChild(createListElement(school));
+                            });
+                        });
+
+                        schoolDropDownMenu.appendChild(clone);
+                        isFirstIteration = false;
+                    }
+                    schoolDropDownMenu.appendChild(createListElement(school.schoolName, index));
+                });
+            })
     });
-    schoolDropDown.addEventListener('hide.bs.dropdown',(event) => {
+    schoolDropDown.addEventListener('hide.bs.dropdown', (event) => {
         schoolDropDownMenu.innerHTML = '';
         const loadingTemp = document.getElementById('loadingTemplate');
         const loadingTempClone = loadingTemp.content.cloneNode(true);
         loadingTempClone.querySelector('div').className = 'loadingMsg m-3';
         schoolDropDownMenu.appendChild(loadingTempClone);
         schools = [];
-        if(currentSchool === "Select School"){
+        if (currentSchool === "Select School") {
 
         }
     });
@@ -973,7 +977,7 @@ document.addEventListener('DOMContentLoaded', function () {
         event.preventDefault();
         // signature data handling...
         const signatureData = signaturePad.toDataURL();
-        
+
         // All Entries handling...
         const studentEntry = {
             studentName: studentNameInput.value,
@@ -989,7 +993,7 @@ document.addEventListener('DOMContentLoaded', function () {
             courseDate: courseDateInput.value,
             eligibility: Array.from(eligibilityRadios).find(radio => radio.checked)?.value || '',
             date: dateInput.value,
-            comment : commentsTextarea.value
+            comment: commentsTextarea.value
         }
         const doctorEntry = {
             doctorMCR: doctorMCRInput.value,
@@ -1008,124 +1012,127 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log("aaaaaaaaaaaaaaaaaaaaaaa" + allEntry.studentNRIC.substring(studentNRIC.length - 4));
             // check student duplication
             checkStudentDuplication(allEntry.studentNRIC.substring(studentNRIC.length - 4))
-            .then(data =>{
-                if(data.deleteStudent){
-                    //modal response
-                    deleteStudentModal.show();
-                    const studentIdsArr = data.studentIdArr.map(obj => obj.studentId);
-                    return waitModalResponse({studentIds : studentIdsArr});
-                }
-                else{
-                    return Promise.resolve();
-                }
-            })
-            .then(() => {
-                if (isDoctorNew === true) {
-                    const data = {
-                        signature: signatureData
-                    };
-                    let signatureCredentials,studentId;
-                    
-                    // show loading modal
-                    loadingModal.show();
+                .then(data => {
+                    if (data.deleteStudent) {
+                        //modal response
+                        deleteStudentModal.show();
+                        const studentIdsArr = data.studentIdArr.map(obj => obj.studentId);
+                        return waitModalResponse({ studentIds: studentIdsArr });
+                    }
+                    else {
+                        return Promise.resolve();
+                    }
+                })
+                .then(() => {
+                    if (isDoctorNew === true) {
+                        const data = {
+                            signature: signatureData
+                        };
+                        let signatureCredentials, studentId;
 
-                    uploadSignature(data)
-                    .then(data => {
-                        signatureCredentials = `${data.url};${today};${doctorNameInput.value}`;
+                        // show loading modal
+                        loadingModal.show();
+
+                        uploadSignature(data)
+                            .then((data) => {
+                                signatureCredentials = `${data.url};${today};${doctorNameInput.value}`;
+                                studentEntry.studentNRIC = studentNRIC.substring(studentNRIC.length - 4);
+                                console.log("StudentNRIC is " + studentEntry.studentNRIC);
+                                doctorEntry.signatureData = signatureCredentials;
+                                return Promise.all([postDoctorInfo(doctorEntry), postStudentInfo(studentEntry)]);
+                            })
+                            .then(([doctorResponse, studentResponse]) => {
+                                studentId = studentResponse[0].insertId;
+                                formEntry.studentId = studentId;
+                                formEntry.doctorMCR = doctorMCRInput.value;
+                                return postFormInfo(formEntry);
+                            })
+                            .then(data => {
+                                // if checkbox, send email
+                                if (isChecked) {
+                                    const emailEntry = {
+                                        studentId: studentId,
+                                        email: studentEntry.parentEmail
+                                    }
+                                    const acknowledgeEntry = {
+                                        studentId: studentId,
+                                        parentContactNo: studentEntry.parentContact,
+                                        parentEmail: studentEntry.parentEmail
+                                    }
+                                    return Promise.all([sendEmail(emailEntry), postAcknowledge(acknowledgeEntry), updateFormStatus(studentId)]);
+                                }
+                                else {
+                                    return;
+                                }
+                            })
+                            .then(data => {
+                                loadingModal.hide();
+                                emptyOutStudentInputs();
+                                alertBox('Submit Succesful', 'success');
+
+                                let scrollableDiv = document.getElementById("formDiv");
+                                scrollableDiv.scrollTop = 0;
+                                doctorAutoFill(doctorMCRInput.value, doctorNameInput.value, signatureCredentials, clinicNameInput.value, clinicAddressInput.value, doctorcontactNoInput.value);
+                            })
+                            .catch((error) => {
+                                console.log(error)
+                            });
+                    }
+                    else if (isDoctorNew === false) {
+                        // show loading modal
+                        loadingModal.show();
                         studentEntry.studentNRIC = studentNRIC.substring(studentNRIC.length - 4);
-                        console.log("StudentNRIC is "+ studentEntry.studentNRIC);
-                        doctorEntry.signatureData = signatureCredentials;
-                        return Promise.all([postDoctorInfo(doctorEntry), postStudentInfo(studentEntry)]);
-                    })
-                    .then(([doctorResponse, studentResponse]) => {
-                        studentId = studentResponse[0].insertId;
-                        formEntry.studentId = studentId;
-                        formEntry.doctorMCR = doctorMCRInput.value;
-                        return postFormInfo(formEntry);
-                    })
-                    .then(data => {
-                        // if checkbox, send email
-                        if(isChecked){
-                            const emailEntry ={
-                                studentId : studentId,
-                                email : studentEntry.parentEmail
-                            }
-                            const acknowledgeEntry = {
-                                studentId : studentId,
-                                parentContactNo : studentEntry.parentContact,
-                                parentEmail : studentEntry.parentEmail
-                            }
-                            return Promise.all([sendEmail(emailEntry),postAcknowledge(acknowledgeEntry),updateFormStatus(studentId)]);
-                        }
-                        else{
-                            return;
-                        }
-                    })
-                    .then(data => {
-                        loadingModal.hide();
-                        emptyOutStudentInputs();
-                        alertBox('Submit Succesful', 'success');
+                        console.log("StudentNRIC is " + studentEntry.studentNRIC);
+                        postStudentInfo(studentEntry)
+                            .then(data => {
+                                studentId = data[0].insertId;
+                                formEntry.studentId = studentId;
+                                formEntry.doctorMCR = currentDoctor;
+                                formEntry.comments = commentsTextarea.value;
+                                return postFormInfo(formEntry);
+                            })
+                            .then(data => {
+                                // if checkbox, send email
+                                if (isChecked) {
+                                    const emailEntry = {
+                                        studentId: studentId,
+                                        email: parentEmail.value
+                                    }
+                                    const acknowledgeEntry = {
+                                        studentId: studentId,
+                                        parentContactNo: studentEntry.parentContact,
+                                        parentEmail: studentEntry.parentEmail
+                                    }
+                                    return Promise.all([sendEmail(emailEntry), postAcknowledge(acknowledgeEntry), updateFormStatus(studentId)]);
+                                }
+                                else {
+                                    return;
+                                }
+                            })
+                            .then(data => {
+                                // hide loading modal
+                                loadingModal.hide();
+                                emptyOutStudentInputs();
+                                alertBox('Submit Succesful', 'success');
 
-                        let scrollableDiv = document.getElementById("formDiv");
-                        scrollableDiv.scrollTop = 0;
-                        doctorAutoFill(doctorMCRInput.value, doctorNameInput.value, signatureCredentials, clinicNameInput.value, clinicAddressInput.value, doctorcontactNoInput.value);
-                    });
-                }
-                else if (isDoctorNew === false) {
-                    // show loading modal
-                    loadingModal.show();
-                    studentEntry.studentNRIC = studentNRIC.substring(studentNRIC.length - 4);
-                    console.log("StudentNRIC is "+ studentEntry.studentNRIC);
-                    postStudentInfo(studentEntry)
-                    .then(data => {
-                        studentId = data[0].insertId;
-                        formEntry.studentId = studentId;
-                        formEntry.doctorMCR = currentDoctor;
-                        formEntry.comments = commentsTextarea.value;
-                        return postFormInfo(formEntry);
-                    })
-                    .then(data => {
-                        // if checkbox, send email
-                        if(isChecked){
-                            const emailEntry ={
-                                studentId : studentId,
-                                email : parentEmail.value
-                            }
-                            const acknowledgeEntry = {
-                                studentId : studentId,
-                                parentContactNo : studentEntry.parentContact,
-                                parentEmail : studentEntry.parentEmail
-                            }
-                            return Promise.all([sendEmail(emailEntry),postAcknowledge(acknowledgeEntry),updateFormStatus(studentId)]);
-                        }
-                        else{
-                            return;
-                        }
-                    })
-                    .then(data => {
-                        // hide loading modal
-                        loadingModal.hide();
-                        emptyOutStudentInputs();
-                        alertBox('Submit Succesful', 'success');
+                                for (let i = 0; i < eligibilityRadios.length; i++) {
+                                    eligibilityRadios[i].checked = false;
+                                }
+                                commentsTextarea.value = '';
 
-                        for (let i = 0; i < eligibilityRadios.length; i++) {
-                            eligibilityRadios[i].checked = false;
-                        }
-                        commentsTextarea.value = '';
-                        
-                        let scrollableDiv = document.getElementById("formDiv");
-                        scrollableDiv.scrollTop = 0;
-                    });
-                }
-            })
-            .catch(error => {
-                if(error.message === "User Canceled updating student"){
-                    alertBox('Canceled','danger');
-                }
-                relocateToErrorPage(error.status);
-            });
+                                let scrollableDiv = document.getElementById("formDiv");
+                                scrollableDiv.scrollTop = 0;
+                            });
+                    }
+                })
+                .catch(error => {
+                    if (error.message === "User Canceled updating student") {
+                        alertBox('Canceled', 'danger');
+                    }
+                    relocateToErrorPage(error.status);
+                });
         }
-        else{
+        else {
             const firstInvalidElement = document.querySelector('.is-invalid');
             if (firstInvalidElement) {
                 firstInvalidElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
