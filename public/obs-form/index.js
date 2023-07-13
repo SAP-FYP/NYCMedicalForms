@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function () {
     
     //prevent users from submitting future date
     document.getElementById("dateOfBirth").setAttribute("max", today);
-    document.getElementById("courseDate").setAttribute("max", today);
+    document.getElementById("courseDate").setAttribute("min", today);
     document.getElementById("date").setAttribute("max", today);
 
     // <img> to display the signature
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 checkContainer.classList.remove('is-invalid');
             }
 
-            if (this.value === 'Fit' || this.value === 'Fit_with_condition') {
+            if (this.value === 'Fit' || this.value === 'Fit With Condition') {
                 validities.isCommentValid = true;
 
                 if(commentsTextarea.classList.contains('is-invalid')){
@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     commentsTextarea.disabled = true;
                     acknowledgeCheckBox.disabled = true;
                 }
-                else if(this.value === 'Fit_with_condition'){
+                else if(this.value === 'Fit With Condition'){
                     commentsTextarea.disabled = false;
                     acknowledgeCheckBox.disabled = false;
                 }
@@ -465,7 +465,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         validities.isCommentValid = false;
                     }
                     else if(key === "comment"){
-                        if(allEntry.eligibility.value === "Fit" || allEntry.eligibility.value === "Fit_with_condition"){
+                        if(allEntry.eligibility.value === "Fit" || allEntry.eligibility.value === "Fit With Condition"){
                             if(document.getElementById(key).classList.contains('is-invalid')){
                                 document.getElementById(key).classList.remove('is-invalid');
                             }
@@ -666,11 +666,16 @@ document.addEventListener('DOMContentLoaded', function () {
     // sections div click event
     sectionOneContainer.addEventListener('click',(event)=>{
         form.style.display = 'none';
-        document.getElementById('infoDiv').style.display = 'block'
+        document.getElementById('infoDiv').style.display = 'block';
+        console.log(form.style.display);
+        console.log(document.getElementById('infoDiv').style.display);
     });
+
     sectionTwoContainer.addEventListener('click',(event)=>{
         form.style.display = 'block';
         document.getElementById('infoDiv').style.display = 'none';
+        console.log(form.style.display);
+        console.log(document.getElementById('infoDiv').style.display);
     });
 
     // checkbox onclick
@@ -902,6 +907,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(err => {
                 if (err.message == 'DoctorNotFound') {
                     // if doctor is new and available
+                    doctorMCRInput.disabled = true;
                     availabilityBtn.disabled = true;
                     availabilityBtn.textContent = `You are new!`
                     availabilityBtn.className = 'btn btn-success'
@@ -999,8 +1005,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Proceed submission
         if (validateValidities(validities)) {
+            console.log("aaaaaaaaaaaaaaaaaaaaaaa" + allEntry.studentNRIC.substring(studentNRIC.length - 4));
             // check student duplication
-            checkStudentDuplication(allEntry.studentNRIC)
+            checkStudentDuplication(allEntry.studentNRIC.substring(studentNRIC.length - 4))
             .then(data =>{
                 if(data.deleteStudent){
                     //modal response
@@ -1025,6 +1032,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     uploadSignature(data)
                     .then(data => {
                         signatureCredentials = `${data.url};${today};${doctorNameInput.value}`;
+                        studentEntry.studentNRIC = studentNRIC.substring(studentNRIC.length - 4);
+                        console.log("StudentNRIC is "+ studentEntry.studentNRIC);
                         doctorEntry.signatureData = signatureCredentials;
                         return Promise.all([postDoctorInfo(doctorEntry), postStudentInfo(studentEntry)]);
                     })
@@ -1065,6 +1074,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 else if (isDoctorNew === false) {
                     // show loading modal
                     loadingModal.show();
+                    studentEntry.studentNRIC = studentNRIC.substring(studentNRIC.length - 4);
+                    console.log("StudentNRIC is "+ studentEntry.studentNRIC);
                     postStudentInfo(studentEntry)
                     .then(data => {
                         studentId = data[0].insertId;
