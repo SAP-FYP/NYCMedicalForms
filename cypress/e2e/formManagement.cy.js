@@ -96,8 +96,7 @@ describe('Filling in all the form details', () => {
     cy.wait(1000);
     cy.get('#deleteStudentModal').should('be.visible').contains('Student Already exists. Update student information?');
     cy.wait(1000);
-    cy.get('button[id=updateStudentBtn]').click();
-    cy.wait(7000);
+    cy.get('button[id=updateStudentBtn]').click().wait(3000);
     cy.get('.alert-success').should('be.visible').contains('Submit Succesful');
   });
 });
