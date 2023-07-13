@@ -23,7 +23,6 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-
 Cypress.Commands.add('doctorlogin', (email, pass) => {
     cy.visit('http://localhost:3000/login');
     cy.get('input[id=login-email]').type(email);
@@ -42,18 +41,30 @@ Cypress.Commands.add('managementLogin', (email, pass) => {
     cy.contains('Overview');
 })
 
+Cypress.Commands.add('parentLogin', (encrypted, password) => {
+    cy.visit(`http://localhost:3000/acknowledgement?encrypted=${encrypted}`)
+    cy.get('input[id=login-password]').type(password);
+    cy.get('button[id=login-button]').click();
+    cy.url().should('include', `/form?encrypted=${encrypted}`);
+    cy.contains('Parent Section:');
+})
+
+Cypress.Commands.add('fillInParentForm', (parentName, parentNRIC, ) => {
+    cy.get('input[id=parentName]').type(parentName);
+    cy.get('input[id=parentNRIC]').type(parentNRIC);
+})
+
 Cypress.Commands.add('checkMCR', (doctorMCR) => {
     cy.get('input[id=doctorMCR]').type(doctorMCR);
     cy.get('button[id=availabilityBtn]').click();
 });
 
-Cypress.Commands.add('fillInForm', (studentName, dateOfBirth, randomNumber, randomNRIC) => {
-    console.log(dateOfBirth)
-    cy.get('input[id=studentName]').type(studentName);
-    cy.get('input[id=dateOfBirth]').type(dateOfBirth);
-    cy.get('button[id=schoolName]').click();
-    cy.get(`li[id=school${randomNumber}]`).click();
-    cy.get('input[id=studentNRIC]').type(randomNRIC);
+Cypress.Commands.add('generateRandomContact', () => {
+    const startingNo = ['8', '9'];
+    const randomStartingChar = startingNo[Math.floor(Math.random() * startingNo.length)];
+    const randomDigits = Math.floor(Math.random() * 10000000).toString().padStart(7, '0');
+
+    return randomStartingChar + randomDigits;
 });
 
 Cypress.Commands.add('adminlogin', (email, pass) => {

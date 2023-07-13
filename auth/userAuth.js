@@ -69,6 +69,7 @@ module.exports.checkPassword = function checkPassword(req, res, next) {
     if (!credentials.email || !credentials.password) {
         const error = new Error("Empty email or password");
         error.status = 400;
+        console.log(error);
         throw error;
     }
 

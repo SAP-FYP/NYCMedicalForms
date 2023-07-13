@@ -12,6 +12,10 @@
     height: 100%;
 }
 
+.invalid-tooltip {
+    position: relative!important;
+    top: 0!important;
+}
 
 #doctor-signature-image {
     border: 1px solid #485EAB;

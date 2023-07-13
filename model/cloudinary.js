@@ -30,18 +30,23 @@ module.exports.uploadImage = function uploadImage(image) {
 
 // Signature Upload 
 module.exports.uploadSignature = function uploadSignature(file) {
+    cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET
+    });
     return new Promise((resolve, reject) => {
         if (file) {
             cloudinary.uploader.upload(file, { resource_type: 'image', format: 'png' }, (err, result) => {
                 if (err) {
-                    console.log(err);
                     reject(new Error('Signature upload failed'));
                 } else {
                     resolve(result.secure_url);
                 }
             }
             );
-        } else {
+        }
+        else {
             resolve(null);
         }
     });

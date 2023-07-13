@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const elasticEmail = require('elasticemail');
 const cloudinary = require("cloudinary").v2;
-const { UserNotFoundError,DUPLICATE_ENTRY_ERROR,EMPTY_RESULT_ERROR } = require("./errors");
+const { UserNotFoundError, DUPLICATE_ENTRY_ERROR, EMPTY_RESULT_ERROR } = require("./errors");
 const crypto = require('crypto');
 
 const key = Buffer.from(process.env.encryptKey, 'hex');
@@ -619,7 +619,29 @@ app.get('/logout', (req, res, next) => {
  * User: Parent
  */
 
-// Retrieve form details for parent acknowledgement- Used by Barry (for identification for merging) // ! TO BE CHANGED WHEN MERGED
+// Encrypt studentID for Cypress testing
+app.post('/parent/cypress/encrypt', (req, res, next) => {
+    const studentID = req.body.studentID;
+
+    // Encrypt studentID
+    const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+    const encrypted = cipher.update(studentID, 'utf8', 'hex') + cipher.final('hex');
+
+    return res.status(200).json({ encrypted: encrypted });
+})
+
+app.get('/parent/logout', (req, res, next) => {
+    try {
+        res.clearCookie('parentJWT');
+        return res.status(200).send({ 'message': 'Logout successful' });
+
+    } catch (err) {
+        const error = new Error("Cleanup error");
+        error.status = 500;
+        throw error;
+    }
+})
+
 app.get('/form/:encrypted', parentAuthHelper.verifyToken, parentAuthHelper.validateUser, (req, res, next) => {
     const encrypted = req.params.encrypted;
 
@@ -714,7 +736,7 @@ app.post('/send-email', authHelper.verifyToken, authHelper.checkIat, (req, res) 
         from: 'sg.outwardbound@gmail.com',
         body: `<p>Dear Parents,
         We hope this email finds you and your family in good health and high spirits. As part of our ongoing commitment to provide the best care for your children, we would like to inform you about some important updates regarding their medical conditions. <br> <br>
-        At our recent healthcare evaluation, we have made significant progress in understanding and managing your child's medical condition. To ensure that our records are up to date, we kindly request your cooperation in acknowledging the new changes in your child's medical condition by clicking on the following link: nycmedicalforms.onrender.com/acknowledgement/?encrypted=${encryptedStudentId}<br> <br>
+        At our recent healthcare evaluation, we have made significant progress in understanding and managing your child's medical condition. To ensure that our records are up to date, we kindly request your cooperation in acknowledging the new changes in your child's medical condition by clicking on the following link: form-obs.onrender.com/acknowledgement/?encrypted=${encryptedStudentId}<br> <br>
         By clicking on the link, you will confirm that you have received and reviewed the updates related to your child's health. Your acknowledgment will help us ensure that our information is accurate and that we can continue to provide the highest quality of care. <br> <br>
         Rest assured that all the information you provide will remain strictly confidential and will only be used for healthcare purposes. We adhere to the highest standards of privacy and data protection, in compliance with applicable laws and regulations. <br> <br>
         If you have any questions or require further assistance, please do not hesitate to reach out to our dedicated support team at nyc_enquiries@nyc.gov.sg. We are here to address any concerns you may have and guide you through the process. <br> <br>
@@ -764,7 +786,33 @@ app.put('/parent/status', parentAuthHelper.verifyToken, parentAuthHelper.validat
 
 });
 
-// ! Make sure parents are unable to login if already acknowledged.
+app.post('/parent/login-verify', (req, res, next) => {
+    // Get encrypted studentID from query
+    const encrypted = req.body.encrypted;
+
+    // Check if encrypted StudentID is valid
+    if (encrypted.length != 32 || !encrypted) {
+        return res.status(400).json({ error: 'Invalid URL' });
+    }
+    
+    // Decrypt studentID
+    const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+    const studentID = decipher.update(encrypted, 'hex', 'utf8') + decipher.final('utf8');
+    
+    if (!studentID) {
+        return res.status(400).json({ error: 'Invalid URL' });
+    }
+
+    return parentModel
+    .verifyIfAcknowledged(studentID)
+        .then((result) => {
+            return res.json(result);
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        });
+});
+
 app.post('/parent/login/', (req, res, next) => {
     // Get encrypted studentID from body
     const encrypted = req.body.encrypted;
@@ -772,7 +820,7 @@ app.post('/parent/login/', (req, res, next) => {
     const password = req.body.password;
 
     // Check if encrypted StudentID is valid
-    if (encrypted.length != 32) {
+    if (encrypted.length != 32 || !encrypted) {
         return res.status(400).json({ error: 'Invalid URL' });
     }
 
@@ -800,8 +848,6 @@ app.post('/parent/login/', (req, res, next) => {
                 encrypted: req.body.encrypted,
             }
 
-            console.log(payload);
-
             let tokenConfig = {
                 expiresIn: '1h',
                 algorithm: 'HS256'
@@ -811,8 +857,8 @@ app.post('/parent/login/', (req, res, next) => {
             jwt.sign(payload, JWT_SECRET, tokenConfig, (err, token) => {
                 if (err) {
                     console.error('Failed to sign JWT token:', err);
-                    error.status = 500;
-                    throw error;
+                    err.status = 500;
+                    throw err;
                 };
                 res.cookie('parentJWT', token, { httpOnly: true, secure: false, sameSite: 'strict' });
                 return res.json({ key: result });
@@ -839,6 +885,13 @@ app.put('/parent/acknowledge', parentAuthHelper.verifyToken, parentAuthHelper.va
     const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
     const studentID = decipher.update(encrypted, 'hex', 'utf8') + decipher.final('utf8');
 
+    // Encrypt parent signature 
+    const signatureKey = Buffer.from(process.env.signatureKey); //must be 32 characters
+    const signatureIV = Buffer.from(process.env.signatureIV);
+    const cipher = crypto.createCipheriv('aes-256-cbc', signatureKey, signatureIV);
+    let parentSignature = cipher.update(req.body.parentSignature, 'utf8', 'hex');
+    parentSignature += cipher.final('hex');
+
     if (!studentID) {
         return res.status(400).json({ error: 'Invalid URL' });
     }
@@ -847,7 +900,7 @@ app.put('/parent/acknowledge', parentAuthHelper.verifyToken, parentAuthHelper.va
         studentID: studentID,
         parentNRIC: req.body.parentNRIC,
         nameOfParent: req.body.nameOfParent,
-        parentSignature: req.body.parentSignature,
+        parentSignature: parentSignature,
         dateOfAcknowledgement: req.body.dateOfAcknowledgement,
     };
 
@@ -862,9 +915,13 @@ app.put('/parent/acknowledge', parentAuthHelper.verifyToken, parentAuthHelper.va
             return res.json({ user: result });
         }
         ).catch((error) => {
-            console.log(error)
+            console.log(error);
             return res.status(error.status || 500).json({ error: error.message });
         })
+
+    function newFunction() {
+        parentAuthHelper.validateIfAcknowledged(studentID);
+    }
 })
 
 app.post('/postAcknowledge', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
@@ -881,6 +938,40 @@ app.post('/postAcknowledge', authHelper.verifyToken, authHelper.checkIat, (req, 
             return res.status(error.status || 500).json({ error: error.message });
         })
 });
+
+app.post('/parent/acknowledged', parentAuthHelper.verifyToken, parentAuthHelper.validateUser, (req, res, next) => {
+    const { encrypted } = req.body;
+
+    if (encrypted.length != 32 || !encrypted) {
+        return res.status(400).json({ error: 'Invalid URL' });
+    }
+
+    // Decrypt studentID
+    const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+    const studentID = decipher.update(encrypted, 'hex', 'utf8') + decipher.final('utf8');
+    
+    if (!studentID) {
+        return res.status(400).json({ error: 'Invalid URL' });
+    }
+
+
+    return parentModel.getAcknowledgement(studentID)
+        .then((result) => {
+
+            const signatureKey = Buffer.from(process.env.signatureKey);
+            const signatureIV = Buffer.from(process.env.signatureIV);
+            const decipher = crypto.createDecipheriv('aes-256-cbc', signatureKey, signatureIV);
+            let parentSignature = decipher.update(result.parentSignature, 'hex', 'utf8');
+            parentSignature += decipher.final('utf8');
+            result.parentSignature = parentSignature;
+
+            return res.json({ user: result });
+        }
+        ).catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        })
+});
+
 
 /**
  * User: Super Admin    
@@ -1146,8 +1237,10 @@ app.put('/obs-admin/permission/groups', authHelper.verifyToken, authHelper.check
         throw error;
     }
 
+    const invalidationDate = moment.tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss');
+
     return adminModel
-        .editPermGroup(permGroup)
+        .editPermGroup(permGroup, invalidationDate)
         .then((result) => {
             if (!result) {
                 const error = new Error("Unable to update permission group")
@@ -1608,9 +1701,9 @@ app.get('/obs-admin/pmt/search/:search', authHelper.verifyToken, authHelper.chec
         })
 });
 
-app.get('/get-school-filter',authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
-     // AUTHORIZATION CHECK - PMT, MST 
-     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+app.get('/get-school-filter', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
         return res.redirect('/error?code=403')
     }
     return doctorFormModel
@@ -1629,9 +1722,9 @@ app.get('/get-school-filter',authHelper.verifyToken, authHelper.checkIat, (req, 
         });
 });
 
-app.get('/getEligibility',authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
-     // AUTHORIZATION CHECK - PMT, MST 
-     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+app.get('/getEligibility', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
         return res.redirect('/error?code=403')
     }
     return doctorFormModel
@@ -1651,10 +1744,10 @@ app.get('/getEligibility',authHelper.verifyToken, authHelper.checkIat, (req, res
 
 // PMT Retrieve submissions by filtering (School, Class, Eligibility, CourseDate
 app.post('/obs-admin/pmt/filter/', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
-// AUTHORIZATION CHECK - PMT, MST 
-if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
-    return res.redirect('/error?code=403')
-}
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+        return res.redirect('/error?code=403')
+    }
     let school = req.body.school
     let stuClass = req.body.class
     let eligibility = req.body.eligibility
@@ -1861,8 +1954,8 @@ app.post('/postDoctorInfo', authHelper.verifyToken, authHelper.checkIat, (req, r
     try {
         // encryption part
         const algorithm = 'aes-256-cbc'; // encryption algorithm
-        const key = Buffer.from('qW3eRt5yUiOpAsDfqW3eRt5yUiOpAsDf'); //must be 32 characters
-        const iv = Buffer.from('qW3eRt5yUiOpAsDf'); // the initialization vector(), recommended to create randombytes and store safely crypto.randomBytes(16)
+        const key = Buffer.from(process.env.signatureKey); //must be 32 characters
+        const iv = Buffer.from(process.env.signatureIV); // the initialization vector(), recommended to create randombytes and store safely crypto.randomBytes(16)
 
         const cipher = crypto.createCipheriv(algorithm, key, iv);//create cipher iv first,
         let encryptedsignatureInfo = cipher.update(signatureData, 'utf8', 'hex'); //and encrypt the data with it
@@ -1981,7 +2074,7 @@ app.put('/updateFormStatus', authHelper.verifyToken, authHelper.checkIat, (req, 
     return doctorFormModel
         .updateFormStatus(studentId)
         .then(data => {
-            res.json(data)
+            res.json(data);
         })
         .catch(error => {
             console.error(error);
@@ -1995,8 +2088,8 @@ app.put('/updateFormStatus', authHelper.verifyToken, authHelper.checkIat, (req, 
 
 // get classes
 app.get('/getClasses', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
-     // AUTHORIZATION CHECK - PMT, MST 
-     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
         return res.redirect('/error?code=403')
     }
     return doctorFormModel
@@ -2012,8 +2105,8 @@ app.get('/getClasses', authHelper.verifyToken, authHelper.checkIat, (req, res, n
 
 // get course dates
 app.get('/getCourseDates', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
-     // AUTHORIZATION CHECK - PMT, MST 
-     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+    // AUTHORIZATION CHECK - PMT, MST 
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
         return res.redirect('/error?code=403')
     }
     return doctorFormModel
@@ -2039,7 +2132,7 @@ app.get('/getSchools', (req, res, next) => {
             res.json(courseDateLists)
         })
         .catch(err => {
-            if (error instanceof EMPTY_RESULT_ERROR) {
+            if (err instanceof EMPTY_RESULT_ERROR) {
                 res.status(404).json({ message: error.message });
             } else {
                 res.status(500).json({ message: 'Internal server error' });
@@ -2074,11 +2167,11 @@ app.post('/checkStudentNRIC', authHelper.verifyToken, authHelper.checkIat, (req,
         });
 });
 // delete duplicated student
-app.delete('/deleteStudentForm',  authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+app.delete('/deleteStudentForm', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
     if (req.decodedToken.role != 4) {
         return res.redirect('/error?code=403');
     }
-    const {studentIds} = req.body;
+    const { studentIds } = req.body;
     console.log(studentIds)
     return doctorFormModel
         .deleteStudentForm(studentIds)
@@ -2092,7 +2185,6 @@ app.delete('/deleteStudentForm',  authHelper.verifyToken, authHelper.checkIat, (
             return res.sendStatus(200);
         })
         .catch((error) => {
-            console.log(error)
             return res.status(error.status || 500).json({ error: error.message });
         })
 })

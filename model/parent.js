@@ -4,7 +4,7 @@ const { query } = conn;
 module.exports.updateAcknowledgement = function updateAcknowledgement(data) {
   const sql = `UPDATE parentAcknowledgement 
   SET parentNRIC = ?, nameOfParent = ?, parentSignature = ?, dateOfAcknowledgement = ?, statusOfAcknowledgement = "Acknowledged"
-   WHERE studentId = ?`;
+   WHERE studentId = ? AND statusOfAcknowledgement = "Pending Parent" `;
     return query(sql, [
         data.parentNRIC, data.nameOfParent, 
         data.parentSignature, data.dateOfAcknowledgement, 
@@ -13,7 +13,6 @@ module.exports.updateAcknowledgement = function updateAcknowledgement(data) {
         .then((result) => {
             const row = result[0];
             if (row.length === 0) {
-                // TODO ERROR HANDLING
                 const error = new Error("Invalid URL");
                 error.status = 401;
                 throw error;
@@ -29,7 +28,6 @@ module.exports.postAcknowledgement = function postAcknowledgement(studentID, par
     .then((result) => {
         const row = result[0];
         if (row.length === 0) {
-            // TODO ERROR HANDLING
             const error = new Error("Invalid URL");
             error.status = 401;
             throw error;
@@ -39,12 +37,11 @@ module.exports.postAcknowledgement = function postAcknowledgement(studentID, par
 };
 
 module.exports.updateFormStatus = function updateFormStatus(studentID) {
-    const sql = `UPDATE form SET formStatus = "Pending" WHERE studentId = ?`;
+    const sql = `UPDATE form SET formStatus = "Pending" WHERE studentId = ? AND formStatus = "Pending Parent"`;
         return query(sql, [studentID])
     .then((result) => {
         const row = result[0];
         if (row.length === 0) {
-            // TODO ERROR HANDLING
             const error = new Error("Invalid URL");
             error.status = 401;
             throw error;
@@ -52,3 +49,31 @@ module.exports.updateFormStatus = function updateFormStatus(studentID) {
         return row[0];
     })
 };
+
+module.exports.verifyIfAcknowledged = function verifyIfAcknowledged(studentID) {
+    const sql = `SELECT statusOfAcknowledgement FROM parentAcknowledgement WHERE studentId = ?`;
+        return query(sql, [studentID])
+    .then((result) => {
+        const row = result[0];
+        if (row.length === 0) {
+            const error = new Error("Invalid URL");
+            error.status = 401;
+            throw error;
+        }
+        return row[0];
+    })
+}
+
+module.exports.getAcknowledgement = function getAcknowledgement(studentID) {
+    const sql = `SELECT parentNRIC, nameOfParent, parentSignature, dateOfAcknowledgement FROM parentAcknowledgement WHERE studentId = ?`;
+        return query(sql, [studentID])
+    .then((result) => {
+        const row = result[0];
+        if (row.length === 0) {
+            const error = new Error("Invalid URL");
+            error.status = 401;
+            throw error;
+        }
+        return row[0];
+    })
+}

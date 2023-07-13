@@ -54,6 +54,7 @@ jobs:
         with:
           name: cypress-screenshots
           path: cypress/screenshots
+          retention-days: 5
           if-no-files-found: ignore
 
       - name: Upload Videos
@@ -62,6 +63,7 @@ jobs:
         with:
           name: cypress-videos
           path: cypress/videos
+          retention-days: 5
           if-no-files-found: ignore
 
   deploy:
