@@ -29,8 +29,8 @@ jobs:
         env:
             CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            cloudinary_api_secret: ${{ secrets.CYPRESS_CLOUDINARY_API_KEY }}
-            cloudinary_api_key: ${{ secrets.CYPRESS_CLOUDINARY_API_SECRET }}
+            cloudinary_api_key: ${{ secrets.CYPRESS_CLOUDINARY_API_KEY }}
+            cloudinary_api_secret: ${{ secrets.CYPRESS_CLOUDINARY_API_SECRET }}
             cloudinary_name: ${{ secrets.CYPRESS_CLOUDINARY_NAME }}
             DB_CONNECTION_LIMIT: ${{ secrets.CYPRESS_DB_CONNECTION_LIMIT }}
             DB_DATABASE: ${{ secrets.CYPRESS_DB_DATABASE }}
