@@ -621,7 +621,7 @@ app.get('/logout', (req, res, next) => {
 
 // Encrypt studentID for Cypress testing
 app.post('/parent/cypress/encrypt', (req, res, next) => {
-    const studentID = req.body.studentID;
+    const studentID = req.body.studentID.toString();
 
     // Encrypt studentID
     const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
@@ -671,7 +671,6 @@ app.get('/form/:encrypted', parentAuthHelper.verifyToken, parentAuthHelper.valid
             return res.json({ form: result });
         })
         .catch((error) => {
-            // TODO ERROR HANDLING
             console.log(error)
             return res.status(error.status || 500).json({ error: error.message });
         })
@@ -712,7 +711,6 @@ National Youth Council in affiliation with Outward Bound Singapore`
         .then((message) => {
             return res.status(200).send({ 'message': 'SMS sent successfully' });
         })
-        // TODO NEED TO DO ERROR HANDLING FOR INCORRECT PHONE NUMBER)
         .catch((error) => {
             console.log(error)
             return res.status(error.status || 500).json({ error: error.message });
@@ -1962,7 +1960,6 @@ app.post('/postDoctorInfo', authHelper.verifyToken, authHelper.checkIat, (req, r
         const algorithm = 'aes-256-cbc'; // encryption algorithm
         const key = Buffer.from(process.env.signatureKey); //must be 32 characters
         const iv = Buffer.from(process.env.signatureIV); // the initialization vector(), recommended to create randombytes and store safely crypto.randomBytes(16)
-
         const cipher = crypto.createCipheriv(algorithm, key, iv);//create cipher iv first,
         let encryptedsignatureInfo = cipher.update(signatureData, 'utf8', 'hex'); //and encrypt the data with it
         encryptedsignatureInfo += cipher.final('hex'); //this is to signal the end of encryption, and to notice the type of data the encryption
@@ -1992,7 +1989,6 @@ app.post('/postStudentInfo', authHelper.verifyToken, authHelper.checkIat, (req, 
     if (req.decodedToken.role != 4) {
         return res.redirect('/error?code=403');
     }
-
     const { studentName, schoolName, dateOfBirth, studentNRIC, studentClass, dateOfVaccine } = req.body;
     return doctorFormModel
         .postStudentInfo(studentNRIC, studentName, dateOfBirth, studentClass, schoolName, dateOfVaccine)
