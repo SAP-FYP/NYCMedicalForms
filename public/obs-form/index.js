@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const dateOfVaccineInput = document.getElementById('dateOfVaccine');
     const parentEmail = document.getElementById('parentEmail');
     const parentContact = document.getElementById('parentContact');
+    const parentsInfoDiv = document.getElementById('parentsInfoDiv');
 
     // physician sector
     const acknowledgeCheckBox = document.getElementById('acknowledgeCheckBox');
@@ -92,58 +93,80 @@ document.addEventListener('DOMContentLoaded', function () {
 
     //date object
     let today = new Date();
+    let dd = String(today.getDate()).padStart(2, '0');
+    let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    let yyyy = today.getFullYear();
+    today = yyyy + '-' + mm + '-' + dd;
+    
+    //prevent users from submitting future date
+    document.getElementById("dateOfBirth").setAttribute("max", today);
+    document.getElementById("courseDate").setAttribute("max", today);
+    document.getElementById("date").setAttribute("max", today);
+
     // <img> to display the signature
     let signatureImg = document.createElement('img');
     signatureImg.id = 'signatureImg';
     signatureImg.style.border = '1px dotted black'
 
-    //prevent users from submitting future date
-    let dd = String(today.getDate()).padStart(2, '0');
-    let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-    let yyyy = today.getFullYear();
-
-    today = yyyy + '-' + mm + '-' + dd;
-    document.getElementById("dateOfBirth").setAttribute("max", today);
-    document.getElementById("courseDate").setAttribute("max", today);
-    document.getElementById("date").setAttribute("max", today);
-
     // Disable comment section
     for (let i = 0; i < eligibilityRadios.length; i++) {
         eligibilityRadios[i].addEventListener('change', function () {
-            const checkContainer = document.getElementById('checkContainer');
             validities.isEligibilityValid = true;
+            parentEmail.value = '';
+            parentContact.value = '';
+            if(parentEmail.classList.contains('is-valid') || parentContact.classList.contains('is-valid')){
+                parentEmail.classList.remove('is-valid');
+                parentContact.classList.remove('is-valid');
+            }
+
+            const checkContainer = document.getElementById('checkContainer');
             if(checkContainer.classList.contains('is-invalid')){
                 checkContainer.classList.remove('is-invalid');
             }
 
-            if (this.value === 'Fit') {
+            if (this.value === 'Fit' || this.value === 'Fit_with_condition') {
+                validities.isCommentValid = true;
+
                 if(commentsTextarea.classList.contains('is-invalid')){
                     commentsTextarea.classList.remove('is-invalid');
                 }
-                commentsTextarea.value = '';
-                commentsTextarea.disabled = true;
-                validities.isCommentValid = true;
-                acknowledgeCheckBox.disabled = true;
-            } 
+                
+                if(acknowledgeCheckBox.checked){
+                    acknowledgeCheckBox.checked = false;
+                    if(parentsInfoDiv.style.display == 'block'){
+                        parentsInfoDiv.style.display = 'none'
+                        if(!document.getElementById('checkBoxContainer').classList.contains('mb-5')){
+                            document.getElementById('checkBoxContainer').classList.add('mb-5')
+                        }
+                    }
+                }
+
+                if (this.value === 'Fit'){
+                    commentsTextarea.value = '';
+                    commentsTextarea.disabled = true;
+                    acknowledgeCheckBox.disabled = true;
+                }
+                else if(this.value === 'Fit_with_condition'){
+                    commentsTextarea.disabled = false;
+                    acknowledgeCheckBox.disabled = false;
+                }
+            }
             else if(this.value === 'Unfit'){
                 if(commentsTextarea.value === ''){
                     commentsTextarea.classList.add('is-invalid');
                     validities.isCommentValid = false;
                 }
-                commentsTextarea.disabled = false;
-                acknowledgeCheckBox.disabled = false;
-            }
-            else{
-                if(commentsTextarea.classList.contains('is-invalid')){
-                    commentsTextarea.classList.remove('is-invalid');
+
+                if(parentsInfoDiv.disabled){
+                    parentsInfoDiv.disabled = false;
                 }
+
                 commentsTextarea.disabled = false;
                 acknowledgeCheckBox.disabled = false;
-                validities.isCommentValid = true;
             }
-            console.log(validities)
         });
     }
+
     // === ALERT BOX ===
     const alertBox = (message, type) => {
         const alertIcon = document.getElementById('alert-icon');
@@ -322,9 +345,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 throw new Error('ServerError');
             }
             return response.json().then(data => ({ studentIdArr: data, deleteStudent: true }));
-        })
-        .catch(error => {
-            alert(error.message);
         });
     }
 
@@ -416,20 +436,19 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
     const validateEmptyValue = (allEntry) => {
-        const signatureMsg = document.getElementById('signatureMsg');
         for (const key in allEntry) {
             // double check if the entry have the key
             if (allEntry.hasOwnProperty(key)) {
                 const value = allEntry[key];
-                
                 console.log(key+'-----'+value)
                 // check signature
                 if(key === "signatureData"){
                     if (signaturePad.isEmpty()) {
+                        const signatureMsg = document.getElementById('signatureMsg');
                         signatureMsg.textContent = 'Please provide your signature';
                         signatureMsg.className = 'text-danger';
                         validities.isSignatureValid = false;
-                        if(document.getElementById('signatureMsg')){
+                        if(document.getElementById('signatureImg')){
                             validities.isSignatureValid = true;
                             signatureMsg.textContent = '';
                         }
@@ -628,18 +647,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .then(response => {
                     if(!response.ok){
-                        reject( new Error('Deletion failed'));
+                        const error = new Error("Unable to delete students and forms")
+                        error.status = 500;
+                        reject(error);
                     }
                     resolve();
-                })
-                .catch(error => {
-                    reject(error);
                 })
             });
             cancelBtn.addEventListener('click', () => {
                 reject(new Error('User Canceled updating student'));
             });
         });
+    };
+    const relocateToErrorPage = (errCode) => {
+        window.location.href += `/error?code=${errCode}`;
     }
 
     // sections div click event
@@ -655,13 +676,13 @@ document.addEventListener('DOMContentLoaded', function () {
     // checkbox onclick
     acknowledgeCheckBox.addEventListener('change',(event)=>{
         if(acknowledgeCheckBox.checked){
-            document.getElementById('parentsInfoDiv').style.display = 'block';
+            parentsInfoDiv.style.display = 'block';
             if(document.getElementById('checkBoxContainer').classList.contains('mb-5')){
                 document.getElementById('checkBoxContainer').classList.remove('mb-5')
             }
         }
         else{
-            document.getElementById('parentsInfoDiv').style.display = 'none';
+            parentsInfoDiv.style.display = 'none';
             if(!document.getElementById('checkBoxContainer').classList.contains('mb-5')){
                 document.getElementById('checkBoxContainer').classList.add('mb-5')
             }
@@ -826,72 +847,73 @@ document.addEventListener('DOMContentLoaded', function () {
         signaturePad.clear();
     });
     //Check MCR Availablability
-    availabilityBtn.addEventListener('click', (event) => {
+    availabilityBtn.addEventListener('click', (event) => {2
         event.preventDefault();
+        if(validities.isDoctorMCRValid){
+            // check if doctorMCR input is empty or not
+            if (!doctorMCRInput.value) {
+                doctorMCRInput.classList.add('is-invalid');
+                doctorMCRFeedback.style.display = 'block';
+                doctorMCRFeedback.textContent = 'Please enter a value';
+                return; // return early from the event handler if doctorMCR is empty
+            } else {
+                doctorMCRInput.classList.remove('is-invalid');
+                doctorMCRInput.classList.add('is-valid');
+                doctorMCRFeedback.style.display = 'none';
+            }
 
-        // check if doctorMCR input is empty or not
-        if (!doctorMCRInput.value) {
-            doctorMCRInput.classList.add('is-invalid');
-            doctorMCRFeedback.style.display = 'block';
-            doctorMCRFeedback.textContent = 'Please enter a value';
-            return; // return early from the event handler if doctorMCR is empty
-        } else {
-            doctorMCRInput.classList.remove('is-invalid');
-            doctorMCRInput.classList.add('is-valid');
-            doctorMCRFeedback.style.display = 'none';
+            const template = document.getElementById('loadingTemplate');
+            const clone = template.content.cloneNode(true);
+            availabilityBtn.innerHTML = '';
+            availabilityBtn.className = 'btn btn-primary'
+            availabilityBtn.appendChild(clone);
+
+            fetch('/checkDoctorMCR', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ doctorMCR: doctorMCRInput.value })
+            })
+            .then(response => {
+                if (response.status === 404) {
+                    // Doctor was not found
+                    throw new Error('DoctorNotFound');
+                }
+                else if (response.status === 500) {
+                    // Server error
+                    alert('An error occurred. Please try again later.');
+                    throw new Error('ServerError');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const { doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo } = data[0];
+                doctorAutoFill(doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo);
+                removeInvalidTooltips();
+                validities.isDoctorMCRValid = true;
+                validities.isDoctorNameValid = true;
+                validities.isDoctorContactValid = true;
+                validities.isClinicNameValid = true;
+                validities.isClinicAddressValid = true;
+                validities.isDateValid = true;
+                validities.isSignatureValid = true;
+            })
+            .catch(err => {
+                if (err.message == 'DoctorNotFound') {
+                    // if doctor is new and available
+                    availabilityBtn.disabled = true;
+                    availabilityBtn.textContent = `You are new!`
+                    availabilityBtn.className = 'btn btn-success'
+                    isAvailabilityBtn = true;
+                }
+                else {
+                    // internal server error
+                    alert("internal server error" + err.message);
+                }
+            });
         }
-
-        const template = document.getElementById('loadingTemplate');
-        const clone = template.content.cloneNode(true);
-        availabilityBtn.innerHTML = '';
-        availabilityBtn.className = 'btn btn-primary'
-        availabilityBtn.appendChild(clone);
-
-        // using POST method since doctorMCR is sensitive information so that it can be protected
-        fetch('/checkDoctorMCR', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ doctorMCR: doctorMCRInput.value })
-        })
-        .then(response => {
-            if (response.status === 404) {
-                // Doctor was not found
-                throw new Error('DoctorNotFound');
-            }
-            else if (response.status === 500) {
-                // Server error
-                alert('An error occurred. Please try again later.');
-                throw new Error('ServerError');
-            }
-            return response.json();
-        })
-        .then(data => {
-            const { doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo } = data[0];
-            doctorAutoFill(doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo);
-            removeInvalidTooltips();
-            validities.isDoctorMCRValid = true;
-            validities.isDoctorNameValid = true;
-            validities.isDoctorContactValid = true;
-            validities.isClinicNameValid = true;
-            validities.isClinicAddressValid = true;
-            validities.isDateValid = true;
-            validities.isSignatureValid = true;
-        })
-        .catch(err => {
-            if (err.message == 'DoctorNotFound') {
-                // if doctor is new and available
-                availabilityBtn.disabled = true;
-                availabilityBtn.textContent = `You are new!`
-                availabilityBtn.className = 'btn btn-success'
-                isAvailabilityBtn = true;
-            }
-            else {
-                // internal server error
-                alert("internal server error" + err.message);
-            }
-        });
+        
     });
     // drop down handlers
     schoolDropDown.addEventListener('show.bs.dropdown',(event) => {
@@ -974,7 +996,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const allEntry = { ...studentEntry, ...formEntry, ...doctorEntry };
         const isChecked = isCheckBoxClicked();
         validateEmptyValue(allEntry);
-        console.log(validities)
 
         // Proceed submission
         if (validateValidities(validities)) {
@@ -982,7 +1003,7 @@ document.addEventListener('DOMContentLoaded', function () {
             checkStudentDuplication(allEntry.studentNRIC)
             .then(data =>{
                 if(data.deleteStudent){
-                    //modal response    
+                    //modal response
                     deleteStudentModal.show();
                     const studentIdsArr = data.studentIdArr.map(obj => obj.studentId);
                     return waitModalResponse({studentIds : studentIdsArr});
@@ -1000,11 +1021,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     
                     // show loading modal
                     loadingModal.show();
+
                     uploadSignature(data)
                     .then(data => {
                         signatureCredentials = `${data.url};${today};${doctorNameInput.value}`;
                         doctorEntry.signatureData = signatureCredentials;
-
                         return Promise.all([postDoctorInfo(doctorEntry), postStudentInfo(studentEntry)]);
                     })
                     .then(([doctorResponse, studentResponse]) => {
@@ -1039,23 +1060,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         let scrollableDiv = document.getElementById("formDiv");
                         scrollableDiv.scrollTop = 0;
                         doctorAutoFill(doctorMCRInput.value, doctorNameInput.value, signatureCredentials, clinicNameInput.value, clinicAddressInput.value, doctorcontactNoInput.value);
-                    })
-                    .catch(error => {
-                        if (error.message === 'Upload failed') {
-                            alert('Signature Upload Failed');
-                        } else if (error.message === 'Doctor Duplicate entry') {
-                            alert('Doctor already exists');
-                        } else if (error.message === 'Student Duplicate entry') {
-                            alert('Student already exists');
-                        } else if (error.message === 'Form Duplicate entry') {
-                            alert('Form already exists');
-                        } else if (error.message === 'Internal server error') {
-                            alert('Server error');
-                        } else if (error.message === 'Encryption Error') {
-                            alert('Encryption Error');
-                        } else {
-                            console.error('Error:', error);
-                        }
                     });
                 }
                 else if (isDoctorNew === false) {
@@ -1100,23 +1104,15 @@ document.addEventListener('DOMContentLoaded', function () {
                         
                         let scrollableDiv = document.getElementById("formDiv");
                         scrollableDiv.scrollTop = 0;
-                    })
-                    .catch(error => {
-                        if (error.message === 'Student Duplicate entry') {
-                            alert('Student already exists');
-                        } else if (error.message === 'Form Duplicate entry') {
-                            alert('Form already exists');
-                        } else if (error.message === 'Internal server error') {
-                            alert('Server error');
-                        } else {
-                            console.error('Error:', error);
-                        }
                     });
                 }
             })
             .catch(error => {
-                //server errors
-            })
+                if(error.message === "User Canceled updating student"){
+                    alertBox('Canceled','danger');
+                }
+                relocateToErrorPage(error.status);
+            });
         }
         else{
             const firstInvalidElement = document.querySelector('.is-invalid');
