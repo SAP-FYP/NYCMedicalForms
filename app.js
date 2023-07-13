@@ -619,6 +619,17 @@ app.get('/logout', (req, res, next) => {
  * User: Parent
  */
 
+// Encrypt studentID for Cypress testing
+app.post('/parent/cypress/encrypt', (req, res, next) => {
+    const studentID = req.body.studentID;
+
+    // Encrypt studentID
+    const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+    const encrypted = cipher.update(studentID, 'utf8', 'hex') + cipher.final('hex');
+
+    return res.status(200).json({ encrypted: encrypted });
+})
+
 app.get('/parent/logout', (req, res, next) => {
     try {
         res.clearCookie('parentJWT');

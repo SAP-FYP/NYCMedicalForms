@@ -1350,19 +1350,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
           if (checkbox.checked) {
             if (checkbox.name === "school") {
               schoolsArray.push(checkbox.value);
-              // If school is checked, uncheck all classes
-              const allClassesCheckBoxes = document.querySelectorAll('.filter-div input[name="class"]');
-              allClassesCheckBoxes.forEach(classCheckBox => {
-                classCheckBox.checked = false;
-              });
-              classesArray = [];
-              // If school is checked, uncheck all course dates
-              const allCourseDatesCheckBoxes = document.querySelectorAll('.filter-div input[name="course-date"]');
-              allCourseDatesCheckBoxes.forEach(courseDateCheckBox => {
-                courseDateCheckBox.checked = false;
-              });
-              courseDatesArray = [];
-
             } else if (checkbox.name === "class") {
               classesArray.push(checkbox.value);
             } else if (checkbox.name === "course-date") {
@@ -1374,22 +1361,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
             // If checkbox is unchecked, remove from array
             if (checkbox.name === "school") {
               schoolsArray = schoolsArray.filter(item => item !== checkbox.value);
-
-              // If school is unchecked, uncheck all classes
-              const allClassesCheckBoxes = document.querySelectorAll('.filter-div input[name="class"]');
-              allClassesCheckBoxes.forEach(classCheckBox => {
-                classCheckBox.checked = false;
-              });
-              classesArray = [];
-
-              // If school is unchecked, uncheck all course dates
-              const allCourseDatesCheckBoxes = document.querySelectorAll('.filter-div input[name="course-date"]');
-              allCourseDatesCheckBoxes.forEach(courseDateCheckBox => {
-                courseDateCheckBox.checked = false;
-              });
-              courseDatesArray = [];
-
-
             } else if (checkbox.name === "class") {
               classesArray = classesArray.filter(item => item !== checkbox.value);
             } else if (checkbox.name === "course-date") {

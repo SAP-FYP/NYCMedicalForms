@@ -41,9 +41,9 @@ Cypress.Commands.add('managementLogin', (email, pass) => {
     cy.contains('Overview');
 })
 
-Cypress.Commands.add('parentlogin', (encrypted, pass) => {
+Cypress.Commands.add('parentLogin', (encrypted, password) => {
     cy.visit(`http://localhost:3000/acknowledgement?encrypted=${encrypted}`)
-    cy.get('input[id=login-password]').type(pass);
+    cy.get('input[id=login-password]').type(password);
     cy.get('button[id=login-button]').click();
     cy.url().should('include', `/form?encrypted=${encrypted}`);
     cy.contains('Parent Section:');
