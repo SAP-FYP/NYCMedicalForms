@@ -48,6 +48,9 @@ function generateNRIC() {
     return generatedNRIC;
 }
 
+const parentName = chance.name();
+const parentNRIC = generateNRIC();
+
 // Doctor MCR generator
 const randomMCR = chance.integer({ min: 100000, max: 999999 });
 
@@ -87,8 +90,12 @@ const formattedDate = randomVaccinationDate.toISOString().substring(0, 10);
 // Random email generator
 const randomEmail = chance.email();
 const phone = "97873648"
+let encrypted;
+let password;
+
 after(() => {
     cy.then(Cypress.session.clearAllSavedSessions);
+    // ! To create delete request to delete all created things
 })
 
 // Before test, create a form that requires parent acknowledgement
@@ -165,18 +172,19 @@ before(() => {
                 studentID: studentID,
             })
         }).then((response) => {
-            const encrypted = response.body.encrypted;
+             encrypted = response.body.encrypted;
             // Password = DDMMYYYY of student's birthdate + last 4 digits of student's NRIC
-            const password = randomDate.getDate().toString().padStart(2, '0') + (randomDate.getMonth() + 1).toString().padStart(2, '0') + randomDate.getFullYear().toString() + studentNRIC.slice(-4);
-            cy.parentLogin(encrypted, password);
+             password = randomDate.getDate().toString().padStart(2, '0') + (randomDate.getMonth() + 1).toString().padStart(2, '0') + randomDate.getFullYear().toString() + studentNRIC.slice(-4);
         })
     })
 })
 
+beforeEach(() => {
+    cy.parentLogin(encrypted, password);
+})
+
 describe('parent acknowledge', () => {
     it('Fill the form', () => {
-        const parentName = chance.name();
-        const parentNRIC = generateNRIC();
         cy.fillInParentForm(parentName, parentNRIC)
         cy.get("canvas[id=parent-signature-canvas]").trigger('mousedown', 'center')
             .click({ release: false })
@@ -190,3 +198,15 @@ describe('parent acknowledge', () => {
 
     })
 })
+
+describe('parent view acknowledgement', () => {
+    it('View the acknowledgement', () => {
+        cy.get('button[id=acknowledge-button]').should('not.exist');
+        cy.get('input[id=parent-name]').should('be.disabled');
+        cy.get('input[id=parent-nric]').should('be.disabled');
+        cy.get('img[id=parent-signature-img]').should('be.visible');
+        
+    })
+})
+
+
