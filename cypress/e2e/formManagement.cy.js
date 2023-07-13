@@ -36,7 +36,7 @@ before(() => {
 });
 
 beforeEach(() => {
-  const emailLogin = 'rltk4545@gomail.com';
+    const emailLogin = 'rltk4545@gomail.com';
     const passLogin = 'PASSword1*';
     cy.doctorlogin(emailLogin, passLogin);
 });
