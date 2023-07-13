@@ -76,7 +76,7 @@ module.exports.updateFormStatus = function updateFormStatus(studentId) {
     return affectedRows;
   }).catch((error) => {
     throw error;
-  })
+  });
 };
 
 module.exports.getClasses = function getClasses(){
