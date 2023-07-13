@@ -925,6 +925,7 @@ app.put('/parent/acknowledge', parentAuthHelper.verifyToken, parentAuthHelper.va
 })
 
 app.post('/postAcknowledge', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    console.log(req.body);
     const { studentId, parentContactNo, parentEmail } = req.body;
     if (req.decodedToken.role != 4) {
         return res.redirect('/error?code=403');
@@ -1986,7 +1987,6 @@ app.post('/postStudentInfo', authHelper.verifyToken, authHelper.checkIat, (req, 
     if (req.decodedToken.role != 4) {
         return res.redirect('/error?code=403');
     }
-
     const { studentName, schoolName, dateOfBirth, studentNRIC, studentClass, dateOfVaccine } = req.body;
     return doctorFormModel
         .postStudentInfo(studentNRIC, studentName, dateOfBirth, studentClass, schoolName, dateOfVaccine)
