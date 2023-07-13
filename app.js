@@ -14,12 +14,6 @@ const crypto = require('crypto');
 const key = Buffer.from(process.env.encryptKey, 'hex');
 const iv = Buffer.from(process.env.encryptIV, 'hex');
 
-cloudinary.config({
-    cloud_name: process.env.cloudinary_name,
-    api_key: process.env.cloudinary_api_key,
-    api_secret: process.env.cloudinary_api_secret,
-});
-
 const authHelper = require('./auth/userAuth');
 const parentAuthHelper = require('./auth/parentAuth');
 const userModel = require('./model/user');
@@ -1935,13 +1929,25 @@ app.post('/uploadSign', authHelper.verifyToken, authHelper.checkIat, (req, res) 
     }
 
     const file = req.body.signature;
-    cloudinary.uploader.upload(file, { resource_type: 'image', format: 'png' }, (err, result) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ message: "Upload failed" });
-        }
-        return res.json({ url: result.secure_url });
-    });
+    try {
+
+        cloudinary.config({
+            cloud_name: process.env.cloudinary_name,
+            api_key: process.env.cloudinary_api_key,
+            api_secret: process.env.cloudinary_api_secret,
+        });
+
+        cloudinary.uploader.upload(file, { resource_type: 'image', format: 'png' }, (err, result) => {
+            if (err) {
+                console.log(err)
+                return res.status(500).json({ message: "Upload failed" });
+            }
+            return res.json({ url: result.secure_url });
+        });
+    } catch (error) {
+        console.log(error)
+    }
+
 });
 
 // upload doctor informtaion

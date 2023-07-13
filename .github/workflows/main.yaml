@@ -41,6 +41,8 @@ jobs:
             elasticEmail: ${{ secrets.CYPRESS_ELASTICEMAIL }}
             encryptIV: ${{ secrets.CYPRESS_ENCRYPTIV }}
             encryptKey: ${{ secrets.CYPRESS_ENCRYPTKEY }}
+            signatureIV: ${{ secrets.CYPRESS_SIGNATUREIV }}
+            signatureKey: ${{ secrets.CYPRESS_SIGNATUREKEY }}
             PORT: ${{ secrets.CYPRESS_PORT }}
             SECRETKEY: ${{ secrets.CYPRESS_SECRETKEY }}
             twilioNumber: ${{ secrets.CYPRESS_TWILIONUMBER }}
