@@ -14,6 +14,12 @@ const crypto = require('crypto');
 const key = Buffer.from(process.env.encryptKey, 'hex');
 const iv = Buffer.from(process.env.encryptIV, 'hex');
 
+cloudinary.config({
+    cloud_name: process.env.cloudinary_name,
+    api_key: process.env.cloudinary_api_key,
+    api_secret: process.env.cloudinary_api_secret,
+});
+
 const authHelper = require('./auth/userAuth');
 const parentAuthHelper = require('./auth/parentAuth');
 const userModel = require('./model/user');
@@ -794,17 +800,17 @@ app.post('/parent/login-verify', (req, res, next) => {
     if (encrypted.length != 32 || !encrypted) {
         return res.status(400).json({ error: 'Invalid URL' });
     }
-    
+
     // Decrypt studentID
     const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
     const studentID = decipher.update(encrypted, 'hex', 'utf8') + decipher.final('utf8');
-    
+
     if (!studentID) {
         return res.status(400).json({ error: 'Invalid URL' });
     }
 
     return parentModel
-    .verifyIfAcknowledged(studentID)
+        .verifyIfAcknowledged(studentID)
         .then((result) => {
             return res.json(result);
         })
@@ -949,7 +955,7 @@ app.post('/parent/acknowledged', parentAuthHelper.verifyToken, parentAuthHelper.
     // Decrypt studentID
     const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
     const studentID = decipher.update(encrypted, 'hex', 'utf8') + decipher.final('utf8');
-    
+
     if (!studentID) {
         return res.status(400).json({ error: 'Invalid URL' });
     }
@@ -1912,12 +1918,6 @@ app.put('/obs-admin/mst/review/:studentId', authHelper.verifyToken, authHelper.c
 /**
  * Obs-form APIs
  */
-
-cloudinary.config({
-    cloud_name: process.env.cloudinary_name,
-    api_key: process.env.cloudinary_api_key,
-    api_secret: process.env.cloudinary_api_secret,
-});
 
 // Check Doctor Auth
 app.get('/obs-form/auth', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
