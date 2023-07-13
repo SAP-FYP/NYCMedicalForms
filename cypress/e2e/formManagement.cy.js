@@ -18,10 +18,10 @@ const doctorMCR = `CYPRESSMCR${chance.integer({ min: 1, max: 200 })}`
 let studentNRIC;
 let doctorContact;
 
-const dateOfBirth = chance.date({min: minDate, max: maxDate}).toISOString().substring(0, 10);
-const courseDate = chance.date({min: minDate, max: maxDate}).toISOString().substring(0, 10);
-const newCourseDate = chance.date({min: minDate, max: maxDate}).toISOString().substring(0, 10);
-const vaccineDate = chance.date({min: minDate, max: maxDate}).toISOString().substring(0, 10);
+const dateOfBirth = chance.date({ min: minDate, max: maxDate }).toISOString().substring(0, 10);
+const courseDate = chance.date({ min: minDate, max: maxDate }).toISOString().substring(0, 10);
+const newCourseDate = chance.date({ min: minDate, max: maxDate }).toISOString().substring(0, 10);
+const vaccineDate = chance.date({ min: minDate, max: maxDate }).toISOString().substring(0, 10);
 const todayDate = today.toISOString().substring(0, 10);
 
 let authToken;
@@ -36,47 +36,47 @@ before(() => {
 });
 
 beforeEach(() => {
-    const emailLogin = 'rltk4545@gomail.com';
-    const passLogin = 'PASSword1*';
-    cy.doctorlogin(emailLogin, passLogin);
+  const emailLogin = 'rltk4545@gomail.com';
+  const passLogin = 'PASSword1*';
+  cy.doctorlogin(emailLogin, passLogin);
 });
 
 describe('Filling in all the form details', () => {
   it('should submit the form successfully', () => {
-      const parentEmail = 'rltk4545@gmail.com';
-      const parentContact = '89490850';
-      cy.get('input[id=studentName]').type(studentName);
-      cy.get('input[id=dateOfBirth]').type(dateOfBirth);
-      cy.get('button[id=schoolName]').click();
-      cy.get(`li[id=school${schoolNumber}]`).click();
-      cy.get('input[id=studentNRIC]').type(studentNRIC);
-      cy.get('input[id=studentClass]').type(className);
-      cy.get('input[id=courseDate]').type(courseDate);
-      cy.get('input[id=dateOfVaccine]').type(vaccineDate);
-      cy.get('input[name="eligibility"][value="Fit With Condition"]').check();
-      cy.get('textarea[id=comment]').type(comment);
-      cy.get('#acknowledgeCheckBox').check();
-      cy.get('input[id=parentEmail]').type(parentEmail);
-      cy.get('input[id=parentContact]').type(parentContact);
-      cy.get('input[id=doctorMCR]').type(doctorMCR);
-      cy.get('button[id=availabilityBtn]').click();
-      cy.get('input[id=physicianName]').type(doctorName);
-      cy.get('input[id=clinicName]').type(clinicName);
-      cy.get('input[id=date]').type(todayDate);
-      cy.get('input[id=doctorContact]').type(doctorContact);
-      cy.get('input[id=clinicAddress]').type(clinicAddress);
+    const parentEmail = 'rltk4545@gmail.com';
+    const parentContact = '89490850';
+    cy.get('input[id=studentName]').type(studentName);
+    cy.get('input[id=dateOfBirth]').type(dateOfBirth);
+    cy.get('button[id=schoolName]').click();
+    cy.get(`li[id=school${schoolNumber}]`).click();
+    cy.get('input[id=studentNRIC]').type(studentNRIC);
+    cy.get('input[id=studentClass]').type(className);
+    cy.get('input[id=courseDate]').type(courseDate);
+    cy.get('input[id=dateOfVaccine]').type(vaccineDate);
+    cy.get('input[name="eligibility"][value="Fit With Condition"]').check();
+    cy.get('textarea[id=comment]').type(comment);
+    cy.get('#acknowledgeCheckBox').check();
+    cy.get('input[id=parentEmail]').type(parentEmail);
+    cy.get('input[id=parentContact]').type(parentContact);
+    cy.get('input[id=doctorMCR]').type(doctorMCR);
+    cy.get('button[id=availabilityBtn]').click();
+    cy.get('input[id=physicianName]').type(doctorName);
+    cy.get('input[id=clinicName]').type(clinicName);
+    cy.get('input[id=date]').type(todayDate);
+    cy.get('input[id=doctorContact]').type(doctorContact);
+    cy.get('input[id=clinicAddress]').type(clinicAddress);
 
-      cy.get("canvas[id=signatureCanvas]").trigger('mousedown','center')
-          .click({release:false})
-          .trigger('mousemove',{ clientX: 200, clientY: 300 })
-          .trigger('mouseup',5,5)
-          .trigger('mouseleave');
+    cy.get("canvas[id=signatureCanvas]").trigger('mousedown', 'center')
+      .click({ release: false })
+      .trigger('mousemove', { clientX: 200, clientY: 300 })
+      .trigger('mouseup', 5, 5)
+      .trigger('mouseleave');
 
-      cy.get('button[id=submitBtn]').click();
-      cy.wait(7000);
-      cy.get('.alert-success').should('be.visible').contains('Submit Succesful');
-      cy.wait(1000);
-    })
+    cy.get('button[id=submitBtn]').click();
+    cy.wait(7000);
+    cy.get('.alert-success').should('be.visible').contains('Submit Succesful');
+    cy.wait(1000);
+  })
 
   it('should update the student and form successfully', () => {
     cy.get('input[id=doctorMCR]').type(doctorMCR);
@@ -96,8 +96,7 @@ describe('Filling in all the form details', () => {
     cy.wait(1000);
     cy.get('#deleteStudentModal').should('be.visible').contains('Student Already exists. Update student information?');
     cy.wait(1000);
-    cy.get('button[id=updateStudentBtn]').click();
-    cy.wait(7000);
+    cy.get('button[id=updateStudentBtn]').click().wait(3000);
     cy.get('.alert-success').should('be.visible').contains('Submit Succesful');
   });
 });
