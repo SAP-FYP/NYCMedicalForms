@@ -28,6 +28,7 @@ const passwordGenerator = require('./helper/passwordGenerator');
 const momentHelper = require('./helper/epochConverter');
 const cronJob = require('./helper/cron');
 const { env } = require("process");
+const e = require("express");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -675,6 +676,7 @@ app.get('/form/:encrypted', parentAuthHelper.verifyToken, parentAuthHelper.valid
             return res.status(error.status || 500).json({ error: error.message });
         })
 });
+
 app.post('/parent-sign-upload', parentAuthHelper.verifyToken, (req, res) => {
     const file = req.body.parentSignature;
     cloudinaryModel.uploadSignature(file)
@@ -972,7 +974,7 @@ app.post('/obs-admin/newuser', authHelper.verifyToken, authHelper.checkIat, (req
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     const generatedPassword = passwordGenerator.generatePassword();
@@ -1048,7 +1050,7 @@ app.get('/obs-admin/users/:search/:limit/:offset', authHelper.verifyToken, authH
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     let searchInput = ""
@@ -1080,7 +1082,7 @@ app.get('/obs-admin/permission/groups/:search/:limit/:offset', authHelper.verify
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     let searchInput = ""
@@ -1115,7 +1117,7 @@ app.get('/obs-admin/permission', authHelper.verifyToken, authHelper.checkIat, (r
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     return adminModel
@@ -1138,7 +1140,7 @@ app.get('/obs-admin/roles', authHelper.verifyToken, authHelper.checkIat, (req, r
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     return adminModel
@@ -1161,7 +1163,7 @@ app.post('/obs-admin/permission/groups', authHelper.verifyToken, authHelper.chec
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     const newPermGroup = {
@@ -1202,7 +1204,7 @@ app.put('/obs-admin/permission/groups', authHelper.verifyToken, authHelper.check
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     const permGroup = {
@@ -1253,7 +1255,7 @@ app.delete('/obs-admin/permission/groups/:groupId', authHelper.verifyToken, auth
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     const groupId = req.params.groupId
@@ -1293,7 +1295,7 @@ app.delete('/obs-admin/permission/groups', authHelper.verifyToken, authHelper.ch
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     const { groupIds } = req.body;
@@ -1333,7 +1335,7 @@ app.put('/obs-admin/user', authHelper.verifyToken, authHelper.checkIat, (req, re
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     const user = {
@@ -1379,7 +1381,7 @@ app.put('/obs-admin/delete/user/:email', authHelper.verifyToken, authHelper.chec
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     const user = {
@@ -1414,7 +1416,7 @@ app.put('/obs-admin/delete/user', authHelper.verifyToken, authHelper.checkIat, (
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     const { users } = req.body;
@@ -1447,7 +1449,7 @@ app.put('/obs-admin/disable/user/:email/:status', authHelper.verifyToken, authHe
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     const user = {
@@ -1483,7 +1485,7 @@ app.put('/obs-admin/disable/user', authHelper.verifyToken, authHelper.checkIat, 
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     const { users } = req.body;
@@ -1516,7 +1518,7 @@ app.post('/obs-admin/reset/:email', authHelper.verifyToken, authHelper.checkIat,
     try {
         // AUTHORIZATION CHECK - ADMIN
         if (req.decodedToken.role !== 1) {
-            return res.redirect('/error?code=403');
+            return res.redirect('/error?code=403&type=obs-admin');
         }
 
         const { email } = req.params;
@@ -1581,11 +1583,11 @@ app.post('/obs-admin/reset/:email', authHelper.verifyToken, authHelper.checkIat,
 app.get('/obs-admin/pmt/all', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
     // AUTHORIZATION CHECK - PMT, MST 
     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
     // IF NO PERMISSIONS
     if (!req.decodedToken.permissions.includes(1)) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
     return pmtModel
         .retrieveAllSubmissions()
@@ -1608,11 +1610,11 @@ app.get('/obs-admin/pmt/:studentId', authHelper.verifyToken, authHelper.checkIat
     const studentId = req.params.studentId;
     // AUTHORIZATION CHECK - PMT, MST
     if (req.decodedToken.role !== 2 && req.decodedToken.role !== 3) {
-        return res.redirect('/error?code=403');
+        return res.redirect('/error?code=403&type=obs-admin');
     }
     // IF NO PERMISSIONS
     if (!req.decodedToken.permissions.includes(1)) {
-        return res.redirect('/error?code=403');
+        return res.redirect('/error?code=403&type=obs-admin');
     }
 
     return pmtModel.retrieveSubmission(studentId)
@@ -1647,7 +1649,7 @@ app.put('/obs-admin/pmt/:studentId', authHelper.verifyToken, authHelper.checkIat
     const formStatus = req.body.formStatus;
     // IF NO PERMISSIONS
     if (!req.decodedToken.permissions.includes(2)) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
     return pmtModel
         .updateSubmissionStatus(formStatus, studentId)
@@ -1674,7 +1676,7 @@ app.get('/obs-admin/pmt/search/:search', authHelper.verifyToken, authHelper.chec
     const searchInput = req.params.search;
     // AUTHORIZATION CHECK - PMT, MST 
     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     return pmtModel
@@ -1694,7 +1696,7 @@ app.get('/obs-admin/pmt/search/:search', authHelper.verifyToken, authHelper.chec
 app.get('/get-school-filter', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
     // AUTHORIZATION CHECK - PMT, MST 
     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
     return doctorFormModel
         .getSchoolsFilter()
@@ -1715,7 +1717,7 @@ app.get('/get-school-filter', authHelper.verifyToken, authHelper.checkIat, (req,
 app.get('/getEligibility', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
     // AUTHORIZATION CHECK - PMT, MST 
     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
     return doctorFormModel
         .getEligibility()
@@ -1736,7 +1738,7 @@ app.get('/getEligibility', authHelper.verifyToken, authHelper.checkIat, (req, re
 app.post('/obs-admin/pmt/filter/', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
     // AUTHORIZATION CHECK - PMT, MST 
     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
     let school = req.body.school
     let stuClass = req.body.class
@@ -1778,11 +1780,11 @@ app.post('/obs-admin/pmt/filter/', authHelper.verifyToken, authHelper.checkIat, 
 app.get('/export', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
     // AUTHORIZATION CHECK - PMT
     if (req.decodedToken.role != 2) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
     // IF NO PERMISSIONS
     if (!req.decodedToken.permissions.includes(5)) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     // Extract the form data from the request
@@ -1825,11 +1827,11 @@ app.get('/export', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
 app.get('/export-bulk', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
     // AUTHORIZATION CHECK - PMT
     if (req.decodedToken.role != 2) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
     // IF NO PERMISSIONS
     if (!req.decodedToken.permissions.includes(5)) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     // Retrieve the bulk data from the request or pass it as a parameter
@@ -1868,11 +1870,11 @@ app.get('/export-bulk', authHelper.verifyToken, authHelper.checkIat, (req, res) 
 app.put('/obs-admin/mst/review/:studentId', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
     // AUTHORIZATION CHECK - PMT, MST 
     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
     // IF NO PERMISSIONS
     if (!req.decodedToken.permissions.includes(7)) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     const studentId = req.params.studentId;
@@ -2160,6 +2162,7 @@ app.post('/checkStudentNRIC', authHelper.verifyToken, authHelper.checkIat, (req,
             }
         });
 });
+
 // delete duplicated student
 app.delete('/deleteStudentForm', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
     if (req.decodedToken.role != 4) {
@@ -2188,7 +2191,12 @@ app.delete('/deleteStudentForm', authHelper.verifyToken, authHelper.checkIat, (r
 
 app.use((error, req, res, next) => {
     if (error) {
-        return res.redirect(`/error?code=${error.status || 500}`)
+        if (req.headers.referer.includes('obs-admin')) {
+            return res.redirect(`/error?code=${error.status || 500}&type=obs-admin`)
+        } else {
+            return res.redirect(`/error?code=${error.status || 500}`)
+        }
+
     }
 });
 
