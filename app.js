@@ -807,7 +807,7 @@ app.post('/parent/login/', (req, res, next) => {
     // Get encrypted studentID from body
     const encrypted = req.body.encrypted;
     // Get password from body
-    const password = req.body.password;
+    const password = req.body.password.toUpperCase();
 
     // Check if encrypted StudentID is valid
     if (encrypted.length != 32 || !encrypted) {
@@ -828,7 +828,7 @@ app.post('/parent/login/', (req, res, next) => {
             // Convert dateofbirth to DD/MM/YYYY (Singapore format)
             result.dateOfBirth = new Date(result.dateOfBirth).toLocaleDateString('en-SG').replace(/\//g, '');
             // Check if password entered is == to DOB + NRIC (password) in database
-            if (password != result.dateOfBirth + result.studentNRIC) {
+            if (password != (result.dateOfBirth + result.studentNRIC).toUpperCase()) {
                 const error = new Error("Invalid URL or password");
                 error.status = 401;
                 throw error;
