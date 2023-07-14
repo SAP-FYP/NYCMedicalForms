@@ -784,10 +784,9 @@ function exportToExcel(applicantName, schoolOrg, classNo, courseDate, formStatus
 
 //Function to export to excel bulk
 function exportToExcelBulk(data) {
-  axios.get("/export-bulk", {
-    params: {
-      data: JSON.stringify(data),
-    },
+  axios.post("/export-bulk", {
+    data: JSON.stringify(data),
+  }, {
     responseType: "blob"
   })
     .then(response => {
@@ -809,9 +808,11 @@ function exportToExcelBulk(data) {
       }
     })
     .catch(error => {
+      // error.response.status === 431
       console.error("Export request failed:", error);
     });
 }
+
 
 const alertContainer = document.getElementById('alertbox');
 let dataAll = [];

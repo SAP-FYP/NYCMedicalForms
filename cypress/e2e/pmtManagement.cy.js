@@ -108,7 +108,7 @@ describe('Export by filtering', () => {
         cy.wait(1000);
         cy.get('input[id=checkBoxTop]').click();
         cy.get('img[id=export-icon]').click()
-        cy.wait(1000);
+        cy.wait(500);
         cy.get('.alert-success').should('be.visible');
         cy.wait(1000);
     }) 
@@ -123,7 +123,7 @@ describe('Approving and rejecting of forms', () => {
         cy.get('button[id=approveBtn-studentid-3]').eq(0).click({force: true})
         cy.get('.alert-success').should('be.visible');
         cy.get('td[id=modalBtn-studentId-3]').eq(0).click({force: true});
-        cy.wait(1000);
+        cy.wait(500);
         cy.get('.alert-success').should('be.visible');
 
         // Put form status back to pending
@@ -142,6 +142,7 @@ describe('Approving and rejecting of forms', () => {
         cy.get('button[id=rejectBtn-studentid-4]').eq(0).click({force: true})
         cy.get('.alert-success').should('be.visible');
         cy.get('td[id=modalBtn-studentId-4]').eq(0).click({force: true});
+        cy.wait(500);
         cy.get('.alert-success').should('be.visible');
         cy.wait(1000);
         cy.get('button[id=closeBtn-studentid-4]').click({force: true})
