@@ -589,6 +589,10 @@ document.addEventListener('DOMContentLoaded', function () {
         studentNRIC = '';
         currentSchool = '';
         acknowledgeCheckBox.checked = false;
+        parentsInfoDiv.style.display = 'none'
+        if (!document.getElementById('checkBoxContainer').classList.contains('mb-5')) {
+            document.getElementById('checkBoxContainer').classList.add('mb-5')
+        }
 
         validities.isStudentNameValid = false;
         validities.isStudentNRICValid = false;
