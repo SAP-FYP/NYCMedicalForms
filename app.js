@@ -2190,9 +2190,14 @@ app.delete('/deleteStudentForm', authHelper.verifyToken, authHelper.checkIat, (r
  */
 
 app.use((error, req, res, next) => {
+    let url = new URL(req.headers.referer)
+    let urlParams = url.searchParams.toString();
+
     if (error) {
         if (req.headers.referer.includes('obs-admin')) {
             return res.redirect(`/error?code=${error.status || 500}&type=obs-admin`)
+        } else if (req.headers.referer.includes('acknowledgement')) {
+            return res.redirect(`/error?code=${error.status || 500}&type=acknowledgement&${urlParams}`)
         } else {
             return res.redirect(`/error?code=${error.status || 500}`)
         }
