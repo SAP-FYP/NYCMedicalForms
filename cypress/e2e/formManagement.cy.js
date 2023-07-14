@@ -72,8 +72,7 @@ describe('Filling in all the form details', () => {
       .trigger('mouseup', 5, 5)
       .trigger('mouseleave');
 
-    cy.get('button[id=submitBtn]').click();
-    cy.wait(7000);
+    cy.get('button[id=submitBtn]').click().wait(3000);
     cy.get('.alert-success').should('be.visible').contains('Submit Succesful');
     cy.wait(1000);
   })
