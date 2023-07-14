@@ -59,7 +59,7 @@ app.use(express.static("public"));
 cronJob.dataRetentionJob();
 
 app.get('/', (req, res) => {
-    res.send(`Server running on port ${port}`)
+    res.redirect(`/login`);
 });
 
 // callback function - directs back to home page
@@ -278,7 +278,7 @@ app.put('/user/password', authHelper.verifyToken, authHelper.checkIat, authHelpe
     const user = req.decodedToken;
 
     if (!user) {
-        return res.redirect('/error?code=401')
+        return res.redirect('/error?code=401&type=obs-admin')
     }
 
     if (!req.body.password.newPassword || !user.email) {
@@ -507,7 +507,7 @@ app.put('/user/profile', authHelper.verifyToken, authHelper.checkIat, authHelper
     const user = req.decodedToken;
 
     if (!user) {
-        return res.redirect('/error?code=401')
+        return res.redirect('/error?code=401&type=obs-admin')
     }
 
     if (!req.body.name || !req.body.number || !user.email) {
