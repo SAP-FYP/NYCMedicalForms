@@ -27,11 +27,8 @@ const cloudinaryModel = require('./model/cloudinary');
 const passwordGenerator = require('./helper/passwordGenerator');
 const momentHelper = require('./helper/epochConverter');
 const cronJob = require('./helper/cron');
-const { env } = require("process");
-const e = require("express");
 
 const app = express();
-const port = process.env.PORT || 3000;
 const JWT_SECRET = process.env.SECRETKEY;
 
 const twilioClient = require('twilio')(process.env.twilioSID, process.env.twilioToken);
@@ -278,6 +275,7 @@ app.put('/user/password', authHelper.verifyToken, authHelper.checkIat, authHelpe
     const user = req.decodedToken;
 
     if (!user) {
+        console.log('UPDATE PASSWORD ERROR: User not found.')
         return res.redirect('/error?code=401&type=obs-admin')
     }
 
@@ -507,6 +505,7 @@ app.put('/user/profile', authHelper.verifyToken, authHelper.checkIat, authHelper
     const user = req.decodedToken;
 
     if (!user) {
+        console.log('UPDATE USER ERROR: User not found.')
         return res.redirect('/error?code=401&type=obs-admin')
     }
 
@@ -1827,51 +1826,51 @@ app.get('/export', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
 app.post('/export-bulk', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
     // AUTHORIZATION CHECK - PMT
     if (req.decodedToken.role != 2) {
-      return res.redirect('/error?code=403&type=obs-admin');
+        return res.redirect('/error?code=403&type=obs-admin');
     }
-  
+
     // IF NO PERMISSIONS
     if (!req.decodedToken.permissions.includes(5)) {
-      return res.redirect('/error?code=403&type=obs-admin');
+        return res.redirect('/error?code=403&type=obs-admin');
     }
-  
+
     // Retrieve the bulk data from the request body
     const data = req.body.data;
-  
+
     const dataArray = JSON.parse(data);
-  
+
     // Create a new worksheet with the formatted data
     const worksheet = XLSX.utils.json_to_sheet(dataArray, {
-      header: [
-        'Name of Applicant',
-        'Organization/School',
-        'Designation/Class',
-        'Course Date',
-        'Form Status',
-      ],
+        header: [
+            'Name of Applicant',
+            'Organization/School',
+            'Designation/Class',
+            'Course Date',
+            'Form Status',
+        ],
     });
-  
+
     // Create a new workbook and add the worksheet to it
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Bulk Data');
-  
+
     // Generate the Excel file buffer
     const excelBuffer = XLSX.write(workbook, {
-      type: 'buffer',
-      bookType: 'xlsx',
+        type: 'buffer',
+        bookType: 'xlsx',
     });
-  
+
     // Set the response headers for downloading the file
     res.setHeader(
-      'Content-Type',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     );
     res.setHeader('Content-Disposition', 'attachment; filename="exported-Bulk.xlsx"');
-  
+
     // Send the Excel file buffer as the response
     res.send(excelBuffer);
-  });
-  
+});
+
 
 //MST Update Submission Comment
 app.put('/obs-admin/mst/review/:studentId', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
