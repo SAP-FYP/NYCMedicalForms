@@ -127,6 +127,35 @@ window.addEventListener('DOMContentLoaded', () => {
                     profileImg.src = user.picUrl
                     picUrl = user.picUrl
                 }
+
+                if (user.role == 1) {
+                    document.getElementById('permission-li').style.opacity = '1';
+                    document.getElementById('user-li').style.opacity = '1';
+                    document.getElementById('form-li').style.opacity = '0.5';
+                    document.getElementById('user-li').onclick = () => {
+                        window.location.href = '/obs-admin/admin/permissions';
+                    }
+                    document.getElementById('user-li').onclick = () => {
+                        window.location.href = '/obs-admin/admin';
+                    }
+                    document.getElementById('form-li').onclick = (e) => {
+                        e.preventDefault();
+                    }
+                } else {
+                    document.getElementById('form-li').style.opacity = '1'
+                    document.getElementById('permission-li').style.opacity = '0.5';
+                    document.getElementById('user-li').style.opacity = '0.5';
+                    document.getElementById('permission-li').onclick = (e) => {
+                        e.preventDefault();
+                    }
+                    document.getElementById('user-li').onclick = (e) => {
+                        e.preventDefault();
+                    }
+                    document.getElementById('form-li').onclick = () => {
+                        window.location.href = '/obs-admin/obs-management';
+
+                    }
+                }
             }
         })
         .catch(handleError)
