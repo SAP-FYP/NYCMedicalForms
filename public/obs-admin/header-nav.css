@@ -20,7 +20,14 @@
 .navbar-nav li {
     display: flex;
     align-items: center;
-    cursor: pointer;
+    cursor: default;
+    transition: ease-in-out 150ms;
+}
+
+.hovered {
+    background-color: rgba(193, 193, 193, 0.159);
+    border-radius: 999px;
+    cursor: pointer !important;
 }
 
 #logout-li {
