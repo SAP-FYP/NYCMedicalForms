@@ -321,12 +321,9 @@ document.addEventListener('DOMContentLoaded', function () {
             body: JSON.stringify(data)
         })
             .then(response => {
-                console.log(response)
                 if (!response.ok) {
-                    console.log('not ok')
                     throw new Error('Upload failed');
                 }
-                console.log('ok')
                 return response.json();
             })
     }
@@ -443,7 +440,6 @@ document.addEventListener('DOMContentLoaded', function () {
             // double check if the entry have the key
             if (allEntry.hasOwnProperty(key)) {
                 const value = allEntry[key];
-                console.log(key + '-----' + value)
                 // check signature
                 if (key === "signatureData") {
                     if (signaturePad.isEmpty()) {
@@ -458,12 +454,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
                 else if (key === "schoolName") {
-                    console.log(value)
+                    
                 }
                 // show error message
                 if (value === "" || value === undefined || value === null) {
                     if (key === "eligibility") {
-                        console.log(value)
                         document.getElementById("checkContainer").classList.add('is-invalid');
                         validities.isCommentValid = false;
                     }
@@ -491,7 +486,6 @@ document.addEventListener('DOMContentLoaded', function () {
         for (const key in validities) {
             const value = validities[key];
             if (!value) {
-                console.log(key + "--------" + value);
                 foundFalse = true;
                 break;
             }
@@ -562,7 +556,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Add click event listener
         li.addEventListener('click', (event) => {
             schoolName.textContent = event.target.textContent;
-            currentSchool = event.target.textContent;
+            currentSchool = schools[index];
             if (schoolName.classList.contains('is-invalid')) {
                 schoolName.classList.remove('is-invalid');
                 schoolName.classList.add('is-valid');
@@ -674,15 +668,11 @@ document.addEventListener('DOMContentLoaded', function () {
     sectionOneContainer.addEventListener('click', (event) => {
         form.style.display = 'none';
         document.getElementById('infoDiv').style.display = 'block';
-        console.log(form.style.display);
-        console.log(document.getElementById('infoDiv').style.display);
     });
 
     sectionTwoContainer.addEventListener('click', (event) => {
         form.style.display = 'block';
         document.getElementById('infoDiv').style.display = 'none';
-        console.log(form.style.display);
-        console.log(document.getElementById('infoDiv').style.display);
     });
 
     // checkbox onclick
@@ -860,7 +850,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     //Check MCR Availablability
     availabilityBtn.addEventListener('click', (event) => {
-        2
         event.preventDefault();
         if (validities.isDoctorMCRValid) {
             // check if doctorMCR input is empty or not
@@ -971,8 +960,8 @@ document.addEventListener('DOMContentLoaded', function () {
         loadingTempClone.querySelector('div').className = 'loadingMsg m-3';
         schoolDropDownMenu.appendChild(loadingTempClone);
         schools = [];
-        if (currentSchool === "Select School") {
-
+        if (currentSchool === "" || currentSchool === undefined || currentSchool === null) {
+            
         }
     });
 
@@ -1013,7 +1002,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Proceed submission
         if (validateValidities(validities)) {
-            console.log("aaaaaaaaaaaaaaaaaaaaaaa" + allEntry.studentNRIC.substring(studentNRIC.length - 4));
             // check student duplication
             checkStudentDuplication(allEntry.studentNRIC.substring(studentNRIC.length - 4))
                 .then(data => {
@@ -1041,7 +1029,6 @@ document.addEventListener('DOMContentLoaded', function () {
                             .then((data) => {
                                 signatureCredentials = `${data.url};${today};${doctorNameInput.value}`;
                                 studentEntry.studentNRIC = studentNRIC.substring(studentNRIC.length - 4);
-                                console.log("StudentNRIC is " + studentEntry.studentNRIC);
                                 doctorEntry.signatureData = signatureCredentials;
                                 return Promise.all([postDoctorInfo(doctorEntry), postStudentInfo(studentEntry)]);
                             })
@@ -1086,7 +1073,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         // show loading modal
                         loadingModal.show();
                         studentEntry.studentNRIC = studentNRIC.substring(studentNRIC.length - 4);
-                        console.log("StudentNRIC is " + studentEntry.studentNRIC);
                         postStudentInfo(studentEntry)
                             .then(data => {
                                 studentId = data[0].insertId;

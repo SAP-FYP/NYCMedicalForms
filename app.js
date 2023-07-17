@@ -59,7 +59,7 @@ app.use(express.static("public"));
 cronJob.dataRetentionJob();
 
 app.get('/', (req, res) => {
-    res.send(`Server running on port ${port}`)
+    res.redirect(`/login`);
 });
 
 // callback function - directs back to home page
@@ -278,7 +278,7 @@ app.put('/user/password', authHelper.verifyToken, authHelper.checkIat, authHelpe
     const user = req.decodedToken;
 
     if (!user) {
-        return res.redirect('/error?code=401')
+        return res.redirect('/error?code=401&type=obs-admin')
     }
 
     if (!req.body.password.newPassword || !user.email) {
@@ -507,7 +507,7 @@ app.put('/user/profile', authHelper.verifyToken, authHelper.checkIat, authHelper
     const user = req.decodedToken;
 
     if (!user) {
-        return res.redirect('/error?code=401')
+        return res.redirect('/error?code=401&type=obs-admin')
     }
 
     if (!req.body.name || !req.body.number || !user.email) {
@@ -1824,47 +1824,54 @@ app.get('/export', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
 });
 
 // Endpoint for exporting the Excel file in bulk
-app.get('/export-bulk', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
+app.post('/export-bulk', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
     // AUTHORIZATION CHECK - PMT
     if (req.decodedToken.role != 2) {
-        return res.redirect('/error?code=403&type=obs-admin')
+      return res.redirect('/error?code=403&type=obs-admin');
     }
+  
     // IF NO PERMISSIONS
     if (!req.decodedToken.permissions.includes(5)) {
-        return res.redirect('/error?code=403&type=obs-admin')
+      return res.redirect('/error?code=403&type=obs-admin');
     }
-
-    // Retrieve the bulk data from the request or pass it as a parameter
-    const data = req.query.data;
-
+  
+    // Retrieve the bulk data from the request body
+    const data = req.body.data;
+  
     const dataArray = JSON.parse(data);
-
+  
     // Create a new worksheet with the formatted data
     const worksheet = XLSX.utils.json_to_sheet(dataArray, {
-        header: [
-            "Name of Applicant",
-            "Organization/School",
-            "Designation/Class",
-            "Course Date",
-            "Form Status",
-        ],
+      header: [
+        'Name of Applicant',
+        'Organization/School',
+        'Designation/Class',
+        'Course Date',
+        'Form Status',
+      ],
     });
-
+  
     // Create a new workbook and add the worksheet to it
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Bulk Data");
-
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Bulk Data');
+  
     // Generate the Excel file buffer
-    const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-
+    const excelBuffer = XLSX.write(workbook, {
+      type: 'buffer',
+      bookType: 'xlsx',
+    });
+  
     // Set the response headers for downloading the file
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    );
     res.setHeader('Content-Disposition', 'attachment; filename="exported-Bulk.xlsx"');
-
-
+  
     // Send the Excel file buffer as the response
     res.send(excelBuffer);
-});
+  });
+  
 
 //MST Update Submission Comment
 app.put('/obs-admin/mst/review/:studentId', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
@@ -2190,9 +2197,14 @@ app.delete('/deleteStudentForm', authHelper.verifyToken, authHelper.checkIat, (r
  */
 
 app.use((error, req, res, next) => {
+    let url = new URL(req.headers.referer)
+    let urlParams = url.searchParams.toString();
+
     if (error) {
         if (req.headers.referer.includes('obs-admin')) {
             return res.redirect(`/error?code=${error.status || 500}&type=obs-admin`)
+        } else if (req.headers.referer.includes('acknowledgement')) {
+            return res.redirect(`/error?code=${error.status || 500}&type=acknowledgement&${urlParams}`)
         } else {
             return res.redirect(`/error?code=${error.status || 500}`)
         }
