@@ -39,12 +39,14 @@ document.addEventListener('DOMContentLoaded', function () {
     let signaturePad = new SignaturePad(canvas);
     const availabilityBtn = document.getElementById('availabilityBtn');
     const clearSignatureBtn = document.getElementById('clearSignatureBtn');
+    // modals
     const loadingModal = new bootstrap.Modal('#loadingModal', {
         keyboard: false
     });
     const deleteStudentModal = new bootstrap.Modal('#deleteStudentModal', {
         keyboard: false
     });
+    // alertBox
     const alertContainer = document.getElementById('alertbox');
     // Section divs
     const sectionOneContainer = document.getElementById('sectionOneContainer');
@@ -454,7 +456,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
                 else if (key === "schoolName") {
-                    
+                    if(value === "" || key === undefined || key === null){
+                        validities.isSchoolValid = false;
+                    }
                 }
                 // show error message
                 if (value === "" || value === undefined || value === null) {
@@ -691,7 +695,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Input Validation event listners:
+    // Input listners:
     studentNameInput.addEventListener('input', (event) => {
         if (validateName(studentNameInput, studentNameFeedback, event.target.value)) {
             validities.isStudentNameValid = true;
@@ -710,7 +714,7 @@ document.addEventListener('DOMContentLoaded', function () {
             studentNRIC = studentNRIC.substring(0, studentNRIC.length - difference);
         }
         if (nric.length > 4) {
-            event.target.value = '*'.repeat(4) + nric.slice(4);
+            event.target.value = '*'.repeat(5) + nric.slice(5);
         } else {
             event.target.value = '*'.repeat(nric.length);
         }
@@ -961,7 +965,7 @@ document.addEventListener('DOMContentLoaded', function () {
         schoolDropDownMenu.appendChild(loadingTempClone);
         schools = [];
         if (currentSchool === "" || currentSchool === undefined || currentSchool === null) {
-            
+            schoolName.classList.add('is-invalid');
         }
     });
 
