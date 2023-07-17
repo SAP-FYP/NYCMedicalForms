@@ -27,6 +27,7 @@ describe('Reviewing forms', () => {
         cy.get('td[id=modalBtn-studentId-1]').eq(0).click();
         cy.get('textarea[id=mst-review]').click().type('change review hello');
         cy.get('div[class="btn btn-primary btn-sm submitReviewBtn"]').contains('Submit Review').click()
+        cy.wait(1000);
         cy.get('.alert-success').should('be.visible');
     }) 
 
@@ -35,6 +36,7 @@ describe('Reviewing forms', () => {
         cy.get('td[id=modalBtn-studentId-1]').eq(0).click();
         cy.get('textarea[id=mst-review]').click().type('{selectall}{backspace}');
         cy.get('div[class="btn btn-primary btn-sm submitReviewBtn"]').contains('Submit Review').click()
+        cy.wait(1000);
         cy.get('.alert-warning').should('be.visible');
     }) 
 })

@@ -1,9 +1,9 @@
 const cloudinary = require('cloudinary').v2;
 
 cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET
+    cloud_name: process.env.cloudinary_name,
+    api_key: process.env.cloudinary_api_key,
+    api_secret: process.env.cloudinary_api_secret
 });
 
 // UPLOAD PROFILE PIC
@@ -31,9 +31,9 @@ module.exports.uploadImage = function uploadImage(image) {
 // Signature Upload 
 module.exports.uploadSignature = function uploadSignature(file) {
     cloudinary.config({
-        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-        api_key: process.env.CLOUDINARY_API_KEY,
-        api_secret: process.env.CLOUDINARY_API_SECRET
+        cloud_name: process.env.cloudinary_name,
+        api_key: process.env.cloudinary_api_key,
+        api_secret: process.env.cloudinary_api_secret
     });
     return new Promise((resolve, reject) => {
         if (file) {

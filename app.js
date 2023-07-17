@@ -28,6 +28,7 @@ const passwordGenerator = require('./helper/passwordGenerator');
 const momentHelper = require('./helper/epochConverter');
 const cronJob = require('./helper/cron');
 const { env } = require("process");
+const e = require("express");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -58,7 +59,7 @@ app.use(express.static("public"));
 cronJob.dataRetentionJob();
 
 app.get('/', (req, res) => {
-    res.send(`Server running on port ${port}`)
+    res.redirect(`/login`);
 });
 
 // callback function - directs back to home page
@@ -277,7 +278,7 @@ app.put('/user/password', authHelper.verifyToken, authHelper.checkIat, authHelpe
     const user = req.decodedToken;
 
     if (!user) {
-        return res.redirect('/error?code=401')
+        return res.redirect('/error?code=401&type=obs-admin')
     }
 
     if (!req.body.password.newPassword || !user.email) {
@@ -506,7 +507,7 @@ app.put('/user/profile', authHelper.verifyToken, authHelper.checkIat, authHelper
     const user = req.decodedToken;
 
     if (!user) {
-        return res.redirect('/error?code=401')
+        return res.redirect('/error?code=401&type=obs-admin')
     }
 
     if (!req.body.name || !req.body.number || !user.email) {
@@ -675,6 +676,7 @@ app.get('/form/:encrypted', parentAuthHelper.verifyToken, parentAuthHelper.valid
             return res.status(error.status || 500).json({ error: error.message });
         })
 });
+
 app.post('/parent-sign-upload', parentAuthHelper.verifyToken, (req, res) => {
     const file = req.body.parentSignature;
     cloudinaryModel.uploadSignature(file)
@@ -732,15 +734,7 @@ app.post('/send-email', authHelper.verifyToken, authHelper.checkIat, (req, res) 
         to: email,
         subject: "Require Parent's Acknowledgement: New Changes in Your Child's Medical Condition",
         from: 'sg.outwardbound@gmail.com',
-        body: `<p>Dear Parents,
-        We hope this email finds you and your family in good health and high spirits. As part of our ongoing commitment to provide the best care for your children, we would like to inform you about some important updates regarding their medical conditions. <br> <br>
-        At our recent healthcare evaluation, we have made significant progress in understanding and managing your child's medical condition. To ensure that our records are up to date, we kindly request your cooperation in acknowledging the new changes in your child's medical condition by clicking on the following link: form-obs.onrender.com/acknowledgement/?encrypted=${encryptedStudentId}<br> <br>
-        By clicking on the link, you will confirm that you have received and reviewed the updates related to your child's health. Your acknowledgment will help us ensure that our information is accurate and that we can continue to provide the highest quality of care. <br> <br>
-        Rest assured that all the information you provide will remain strictly confidential and will only be used for healthcare purposes. We adhere to the highest standards of privacy and data protection, in compliance with applicable laws and regulations. <br> <br>
-        If you have any questions or require further assistance, please do not hesitate to reach out to our dedicated support team at nyc_enquiries@nyc.gov.sg. We are here to address any concerns you may have and guide you through the process. <br> <br>
-        Thank you for your attention to this matter and for entrusting us with the care of your precious child. Together, we can make a positive impact on their health and future. <br>
-        Warm regards, <br>
-        National Youth Council in affiliation with Outward Bound Singapore</p>`,
+        body: `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Important Medical Updates</title><style>body{font-family:Arial,sans-serif;padding:20px;background-color:#f5f5f5}.container{max-width:600px;margin:0 auto;background-color:#fff;padding:20px;border-radius:5px;box-shadow:0 2px 5px rgba(0,0,0,.1)}.logo{text-align:left;margin-bottom:40px}.logo img{max-width:300px}.message{margin-bottom:20px;font-size:16px}.btn{display:inline-block;padding:10px 20px;background-color:#007bff;color:#fff;text-decoration:none;border-radius:5px;font-weight:700}.btn:hover{background-color:#0056b3}.footer{text-align:center;color:#888;font-size:14px;margin-top:20px;border-top:1px solid #ccc;padding-top:20px}.footer hr{margin-bottom:10px}.footer p{margin-bottom:10px}</style></head><body><div class="container"><div class="logo"><img src="https://res.cloudinary.com/sp-esde-2100030/image/upload/v1688051640/obs-logo_pi70gy.png" alt="Logo"></div><div class="message"><p>Dear Parents,</p><p>We hope this email finds you and your family in good health and high spirits. As part of our ongoing commitment to provide the best care for your children, we would like to inform you about some important updates regarding their medical conditions.</p><br><p>At our recent healthcare evaluation, we have made significant progress in understanding and managing your child's medical condition. To ensure that our records are up to date, we kindly request your cooperation in acknowledging the new changes in your child's medical condition by clicking on the following link:</p><p><a class="btn" href="form-obs.onrender.com/acknowledgement/?encrypted=${encryptedStudentId}">Click here to acknowledge the updates</a></p><br><p>By clicking on the link, you will confirm that you have received and reviewed the updates related to your child's health. Your acknowledgment will help us ensure that our information is accurate and that we can continue to provide the highest quality of care.</p><br><p>Rest assured that all the information you provide will remain strictly confidential and will only be used for healthcare purposes. We adhere to the highest standards of privacy and data protection, in compliance with applicable laws and regulations.</p><br><p>If you have any questions or require further assistance, please do not hesitate to reach out to our dedicated support team at nyc_enquiries@nyc.gov.sg. We are here to address any concerns you may have and guide you through the process.</p><br><p>Thank you for your attention to this matter and for entrusting us with the care of your precious child. Together, we can make a positive impact on their health and future.</p><p>Warm regards,</p><p>National Youth Council in affiliation with Outward Bound Singapore</p></div><div class="footer"><p>This email was sent to you by the Administrative Team. If you have any questions, please contact our support team.</p><p>© National Youth Council | Outward Bound Singapore.</p></div></div></body></html>`
     };
 
     // Send the email using Elastic Email SDK
@@ -815,7 +809,7 @@ app.post('/parent/login/', (req, res, next) => {
     // Get encrypted studentID from body
     const encrypted = req.body.encrypted;
     // Get password from body
-    const password = req.body.password;
+    const password = req.body.password.toUpperCase();
 
     // Check if encrypted StudentID is valid
     if (encrypted.length != 32 || !encrypted) {
@@ -836,7 +830,7 @@ app.post('/parent/login/', (req, res, next) => {
             // Convert dateofbirth to DD/MM/YYYY (Singapore format)
             result.dateOfBirth = new Date(result.dateOfBirth).toLocaleDateString('en-SG').replace(/\//g, '');
             // Check if password entered is == to DOB + NRIC (password) in database
-            if (password != result.dateOfBirth + result.studentNRIC) {
+            if (password != (result.dateOfBirth + result.studentNRIC).toUpperCase()) {
                 const error = new Error("Invalid URL or password");
                 error.status = 401;
                 throw error;
@@ -980,7 +974,7 @@ app.post('/obs-admin/newuser', authHelper.verifyToken, authHelper.checkIat, (req
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     const generatedPassword = passwordGenerator.generatePassword();
@@ -1056,7 +1050,7 @@ app.get('/obs-admin/users/:search/:limit/:offset', authHelper.verifyToken, authH
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     let searchInput = ""
@@ -1088,7 +1082,7 @@ app.get('/obs-admin/permission/groups/:search/:limit/:offset', authHelper.verify
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     let searchInput = ""
@@ -1123,7 +1117,7 @@ app.get('/obs-admin/permission', authHelper.verifyToken, authHelper.checkIat, (r
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     return adminModel
@@ -1146,7 +1140,7 @@ app.get('/obs-admin/roles', authHelper.verifyToken, authHelper.checkIat, (req, r
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     return adminModel
@@ -1169,7 +1163,7 @@ app.post('/obs-admin/permission/groups', authHelper.verifyToken, authHelper.chec
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     const newPermGroup = {
@@ -1210,7 +1204,7 @@ app.put('/obs-admin/permission/groups', authHelper.verifyToken, authHelper.check
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     const permGroup = {
@@ -1261,7 +1255,7 @@ app.delete('/obs-admin/permission/groups/:groupId', authHelper.verifyToken, auth
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     const groupId = req.params.groupId
@@ -1301,7 +1295,7 @@ app.delete('/obs-admin/permission/groups', authHelper.verifyToken, authHelper.ch
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     const { groupIds } = req.body;
@@ -1341,7 +1335,7 @@ app.put('/obs-admin/user', authHelper.verifyToken, authHelper.checkIat, (req, re
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     const user = {
@@ -1387,7 +1381,7 @@ app.put('/obs-admin/delete/user/:email', authHelper.verifyToken, authHelper.chec
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     const user = {
@@ -1422,7 +1416,7 @@ app.put('/obs-admin/delete/user', authHelper.verifyToken, authHelper.checkIat, (
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     const { users } = req.body;
@@ -1455,7 +1449,7 @@ app.put('/obs-admin/disable/user/:email/:status', authHelper.verifyToken, authHe
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     const user = {
@@ -1491,7 +1485,7 @@ app.put('/obs-admin/disable/user', authHelper.verifyToken, authHelper.checkIat, 
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     const { users } = req.body;
@@ -1524,7 +1518,7 @@ app.post('/obs-admin/reset/:email', authHelper.verifyToken, authHelper.checkIat,
     try {
         // AUTHORIZATION CHECK - ADMIN
         if (req.decodedToken.role !== 1) {
-            return res.redirect('/error?code=403');
+            return res.redirect('/error?code=403&type=obs-admin');
         }
 
         const { email } = req.params;
@@ -1589,11 +1583,11 @@ app.post('/obs-admin/reset/:email', authHelper.verifyToken, authHelper.checkIat,
 app.get('/obs-admin/pmt/all', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
     // AUTHORIZATION CHECK - PMT, MST 
     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
     // IF NO PERMISSIONS
     if (!req.decodedToken.permissions.includes(1)) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
     return pmtModel
         .retrieveAllSubmissions()
@@ -1616,11 +1610,11 @@ app.get('/obs-admin/pmt/:studentId', authHelper.verifyToken, authHelper.checkIat
     const studentId = req.params.studentId;
     // AUTHORIZATION CHECK - PMT, MST
     if (req.decodedToken.role !== 2 && req.decodedToken.role !== 3) {
-        return res.redirect('/error?code=403');
+        return res.redirect('/error?code=403&type=obs-admin');
     }
     // IF NO PERMISSIONS
     if (!req.decodedToken.permissions.includes(1)) {
-        return res.redirect('/error?code=403');
+        return res.redirect('/error?code=403&type=obs-admin');
     }
 
     return pmtModel.retrieveSubmission(studentId)
@@ -1655,7 +1649,7 @@ app.put('/obs-admin/pmt/:studentId', authHelper.verifyToken, authHelper.checkIat
     const formStatus = req.body.formStatus;
     // IF NO PERMISSIONS
     if (!req.decodedToken.permissions.includes(2)) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
     return pmtModel
         .updateSubmissionStatus(formStatus, studentId)
@@ -1682,7 +1676,7 @@ app.get('/obs-admin/pmt/search/:search', authHelper.verifyToken, authHelper.chec
     const searchInput = req.params.search;
     // AUTHORIZATION CHECK - PMT, MST 
     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     return pmtModel
@@ -1702,7 +1696,7 @@ app.get('/obs-admin/pmt/search/:search', authHelper.verifyToken, authHelper.chec
 app.get('/get-school-filter', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
     // AUTHORIZATION CHECK - PMT, MST 
     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
     return doctorFormModel
         .getSchoolsFilter()
@@ -1723,7 +1717,7 @@ app.get('/get-school-filter', authHelper.verifyToken, authHelper.checkIat, (req,
 app.get('/getEligibility', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
     // AUTHORIZATION CHECK - PMT, MST 
     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
     return doctorFormModel
         .getEligibility()
@@ -1744,7 +1738,7 @@ app.get('/getEligibility', authHelper.verifyToken, authHelper.checkIat, (req, re
 app.post('/obs-admin/pmt/filter/', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
     // AUTHORIZATION CHECK - PMT, MST 
     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
     let school = req.body.school
     let stuClass = req.body.class
@@ -1786,11 +1780,11 @@ app.post('/obs-admin/pmt/filter/', authHelper.verifyToken, authHelper.checkIat, 
 app.get('/export', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
     // AUTHORIZATION CHECK - PMT
     if (req.decodedToken.role != 2) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
     // IF NO PERMISSIONS
     if (!req.decodedToken.permissions.includes(5)) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     // Extract the form data from the request
@@ -1830,57 +1824,64 @@ app.get('/export', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
 });
 
 // Endpoint for exporting the Excel file in bulk
-app.get('/export-bulk', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
+app.post('/export-bulk', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
     // AUTHORIZATION CHECK - PMT
     if (req.decodedToken.role != 2) {
-        return res.redirect('/error?code=403')
+      return res.redirect('/error?code=403&type=obs-admin');
     }
+  
     // IF NO PERMISSIONS
     if (!req.decodedToken.permissions.includes(5)) {
-        return res.redirect('/error?code=403')
+      return res.redirect('/error?code=403&type=obs-admin');
     }
-
-    // Retrieve the bulk data from the request or pass it as a parameter
-    const data = req.query.data;
-
+  
+    // Retrieve the bulk data from the request body
+    const data = req.body.data;
+  
     const dataArray = JSON.parse(data);
-
+  
     // Create a new worksheet with the formatted data
     const worksheet = XLSX.utils.json_to_sheet(dataArray, {
-        header: [
-            "Name of Applicant",
-            "Organization/School",
-            "Designation/Class",
-            "Course Date",
-            "Form Status",
-        ],
+      header: [
+        'Name of Applicant',
+        'Organization/School',
+        'Designation/Class',
+        'Course Date',
+        'Form Status',
+      ],
     });
-
+  
     // Create a new workbook and add the worksheet to it
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Bulk Data");
-
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Bulk Data');
+  
     // Generate the Excel file buffer
-    const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-
+    const excelBuffer = XLSX.write(workbook, {
+      type: 'buffer',
+      bookType: 'xlsx',
+    });
+  
     // Set the response headers for downloading the file
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    );
     res.setHeader('Content-Disposition', 'attachment; filename="exported-Bulk.xlsx"');
-
-
+  
     // Send the Excel file buffer as the response
     res.send(excelBuffer);
-});
+  });
+  
 
 //MST Update Submission Comment
 app.put('/obs-admin/mst/review/:studentId', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
     // AUTHORIZATION CHECK - PMT, MST 
     if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
     // IF NO PERMISSIONS
     if (!req.decodedToken.permissions.includes(7)) {
-        return res.redirect('/error?code=403')
+        return res.redirect('/error?code=403&type=obs-admin')
     }
 
     const studentId = req.params.studentId;
@@ -2168,6 +2169,7 @@ app.post('/checkStudentNRIC', authHelper.verifyToken, authHelper.checkIat, (req,
             }
         });
 });
+
 // delete duplicated student
 app.delete('/deleteStudentForm', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
     if (req.decodedToken.role != 4) {
@@ -2195,8 +2197,18 @@ app.delete('/deleteStudentForm', authHelper.verifyToken, authHelper.checkIat, (r
  */
 
 app.use((error, req, res, next) => {
+    let url = new URL(req.headers.referer)
+    let urlParams = url.searchParams.toString();
+
     if (error) {
-        return res.redirect(`/error?code=${error.status || 500}`)
+        if (req.headers.referer.includes('obs-admin')) {
+            return res.redirect(`/error?code=${error.status || 500}&type=obs-admin`)
+        } else if (req.headers.referer.includes('acknowledgement')) {
+            return res.redirect(`/error?code=${error.status || 500}&type=acknowledgement&${urlParams}`)
+        } else {
+            return res.redirect(`/error?code=${error.status || 500}`)
+        }
+
     }
 });
 

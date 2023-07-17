@@ -7,6 +7,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const url = window.location.search;
     const searchParams = new URLSearchParams(url);
     const type = searchParams.get("type");
+    const encrypt = searchParams.get("encrypted");
 
     const actionBtnHandler = (text, display) => {
         actionBtn.textContent = text;
@@ -15,7 +16,13 @@ window.addEventListener('DOMContentLoaded', () => {
         actionBtn.addEventListener('click', (e) => {
             e.preventDefault();
             if (code == 401) {
-                type ? window.location.replace(`/${type}/login`) : window.location.replace(`/login`);
+                if (encrypt && type) {
+                    window.location.replace(`/${type}/?encrypted=${encrypt}`)
+                } else if (!encrypt && type) {
+                    window.location.replace(`/${type}/login`)
+                } else {
+                    window.location.replace(`/login`)
+                }
             } else {
                 history.back();
             }

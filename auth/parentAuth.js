@@ -16,7 +16,7 @@ module.exports.verifyToken = function verifyToken(req, res, next) {
         jwt.verify(token, JWT_SECRET, { algorithm: ['HS256'] }, function (err, decodedPayload) {
             if (err) {
                 // FAIL CHECK
-                res.clearCookie('jwt');
+                res.clearCookie('parentJWT');
                 const error = new Error("Not authorized! Reason(Invalid token)");
                 error.status = 403;
                 console.log('Error: ' + error.message);
@@ -52,6 +52,6 @@ module.exports.validateUser = function validateUser(req, res, next) {
 }
 
 module.exports.validateIfAcknowledged = function validateIfAcknowledged(req, res, next) {
-    
+
 
 }
