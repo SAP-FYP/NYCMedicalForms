@@ -55,12 +55,12 @@
                         </li>
                         <li id="permission-li"><img id="navbar-icons-permission"
                                 src="../../assets/images/permission-disabled-icon.png"><a
-                                class="navbar-label">Permissions</a></li>
+                                class="navbar-label navbar-label-perms">Permissions</a></li>
                         <li id="user-li"><img id="navbar-icons-profile"
-                                src="../../assets/images/profile-disabled-icon.png"><a class="navbar-label">Users</a>
+                                src="../../assets/images/profile-disabled-icon.png"><a class="navbar-label navbar-label-users">Users</a>
                         </li>
                         <li id="form-li"><img id="navbar-icons-form" src="../../assets/images/form-enabled-icon.png"><a
-                                class="navbar-label">Forms</a></li>
+                                class="navbar-label navbar-label-forms">Forms</a></li>
                         <li id="logout-li"><img id="navbar-icons-logout" src="../../assets/images/logout-icon.png"><a
                                 class="navbar-label">Logout</a></li>
                     </ul>
@@ -249,15 +249,7 @@
                             <a id="export-btn-filter">
                                 
                             </a>
-                            <a id="export-btn-filter-school">
-
-                            </a>
-                            <a id="export-btn-filter-course-date">
-
-                            </a>
-                            <a id="export-btn-filter-eligibility">
-
-                            </a>
+                           
                         </div>
                     </div>
                 </div>
@@ -265,7 +257,10 @@
                     <table>
                         <thead>
                             <th>
-                                <input type="checkbox" id="checkBoxTop">
+                                <div class="header-container">
+                                    <input type="checkbox" id="checkBoxTop">
+                                    <i class="material-icons arrow-icon">arrow_drop_down</i>
+                                  </div>
                             </th>
                             <th>NRIC</th>
                             <th>FULL NAME</th>
@@ -539,7 +534,7 @@
                                             <div class="col-12 mb-3 text-end">
                                                 <a>
                                                     <button
-                                                        class="btn btn-primary btn-lg exportBtn d-none">Export</button>
+                                                        class="btn btn-primary btn-lg exportBtn d-none"><img src="../../assets/images/export-btn-form.png" id="export-btn-img"></button>
                                                 </a>
                                             </div>
                                         </div>
@@ -565,6 +560,13 @@
                                                 <div class="col-12 text-center mb-3">
                                                     <div class="btn btn-primary btn-sm submitReviewBtn d-none">Submit
                                                         Review</div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-12 mb-3">
+                                                    <div class="form-group" id="undoStatusContainer">
+                                                        
+                                                    </div>
                                                 </div>
                                             </div>
                                         </form>

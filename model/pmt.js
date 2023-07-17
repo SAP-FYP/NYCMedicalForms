@@ -2,7 +2,7 @@ const conn = require("../database");
 const { query } = conn;
 
 module.exports.retrieveAllSubmissions = function retrieveAllSubmissions() {
-    const sql = `SELECT F.formId, S.studentId, S.studentNRIC, S.nameOfStudent, S.class, S.school, F.eligibility, F.courseDate, F.formStatus
+    const sql = `SELECT F.formId, S.studentId, S.studentNRIC, S.nameOfStudent, S.class, S.school, F.eligibility, F.courseDate, F.formStatus, F.comments, F.review
     FROM form F
     LEFT JOIN student S ON F.studentId = S.studentId
                     ;`;
@@ -39,11 +39,9 @@ module.exports.retrieveSubmission = function retrieveSubmission(studentId) {
 };
 
 module.exports.retrieveSubmissionBySearch = function retrieveSubmissionBySearch(searchInput) {
-  const sql = `SELECT *
-    FROM form F
-    LEFT JOIN student S ON F.studentId = S.studentId
-    LEFT JOIN parentAcknowledgement PA ON F.studentId = PA.studentId
-    RIGHT JOIN doctor D ON F.doctorMCR = D.doctorMCR
+  const sql = `SELECT F.formId, S.studentId, S.studentNRIC, S.nameOfStudent, S.class, S.school, F.eligibility, F.courseDate, F.formStatus, F.comments, F.review
+  FROM form F
+  LEFT JOIN student S ON F.studentId = S.studentId
     WHERE S.nameOfStudent LIKE ?`;
   return query(sql, `%${searchInput}%`)
     .then((result) => {

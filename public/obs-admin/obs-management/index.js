@@ -88,6 +88,14 @@ function createExportButtonAll(id) {
   exportIcon.src = '../../assets/images/export-to-excel-icon.png';
   exportIcon.id = id;
   exportIcon.alt = 'export-icon';
+  exportIcon.addEventListener('click', function() {
+    exportIcon.style.transform = 'scale(0.9)';
+    exportIcon.style.transition = 'transform 0.2s ease-in-out';
+  
+    setTimeout(function() {
+      exportIcon.style.transform = 'scale(1)';
+    }, 200);
+  });
   return exportIcon;
 }
 // Function to populate row data
@@ -118,6 +126,9 @@ function populateRowData(clonedRowTemplate, formData, index, formattedDate) {
   formattedDateCell.textContent = formattedDate;
 
   const formStatusValue = formData[index].formStatus;
+  const mstReviewCell = formData[index].review;
+  const docReviewCell = formData[index].comments;
+
 
   return {
     studentNRICCell,
@@ -127,12 +138,14 @@ function populateRowData(clonedRowTemplate, formData, index, formattedDate) {
     eligibilityCell,
     formattedDateCell,
     formStatusValue,
-    studentId
+    studentId,
+    mstReviewCell,
+    docReviewCell,
   };
 }
 
 // Function to handle checkboxes
-function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, exportContainer, exportIcon, targetDataArray, i, formData) {
+function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportContainer, exportIcon, targetDataArray, i, formData) {
   const formId = formData[i].formId;
   const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
   const checkBoxTop = document.querySelector('#checkBoxTop');
@@ -162,13 +175,17 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
       const classNo = classCell.textContent;
       const courseDate = formattedDateCell.textContent;
       const formStatus = formStatusValue;
+      const mstReview = mstReviewCell;
+      const docReview = docReviewCell;
 
       const data = {
         "Name of Applicant": applicantName,
         "Organization/School": schoolOrg,
         "Designation/Class": classNo,
         "Course Date": courseDate,
-        "Form Status": formStatus
+        "Form Status": formStatus,
+        "MST Review": mstReview,
+        "Doctor Review": docReview
       };
 
       if (isChecked) {
@@ -200,13 +217,17 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
       const classNo = classCell.textContent;
       const courseDate = formattedDateCell.textContent;
       const formStatus = formStatusValue;
+      const mstReview = mstReviewCell;
+      const docReview = docReviewCell;
 
       const data = {
         "Name of Applicant": applicantName,
         "Organization/School": schoolOrg,
         "Designation/Class": classNo,
         "Course Date": courseDate,
-        "Form Status": formStatus
+        "Form Status": formStatus,
+        "MST Review": mstReview,
+        "Doctor Review": docReview
       };
 
       if (checkbox.checked) {
@@ -298,6 +319,7 @@ function openModal(studentId, modalBtns) {
       const rejectBtn = document.querySelector(".rejectBtn");
       const closeBtn = document.querySelector(".closeBtn");
       const exportBtns = document.querySelectorAll(".exportBtn");
+      
       exportBtns.forEach((exportBtn) => {
         //for cypress testing
         exportBtn.setAttribute("id", "exportBtn-studentid-" + studentId);
@@ -315,6 +337,7 @@ function openModal(studentId, modalBtns) {
           });
         }
       });
+      
 
       function handleExportClick(e) {
         e.preventDefault(); // prevent the default form submission behavior
@@ -325,10 +348,12 @@ function openModal(studentId, modalBtns) {
         const classNo = formData.class;
         const courseDate = formattedCourseDate;
         const formStatus = formData.formStatus;
+        const mstReview = formData.review
+        const docReview = formData.comments
 
         // Call the exportData function with the form data
-        exportToExcel(applicantName, schoolOrg, classNo, courseDate, formStatus);
-       
+        exportToExcel(applicantName, schoolOrg, classNo, courseDate, formStatus, mstReview, docReview);
+
         // Remove the event listener to avoid repeated downloads
         exportBtns.forEach((exportBtn) => {
           exportBtn.removeEventListener("click", handleExportClick);
@@ -379,9 +404,12 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
 
   const parentContainer = document.querySelector('#parent-signature-container');
   const canvas = document.createElement('canvas');
+  const formModal = document.querySelector('#staticBackdrop');
+  const isFormModalOpen = formModal.classList.contains('show');
   if (parentSignatureImg) {
     parentSignatureInput.setAttribute('src', parentSignatureImg);
-  } else {
+    parentSignatureInput.style.display = 'block';
+  } else if (isFormModalOpen){
     // Hide the parentSignatureInput element
 
     parentSignatureInput.style.display = 'none';
@@ -450,17 +478,22 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
   // }
 
   const pillPending = document.querySelector('.changePill');
+  const undoStatusContainer = document.querySelector('#undoStatusContainer');
+  const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
+  const apprRejContainer = document.querySelector('#apprRejContainer');
+
   //if theres permission
   if (userPermissions.includes(2) || userPermissions.includes(3)) {
     //if Pending create heading and approve/reject buttons
-    if (formData.formStatus === "Pending") {
-      const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
+
+    if (isFormModalOpen && formData.formStatus === "Pending") {
+      
       // Create the h4 element
       const h4 = document.createElement('h4');
       h4.textContent = 'Partnership Management Team:';
       pmtHeadingForm.appendChild(h4);
 
-      const apprRejContainer = document.querySelector('#apprRejContainer');
+
       // Create the label element
       const label = document.createElement('label');
       label.setAttribute('for', 'medical_check');
@@ -513,7 +546,11 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
       apprRejContainer.appendChild(buttonContainerDiv);
 
     }
-    
+    //if Approved create undo button
+    if (formData.formStatus === "Approved" || formData.formStatus === "Rejected") {
+     undoStatusContainer.innerHTML = `<div class="btn btn-primary btn-sm undoStatusBtn"data-bs-dismiss="modal">Undo
+     Back To Pending</div>`
+    }
     //check if form is rejected
     if (pillPending.textContent === 'Rejected') {
       modalBtns.forEach(modalBtn => {
@@ -556,8 +593,67 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
         if (canvas.parentElement === parentContainer) {
           parentContainer.removeChild(canvas);
         }
+        undoStatusContainer.innerHTML = `<div class="btn btn-primary btn-sm undoStatusBtn">Undo
+        Back To Pending</div>`
       });
 
+    }
+    const undoStatusBtn = document.querySelector('.undoStatusBtn');
+    if(formData.formStatus === "Approved"){
+      if (undoStatusBtn) {
+        undoStatusBtn.addEventListener('click', function () {
+          // Update status to "rejected" in the database
+          updateStatusPending(formData)
+
+          pillPending.classList.remove('pillApproved');
+
+          pillPending.textContent = 'Pending';
+          alertBox("The form has been reverted back to pending.", 'success');
+
+          
+
+          const rejAmt = document.querySelector('.apprAmt');
+          rejAmt.textContent = parseInt(rejAmt.textContent) - 1
+
+          const pendingAmt = document.querySelector('.pendingAmt');
+          pendingAmt.textContent = parseInt(pendingAmt.textContent) + 1
+
+          pillPending.classList.remove('changePill');
+          if (canvas.parentElement === parentContainer) {
+            parentContainer.removeChild(canvas);
+          }
+          
+        });
+
+      }
+    }
+    if(formData.formStatus === "Rejected"){
+      if (undoStatusBtn) {
+        undoStatusBtn.addEventListener('click', function () {
+          // Update status to "rejected" in the database
+          updateStatusPending(formData)
+
+          pillPending.classList.remove('pillRejected');
+
+          pillPending.textContent = 'Pending';
+          alertBox("The form has been reverted back to pending.", 'success');
+
+         
+          
+
+          const rejAmt = document.querySelector('.rejAmt');
+          rejAmt.textContent = parseInt(rejAmt.textContent) - 1
+
+          const pendingAmt = document.querySelector('.pendingAmt');
+          pendingAmt.textContent = parseInt(pendingAmt.textContent) + 1
+
+          pillPending.classList.remove('changePill');
+          if (canvas.parentElement === parentContainer) {
+            parentContainer.removeChild(canvas);
+          }
+        });
+
+      }
     }
 
     const approveBtn = document.querySelector('#approveBtn');
@@ -587,6 +683,8 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
         if (canvas.parentElement === parentContainer) {
           parentContainer.removeChild(canvas);
         }
+        undoStatusContainer.innerHTML = `<div class="btn btn-primary btn-sm undoStatusBtn">Undo
+        Back To Pending</div>`
 
       });
     }
@@ -722,6 +820,20 @@ function updateStatusReject(formData) {
     });
 }
 
+//FUNCTION TO UPDATE STATUS OF FORM TO PENDING
+function updateStatusPending(formData) {
+  const studentId = formData.studentId;
+  axios
+    .put(`${API_URL}/${studentId}`, { formStatus: 'Pending' })
+    .then(function (response) {
+    })
+    .catch(function (error) {
+      // Handle error
+      console.log(error);
+      // Display an error message or handle the error as needed
+    });
+}
+
 function editReview(formData, newReview) {
   const submitReview = document.querySelector('.submitReviewBtn');
   const studentId = formData.studentId;
@@ -747,14 +859,18 @@ function editReview(formData, newReview) {
 }
 
 //Function to export to excel individually
-function exportToExcel(applicantName, schoolOrg, classNo, courseDate, formStatus) {
+function exportToExcel(applicantName, schoolOrg, classNo, courseDate, formStatus, mstReview, docReview) {
   axios.get('/export', {
     params: {
       applicantName: applicantName,
       schoolOrg: schoolOrg,
       classNo: classNo,
       courseDate: courseDate,
-      formStatus: formStatus
+      formStatus: formStatus,
+      mstReview: mstReview,
+      docReview: docReview,
+
+
     },
     responseType: 'blob' // Set the response type to 'blob' to handle binary data
   })
@@ -818,6 +934,7 @@ const alertContainer = document.getElementById('alertbox');
 let dataAll = [];
 
 document.addEventListener("DOMContentLoaded", function () {
+
   axios.get(`${API_URL}/all`)
     .then(function (response) {
       const configURL = response.config.url;
@@ -832,7 +949,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       //remove user permission from array of data
       const userPermission = response.data.pop();
-
+      console.log(formData)
       updateFormCounts(formData);
 
       //call function to create export button for
@@ -889,11 +1006,13 @@ document.addEventListener("DOMContentLoaded", function () {
           eligibilityCell,
           formattedDateCell,
           formStatusValue,
-          studentId
+          studentId,
+          mstReviewCell,
+          docReviewCell
         } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
         //call function to handle checkboxes
         if (userPermission.includes(5)) {
-          handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
+          handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
         } else {
           const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
           const checkBoxTop = document.querySelector('#checkBoxTop');
@@ -911,7 +1030,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       }
       //Outside of for loop 
-      //Export to Excel Bulk Once alertBox("You do not have permission to export!", "danger")
+      //Export to Excel Bulk Once
       const exportBtnBulk = document.querySelector('#export-btn-all');
       exportBtnBulk.addEventListener('click', function () {
         console.log(dataAll);
@@ -931,39 +1050,8 @@ document.addEventListener("DOMContentLoaded", function () {
 const searchInput = document.querySelector("#searchInput");
 const searchBtn = document.querySelector('#search-button');
 const searchClearBtn = document.querySelector('#clear-button');
-
+const allForms = document.querySelector('#getAllForms');
 function searchForms() {
-  // const exportBtnFilter = document.querySelector('#export-btn-filter');
-  // const exportBtnFilterSchool = document.querySelector('#export-btn-filter-school');
-  // const exportBtnFilterCourseDate = document.querySelector('#export-btn-filter-course-date');
-  // const exportBtnFilterEligibility = document.querySelector('#export-btn-filter-eligibility');
-  // const exportBtnAll = document.querySelector('#export-btn-all');
-  // if (exportBtnAll) {
-  //   exportBtnAll.style.display = 'none';
-  // }
-  // const exportBtnSearch = document.querySelector('#export-btn-search');
-  // if (exportBtnSearch) {
-  //   exportBtnSearch.style.display = 'block';
-  // }
-
-  // if (exportBtnFilter) {
-  //   exportBtnFilter.style.display = 'none';
-  // }
-  // if (exportBtnFilterSchool) {
-  //   exportBtnFilterSchool.style.display = 'none';
-  // }
-  // if (exportBtnFilterCourseDate) {
-  //   exportBtnFilterCourseDate.style.display = 'none';
-  // }
-  // if (exportBtnFilterEligibility) {
-  //   exportBtnFilterEligibility.style.display = 'none';
-  // }
-
-  // const dataSearch = [];
-
-  // const exportBtnBulkContainer = document.querySelector('#export-btn-search');
-  // const exportIcon = createExportButtonSearch();
-
 
   if (searchInput.value.trim() === '') {
     location.reload();
@@ -981,7 +1069,6 @@ function searchForms() {
         //call function to update status count
         const formData = response.data;
         const userPermission = response.data.pop();
-
 
         updateFormCounts(formData);
 
@@ -1010,14 +1097,13 @@ function searchForms() {
 
           });
         }
-        //create array to store all data for export to excel bulk
+        
 
         // Loop through the data and add it to the page
         for (i = 0; i < formData.length; i++) {
 
           //call function to format date
           const formattedDate = createFormattedDate(formData[i].courseDate);
-
           // Get references to the status container and template
           const getAllForms = document.querySelector('#getAllForms');
           const rowTemplate = document.querySelector('.row-table-template');
@@ -1032,6 +1118,7 @@ function searchForms() {
           const clonedRowTemplate = document.importNode(templateContent, true);
 
           // Populate the cloned template function
+        
           const {
             studentNRICCell,
             nameOfStudentCell,
@@ -1040,12 +1127,13 @@ function searchForms() {
             eligibilityCell,
             formattedDateCell,
             formStatusValue,
-            studentId
+            studentId,
+            mstReviewCell,
+            docReviewCell
           } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
-
           //call function to handle checkboxes
           if (userPermission.includes(5)) {
-            handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
+            handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
           } else {
             const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
             const checkBoxTop = document.querySelector('#checkBoxTop');
@@ -1063,7 +1151,7 @@ function searchForms() {
 
         }
         //Outside of for loop 
-        //Export to Excel Bulk Once
+        //Export to Excel Bulk Once 
         const exportBtnBulk = document.querySelector('#export-btn-search');
         exportBtnBulk.removeEventListener('click', exportButtonHandler);
         exportBtnBulk.addEventListener('click', exportButtonHandler);
@@ -1072,6 +1160,14 @@ function searchForms() {
       .catch(function (error) {
         if (error && error.message !== "redirected") {
           console.log(error);
+        }
+        if (error.response && error.response.status === 404) {
+          alertBox("No results found!", "danger")
+          allForms.innerHTML = ` <tr>
+          <td><input type="checkbox" id="checkBox"></td>
+          <td colspan="7" class="text-center" style="font-size: calc(1.275rem + .3vw) !important">
+          <div style="margin-right: 70px; display: inline-block;">No results found!</div></td>
+          </tr>`;
         }
         console.log(error);
       });
@@ -1117,6 +1213,23 @@ filterIcons.addEventListener('click', () => {
     filterDropDowns.classList.add('d-none');
   }
 });
+////////////////////////////
+//Navbar 
+////////////////////////////
+const navBarPerms = document.querySelector('#permission-li')
+const navBarUsers = document.querySelector('#user-li')
+const navBarForms = document.querySelector('#form-li')
+navBarPerms.addEventListener('click', function () {
+  alertBox('You do not have permission to access this page!', 'danger');
+});
+navBarUsers.addEventListener('click', function () {
+  alertBox('You do not have permission to access this page!', 'danger');
+});
+navBarForms.addEventListener('click', function () {
+  alertBox('You are already on this page', 'warn');
+});
+
+
 
 ////////////////////////////
 //Filters
@@ -1440,6 +1553,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 const clonedRowTemplate = document.importNode(templateContent, true);
 
                 // Populate the cloned template function
+                // Populate the cloned template function
                 const {
                   studentNRICCell,
                   nameOfStudentCell,
@@ -1448,12 +1562,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
                   eligibilityCell,
                   formattedDateCell,
                   formStatusValue,
-                  studentId
+                  studentId,
+                  mstReviewCell,
+                  docReviewCell
                 } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
-
                 //call function to handle checkboxes
                 if (userPermission.includes(5)) {
-                  handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
+                  handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
                 } else {
                   const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
                   const checkBoxTop = document.querySelector('#checkBoxTop');

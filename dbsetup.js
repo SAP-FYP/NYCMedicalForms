@@ -86,7 +86,6 @@ const CREATE_TABLE_SQL = `
     comments VARCHAR(255) NOT NULL,
     formStatus VARCHAR(50) NOT NULL DEFAULT 'Pending',
     examinationDate DATE NOT NULL,
-    email VARCHAR(255) NOT NULL,
     review VARCHAR(255) NOT NULL,
     PRIMARY KEY (formId)
     );
