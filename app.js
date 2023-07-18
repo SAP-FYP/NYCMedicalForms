@@ -59,6 +59,9 @@ app.get('/', (req, res) => {
     res.redirect(`/login`);
 });
 
+app.get('/obs-admin', (req, res) => {
+    res.redirect(`/obs-admin/login`);
+});
 // callback function - directs back to home page
 app.get('/callback', function (req, res) {
     res.sendFile(__dirname + '/public/index.html');
