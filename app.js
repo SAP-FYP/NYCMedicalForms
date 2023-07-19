@@ -1019,7 +1019,8 @@ app.post('/obs-admin/newuser', authHelper.verifyToken, authHelper.checkIat, (req
                     throw error;
                 }
 
-                user.role == 4 ? urlLink = 'https://form-obs.onrender.com' : 'https://form-obs.onrender.com/obs-admin'
+                let urlLink;
+                newuser.role == 4 ? urlLink = 'https://form-obs.onrender.com' : urlLink = 'https://form-obs.onrender.com/obs-admin'
 
                 const emailOptions = {
                     to: newuser.email,
@@ -1554,7 +1555,8 @@ app.post('/obs-admin/reset/:email', authHelper.verifyToken, authHelper.checkIat,
             throw error;
         }
 
-        result.roleId == 4 ? urlLink = 'https://form-obs.onrender.com' : 'https://form-obs.onrender.com/obs-admin'
+        let urlLink;
+        result.roleId == 4 ? urlLink = 'https://form-obs.onrender.com' : urlLink = 'https://form-obs.onrender.com/obs-admin'
 
         const emailOptions = {
             to: email,
