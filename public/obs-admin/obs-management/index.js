@@ -105,7 +105,7 @@ function populateRowData(clonedRowTemplate, formData, index, formattedDate) {
   // show last 4digits of NRIC
   const studentNRIC = formData[index].studentNRIC;
   // const extractedNRIC = studentNRIC.substring(studentNRIC.length - 4);
-  studentNRICCell.textContent = `****${studentNRIC}`;
+  studentNRICCell.textContent = `*****${studentNRIC}`;
 
   const nameOfStudentCell = clonedRowTemplate.querySelector('.studentName');
   nameOfStudentCell.textContent = formData[index].nameOfStudent;
@@ -450,7 +450,7 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
   // Set input field values
   nameInput.value = `${formData.nameOfStudent || 'N/A'}`;
   schoolInput.value = `${formData.school || 'N/A'}`;
-  nricInput.value = `****${formData.studentNRIC || 'N/A'}`;
+  nricInput.value = `*****${formData.studentNRIC || 'N/A'}`;
   studentDOBInput.value = `${formattedDateOfBirth || 'N/A'}`;
   classInput.value = `${formData.class || 'N/A'}`;
   courseDateInput.value = `${formattedCourseDate || 'N/A'}`;
@@ -465,7 +465,7 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
   parentName.value = `${formData.nameOfParent || 'N/A'}`;
   mstReview.value = `${formData.review || ''}`;
 
-  parentNRICInput.value = `****${formData.parentNRIC || 'N/A'}`;
+  parentNRICInput.value = `${formData.parentNRIC ? '*****'+formData.parentNRIC : 'N/A'}`;
   parentEmailInput.value = `${formData.parentEmail || 'N/A'}`;
   parentContactInput.value = `${formData.parentContactNo || 'N/A'}`;
   parentDateInput.value = `${formattedAckDate}`;
@@ -934,6 +934,24 @@ const exportButtonHandler = () => {
 const alertContainer = document.getElementById('alertbox');
 let dataAll = [];
 const arrowIcon = document.querySelector('.arrow-icon');
+const searchInput = document.querySelector("#searchInput");
+const searchBtn = document.querySelector('#search-button');
+const searchClearBtn = document.querySelector('#clear-button');
+const allForms = document.querySelector('#getAllForms');
+const rectanglePendingParent = document.querySelector('.rectanglePendingParent');
+const rectanglePending = document.querySelector('.rectanglePending');
+const rectangleApproved = document.querySelector('.rectangleApproved');
+const rectangleRejected = document.querySelector('.rectangleRejected');
+
+const nricColoumn = document.querySelector('#nricColoumn');
+const fullNameColoumn = document.querySelector('#fullNameColoumn');
+const classColumn = document.querySelector('#classColumn');
+const schoolColumn = document.querySelector('#schColumn');
+const eligibilityColumn = document.querySelector('#eligibilityColumn');
+const courseDateColumn = document.querySelector('#courseDateColumn');
+
+
+
 document.addEventListener("DOMContentLoaded", function () {
 
   axios.get(`${API_URL}/all`)
@@ -1048,14 +1066,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-const searchInput = document.querySelector("#searchInput");
-const searchBtn = document.querySelector('#search-button');
-const searchClearBtn = document.querySelector('#clear-button');
-const allForms = document.querySelector('#getAllForms');
-const rectanglePendingParent = document.querySelector('.rectanglePendingParent');
-const rectanglePending = document.querySelector('.rectanglePending');
-const rectangleApproved = document.querySelector('.rectangleApproved');
-const rectangleRejected = document.querySelector('.rectangleRejected');
+
 //Function to search for forms
 function searchForms() {
   if (searchInput.value.trim() === '') {
@@ -1205,7 +1216,6 @@ searchInput.addEventListener('keypress', event => {
 //Search, clear button
 searchClearBtn.onclick = () => {
   searchInput.value = "";
-  searchForms();
 }
 
 ////////////////////////////
@@ -1352,86 +1362,230 @@ function retrieveByStatus(apiUrl) {
     console.log(error);
   });
 }
-//If user clicks on pending parent status button, retrieve forms by status
-//highlight button when clicked
+
+let selectedButton = null;
+
+function resetBorders() {
+  rectanglePendingParent.style.border = '1px solid #485eab';
+  rectangleApproved.style.border = '1px solid #485eab';
+  rectanglePending.style.border = '1px solid #485eab';
+  rectangleRejected.style.border = '1px solid #485eab';
+}
+function retrieveAllForms() {
+  axios.get(`${API_URL}/all`)
+  .then(function (response) {
+    const configURL = response.config.url;
+    const requestURL = response.request.responseURL;
+    if (configURL !== requestURL) {
+      window.location.href = requestURL;
+      throw new Error("redirected");
+    }
+
+    //call function to update status count
+    const formData = response.data;
+
+    //remove user permission from array of data
+    const userPermission = response.data.pop();
+    console.log(formData)
+    updateFormCounts(formData);
+
+    //call function to create export button for
+    const exportBtnBulkContainer = document.querySelector('#export-btn-all');
+    const exportIcon = createExportButtonAll('export-icon');
+
+
+    const successBtn = document.querySelector('.successBtn');
+    const rejectBtn = document.querySelector('.rejectBtn');
+    if (successBtn) {
+      successBtn.addEventListener('click', function () {
+
+        const pillPending = document.querySelector('.changePill');
+        if (pillPending) {
+          pillPending.classList.remove('changePill');
+        }
+
+      });
+    }
+    if (rejectBtn) {
+      rejectBtn.addEventListener('click', function () {
+        const pillPending = document.querySelector('.changePill');
+        if (pillPending) {
+          pillPending.classList.remove('changePill');
+        }
+      });
+    }
+    //create array to store all data for export to excel bulk
+
+    // Loop through the data and add it to the page
+    for (i = 0; i < formData.length; i++) {
+
+      //call function to format date
+      const formattedDate = createFormattedDate(formData[i].courseDate);
+      // Get references to the status container and template
+      const getAllForms = document.querySelector('#getAllForms');
+      const rowTemplate = document.querySelector('.row-table-template');
+
+      //clear html content in getAllForms once since using template
+      if (i === 0) {
+        dataAll = [];
+        getAllForms.innerHTML = "";
+      }
+      // Clone the template and append it to the status container
+      const templateContent = rowTemplate.content;
+      const clonedRowTemplate = document.importNode(templateContent, true);
+
+      // Populate the cloned template function
+      const {
+        studentNRICCell,
+        nameOfStudentCell,
+        classCell,
+        schoolCell,
+        eligibilityCell,
+        formattedDateCell,
+        formStatusValue,
+        studentId,
+        mstReviewCell,
+        docReviewCell
+      } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
+      //call function to handle checkboxes
+      if (userPermission.includes(5)) {
+        arrowIcon.classList.remove('d-none');
+        handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
+      } else {
+        const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
+        const checkBoxTop = document.querySelector('#checkBoxTop');
+        checkBoxes.forEach(function (checkBox) {
+          checkBox.classList.add('d-none');
+        });
+        checkBoxTop.classList.add('d-none');
+      }
+
+
+      //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
+      handleModalButtons(clonedRowTemplate, studentId, formData, i);
+      ;
+
+
+    }
+    //Outside of for loop 
+    //Export to Excel Bulk Once
+    const exportBtnBulk = document.querySelector('#export-btn-all');
+    exportBtnBulk.addEventListener('click', function () {
+      console.log(dataAll);
+      exportToExcelBulk(dataAll);
+    });
+
+  })
+  .catch(function (error) {
+    if (error && error.message !== "redirected") {
+      console.log(error);
+    }
+    console.log(error);
+  });
+}
+// If user clicks on pending parent status button, retrieve forms by status
 if (rectanglePendingParent) {
   rectanglePendingParent.addEventListener('click', () => {
-    //put back the border for the rest of the buttons
-    rectangleApproved.style.border = '1px solid #485eab';
-    rectangleRejected.style.border = '1px solid #485eab';
-    rectanglePending.style.border = '1px solid #485eab';
-    //highlight the button that is clicked //change ltr
-    rectanglePendingParent.style.border = '4px solid #4195fc';
-    rectanglePendingParent.style.transform = 'scale(0.9)';
-    rectanglePendingParent.style.transition = 'transform 0.2s ease-in-out';
+    // Check if this button was previously selected
+    if (selectedButton === rectanglePendingParent) {
+      // Deselect the button
+      resetBorders();
+      selectedButton = null;
+      retrieveAllForms()
+      
+    } else {
+      // Reset borders and highlight the button
+      resetBorders();
+      rectanglePendingParent.style.border = '4px solid #4195fc';
+      selectedButton = rectanglePendingParent;
+      rectanglePendingParent.style.transform = 'scale(0.9)';
+      rectanglePendingParent.style.transition = 'transform 0.2s ease-in-out';
   
     setTimeout(function() {
       rectanglePendingParent.style.transform = 'scale(1)';
     }, 200);
-    let apiUrl = `${API_URL}/formStatus/Pending%20Parent`;
-    retrieveByStatus(apiUrl);
-    
+
+      let apiUrl = `${API_URL}/formStatus/Pending%20Parent`;
+      retrieveByStatus(apiUrl);
+    }
   });
 }
 
-//If user clicks on pending status button, retrieve forms by status
+// If user clicks on pending status button, retrieve forms by status
 if (rectanglePending) {
   rectanglePending.addEventListener('click', () => {
-    //put back the border for the rest of the buttons
-    rectangleApproved.style.border = '1px solid #485eab';
-    rectangleRejected.style.border = '1px solid #485eab';
-    rectanglePendingParent.style.border = '1px solid #485eab';
-    //highlight the button that is clicked
-    rectanglePending.style.border = '4px solid #4195fc';
-    rectanglePending.style.transform = 'scale(0.9)';
-    rectanglePending.style.transition = 'transform 0.2s ease-in-out';
+    // Check if this button was previously selected
+    if (selectedButton === rectanglePending) {
+      // Deselect the button
+      resetBorders();
+      selectedButton = null;
+      retrieveAllForms()
+    } else {
+      // Reset borders and highlight the button
+      resetBorders();
+      rectanglePending.style.border = '4px solid #4195fc';
+      selectedButton = rectanglePending;
+      rectanglePending.style.transform = 'scale(0.9)';
+      rectanglePending.style.transition = 'transform 0.2s ease-in-out';
   
     setTimeout(function() {
       rectanglePending.style.transform = 'scale(1)';
     }, 200);
-    let apiUrl = `${API_URL}/formStatus/Pending`;
-    retrieveByStatus(apiUrl);
+      let apiUrl = `${API_URL}/formStatus/Pending`;
+      retrieveByStatus(apiUrl);
+    }
   });
 }
 
-//If user clicks on approved status button, retrieve forms by status
+// If user clicks on approved status button, retrieve forms by status
 if (rectangleApproved) {
   rectangleApproved.addEventListener('click', () => {
-    //put back the border for the rest of the buttons
-    rectanglePendingParent.style.border = '1px solid #485eab';
-    rectangleRejected.style.border = '1px solid #485eab';
-    rectanglePending.style.border = '1px solid #485eab';
-    //highlight the button that is clicked
-    rectangleApproved.style.border = '4px solid #4195fc';
-    rectangleApproved.style.transform = 'scale(0.9)';
-    rectangleApproved.style.transition = 'transform 0.2s ease-in-out';
+    // Check if this button was previously selected
+    if (selectedButton === rectangleApproved) {
+      // Deselect the button
+      resetBorders();
+      selectedButton = null;
+      retrieveAllForms()
+    } else {
+      // Reset borders and highlight the button
+      resetBorders();
+      rectangleApproved.style.border = '4px solid #4195fc';
+      selectedButton = rectangleApproved;
+      rectangleApproved.style.transform = 'scale(0.9)';
+      rectangleApproved.style.transition = 'transform 0.2s ease-in-out';
   
     setTimeout(function() {
       rectangleApproved.style.transform = 'scale(1)';
     }, 200);
-    let apiUrl = `${API_URL}/formStatus/Approved`;
-    retrieveByStatus(apiUrl);
+      let apiUrl = `${API_URL}/formStatus/Approved`;
+      retrieveByStatus(apiUrl);
+    }
   });
 }
 
-//If user clicks on rejected status button, retrieve forms by status
+// If user clicks on rejected status button, retrieve forms by status
 if (rectangleRejected) {
   rectangleRejected.addEventListener('click', () => {
-    //put back the border for the rest of the buttons
-    rectanglePendingParent.style.border = '1px solid #485eab';
-    rectangleApproved.style.border = '1px solid #485eab';
-    rectanglePending.style.border = '1px solid #485eab';
-    //highlight the button that is clicked
-    rectangleRejected.style.border = '4px solid #4195fc';
-
-    rectangleRejected.style.transform = 'scale(0.9)';
+    // Check if this button was previously selected
+    if (selectedButton === rectangleRejected) {
+      // Deselect the button
+      resetBorders();
+      selectedButton = null;
+      retrieveAllForms()
+    } else {
+      // Reset borders and highlight the button
+      resetBorders();
+      rectangleRejected.style.border = '4px solid #4195fc';
+      selectedButton = rectangleRejected;
+      rectangleRejected.style.transform = 'scale(0.9)';
     rectangleRejected.style.transition = 'transform 0.2s ease-in-out';
   
     setTimeout(function() {
       rectangleRejected.style.transform = 'scale(1)';
     }, 200);
-    let apiUrl = `${API_URL}/formStatus/Rejected`;
-    retrieveByStatus(apiUrl);
+      let apiUrl = `${API_URL}/formStatus/Rejected`;
+      retrieveByStatus(apiUrl);
+    }
   });
 }
 

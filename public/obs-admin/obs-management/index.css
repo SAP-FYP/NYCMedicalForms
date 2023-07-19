@@ -329,6 +329,9 @@ th {
     top: 0 !important; 
     z-index: 1 !important; 
 }
+#nricColumn, #fullNameColumn, #classColumn, #schColumn, #eligibilityColumn, #courseDateColumn {
+    cursor: pointer;
+}
 tbody {
     cursor: pointer !important;
 }
