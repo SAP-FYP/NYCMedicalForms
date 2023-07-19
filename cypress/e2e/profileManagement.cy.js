@@ -21,8 +21,9 @@ describe('Update user profile', () => {
         cy.get('input[id=input-name]').should('have.value', 'Cypress Test Account')
         cy.get('input[id=input-number]').clear();
         cy.get('input[id=input-number]').type(number);
-        cy.get('input[id=input-password]').type('Password1!');
         cy.get('button[id=save-changes-button]').click();
+        cy.get('input[id=enter-password-input]').should('be.visible').type('Password1!');
+        cy.get('input[id=submit-password-btn]').click();
         cy.get('.alert-success').should('be.visible').contains('Successfully updated profile.');
         cy.then(Cypress.session.clearAllSavedSessions)
     })
@@ -60,13 +61,6 @@ describe('Update user password', () => {
     it('should change back the user\'s password', () => {
         cy.adminlogin(emailLogin, 'Password2!');
         cy.visit('http://localhost:3000/obs-admin/profile');
-        // cy.get('input[id=input-name]').should('have.value', 'Cypress Test Account')
-        // cy.get('button[id=change-password-button]').click().wait(500);
-        // cy.get('input[id=current-input]').click().wait(500).type('Password2!');
-        // cy.get('input[id=new-input]').type('Password1!');
-        // cy.get('input[id=confirm-input]').type('Password1!');
-        // cy.get('input[id=confirm-password-icon]').click();
-        // cy.get('.alert-success').should('be.visible').contains('Password updated successfully.');
 
         let password = {
             newPassword: passLogin,

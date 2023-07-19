@@ -3,7 +3,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const numberInput = document.getElementById('input-number');
     const roleInput = document.getElementById('input-role');
     const emailInput = document.getElementById('input-email');
-    const passwordInput = document.getElementById('input-password');
+    const passwordInput = document.getElementById('enter-password-input');
     const newInput = document.getElementById('new-input');
     const confirmInput = document.getElementById('confirm-input');
     const currentInput = document.getElementById('current-input');
@@ -13,11 +13,14 @@ window.addEventListener('DOMContentLoaded', () => {
     const visibilityCurrent = document.getElementById('current-btn');
     const visibilityNew = document.getElementById('new-btn');
     const visibilityConfirm = document.getElementById('confirm-btn');
+    const visibilityPassword = document.getElementById('enter-password-btn');
     const submitPassword = document.getElementById('confirm-password-icon');
     const passwordForm = document.getElementById('change-password-form');
     const profileForm = document.getElementById('profile-form');
     const myModalEl = document.getElementById('editPasswordModal');
     const modal = new bootstrap.Modal(myModalEl);
+    const myModalEl1 = document.getElementById('enterPasswordModal');
+    const enterPasswordModal = new bootstrap.Modal(myModalEl1);
     const alertContainer = document.getElementById('alertbox');
 
     // === ALERT BOX ===
@@ -124,6 +127,35 @@ window.addEventListener('DOMContentLoaded', () => {
                     profileImg.src = user.picUrl
                     picUrl = user.picUrl
                 }
+
+                if (user.role == 1) {
+                    document.getElementById('permission-li').style.opacity = '1';
+                    document.getElementById('user-li').style.opacity = '1';
+                    document.getElementById('form-li').style.opacity = '0.5';
+                    document.getElementById('user-li').onclick = () => {
+                        window.location.href = '/obs-admin/admin/permissions';
+                    }
+                    document.getElementById('user-li').onclick = () => {
+                        window.location.href = '/obs-admin/admin';
+                    }
+                    document.getElementById('form-li').onclick = (e) => {
+                        e.preventDefault();
+                    }
+                } else {
+                    document.getElementById('form-li').style.opacity = '1'
+                    document.getElementById('permission-li').style.opacity = '0.5';
+                    document.getElementById('user-li').style.opacity = '0.5';
+                    document.getElementById('permission-li').onclick = (e) => {
+                        e.preventDefault();
+                    }
+                    document.getElementById('user-li').onclick = (e) => {
+                        e.preventDefault();
+                    }
+                    document.getElementById('form-li').onclick = () => {
+                        window.location.href = '/obs-admin/obs-management';
+
+                    }
+                }
             }
         })
         .catch(handleError)
@@ -161,41 +193,53 @@ window.addEventListener('DOMContentLoaded', () => {
             .then(handleUpdateResponse)
             .then(() => {
                 imgProfileFile.value = "";
-                document.getElementById('input-password').value = "";
+                passwordInput.value = "";
                 alertBox('Successfully updated profile.', 'success');
+                enterPasswordModal.hide();
             })
             .catch(handleError);
     }
 
     // === EVENT HANDLERS ===
 
+    document.getElementById('enter-password-form').onsubmit = (e) => {
+        e.preventDefault();
+        const valid = validateForm();
+
+        if (valid) {
+            const password = passwordInput.value;
+
+            if (!password) {
+                passwordInput.classList.add('is-invalid');
+            } else {
+                const webFormData = new FormData();
+
+                webFormData.append('name', nameInput.value.trim());
+                webFormData.append('number', numberInput.value.trim());
+                webFormData.append('password[currentPassword]', password);
+
+                if (imgProfileFile.files[0]) {
+                    webFormData.append("img", imgProfileFile.files[0]);
+                }
+                updateUser(webFormData);
+            }
+        } else {
+            alertBox('Please fill in all fields', 'danger');
+        }
+    }
 
     // UPDATE PROFILE SUBMIT
     profileForm.onsubmit = (e) => {
         e.preventDefault();
         const valid = validateForm();
 
-        if (valid) {
-            const password = document.getElementById('input-password').value;
-            const webFormData = new FormData();
-
-            webFormData.append('name', nameInput.value.trim());
-            webFormData.append('number', numberInput.value.trim());
-            webFormData.append('password[currentPassword]', password);
-
-            if (imgProfileFile.files[0]) {
-                webFormData.append("img", imgProfileFile.files[0]);
-            }
-
-            updateUser(webFormData);
-        }
+        if (valid) { enterPasswordModal.show(); }
     }
 
     // VALIDATE UPDATE PROFILE FORM
     const validateForm = () => {
         const name = nameInput.value.trim();
         const contact = numberInput.value.trim();
-        const password = passwordInput.value;
         const phoneNumberPattern = /^(\+?65)?[689]\d{7}$/;
         let valid = true;
 
@@ -206,11 +250,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
         if (!phoneNumberPattern.test(contact)) {
             numberInput.classList.add('is-invalid');
-            valid = false;
-        }
-
-        if (!password) {
-            passwordInput.classList.add('is-invalid');
             valid = false;
         }
 
@@ -343,7 +382,17 @@ window.addEventListener('DOMContentLoaded', () => {
         togglePassword('confirm-input', 'confirm-btn')
     }
 
+    // VISIBILITY BUTTON - ENTER PASSWORD
+    visibilityPassword.onclick = (e) => {
+        e.preventDefault();
+        togglePassword('enter-password-input', 'confirm-btn')
+    }
 
+    // INITIALIZE BOOTSTRAP TOOLTIP
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl, { trigger: 'hover' });
+    });
 
 })
 

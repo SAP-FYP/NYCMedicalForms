@@ -27,11 +27,8 @@ const cloudinaryModel = require('./model/cloudinary');
 const passwordGenerator = require('./helper/passwordGenerator');
 const momentHelper = require('./helper/epochConverter');
 const cronJob = require('./helper/cron');
-const { env } = require("process");
-const e = require("express");
 
 const app = express();
-const port = process.env.PORT || 3000;
 const JWT_SECRET = process.env.SECRETKEY;
 
 const twilioClient = require('twilio')(process.env.twilioSID, process.env.twilioToken);
@@ -62,6 +59,9 @@ app.get('/', (req, res) => {
     res.redirect(`/login`);
 });
 
+app.get('/obs-admin', (req, res) => {
+    res.redirect(`/obs-admin/login`);
+});
 // callback function - directs back to home page
 app.get('/callback', function (req, res) {
     res.sendFile(__dirname + '/public/index.html');
@@ -278,6 +278,7 @@ app.put('/user/password', authHelper.verifyToken, authHelper.checkIat, authHelpe
     const user = req.decodedToken;
 
     if (!user) {
+        console.log('UPDATE PASSWORD ERROR: User not found.')
         return res.redirect('/error?code=401&type=obs-admin')
     }
 
@@ -507,6 +508,7 @@ app.put('/user/profile', authHelper.verifyToken, authHelper.checkIat, authHelper
     const user = req.decodedToken;
 
     if (!user) {
+        console.log('UPDATE USER ERROR: User not found.')
         return res.redirect('/error?code=401&type=obs-admin')
     }
 
@@ -1017,12 +1019,14 @@ app.post('/obs-admin/newuser', authHelper.verifyToken, authHelper.checkIat, (req
                     throw error;
                 }
 
+                let urlLink;
+                newuser.role == 4 ? urlLink = 'https://form-obs.onrender.com' : urlLink = 'https://form-obs.onrender.com/obs-admin'
+
                 const emailOptions = {
                     to: newuser.email,
                     subject: "Welcome to the OBS Team!",
                     from: 'sg.outwardbound@gmail.com',
-                    body: `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Forget Password</title><style>body{font-family:Arial,sans-serif;padding:20px;background-color:#f5f5f5}.container{max-width:600px;margin:0 auto;background-color:#fff;padding:20px;border-radius:5px;box-shadow:0 2px 5px rgba(0,0,0,.1)}.logo{text-align:left;margin-bottom:40px}.logo img{max-width:300px}.message{margin-bottom:20px;font-size:16px}.password-block{background-color:#f5f5f5;padding:10px;border-radius:5px;text-align:center}.password{font-weight:700;font-size:24px;color:#007bff}.btn{display:inline-block;padding:10px 20px;background-color:#007bff;color:#fff;text-decoration:none;border-radius:5px;font-weight:700}.btn:hover{background-color:#0056b3}.footer{text-align:center;color:#888;font-size:14px;margin-top:20px;border-top:1px solid #ccc;padding-top:20px}.footer hr{margin-bottom:10px}.footer p{margin-bottom:10px}</style></head><body><div class="container"><div class="logo"><img src="https://res.cloudinary.com/sp-esde-2100030/image/upload/v1688051640/obs-logo_pi70gy.png" alt="Logo"></div><div class="message"><p><b>Hello ${newuser.name}, Welcome to the team!</b></p><p>Your account have been successfully created and you may now login with your email and the given password below.</p><div class="password-block"><span class="password" id="new-password">${generatedPassword}</span></div><p>Please use this password to log in to your account. We recommend changing your password after logging in for security reasons.</p><p>If you did not initiate this request, please ignore this email or contact our support team.</p></div><div class="footer"><p>This email was sent to you by the Administrative Team. If you have any questions, please contact our support team.</p><p>© National Youth Council | Outward Bound Singapore.</p></div></div></body></html>
-                    `,
+                    body: `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Forget Password</title><style>body{font-family:Arial,sans-serif;padding:20px;background-color:#f5f5f5}.container{max-width:600px;margin:0 auto;background-color:#fff;padding:20px;border-radius:5px;box-shadow:0 2px 5px rgba(0,0,0,.1)}.logo{text-align:left;margin-bottom:40px}.logo img{max-width:300px}.message{margin-bottom:20px;font-size:16px}.password-block{background-color:#f5f5f5;padding:10px;border-radius:5px;text-align:center}.password{font-weight:700;font-size:24px;color:#007bff}.btn{display:inline-block;padding:10px 20px;background-color:#007bff;color:#fff;text-decoration:none;border-radius:5px;font-weight:700}.btn:hover{background-color:#0056b3}.footer{text-align:center;color:#888;font-size:14px;margin-top:20px;border-top:1px solid #ccc;padding-top:20px}.footer hr{margin-bottom:10px}.footer p{margin-bottom:10px}.login-btn{display:inline-block;padding:10px 20px;background-color:#007bff;color:#fff;text-decoration:none;border-radius:5px;font-weight:700;margin-top:20px;margin-bottom:20px}.login-btn:hover{background-color:#0056b3}</style></head><body><div class="container"><div class="logo"><img src="https://res.cloudinary.com/sp-esde-2100030/image/upload/v1688051640/obs-logo_pi70gy.png" alt="Logo"></div><div class="message"><p><b>Hello ${newuser.name}, Welcome to the team!</b></p><p>Your account have been successfully created and you may now login with your email and the given password below.</p><div class="password-block"><span class="password" id="new-password">${generatedPassword}</span></div><p>Please use this password to log in to your account. We recommend changing your password after logging in for security reasons.</p><p>If you did not initiate this request, please ignore this email or contact our support team.</p></div><div style="text-align:center"><a class="login-btn" href="${urlLink}">Login Now</a></div><div class="footer"><p>This email was sent to you by the Administrative Team. If you have any questions, please contact our support team.</p><p>© National Youth Council | Outward Bound Singapore.</p></div></div></body></html>`,
                 };
 
                 elasticEmailClient.mailer.send(emailOptions, (error, result) => {
@@ -1551,12 +1555,14 @@ app.post('/obs-admin/reset/:email', authHelper.verifyToken, authHelper.checkIat,
             throw error;
         }
 
+        let urlLink;
+        result.roleId == 4 ? urlLink = 'https://form-obs.onrender.com' : urlLink = 'https://form-obs.onrender.com/obs-admin'
+
         const emailOptions = {
             to: email,
             subject: "Reset your OBS password",
             from: 'sg.outwardbound@gmail.com',
-            body: `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Forget Password</title><style>body{font-family:Arial,sans-serif;padding:20px;background-color:#f5f5f5}.container{max-width:600px;margin:0 auto;background-color:#fff;padding:20px;border-radius:5px;box-shadow:0 2px 5px rgba(0,0,0,.1)}.logo{text-align:left;margin-bottom:40px}.logo img{max-width:300px}.message{margin-bottom:20px; font-size: 16px;}.password-block{background-color:#f5f5f5;padding:10px;border-radius:5px;text-align:center}.password{font-weight:700;font-size:24px;color:#007bff}.btn{display:inline-block;padding:10px 20px;background-color:#007bff;color:#fff;text-decoration:none;border-radius:5px;font-weight:700}.btn:hover{background-color:#0056b3}.footer{text-align:center;color:#888;font-size:14px;margin-top:20px;border-top:1px solid #ccc;padding-top:20px}.footer hr{margin-bottom:10px}.footer p{margin-bottom:10px}</style></head><body><div class="container"><div class="logo"><img src="https://res.cloudinary.com/sp-esde-2100030/image/upload/v1688051640/obs-logo_pi70gy.png" alt="Logo"></div><div class="message"><p><b>Hello ${name},</b></p><p>You have requested a new password for your account. Below is your new password:</p><div class="password-block"><span class="password" id="new-password">${password}</span></div><p>Please use this password to log in to your account. We recommend changing your password after logging in for security reasons.</p><p>If you did not request a password reset, email or contact our support team immediately.</p></div><div class="footer"><p>This email was sent to you by the Administrative Team. If you have any questions, please contact our support team.</p><p>© National Youth Council | Outward Bound Singapore.</p></div></div></body></html>
-            `,
+            body: `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Forget Password</title><style>body{font-family:Arial,sans-serif;padding:20px;background-color:#f5f5f5}.container{max-width:600px;margin:0 auto;background-color:#fff;padding:20px;border-radius:5px;box-shadow:0 2px 5px rgba(0,0,0,.1)}.logo{text-align:left;margin-bottom:40px}.logo img{max-width:300px}.message{margin-bottom:20px;font-size:16px}.password-block{background-color:#f5f5f5;padding:10px;border-radius:5px;text-align:center}.password{font-weight:700;font-size:24px;color:#007bff}.btn{display:inline-block;padding:10px 20px;background-color:#007bff;color:#fff;text-decoration:none;border-radius:5px;font-weight:700}.btn:hover{background-color:#0056b3}.footer{text-align:center;color:#888;font-size:14px;margin-top:20px;border-top:1px solid #ccc;padding-top:20px}.footer hr{margin-bottom:10px}.footer p{margin-bottom:10px}.login-btn{display:inline-block;padding:10px 20px;background-color:#007bff;color:#fff;text-decoration:none;border-radius:5px;font-weight:700;margin-top:20px;margin-bottom:20px}.login-btn:hover{background-color:#0056b3}</style></head><body><div class="container"><div class="logo"><img src="https://res.cloudinary.com/sp-esde-2100030/image/upload/v1688051640/obs-logo_pi70gy.png" alt="Logo"></div><div class="message"><p><b>Hello ${name},</b></p><p>You have requested a new password for your account. Below is your new password:</p><div class="password-block"><span class="password" id="new-password">${password}</span></div><p>Please use this password to log in to your account. We recommend changing your password after logging in for security reasons.</p><p>If you did not request a password reset, email or contact our support team immediately.</p></div><div style="text-align:center"><a class="login-btn" href="${urlLink}">Login Now</a></div><div class="footer"><p>This email was sent to you by the Administrative Team. If you have any questions, please contact our support team.</p><p>© National Youth Council | Outward Bound Singapore.</p></div></div></body></html>`,
         };
 
         elasticEmailClient.mailer.send(emailOptions, (error, result) => {
@@ -1647,7 +1653,7 @@ app.get('/obs-admin/pmt/:studentId', authHelper.verifyToken, authHelper.checkIat
     return pmtModel.retrieveSubmission(studentId)
         .then((result) => {
             if (result[0].length === 0) {
-         
+
                 throw new Error(`${studentId}'s submission not found`);
             }
 
@@ -1662,15 +1668,15 @@ app.get('/obs-admin/pmt/:studentId', authHelper.verifyToken, authHelper.checkIat
             decrypted += decipher.final('utf8');
 
             if (encryptedParentSignInfo !== null) {
-            const decipherParent = crypto.createDecipheriv('aes-256-cbc', key, iv);
-            let decryptedParent = decipherParent.update(encryptedParentSignInfo, 'hex', 'utf8');
-            decryptedParent += decipherParent.final('utf8');
-            result[0][0].parentSignature = decryptedParent
+                const decipherParent = crypto.createDecipheriv('aes-256-cbc', key, iv);
+                let decryptedParent = decipherParent.update(encryptedParentSignInfo, 'hex', 'utf8');
+                decryptedParent += decipherParent.final('utf8');
+                result[0][0].parentSignature = decryptedParent
             }
 
             result[0][0].signature = decrypted;
-            
-           
+
+
 
             result[0].push(req.decodedToken.permissions);
 
@@ -1722,15 +1728,15 @@ app.get('/obs-admin/pmt/search/:search', authHelper.verifyToken, authHelper.chec
     return pmtModel
         .retrieveSubmissionBySearch(searchInput)
         .then((result) => {
-         
+
             if (result[0].length === 0) {
-                return res.status(404).json({ error: "No submissions found" });            
+                return res.status(404).json({ error: "No submissions found" });
             }
             result[0].push(req.decodedToken.permissions);
             return res.json(result[0]);
         })
         .catch((error) => {
-            return res.status(error.status || 500).json({ error: error.message });         
+            return res.status(error.status || 500).json({ error: error.message });
         })
 });
 
@@ -1872,53 +1878,53 @@ app.get('/export', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
 app.post('/export-bulk', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
     // AUTHORIZATION CHECK - PMT
     if (req.decodedToken.role != 2) {
-      return res.redirect('/error?code=403&type=obs-admin');
+        return res.redirect('/error?code=403&type=obs-admin');
     }
-  
+
     // IF NO PERMISSIONS
     if (!req.decodedToken.permissions.includes(5)) {
-      return res.redirect('/error?code=403&type=obs-admin');
+        return res.redirect('/error?code=403&type=obs-admin');
     }
-  
+
     // Retrieve the bulk data from the request body
     const data = req.body.data;
-  
+
     const dataArray = JSON.parse(data);
-  
+
     // Create a new worksheet with the formatted data
     const worksheet = XLSX.utils.json_to_sheet(dataArray, {
-      header: [
-        'Name of Applicant',
-        'Organization/School',
-        'Designation/Class',
-        'Course Date',
-        'Form Status',
-        'MST Review',
-        'Doctor Review',
-      ],
+        header: [
+            'Name of Applicant',
+            'Organization/School',
+            'Designation/Class',
+            'Course Date',
+            'Form Status',
+            'MST Review',
+            'Doctor Review',
+        ],
     });
-  
+
     // Create a new workbook and add the worksheet to it
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Bulk Data');
-  
+
     // Generate the Excel file buffer
     const excelBuffer = XLSX.write(workbook, {
-      type: 'buffer',
-      bookType: 'xlsx',
+        type: 'buffer',
+        bookType: 'xlsx',
     });
-  
+
     // Set the response headers for downloading the file
     res.setHeader(
-      'Content-Type',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     );
     res.setHeader('Content-Disposition', 'attachment; filename="exported-Bulk.xlsx"');
-  
+
     // Send the Excel file buffer as the response
     res.send(excelBuffer);
-  });
-  
+});
+
 
 //MST Update Submission Comment
 app.put('/obs-admin/mst/review/:studentId', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
@@ -2021,7 +2027,7 @@ app.post('/postDoctorInfo', authHelper.verifyToken, authHelper.checkIat, (req, r
             .catch(error => {
                 if (error instanceof DUPLICATE_ENTRY_ERROR) {
                     res.status(409).json({ message: error.message });
-                } 
+                }
                 else if (error instanceof WRONG_VALUE_FOR_FIELD) {
                     res.status(409).json({ message: error.message });
                 }
@@ -2049,12 +2055,12 @@ app.post('/postStudentInfo', authHelper.verifyToken, authHelper.checkIat, (req, 
             res.json(data);
         })
         .catch(error => {
-           if (error instanceof DUPLICATE_ENTRY_ERROR) {
-                    res.status(409).json({ message: error.message });
-            } 
+            if (error instanceof DUPLICATE_ENTRY_ERROR) {
+                res.status(409).json({ message: error.message });
+            }
             else if (error instanceof WRONG_VALUE_FOR_FIELD) {
                 res.status(409).json({ message: error.message });
-            } 
+            }
             else {
                 res.status(500).json({ message: 'Internal server error' });
             }
@@ -2076,10 +2082,10 @@ app.post('/postFormInfo', authHelper.verifyToken, authHelper.checkIat, (req, res
         .catch(error => {
             if (error instanceof DUPLICATE_ENTRY_ERROR) {
                 res.status(409).json({ message: error.message });
-            } 
+            }
             else if (error instanceof WRONG_VALUE_FOR_FIELD) {
                 res.status(409).json({ message: error.message });
-            } 
+            }
             else {
                 res.status(500).json({ message: 'Internal server error' });
             }
@@ -2236,9 +2242,9 @@ app.delete('/deleteStudentForm', authHelper.verifyToken, authHelper.checkIat, (r
     }
     const { studentId } = req.body;
     const { formStatus } = req.body;
-    
+
     return doctorFormModel
-        .deleteStudentForm(studentId,formStatus)
+        .deleteStudentForm(studentId, formStatus)
         .then((result) => {
             console.log(result)
             if (!result) {
