@@ -1216,6 +1216,7 @@ searchInput.addEventListener('keypress', event => {
 //Search, clear button
 searchClearBtn.onclick = () => {
   searchInput.value = "";
+  retrieveAllForms()
 }
 
 ////////////////////////////
