@@ -1592,6 +1592,33 @@ app.get('/obs-admin/pmt/all', authHelper.verifyToken, authHelper.checkIat, async
     return pmtModel
         .retrieveAllSubmissions()
         .then((result) => {
+
+            if (result.length === 0) {
+                throw new Error("No submissions found");
+            }
+
+
+            result[0].push(req.decodedToken.permissions);
+            return res.json(result[0]);
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        });
+});
+app.get('/obs-admin/pmt/formStatus/:formStatus', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
+    // AUTHORIZATION CHECK - PMT, MST 
+    const formStatus = req.params.formStatus;
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+        return res.redirect('/error?code=403&type=obs-admin')
+    }
+    // IF NO PERMISSIONS
+    if (!req.decodedToken.permissions.includes(1)) {
+        return res.redirect('/error?code=403&type=obs-admin')
+    }
+    return pmtModel
+        .getSubmissionByStatus(formStatus)
+        .then((result) => {
+
             if (result.length === 0) {
                 throw new Error("No submissions found");
             }
@@ -1619,21 +1646,34 @@ app.get('/obs-admin/pmt/:studentId', authHelper.verifyToken, authHelper.checkIat
 
     return pmtModel.retrieveSubmission(studentId)
         .then((result) => {
-            if (result.length === 0) {
+            if (result[0].length === 0) {
+         
                 throw new Error(`${studentId}'s submission not found`);
             }
 
             const encryptedSignInfo = result[0][0].signature;
-            const key = Buffer.from('qW3eRt5yUiOpAsDfqW3eRt5yUiOpAsDf', 'utf8'); // must be 32 characters
-            const iv = Buffer.from('qW3eRt5yUiOpAsDf', 'utf8'); // must be 16 characters
+            const encryptedParentSignInfo = result[0][0].parentSignature;
+            const key = Buffer.from(process.env.signatureKey, 'utf8'); // must be 32 characters
+            const iv = Buffer.from(process.env.signatureIV, 'utf8'); // must be 16 characters
 
             // Create the decipher object
             const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
             let decrypted = decipher.update(encryptedSignInfo, 'hex', 'utf8');
             decrypted += decipher.final('utf8');
 
+            if (encryptedParentSignInfo !== null) {
+            const decipherParent = crypto.createDecipheriv('aes-256-cbc', key, iv);
+            let decryptedParent = decipherParent.update(encryptedParentSignInfo, 'hex', 'utf8');
+            decryptedParent += decipherParent.final('utf8');
+            result[0][0].parentSignature = decryptedParent
+            }
+
             result[0][0].signature = decrypted;
+            
+           
+
             result[0].push(req.decodedToken.permissions);
+
             return res.json(result[0]);
         })
         .catch((error) => {
@@ -1682,14 +1722,15 @@ app.get('/obs-admin/pmt/search/:search', authHelper.verifyToken, authHelper.chec
     return pmtModel
         .retrieveSubmissionBySearch(searchInput)
         .then((result) => {
-            if (result.length === 0) {
-                throw new Error("No submission found");
+         
+            if (result[0].length === 0) {
+                return res.status(404).json({ error: "No submissions found" });            
             }
             result[0].push(req.decodedToken.permissions);
             return res.json(result[0]);
         })
         .catch((error) => {
-            return res.status(error.status || 500).json({ error: error.message });
+            return res.status(error.status || 500).json({ error: error.message });         
         })
 });
 
@@ -1788,7 +1829,7 @@ app.get('/export', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
     }
 
     // Extract the form data from the request
-    const { applicantName, schoolOrg, classNo, courseDate, formStatus } = req.query;
+    const { applicantName, schoolOrg, classNo, courseDate, formStatus, mstReview, docReview } = req.query;
     // Create a new workbook
     const workbook = XLSX.utils.book_new();
     // Create a new worksheet with the form data
@@ -1799,6 +1840,8 @@ app.get('/export', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
             "Designation/Class": classNo,
             "Course Date": courseDate,
             "Form Status": formStatus,
+            "MST Review": mstReview,
+            "Doctor Review": docReview
         },
     ], {
         header: [
@@ -1807,6 +1850,8 @@ app.get('/export', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
             "Designation/Class",
             "Course Date",
             "Form Status",
+            "MST Review",
+            "Doctor Review",
         ],
     });
     // Add the worksheet to the workbook
@@ -1848,6 +1893,8 @@ app.post('/export-bulk', authHelper.verifyToken, authHelper.checkIat, (req, res)
         'Designation/Class',
         'Course Date',
         'Form Status',
+        'MST Review',
+        'Doctor Review',
       ],
     });
   
