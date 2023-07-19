@@ -22,7 +22,7 @@ describe('Update user profile', () => {
         cy.get('input[id=input-number]').clear();
         cy.get('input[id=input-number]').type(number);
         cy.get('button[id=save-changes-button]').click();
-        cy.get('input[id=enter-password-input]').should('be.visible').type('Password1!');
+        cy.get('input[id=enter-password-input]').should('be.visible').click().wait(500).type('Password1!');
         cy.get('input[id=submit-password-btn]').click();
         cy.get('.alert-success').should('be.visible').contains('Successfully updated profile.');
         cy.then(Cypress.session.clearAllSavedSessions)
