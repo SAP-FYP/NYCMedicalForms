@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const elasticEmail = require('elasticemail');
 const cloudinary = require("cloudinary").v2;
-const { UserNotFoundError, DUPLICATE_ENTRY_ERROR, EMPTY_RESULT_ERROR } = require("./errors");
+const { UserNotFoundError, DUPLICATE_ENTRY_ERROR, EMPTY_RESULT_ERROR, WRONG_VALUE_FOR_FIELD } = require("./errors");
 const crypto = require('crypto');
 
 const key = Buffer.from(process.env.encryptKey, 'hex');
@@ -2021,7 +2021,11 @@ app.post('/postDoctorInfo', authHelper.verifyToken, authHelper.checkIat, (req, r
             .catch(error => {
                 if (error instanceof DUPLICATE_ENTRY_ERROR) {
                     res.status(409).json({ message: error.message });
-                } else {
+                } 
+                else if (error instanceof WRONG_VALUE_FOR_FIELD) {
+                    res.status(409).json({ message: error.message });
+                }
+                else {
                     res.status(500).json({ message: 'Internal server error' });
                 }
             })
@@ -2038,15 +2042,20 @@ app.post('/postStudentInfo', authHelper.verifyToken, authHelper.checkIat, (req, 
         return res.redirect('/error?code=403');
     }
     const { studentName, schoolName, dateOfBirth, studentNRIC, studentClass, dateOfVaccine } = req.body;
+    console.log(req.body);
     return doctorFormModel
         .postStudentInfo(studentNRIC, studentName, dateOfBirth, studentClass, schoolName, dateOfVaccine)
         .then(data => {
             res.json(data);
         })
         .catch(error => {
-            if (error instanceof DUPLICATE_ENTRY_ERROR) {
+           if (error instanceof DUPLICATE_ENTRY_ERROR) {
+                    res.status(409).json({ message: error.message });
+            } 
+            else if (error instanceof WRONG_VALUE_FOR_FIELD) {
                 res.status(409).json({ message: error.message });
-            } else {
+            } 
+            else {
                 res.status(500).json({ message: 'Internal server error' });
             }
         });
@@ -2067,7 +2076,11 @@ app.post('/postFormInfo', authHelper.verifyToken, authHelper.checkIat, (req, res
         .catch(error => {
             if (error instanceof DUPLICATE_ENTRY_ERROR) {
                 res.status(409).json({ message: error.message });
-            } else {
+            } 
+            else if (error instanceof WRONG_VALUE_FOR_FIELD) {
+                res.status(409).json({ message: error.message });
+            } 
+            else {
                 res.status(500).json({ message: 'Internal server error' });
             }
         });
@@ -2103,7 +2116,6 @@ app.post('/checkDoctorMCR', authHelper.verifyToken, authHelper.checkIat, (req, r
             }
         })
         .catch(err => {
-            console.error(err);
             if (err instanceof UserNotFoundError) {
                 // user is not found
                 res.status(404).json({ message: 'DoctorNotFound' });
@@ -2200,7 +2212,7 @@ app.post('/checkStudentNRIC', authHelper.verifyToken, authHelper.checkIat, (req,
     const { studentNRIC } = req.body;
     //continue to database...
     return doctorFormModel
-        .getStudents(studentNRIC)
+        .getStudentFormStatus(studentNRIC)
         .then(data => {
             console.log(data);
             res.json(data);
@@ -2222,10 +2234,11 @@ app.delete('/deleteStudentForm', authHelper.verifyToken, authHelper.checkIat, (r
     if (req.decodedToken.role != 4) {
         return res.redirect('/error?code=403');
     }
-    const { studentIds } = req.body;
-    console.log(studentIds)
+    const { studentId } = req.body;
+    const { formStatus } = req.body;
+    
     return doctorFormModel
-        .deleteStudentForm(studentIds)
+        .deleteStudentForm(studentId,formStatus)
         .then((result) => {
             console.log(result)
             if (!result) {
@@ -2237,8 +2250,9 @@ app.delete('/deleteStudentForm', authHelper.verifyToken, authHelper.checkIat, (r
         })
         .catch((error) => {
             return res.status(error.status || 500).json({ error: error.message });
-        })
-})
+        });
+});
+
 /**
  * Error handling
  */
@@ -2255,7 +2269,6 @@ app.use((error, req, res, next) => {
         } else {
             return res.redirect(`/error?code=${error.status || 500}`)
         }
-
     }
 });
 

@@ -39,12 +39,14 @@ document.addEventListener('DOMContentLoaded', function () {
     let signaturePad = new SignaturePad(canvas);
     const availabilityBtn = document.getElementById('availabilityBtn');
     const clearSignatureBtn = document.getElementById('clearSignatureBtn');
+    // modals
     const loadingModal = new bootstrap.Modal('#loadingModal', {
         keyboard: false
     });
     const deleteStudentModal = new bootstrap.Modal('#deleteStudentModal', {
         keyboard: false
     });
+    // alertBox
     const alertContainer = document.getElementById('alertbox');
     // Section divs
     const sectionOneContainer = document.getElementById('sectionOneContainer');
@@ -165,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 acknowledgeCheckBox.disabled = false;
             }
         });
-    }
+    };
 
     // === ALERT BOX ===
     const alertBox = (message, type) => {
@@ -230,7 +232,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 return response.json();
             })
-    }
+    };
     const postStudentInfo = (studentEntry) => {
         return fetch('/postStudentInfo', {
             method: 'POST',
@@ -243,7 +245,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 return response.json();
             })
-    }
+    };
     const postFormInfo = (formEntry) => {
         return fetch('/postFormInfo', {
             method: 'POST',
@@ -258,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 return response.json();
             });
-    }
+    };
     const postAcknowledge = (formEntry) => {
         return fetch('/postAcknowledge', {
             method: 'POST',
@@ -273,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 return response.json();
             });
-    }
+    };
     const updateFormStatus = (studentId) => {
         return fetch(`/updateFormStatus?studentId=${studentId}`, {
             method: 'PUT',
@@ -287,7 +289,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 return response.json();
             })
-    }
+    };
     const sendEmail = (emailEntry) => {
         return fetch('/send-email', {
             method: 'POST',
@@ -302,7 +304,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 return response.json();
             })
-    }
+    };
     const getSchools = () => {
         return fetch(`/getSchools`)
             .then((response) => {
@@ -311,7 +313,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 return response.json();
             })
-    }
+    };
     const uploadSignature = (data) => {
         return fetch('/uploadSign', {
             method: 'POST',
@@ -326,7 +328,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 return response.json();
             })
-    }
+    };
     const checkStudentDuplication = (studentNRIC) => {
         return fetch('/checkStudentNRIC', {
             method: 'POST',
@@ -335,18 +337,18 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: JSON.stringify({ studentNRIC: studentNRIC })
         })
-            .then(response => {
-                if (response.status === 404) {
-                    // student was not found
-                    return { studentIdArr: false, deleteStudent: false };
-                }
-                else if (response.status === 500) {
-                    // Server error
-                    throw new Error('ServerError');
-                }
-                return response.json().then(data => ({ studentIdArr: data, deleteStudent: true }));
-            });
-    }
+        .then(response => {
+            if (response.status === 404) {
+                // student was not found
+                return { studentInfo: false, deleteStudent: false };
+            }
+            else if (response.status === 500) {
+                // Server error
+                throw new Error('ServerError');
+            }
+            return response.json().then(data => ({ studentInfo: data, deleteStudent: true }));
+        });
+    };
 
     // Validation functions
     const validatePhone = (inputElement, feedbackElement, value) => {
@@ -454,7 +456,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
                 else if (key === "schoolName") {
-                    
+                    if (value === "" || key === undefined || key === null) {
+                        validities.isSchoolValid = false;
+                    }
                 }
                 // show error message
                 if (value === "" || value === undefined || value === null) {
@@ -497,7 +501,7 @@ document.addEventListener('DOMContentLoaded', function () {
         else {
             return true;
         }
-    }
+    };
 
     // Other functions
     const doctorAutoFill = (doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo) => {
@@ -631,7 +635,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return true;
         }
     };
-    const waitModalResponse = (studentIdsArr) => {
+    const waitModalResponse = (deletionStudentEntry) => {
         return new Promise((resolve, reject) => {
             // Attach an event listener to the button
             const updateBtn = document.getElementById('updateStudentBtn');
@@ -644,7 +648,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(studentIdsArr)
+                    body: JSON.stringify(deletionStudentEntry)
                 })
                     .then(response => {
                         if (!response.ok) {
@@ -662,7 +666,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
     const relocateToErrorPage = (errCode) => {
         window.location.href += `/error?code=${errCode}`;
-    }
+    };
 
     // sections div click event
     sectionOneContainer.addEventListener('click', (event) => {
@@ -691,7 +695,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Input Validation event listners:
+    // Input listners:
     studentNameInput.addEventListener('input', (event) => {
         if (validateName(studentNameInput, studentNameFeedback, event.target.value)) {
             validities.isStudentNameValid = true;
@@ -710,7 +714,7 @@ document.addEventListener('DOMContentLoaded', function () {
             studentNRIC = studentNRIC.substring(0, studentNRIC.length - difference);
         }
         if (nric.length > 4) {
-            event.target.value = '*'.repeat(4) + nric.slice(4);
+            event.target.value = '*'.repeat(5) + nric.slice(5);
         } else {
             event.target.value = '*'.repeat(nric.length);
         }
@@ -836,7 +840,7 @@ document.addEventListener('DOMContentLoaded', function () {
             validities.isCommentValid = true;
         }
     });
-    signaturePad.onBegin = function () {
+    signaturePad.onBegin = () => {
         const signatureMsg = document.getElementById('signatureMsg');
         signatureMsg.textContent = '';
         signatureMsg.className = '';
@@ -869,7 +873,7 @@ document.addEventListener('DOMContentLoaded', function () {
             availabilityBtn.innerHTML = '';
             availabilityBtn.className = 'btn btn-primary'
             availabilityBtn.appendChild(clone);
-
+         
             fetch('/checkDoctorMCR', {
                 method: 'POST',
                 headers: {
@@ -877,44 +881,41 @@ document.addEventListener('DOMContentLoaded', function () {
                 },
                 body: JSON.stringify({ doctorMCR: doctorMCRInput.value })
             })
-                .then(response => {
-                    if (response.status === 404) {
-                        // Doctor was not found
-                        throw new Error('DoctorNotFound');
-                    }
-                    else if (response.status === 500) {
-                        // Server error
-                        alert('An error occurred. Please try again later.');
-                        throw new Error('ServerError');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    const { doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo } = data[0];
-                    doctorAutoFill(doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo);
-                    removeInvalidTooltips();
-                    validities.isDoctorMCRValid = true;
-                    validities.isDoctorNameValid = true;
-                    validities.isDoctorContactValid = true;
-                    validities.isClinicNameValid = true;
-                    validities.isClinicAddressValid = true;
-                    validities.isDateValid = true;
-                    validities.isSignatureValid = true;
-                })
-                .catch(err => {
-                    if (err.message == 'DoctorNotFound') {
-                        // if doctor is new and available
-                        doctorMCRInput.disabled = true;
-                        availabilityBtn.disabled = true;
-                        availabilityBtn.textContent = `You are new!`
-                        availabilityBtn.className = 'btn btn-success'
-                        isAvailabilityBtn = true;
-                    }
-                    else {
-                        // internal server error
-                        alert("internal server error" + err.message);
-                    }
-                });
+            .then(response => {
+                if (response.status === 404) {
+                    // Doctor was not found
+                    throw new Error('DoctorNotFound');
+                }
+                else if (response.status === 500) {
+                    throw new Error('ServerError');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const { doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo } = data[0];
+                doctorAutoFill(doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo);
+                removeInvalidTooltips();
+                validities.isDoctorMCRValid = true;
+                validities.isDoctorNameValid = true;
+                validities.isDoctorContactValid = true;
+                validities.isClinicNameValid = true;
+                validities.isClinicAddressValid = true;
+                validities.isDateValid = true;
+                validities.isSignatureValid = true;
+            })
+            .catch(err => {
+                if (err.message == 'DoctorNotFound') {
+                    // if doctor is new and available
+                    doctorMCRInput.disabled = true;
+                    availabilityBtn.disabled = true;
+                    availabilityBtn.textContent = `You are new!`
+                    availabilityBtn.className = 'btn btn-success'
+                    isAvailabilityBtn = true;
+                }
+                else {
+                    relocateToErrorPage(500);
+                }
+            });
         }
 
     });
@@ -961,7 +962,7 @@ document.addEventListener('DOMContentLoaded', function () {
         schoolDropDownMenu.appendChild(loadingTempClone);
         schools = [];
         if (currentSchool === "" || currentSchool === undefined || currentSchool === null) {
-            
+            schoolName.classList.add('is-invalid');
         }
     });
 
@@ -1008,8 +1009,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (data.deleteStudent) {
                         //modal response
                         deleteStudentModal.show();
-                        const studentIdsArr = data.studentIdArr.map(obj => obj.studentId);
-                        return waitModalResponse({ studentIds: studentIdsArr });
+                        const deletionStudentEntry = {
+                            studentId : data.studentInfo[0].studentId,
+                            formStatus : data.studentInfo[0].formStatus
+                        }
+                        return waitModalResponse(deletionStudentEntry);
                     }
                     else {
                         return Promise.resolve();
@@ -1075,6 +1079,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         studentEntry.studentNRIC = studentNRIC.substring(studentNRIC.length - 4);
                         postStudentInfo(studentEntry)
                             .then(data => {
+                                console.log(data)
                                 studentId = data[0].insertId;
                                 formEntry.studentId = studentId;
                                 formEntry.doctorMCR = currentDoctor;
@@ -1116,10 +1121,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 })
                 .catch(error => {
-                    if (error.message === "User Canceled updating student") {
-                        alertBox('Canceled', 'danger');
+                    if (error.status === 409) {
+                        alertBox(error.message, 'danger');
                     }
-                    relocateToErrorPage(error.status);
+                    else {
+                        if (error.status === 500) {
+                            relocateToErrorPage(error.status);
+                        }
+
+                    }
                 });
         }
         else {
