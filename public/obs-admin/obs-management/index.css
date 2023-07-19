@@ -143,13 +143,14 @@ a.navbar-label-perms {
 }
 
 /*Status*/
-  .rectanglePending, .rectangleApproved, .rectangleRejected {
+  .rectanglePending, .rectangleApproved, .rectangleRejected, .rectanglePendingParent {
     margin: 10px;
     width: 280px;
     height: 170px;
     background-color: #f2c153;
     border:1px solid #485eab;  
     border-radius: 10px;   
+    cursor: pointer;
   }
 
   .rectangleApproved {

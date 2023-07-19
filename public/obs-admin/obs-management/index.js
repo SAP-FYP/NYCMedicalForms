@@ -56,12 +56,10 @@ function updateFormCounts(formData) {
         counts.rejected++;
       } else if (form.formStatus === "Pending Parent") {
         counts.pendingParent++;
-      } else if (form.formStatus === "Need Review") {
-        counts.pending++;
-      }
+      } 
       return counts;
     },
-    { pendingParent: 0, pending: 0, approved: 0, rejected: 0, needReview: 0 }
+    { pendingParent: 0, pending: 0, approved: 0, rejected: 0}
   );
   // console.log(formCounts); // Log the formCounts object to the console
   const pendingParentAmtElement = document.querySelector('.pendingParentAmt');
@@ -74,6 +72,7 @@ function updateFormCounts(formData) {
   apprAmtElement.textContent = `${formCounts.approved}`;
   rejAmtElement.textContent = `${formCounts.rejected}`;
 }
+
 function createFormattedDate(date) {
   const dateObj = new Date(date);
   return dateObj.toLocaleDateString("en-SG", {
@@ -85,6 +84,7 @@ function createFormattedDate(date) {
 function createExportButtonAll(id) {
   // Create the export button element for all data
   const exportIcon = document.createElement('img');
+  exportIcon.style.cursor = 'pointer';
   exportIcon.src = '../../assets/images/export-to-excel-icon.png';
   exportIcon.id = id;
   exportIcon.alt = 'export-icon';
@@ -544,7 +544,9 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
       // Add the elements to the parent element
       apprRejContainer.appendChild(containerDiv);
       apprRejContainer.appendChild(buttonContainerDiv);
-
+      if (undoStatusContainer) {
+      undoStatusContainer.innerHTML = ''
+      }
     }
     //if Approved create undo button
     if (formData.formStatus === "Approved" || formData.formStatus === "Rejected") {
@@ -566,6 +568,7 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
       })
     }
 
+    //update status to reject
     const rejectBtn = document.querySelector('#rejectBtn');
     if (rejectBtn) {
       rejectBtn.setAttribute('id', 'rejectBtn-studentid-' + studentId);
@@ -598,6 +601,8 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
       });
 
     }
+
+    //update status to pending
     const undoStatusBtn = document.querySelector('.undoStatusBtn');
     if(formData.formStatus === "Approved"){
       if (undoStatusBtn) {
@@ -609,8 +614,6 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
 
           pillPending.textContent = 'Pending';
           alertBox("The form has been reverted back to pending.", 'success');
-
-          
 
           const rejAmt = document.querySelector('.apprAmt');
           rejAmt.textContent = parseInt(rejAmt.textContent) - 1
@@ -638,9 +641,6 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
           pillPending.textContent = 'Pending';
           alertBox("The form has been reverted back to pending.", 'success');
 
-         
-          
-
           const rejAmt = document.querySelector('.rejAmt');
           rejAmt.textContent = parseInt(rejAmt.textContent) - 1
 
@@ -652,10 +652,10 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
             parentContainer.removeChild(canvas);
           }
         });
-
       }
     }
 
+    //update status to approve
     const approveBtn = document.querySelector('#approveBtn');
     if (approveBtn) {
       approveBtn.setAttribute('id', 'approveBtn-studentid-' + studentId);
@@ -720,13 +720,7 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
     } else {
       alertBox("You don't have permission to edit review!", 'danger');
     }
-
   })
-
-
-
-
-
 }
 
 //FUNCTION TO UPDATE STATUS OF FORM TO APPROVED
@@ -834,6 +828,7 @@ function updateStatusPending(formData) {
     });
 }
 
+//FUNCTION TO EDIT REVIEW OF FORM
 function editReview(formData, newReview) {
   const submitReview = document.querySelector('.submitReviewBtn');
   const studentId = formData.studentId;
@@ -928,11 +923,17 @@ function exportToExcelBulk(data) {
       console.error("Export request failed:", error);
     });
 }
+//expportButtonHandler
+const exportButtonHandler = () => {
+  console.log(dataAll);
+  exportToExcelBulk(dataAll);
+  alertBox("You have successfully exported the data to excel!", "success")
+}
 
 
 const alertContainer = document.getElementById('alertbox');
 let dataAll = [];
-
+const arrowIcon = document.querySelector('.arrow-icon');
 document.addEventListener("DOMContentLoaded", function () {
 
   axios.get(`${API_URL}/all`)
@@ -1012,6 +1013,7 @@ document.addEventListener("DOMContentLoaded", function () {
         } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
         //call function to handle checkboxes
         if (userPermission.includes(5)) {
+          arrowIcon.classList.remove('d-none');
           handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
         } else {
           const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
@@ -1046,13 +1048,16 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-
 const searchInput = document.querySelector("#searchInput");
 const searchBtn = document.querySelector('#search-button');
 const searchClearBtn = document.querySelector('#clear-button');
 const allForms = document.querySelector('#getAllForms');
+const rectanglePendingParent = document.querySelector('.rectanglePendingParent');
+const rectanglePending = document.querySelector('.rectanglePending');
+const rectangleApproved = document.querySelector('.rectangleApproved');
+const rectangleRejected = document.querySelector('.rectangleRejected');
+//Function to search for forms
 function searchForms() {
-
   if (searchInput.value.trim() === '') {
     location.reload();
   } else {
@@ -1133,6 +1138,7 @@ function searchForms() {
           } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
           //call function to handle checkboxes
           if (userPermission.includes(5)) {
+            arrowIcon.classList.remove('d-none');
             handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
           } else {
             const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
@@ -1175,30 +1181,258 @@ function searchForms() {
 
 }
 
-const exportButtonHandler = () => {
-  console.log(dataAll);
-  exportToExcelBulk(dataAll);
-  alertBox("You have successfully exported the data to excel!", "success")
-}
-
-// function showAlert(message) {
-//   alert(message);
-// }
-
+//Serach, click icon
 searchBtn.addEventListener('click', () => {
+  rectanglePendingParent.style.border = '1px solid #485eab';
+  rectangleApproved.style.border = '1px solid #485eab';
+  rectanglePending.style.border = '1px solid #485eab';
+  rectangleRejected.style.border = '1px solid #485eab';
   searchForms();
 });
 
+//Search, press enter
 searchInput.addEventListener('keypress', event => {
+  rectanglePendingParent.style.border = '1px solid #485eab';
+  rectangleApproved.style.border = '1px solid #485eab';
+  rectanglePending.style.border = '1px solid #485eab';
+  rectangleRejected.style.border = '1px solid #485eab';
   if (event.key === "Enter") {
     event.preventDefault();
     searchForms();
   }
 });
 
+//Search, clear button
 searchClearBtn.onclick = () => {
   searchInput.value = "";
   searchForms();
+}
+
+////////////////////////////
+//Big Status Buttons
+////////////////////////////
+
+//temp
+function formCountOfDataAll() {
+  axios.get(`${API_URL}/all`)
+    .then(function (response) {
+      const configURL = response.config.url;
+      const requestURL = response.request.responseURL;
+      if (configURL !== requestURL) {
+        window.location.href = requestURL;
+        throw new Error("redirected");
+      }
+      //call function to update status count
+      const formData = response.data;
+      //remove user permission from array of data
+      const userPermission = response.data.pop();
+      console.log(formData)
+      updateFormCounts(formData);
+
+    })
+    .catch(function (error) {
+      if (error && error.message !== "redirected") {
+        console.log(error);
+      }
+      console.log(error);
+    });
+}
+
+//function for retreriving data by status
+function retrieveByStatus(apiUrl) {
+  axios.get(apiUrl)
+  .then(function (response) {
+    const configURL = response.config.url;
+    const requestURL = response.request.responseURL;
+    if (configURL !== requestURL) {
+      window.location.href = requestURL;
+      throw new Error("redirected");
+    }
+
+    //call function to update status count
+    const formData = response.data;
+
+    //remove user permission from array of data
+    const userPermission = response.data.pop();
+    console.log(formData)
+
+    //tempx
+    formCountOfDataAll()
+    //  updateFormCounts(formData);  
+
+    //call function to create export button for
+    const exportBtnBulkContainer = document.querySelector('#export-btn-status');
+    const exportIcon = createExportButtonAll('export-icon');
+
+
+    const successBtn = document.querySelector('.successBtn');
+    const rejectBtn = document.querySelector('.rejectBtn');
+    if (successBtn) {
+      successBtn.addEventListener('click', function () {
+
+        const pillPending = document.querySelector('.changePill');
+        if (pillPending) {
+          pillPending.classList.remove('changePill');
+        }
+
+      });
+    }
+    if (rejectBtn) {
+      rejectBtn.addEventListener('click', function () {
+        const pillPending = document.querySelector('.changePill');
+        if (pillPending) {
+          pillPending.classList.remove('changePill');
+        }
+      });
+    }
+    //create array to store all data for export to excel bulk
+
+    // Loop through the data and add it to the page
+    for (i = 0; i < formData.length; i++) {
+
+      //call function to format date
+      const formattedDate = createFormattedDate(formData[i].courseDate);
+      // Get references to the status container and template
+      const getAllForms = document.querySelector('#getAllForms');
+      const rowTemplate = document.querySelector('.row-table-template');
+
+      //clear html content in getAllForms once since using template
+      if (i === 0) {
+        dataAll = [];
+        getAllForms.innerHTML = "";
+      }
+      // Clone the template and append it to the status container
+      const templateContent = rowTemplate.content;
+      const clonedRowTemplate = document.importNode(templateContent, true);
+
+      // Populate the cloned template function
+      const {
+        studentNRICCell,
+        nameOfStudentCell,
+        classCell,
+        schoolCell,
+        eligibilityCell,
+        formattedDateCell,
+        formStatusValue,
+        studentId,
+        mstReviewCell,
+        docReviewCell
+      } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
+      //call function to handle checkboxes
+      if (userPermission.includes(5)) {
+        arrowIcon.classList.remove('d-none');
+        handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
+      } else {
+        const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
+        const checkBoxTop = document.querySelector('#checkBoxTop');
+        checkBoxes.forEach(function (checkBox) {
+          checkBox.classList.add('d-none');
+        });
+        checkBoxTop.classList.add('d-none');
+      }
+
+
+      //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
+      handleModalButtons(clonedRowTemplate, studentId, formData, i);
+      ;
+
+
+    }
+    //Outside of for loop 
+    //Export to Excel Bulk Once
+    exportBtnBulkContainer.removeEventListener('click', exportButtonHandler);
+    exportBtnBulkContainer.addEventListener('click', exportButtonHandler);
+    
+
+  })
+  .catch(function (error) {
+    if (error && error.message !== "redirected") {
+      console.log(error);
+    }
+    console.log(error);
+  });
+}
+//If user clicks on pending parent status button, retrieve forms by status
+//highlight button when clicked
+if (rectanglePendingParent) {
+  rectanglePendingParent.addEventListener('click', () => {
+    //put back the border for the rest of the buttons
+    rectangleApproved.style.border = '1px solid #485eab';
+    rectangleRejected.style.border = '1px solid #485eab';
+    rectanglePending.style.border = '1px solid #485eab';
+    //highlight the button that is clicked //change ltr
+    rectanglePendingParent.style.border = '4px solid #4195fc';
+    rectanglePendingParent.style.transform = 'scale(0.9)';
+    rectanglePendingParent.style.transition = 'transform 0.2s ease-in-out';
+  
+    setTimeout(function() {
+      rectanglePendingParent.style.transform = 'scale(1)';
+    }, 200);
+    let apiUrl = `${API_URL}/formStatus/Pending%20Parent`;
+    retrieveByStatus(apiUrl);
+    
+  });
+}
+
+//If user clicks on pending status button, retrieve forms by status
+if (rectanglePending) {
+  rectanglePending.addEventListener('click', () => {
+    //put back the border for the rest of the buttons
+    rectangleApproved.style.border = '1px solid #485eab';
+    rectangleRejected.style.border = '1px solid #485eab';
+    rectanglePendingParent.style.border = '1px solid #485eab';
+    //highlight the button that is clicked
+    rectanglePending.style.border = '4px solid #4195fc';
+    rectanglePending.style.transform = 'scale(0.9)';
+    rectanglePending.style.transition = 'transform 0.2s ease-in-out';
+  
+    setTimeout(function() {
+      rectanglePending.style.transform = 'scale(1)';
+    }, 200);
+    let apiUrl = `${API_URL}/formStatus/Pending`;
+    retrieveByStatus(apiUrl);
+  });
+}
+
+//If user clicks on approved status button, retrieve forms by status
+if (rectangleApproved) {
+  rectangleApproved.addEventListener('click', () => {
+    //put back the border for the rest of the buttons
+    rectanglePendingParent.style.border = '1px solid #485eab';
+    rectangleRejected.style.border = '1px solid #485eab';
+    rectanglePending.style.border = '1px solid #485eab';
+    //highlight the button that is clicked
+    rectangleApproved.style.border = '4px solid #4195fc';
+    rectangleApproved.style.transform = 'scale(0.9)';
+    rectangleApproved.style.transition = 'transform 0.2s ease-in-out';
+  
+    setTimeout(function() {
+      rectangleApproved.style.transform = 'scale(1)';
+    }, 200);
+    let apiUrl = `${API_URL}/formStatus/Approved`;
+    retrieveByStatus(apiUrl);
+  });
+}
+
+//If user clicks on rejected status button, retrieve forms by status
+if (rectangleRejected) {
+  rectangleRejected.addEventListener('click', () => {
+    //put back the border for the rest of the buttons
+    rectanglePendingParent.style.border = '1px solid #485eab';
+    rectangleApproved.style.border = '1px solid #485eab';
+    rectanglePending.style.border = '1px solid #485eab';
+    //highlight the button that is clicked
+    rectangleRejected.style.border = '4px solid #4195fc';
+
+    rectangleRejected.style.transform = 'scale(0.9)';
+    rectangleRejected.style.transition = 'transform 0.2s ease-in-out';
+  
+    setTimeout(function() {
+      rectangleRejected.style.transform = 'scale(1)';
+    }, 200);
+    let apiUrl = `${API_URL}/formStatus/Rejected`;
+    retrieveByStatus(apiUrl);
+  });
 }
 
 ////////////////////////////
@@ -1207,14 +1441,19 @@ searchClearBtn.onclick = () => {
 const filterIcons = document.querySelector('#filter-icon');
 const filterDropDowns = document.querySelector('.displayFilters');
 filterIcons.addEventListener('click', () => {
+  rectanglePendingParent.style.border = '1px solid #485eab';
+  rectangleApproved.style.border = '1px solid #485eab';
+  rectanglePending.style.border = '1px solid #485eab';
+  rectangleRejected.style.border = '1px solid #485eab';
   if (filterDropDowns.classList.contains('d-none')) {
     filterDropDowns.classList.remove('d-none');
   } else {
     filterDropDowns.classList.add('d-none');
   }
 });
+
 ////////////////////////////
-//Navbar 
+//Navbar Error Handling
 ////////////////////////////
 const navBarPerms = document.querySelector('#permission-li')
 const navBarUsers = document.querySelector('#user-li')
@@ -1228,7 +1467,6 @@ navBarUsers.addEventListener('click', function () {
 navBarForms.addEventListener('click', function () {
   alertBox('You are already on this page', 'warn');
 });
-
 
 
 ////////////////////////////
@@ -1492,7 +1730,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             eligibility: eligibilityArray
           })
             .then(response => {
-              formData = response.data;
+              const formData = response.data;
 
               //remove user permission from array of data
               const userPermission = response.data.pop();
@@ -1568,6 +1806,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
                 //call function to handle checkboxes
                 if (userPermission.includes(5)) {
+                  arrowIcon.classList.remove('d-none');
                   handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
                 } else {
                   const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
@@ -1587,9 +1826,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
               }
               //Outside of for loop 
               //Export to Excel Bulk Once
-              const exportBtnBulk = document.querySelector('#export-btn-filter');
-              exportBtnBulk.removeEventListener('click', exportButtonHandler);
-              exportBtnBulk.addEventListener('click', exportButtonHandler);
+              exportBtnBulkContainer.removeEventListener('click', exportButtonHandler);
+              exportBtnBulkContainer.addEventListener('click', exportButtonHandler);
               // Remove exportIcon if filter checkbox is pressed
             })
             .catch(function (error) {
@@ -1607,11 +1845,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
       }
     });
 
-  const exportButtonHandler = () => {
-    console.log(dataAll);
-    exportToExcelBulk(dataAll);
-    alertBox("You have successfully exported the data to excel!", "success")
-  }
+  // const exportButtonHandler = () => {
+  //   console.log(dataAll);
+  //   exportToExcelBulk(dataAll);
+  //   alertBox("You have successfully exported the data to excel!", "success")
+  // }
 
 
 

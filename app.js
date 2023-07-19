@@ -1605,6 +1605,32 @@ app.get('/obs-admin/pmt/all', authHelper.verifyToken, authHelper.checkIat, async
             return res.status(error.status || 500).json({ error: error.message });
         });
 });
+app.get('/obs-admin/pmt/formStatus/:formStatus', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
+    // AUTHORIZATION CHECK - PMT, MST 
+    const formStatus = req.params.formStatus;
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+        return res.redirect('/error?code=403&type=obs-admin')
+    }
+    // IF NO PERMISSIONS
+    if (!req.decodedToken.permissions.includes(1)) {
+        return res.redirect('/error?code=403&type=obs-admin')
+    }
+    return pmtModel
+        .getSubmissionByStatus(formStatus)
+        .then((result) => {
+
+            if (result.length === 0) {
+                throw new Error("No submissions found");
+            }
+
+
+            result[0].push(req.decodedToken.permissions);
+            return res.json(result[0]);
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        });
+});
 
 //PMT Retrieve Submission By Student Name
 app.get('/obs-admin/pmt/:studentId', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {

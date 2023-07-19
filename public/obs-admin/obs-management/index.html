@@ -89,7 +89,7 @@
                         <!-- Template for status -->
 
                         <!-- Status -->
-                        <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePending">
+                        <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePendingParent">
                             <div>
                                 <h2 class="text-center m-auto p-0">Pending Parent</h2>
                                 <h1 class="text-center m-auto p-0 pendingParentAmt"><span
@@ -243,6 +243,9 @@
                             <a id="export-btn-all">
 
                             </a>
+                            <a id="export-btn-status">
+                                
+                            </a>
                             <a id="export-btn-search">
 
                             </a>
@@ -259,7 +262,7 @@
                             <th>
                                 <div class="header-container">
                                     <input type="checkbox" id="checkBoxTop">
-                                    <i class="material-icons arrow-icon">arrow_drop_down</i>
+                                    <i class="material-icons arrow-icon d-none">arrow_drop_down</i>
                                   </div>
                             </th>
                             <th>NRIC</th>
@@ -531,6 +534,11 @@
                                             <div class="form-group" id="apprRejContainer">
 
                                             </div>
+                                            <div class="col-12 mb-3">
+                                                <div class="form-group text-center mb-3 d-flex justify-content-center align-items-center" id="undoStatusContainer">
+                                                    
+                                                </div>
+                                            </div>
                                             <div class="col-12 mb-3 text-end">
                                                 <a>
                                                     <button
@@ -562,13 +570,7 @@
                                                         Review</div>
                                                 </div>
                                             </div>
-                                            <div class="row">
-                                                <div class="col-12 mb-3">
-                                                    <div class="form-group" id="undoStatusContainer">
-                                                        
-                                                    </div>
-                                                </div>
-                                            </div>
+                                           
                                         </form>
                                     </div>
                                 </div>
@@ -662,7 +664,7 @@
     <template class="status-template">
         <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePending">
             <div>
-                <h2 class="text-center m-auto p-0">Pending Parent</h2>
+                <h2 class="text-center m-auto p-0 ">Pending Parent</h2>
                 <h1 class="text-center m-auto p-0 pendingParentAmt">2</h1>
             </div>
         </div>

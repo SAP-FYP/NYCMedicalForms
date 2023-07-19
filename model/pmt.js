@@ -71,6 +71,20 @@ module.exports.updateSubmissionStatus = function updateSubmissionStatus(
     });
 };
 
+module.exports.getSubmissionByStatus = function getSubmissionByStatus(formStatus) {
+  const sql = `SELECT F.formId, S.studentId, S.studentNRIC, S.nameOfStudent, S.class, S.school, F.eligibility, F.courseDate, F.formStatus, F.comments, F.review
+  FROM form F
+  LEFT JOIN student S ON F.studentId = S.studentId
+    WHERE F.formStatus = ?`;
+  return query(sql, [formStatus])
+    .then((result) => {
+      return result;
+    })
+    .catch((error) => {
+      throw new Error(error);
+    });
+};
+
 module.exports.retrieveSubmissionByFilter = function retrieveSubmissionByFilter(
   filter
 ) {
