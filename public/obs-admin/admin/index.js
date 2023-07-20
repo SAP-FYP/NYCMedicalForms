@@ -28,7 +28,7 @@ window.addEventListener('DOMContentLoaded', () => {
     let eof = false;
     let offset = 0;
     let searchFilter;
-
+    let order = 0;
     // === ALERT BOX ===
 
     const alertBox = (message, type) => {
@@ -145,7 +145,6 @@ window.addEventListener('DOMContentLoaded', () => {
             .then(handleResponse)
             .then((jsonData) => {
                 const permGroups = jsonData.result;
-
                 if (!permGroups) {
                     alertBox('No permission groups found.', 'warn');
                 } else {
@@ -165,7 +164,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const getUsers = (filter) => {
         !filter ? filter = -1 : filter;
 
-        fetch(`/obs-admin/users/${filter}/16/${offset}`)
+        fetch(`/obs-admin/users/${filter}/16/${offset}/${order}`)
             .then(handleResponse)
             .then((jsonData) => {
                 const users = jsonData.result;
@@ -543,6 +542,13 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     // === EVENT HANDLERS ===
+
+    document.getElementById('sort-select').onchange = (e) => {
+        removeUsers();
+        searchInput.value = "";
+        order = e.target.value
+        getUsers(null, order)
+    }
 
     const validateInput = (inputElement, validationFn) => {
         const isValid = validationFn(inputElement.value.trim());

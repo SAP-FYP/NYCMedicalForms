@@ -272,16 +272,8 @@ module.exports.bulkDeletePermissionGroup = async function bulkDeletePermissionGr
     }
 }
 
-module.exports.getAllUsers = function getAllUsers(email, searchInput, limit, offset) {
-    // const sql = `SELECT u.email, u.nameOfUser, u.contactNo, u.groupId, u.roleId, u.picUrl, u.isDisabled, r.roleName
-    // FROM user u
-    // LEFT JOIN role r ON u.roleId = r.roleId
-    // WHERE u.isDeleted = 0 AND
-    // u.email != ? AND
-    // (u.nameOfUser LIKE ? OR
-    // u.email LIKE ?)
-    // ORDER BY u.nameOfUser 
-    // LIMIT ? OFFSET ?`;
+module.exports.getAllUsers = function getAllUsers(email, searchInput, limit, offset, order) {
+    const orderColumn = 'u.' + order;
 
     const sql = `SELECT u.email, u.nameOfUser, u.contactNo, u.groupId, u.roleId, u.picUrl, u.isDisabled, r.roleName
     FROM user u
@@ -289,7 +281,7 @@ module.exports.getAllUsers = function getAllUsers(email, searchInput, limit, off
     WHERE u.isDeleted = 0 AND
     u.email != ? AND
     u.nameOfUser LIKE ? 
-    ORDER BY u.nameOfUser 
+    ORDER BY ${orderColumn}
     LIMIT ? OFFSET ?`;
 
     return query(sql, [email, `%${searchInput}%`, limit, offset])

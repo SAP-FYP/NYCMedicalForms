@@ -112,6 +112,20 @@ body {
     font-weight: 600;
 }
 
+#sort-btn-container {
+    margin-right: 10px;
+}
+
+#sort-select {
+    height: 40px;
+    color: #485EAB;
+    background-color: #C7D3EF;
+    height: 40px;
+    border-radius: 10px;
+    border: 2px solid #485EAB;
+    padding: 0px 10px;
+}
+
 /* DATA CONTAINER */
 #data-container {
     flex: 1 1 auto;
