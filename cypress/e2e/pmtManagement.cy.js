@@ -122,6 +122,7 @@ describe('Approving and rejecting of forms', () => {
         cy.get('td[id=modalBtn-studentId-3]').eq(0).click({force: true});
         cy.get('button[id=approveBtn-studentid-3]').eq(0).click({force: true})
         cy.get('.alert-success').should('be.visible');
+        cy.wait(500);
         cy.get('td[id=modalBtn-studentId-3]').eq(0).click({force: true});
         cy.wait(500);
         cy.get('.alert-success').should('be.visible');
@@ -141,6 +142,7 @@ describe('Approving and rejecting of forms', () => {
         cy.get('td[id=modalBtn-studentId-4]').eq(0).click({force: true});
         cy.get('button[id=rejectBtn-studentid-4]').eq(0).click({force: true})
         cy.get('.alert-success').should('be.visible');
+        cy.wait(500);
         cy.get('td[id=modalBtn-studentId-4]').eq(0).click({force: true});
         cy.wait(500);
         cy.get('.alert-success').should('be.visible');
