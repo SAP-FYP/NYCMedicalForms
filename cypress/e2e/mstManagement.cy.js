@@ -16,6 +16,7 @@ before(() => {
 
 beforeEach(() => {
     cy.viewport(1669, 937);
+    cy.wait(500)
     cy.setCookie('jwt', authToken);
     cy.visit('http://localhost:3000/obs-admin/obs-management/');
 })
