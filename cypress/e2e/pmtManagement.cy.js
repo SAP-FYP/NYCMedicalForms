@@ -21,14 +21,14 @@ beforeEach(() => {
     cy.visit('http://localhost:3000/obs-admin/obs-management/');
     cy.request({
         method: 'PUT',
-        url: '/obs-admin/pmt/4',
+        url: '/obs-admin/pmt/1',
         body: {
             formStatus: 'Pending'
         }
     })
     cy.request({
         method: 'PUT',
-        url: '/obs-admin/pmt/3',
+        url: '/obs-admin/pmt/2',
         body: {
             formStatus: 'Pending'
         }
@@ -120,10 +120,10 @@ describe('Approving and rejecting of forms', () => {
     //use cy.intercept
     it('should approve the selected form', () => {
         cy.wait(500);
-        cy.get('td[id=modalBtn-studentId-3]').eq(0).click({force: true});
-        cy.get('button[id=approveBtn-studentid-3]').eq(0).contains('Approve').click({force: true})
+        cy.get('td[id=modalBtn-studentId-1]').eq(0).click({force: true}); 
+        cy.get('button[id=approveBtn-studentid-1]').eq(0).contains('Approve').click({force: true})
         cy.get('.alert-success').should('be.visible');
-        cy.get('td[id=modalBtn-studentId-3]').eq(0).click({force: true});
+        cy.get('td[id=modalBtn-studentId-1]').eq(0).click({force: true});
         cy.wait(500);
         cy.get('.alert-success').should('be.visible');
         cy.wait(500);
@@ -131,7 +131,7 @@ describe('Approving and rejecting of forms', () => {
         // Put form status back to pending
         cy.request({
             method: 'PUT',
-            url: '/obs-admin/pmt/3',
+            url: '/obs-admin/pmt/1',
             body: {
                 formStatus: 'Pending'
             }
@@ -140,10 +140,10 @@ describe('Approving and rejecting of forms', () => {
 
     it('should reject the selected form', () => {
         cy.wait(500);
-        cy.get('td[id=modalBtn-studentId-4]').eq(0).click({force: true});
-        cy.get('button[id=rejectBtn-studentid-4]').eq(0).contains('Reject').click({force: true})
+        cy.get('td[id=modalBtn-studentId-2]').eq(0).click({force: true});
+        cy.get('button[id=rejectBtn-studentid-2]').eq(0).contains('Reject').click({force: true})
         cy.get('.alert-success').should('be.visible');
-        cy.get('td[id=modalBtn-studentId-4]').eq(0).click({force: true});
+        cy.get('td[id=modalBtn-studentId-2]').eq(0).click({force: true});
         cy.wait(500);
         cy.get('.alert-success').should('be.visible');
         cy.wait(500);
@@ -151,7 +151,7 @@ describe('Approving and rejecting of forms', () => {
         // Put form status back to pending
         cy.request({
             method: 'PUT',
-            url: '/obs-admin/pmt/4',
+            url: '/obs-admin/pmt/2',
             body: {
                 formStatus: 'Pending'
             }
