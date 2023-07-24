@@ -943,17 +943,25 @@ const rectanglePending = document.querySelector('.rectanglePending');
 const rectangleApproved = document.querySelector('.rectangleApproved');
 const rectangleRejected = document.querySelector('.rectangleRejected');
 
-const nricColoumn = document.querySelector('#nricColoumn');
-const fullNameColoumn = document.querySelector('#fullNameColoumn');
+//All variables for sorting
+const nricColumn = document.querySelector('#nricColumn');
+const fullNameColumn = document.querySelector('#fullNameColumn');
 const classColumn = document.querySelector('#classColumn');
 const schoolColumn = document.querySelector('#schColumn');
 const eligibilityColumn = document.querySelector('#eligibilityColumn');
 const courseDateColumn = document.querySelector('#courseDateColumn');
-
-
-
+//Sorting arrow icon
+const sortIconName = document.querySelector('#fullNameColumn i.arrow-icon-name');
+const sortIconClass = document.querySelector('#classColumn i.arrow-icon-class');
+const sortIconSchool = document.querySelector('#schColumn i.arrow-icon-school');
+const sortIconEligibility = document.querySelector('#eligibilityColumn i.arrow-icon-eligibility');
+const sortIconCourseDate = document.querySelector('#courseDateColumn i.arrow-icon-coursedate');
+let ascending = true; // Variable to keep track of the current sorting order
+function displayArrowIcons() {
+  sortIconName.classList.remove('d-none');
+  sortIconSchool.classList.remove('d-none');
+}
 document.addEventListener("DOMContentLoaded", function () {
-
   axios.get(`${API_URL}/all`)
     .then(function (response) {
       const configURL = response.config.url;
@@ -1029,6 +1037,9 @@ document.addEventListener("DOMContentLoaded", function () {
           mstReviewCell,
           docReviewCell
         } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
+        displayArrowIcons()
+
+
         //call function to handle checkboxes
         if (userPermission.includes(5)) {
           arrowIcon.classList.remove('d-none');
@@ -1066,6 +1077,59 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+//Function to sort table
+function sortTable(columnIndex, ascending) {
+  var table, rows, switching, i, x, y, shouldSwitch;
+  table = document.getElementById("dashboard-table");
+  switching = true;
+
+  while (switching) {
+    switching = false;
+    rows = table.rows;
+
+    for (i = 1; i < (rows.length - 1); i++) {
+      shouldSwitch = false;
+      x = rows[i].getElementsByTagName("TD")[columnIndex];
+      y = rows[i + 1].getElementsByTagName("TD")[columnIndex];
+
+      // Compare the values based on the sorting order (ascending or descending)
+      if (ascending) {
+        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+          shouldSwitch = true;
+          break;
+        }
+      } else {
+        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+          shouldSwitch = true;
+          break;
+        }
+      }
+    }
+
+    if (shouldSwitch) {
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+    }
+  }
+}
+//Function to change sort icon back to normal when other elements are clicked
+function changeBackSortIcon() {
+  ascending = true;
+  sortIconName.textContent = 'arrow_drop_down';
+  sortIconSchool.textContent = 'arrow_drop_down';
+}
+//Event listner for sorting by fullname, alphabetically, ascending and descending
+fullNameColumn.addEventListener('click', () => {
+  sortTable(2, ascending); // The index of the FULL NAME column is 2 (0-based index)
+  ascending = !ascending; // Toggle the sorting order
+  sortIconName.textContent = ascending ? 'arrow_drop_down' : 'arrow_drop_up';
+});
+
+schoolColumn.addEventListener('click', () => {
+  sortTable(4, ascending); // The index of the FULL NAME column is 2 (0-based index)
+  ascending = !ascending; // Toggle the sorting order
+  sortIconSchool.textContent = ascending ? 'arrow_drop_down' : 'arrow_drop_up';
+});
 
 //Function to search for forms
 function searchForms() {
@@ -1194,6 +1258,7 @@ function searchForms() {
 
 //Serach, click icon
 searchBtn.addEventListener('click', () => {
+  changeBackSortIcon()
   rectanglePendingParent.style.border = '1px solid #485eab';
   rectangleApproved.style.border = '1px solid #485eab';
   rectanglePending.style.border = '1px solid #485eab';
@@ -1203,6 +1268,7 @@ searchBtn.addEventListener('click', () => {
 
 //Search, press enter
 searchInput.addEventListener('keypress', event => {
+  changeBackSortIcon()
   rectanglePendingParent.style.border = '1px solid #485eab';
   rectangleApproved.style.border = '1px solid #485eab';
   rectanglePending.style.border = '1px solid #485eab';
@@ -1364,6 +1430,7 @@ function retrieveByStatus(apiUrl) {
   });
 }
 
+
 let selectedButton = null;
 
 function resetBorders() {
@@ -1487,6 +1554,7 @@ function retrieveAllForms() {
 // If user clicks on pending parent status button, retrieve forms by status
 if (rectanglePendingParent) {
   rectanglePendingParent.addEventListener('click', () => {
+    changeBackSortIcon()
     // Check if this button was previously selected
     if (selectedButton === rectanglePendingParent) {
       // Deselect the button
@@ -1515,6 +1583,7 @@ if (rectanglePendingParent) {
 // If user clicks on pending status button, retrieve forms by status
 if (rectanglePending) {
   rectanglePending.addEventListener('click', () => {
+    changeBackSortIcon()
     // Check if this button was previously selected
     if (selectedButton === rectanglePending) {
       // Deselect the button
@@ -1541,6 +1610,7 @@ if (rectanglePending) {
 // If user clicks on approved status button, retrieve forms by status
 if (rectangleApproved) {
   rectangleApproved.addEventListener('click', () => {
+    changeBackSortIcon()
     // Check if this button was previously selected
     if (selectedButton === rectangleApproved) {
       // Deselect the button
@@ -1567,6 +1637,7 @@ if (rectangleApproved) {
 // If user clicks on rejected status button, retrieve forms by status
 if (rectangleRejected) {
   rectangleRejected.addEventListener('click', () => {
+    changeBackSortIcon()
     // Check if this button was previously selected
     if (selectedButton === rectangleRejected) {
       // Deselect the button
@@ -1596,6 +1667,8 @@ if (rectangleRejected) {
 const filterIcons = document.querySelector('#filter-icon');
 const filterDropDowns = document.querySelector('.displayFilters');
 filterIcons.addEventListener('click', () => {
+  searchInput.value = "";
+  changeBackSortIcon()
   rectanglePendingParent.style.border = '1px solid #485eab';
   rectangleApproved.style.border = '1px solid #485eab';
   rectanglePending.style.border = '1px solid #485eab';
