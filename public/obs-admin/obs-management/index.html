@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="../header-nav.css" rel="stylesheet">
     <link rel="stylesheet" href="./index.css">
-
+    <link rel="icon" href="../../assets/images/obs-logo-icon.png">
     <link href="https://fonts.cdnfonts.com/css/myriad-pro" rel="stylesheet">
     <!-- Font Awsome CDN -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
@@ -257,7 +257,7 @@
                     </div>
                 </div>
                 <div class="bg-white rounded overflow-auto tableContainer">
-                    <table>
+                    <table id="dashboard-table">
                         <thead>
                             <th>
                                 <div class="header-container">
@@ -266,9 +266,15 @@
                                   </div>
                             </th>
                             <th id="nricColumn">NRIC</th>
-                            <th id="fullNameColumn">FULL NAME</th>
+                            <th id="fullNameColumn">
+                                <div class="header-container">
+                                FULL NAME<i class="material-icons arrow-icon-name d-none">arrow_drop_down</i>
+                                </div>
+                            </th>
                             <th id="classColumn">CLASS</th>
-                            <th id="schColumn">SCHOOL</th>
+                            <th id="schColumn"><div class="header-container">
+                                SCHOOL<i class="material-icons arrow-icon-school d-none">arrow_drop_down</i>
+                                </div</th>
                             <th id="eligibilityColumn">ELIGIBILITY</th>
                             <th id="courseDateColumn">COURSE DATE</th>
                             <th>STATUS</th>

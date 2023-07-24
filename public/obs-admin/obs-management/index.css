@@ -419,6 +419,14 @@ td:first-child {
   margin-left: 2px; /* Adjust margin as needed */
   transform: translateY(-2px);
 }
+.arrow-icon-name,
+.arrow-icon-class,
+.arrow-icon-school,
+.arrow-icon-eligibility,
+.arrow-icon-coursedate {
+    margin-left: 2px; /* Adjust margin as needed */
+    transform: translateY(-2px);
+}
 
 #checkBoxTop {
     transform: translateY(1px);
