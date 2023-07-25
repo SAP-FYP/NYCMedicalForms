@@ -76,7 +76,6 @@ module.exports.parentLogin = function parentLogin(studentID) {
             return row[0];
         })
         .catch((error) => {
-            // TODO Error handling if studentID doesn't need parents acknowledgement
             throw new Error(error);
         })
 }

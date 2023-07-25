@@ -312,7 +312,7 @@ window.addEventListener("DOMContentLoaded", function () {
             throw new Error("redirected");
           }
 
-          parentSignature = `${response.data.url}`;
+          parentSignature = `${response.data.signature}`;
 
           const updateParentAcknowledgement = axios.put("/parent/acknowledge", {
             encrypted: encrypted,

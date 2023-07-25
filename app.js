@@ -679,9 +679,10 @@ app.get('/form/:encrypted', parentAuthHelper.verifyToken, parentAuthHelper.valid
 
 app.post('/parent-sign-upload', parentAuthHelper.verifyToken, (req, res) => {
     const file = req.body.parentSignature;
-    cloudinaryModel.uploadSignature(file)
+    return cloudinaryModel.uploadSignature(file)
         .then((result) => {
-            return res.status(200).send({ 'message': 'Signature uploaded successfully', 'url': result });
+            const signature = result;
+            return res.status(200).json({ signature: signature });
         }
         )
         .catch((error) => {
@@ -795,6 +796,7 @@ app.post('/parent/login-verify', (req, res, next) => {
         return res.status(400).json({ error: 'Invalid URL' });
     }
 
+    console.log(studentID)
     return parentModel
         .verifyIfAcknowledged(studentID)
         .then((result) => {
@@ -824,12 +826,15 @@ app.post('/parent/login/', (req, res, next) => {
         return res.status(400).json({ error: 'Invalid URL or password' });
     }
 
+    console.log(studentID);
     return userModel
         .parentLogin(studentID)
         .then((result) => {
             // Convert dateofbirth to DD/MM/YYYY (Singapore format)
             result.dateOfBirth = new Date(result.dateOfBirth).toLocaleDateString('en-SG').replace(/\//g, '');
             // Check if password entered is == to DOB + NRIC (password) in database
+            console.log(password);
+            console.log((result.dateOfBirth + result.studentNRIC).toUpperCase());
             if (password != (result.dateOfBirth + result.studentNRIC).toUpperCase()) {
                 const error = new Error("Invalid URL or password");
                 error.status = 401;
@@ -859,6 +864,7 @@ app.post('/parent/login/', (req, res, next) => {
 
         })
         .catch((error) => {
+            console.log(error);
             return res.status(error.status || 500).json({ error: error.message });
         }
         );

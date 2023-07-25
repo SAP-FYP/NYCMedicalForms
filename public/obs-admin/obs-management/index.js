@@ -328,7 +328,7 @@ function openModal(studentId, modalBtns) {
 
         // Call the exportData function with the form data
         exportToExcel(applicantName, schoolOrg, classNo, courseDate, formStatus);
-       
+
         // Remove the event listener to avoid repeated downloads
         exportBtns.forEach((exportBtn) => {
           exportBtn.removeEventListener("click", handleExportClick);
@@ -513,7 +513,7 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
       apprRejContainer.appendChild(buttonContainerDiv);
 
     }
-    
+
     //check if form is rejected
     if (pillPending.textContent === 'Rejected') {
       modalBtns.forEach(modalBtn => {
@@ -1123,10 +1123,10 @@ filterIcons.addEventListener('click', () => {
 ////////////////////////////
 document.addEventListener('DOMContentLoaded', (event) => {
   var dropdownMenuStayOpen = document.querySelectorAll('.dropdown-menu-stay');
-  // const classDropDown = document.getElementById('classDropDown');
-  // const schoolDropDown = document.getElementById('schoolDropDown');
-  // const courseDateDropDown = document.getElementById('courseDateDropDown');
-  // const eligibilityDropDown = document.getElementById('eligibilityDropDown');
+  const schoolMenuBtn = document.querySelector('#schoolMenuButton');
+  const classMenuBtn = document.querySelector('#classMenuButton');
+  const courseDateMenuBtn = document.querySelector('#courseDateMenuButton');
+  const eligibilityMenuBtn = document.querySelector('#eligibilityMenuButton');
   // const exportBtnFilter = document.querySelector('#export-btn-filter');
   // const exportBtnFilterSchool = document.querySelector('#export-btn-filter-school');
   // const exportBtnFilterCourseDate = document.querySelector('#export-btn-filter-course-date');
@@ -1138,13 +1138,32 @@ document.addEventListener('DOMContentLoaded', (event) => {
     });
   }
 
-  let limit = 7;
-  let offset = 0;
   let dataAll = [];
   let classesArray = [];
   let schoolsArray = [];
   let courseDatesArray = [];
   let eligibilityArray = [];
+
+  // Clear searches when dropdown is closed
+  // For each dropdown, clear the search input
+  const dropdowns = [schoolMenuBtn, classMenuBtn, courseDateMenuBtn, eligibilityMenuBtn];
+  dropdowns.forEach(dropdown => {
+    dropdown.addEventListener('hide.bs.dropdown', function () {
+      const searchInputs = document.querySelectorAll('.searchBarFilter');
+      searchInputs.forEach(searchInput => {
+        searchInput.value = "";
+      }
+      );
+      const filterDiv = document.querySelectorAll('.filter-div');
+      filterDiv.forEach(filter => {
+        const filterList = filter.querySelector('li');
+        filterList.style.display = "block";
+      }
+      );
+    });
+  });
+
+
 
   let fetchSchools = fetch(`/get-school-filter`)
     .then(response => {
@@ -1340,6 +1359,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
       console.log(error);
     });
 
+  let schoolCount = 0;
+  let classCount = 0;
+  let courseDateCount = 0;
+  let eligibilityCount = 0;
+
+
+
   Promise.all([fetchSchools, fetchClasses, fetchCourseDates, fetchEligiblity])
     // For each of the filters, add event listener to each checkbox
     .then(() => {
@@ -1350,23 +1376,87 @@ document.addEventListener('DOMContentLoaded', (event) => {
           // If checkbox is checked, add to array
           if (checkbox.checked) {
             if (checkbox.name === "school") {
+              schoolCount++;
+              if (schoolCount === 0) {
+                schoolMenuBtn.textContent = "School";
+              } else if (schoolCount === 1) {
+                schoolMenuBtn.textContent = schoolCount + " School Selected";
+              } else {
+                schoolMenuBtn.textContent = schoolCount + " Schools Selected";
+              }
               schoolsArray.push(checkbox.value);
             } else if (checkbox.name === "class") {
+              classCount++;
+              if (classCount === 0) {
+                classMenuBtn.textContent = "Class";
+              } else if (classCount === 1) {
+                classMenuBtn.textContent = classCount + " Class Selected";
+              } else {
+                classMenuBtn.textContent = classCount + " Classes Selected";
+              }
               classesArray.push(checkbox.value);
             } else if (checkbox.name === "course-date") {
+              courseDateCount++;
+              if (courseDateCount === 0) {
+                courseDateMenuBtn.textContent = "Course Date";
+              } else if (courseDateCount === 1) {
+                courseDateMenuBtn.textContent = courseDateCount + " Course Date Selected";
+              } else {
+                courseDateMenuBtn.textContent = courseDateCount + " Course Dates Selected";
+              }
               courseDatesArray.push(checkbox.value);
             } else if (checkbox.name === "eligibility") {
+              eligibilityCount++;
+              if (eligibilityCount === 0) {
+                eligibilityMenuBtn.textContent = "Eligibility";
+              } else if (eligibilityCount === 1) {
+                eligibilityMenuBtn.textContent = eligibilityCount + " Eligibility Selected";
+              } else {
+                eligibilityMenuBtn.textContent = eligibilityCount + " Eligibilities Selected";
+              }
               eligibilityArray.push(checkbox.value);
             }
           } else {
             // If checkbox is unchecked, remove from array
             if (checkbox.name === "school") {
+              schoolCount--;
+              if (schoolCount === 0) {
+                schoolMenuBtn.textContent = "School";
+              } else if (schoolCount === 1) {
+                schoolMenuBtn.textContent = schoolCount + " School Selected";
+              } else {
+                schoolMenuBtn.textContent = schoolCount + " Schools Selected";
+              }
               schoolsArray = schoolsArray.filter(item => item !== checkbox.value);
             } else if (checkbox.name === "class") {
+              classCount--;
+              if (classCount === 0) {
+                classMenuBtn.textContent = "Class";
+              } else if (classCount === 1) {
+                classMenuBtn.textContent = classCount + " Class Selected";
+              } else {
+                classMenuBtn.textContent = classCount + " Classes Selected";
+              }
               classesArray = classesArray.filter(item => item !== checkbox.value);
             } else if (checkbox.name === "course-date") {
+              courseDateCount--;
+              if (courseDateCount === 0) {
+                courseDateMenuBtn.textContent = "Course Date";
+              } else if (courseDateCount === 1) {
+                courseDateMenuBtn.textContent = courseDateCount + " Course Date Selected";
+              } else {
+                courseDateMenuBtn.textContent = courseDateCount + " Course Dates Selected";
+              }
               courseDatesArray = courseDatesArray.filter(item => item !== checkbox.value);
             } else if (checkbox.name === "eligibility") {
+              eligibilityCount--;
+              if (eligibilityCount === 0) {
+                eligibilityMenuBtn.textContent = "Eligibility";
+              } else if (eligibilityCount === 1) {
+                eligibilityMenuBtn.textContent = eligibilityCount + " Eligibility Selected";
+              } else {
+                eligibilityMenuBtn.textContent = eligibilityCount + " Eligibilities Selected";
+              }
               eligibilityArray = eligibilityArray.filter(item => item !== checkbox.value);
             }
           }
