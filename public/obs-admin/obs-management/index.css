@@ -73,12 +73,15 @@ body {
     margin-left: 15px;
 }
 
-#navbar-icons-form {
+#navbar-icons-form,
+#navbar-icons-help {
     height: 40px;
     width: 40px;
     min-width: 40px;
     padding: 6px 8px;
+    cursor: pointer !important;
 }
+
 #navbar-icons-permission,
 #navbar-icons-profile {
     cursor: not-allowed;
@@ -536,3 +539,4 @@ form {
 ::-webkit-scrollbar-thumb {
     -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
+

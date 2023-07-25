@@ -34,7 +34,7 @@ window.addEventListener('DOMContentLoaded', () => {
             headerName.textContent = jsonData.user.name;
             headerImg.src = jsonData.user.picUrl || '../../../assets/images/default-user-icon.png';
 
-            document.querySelectorAll('#permission-li, #user-li, #form-li')
+            document.querySelectorAll('#permission-li, #user-li, #form-li, #help-li')
                 .forEach(li => {
                     li.addEventListener('mouseenter', () => {
                         if (jsonData.user.role === 1) {
@@ -44,6 +44,10 @@ window.addEventListener('DOMContentLoaded', () => {
                             }
                         } else {
                             if (li.id === 'form-li') {
+                                navToggle ? li.style.padding = '0px 0px 0px 10px' : null;
+                                li.classList.add('hovered');
+                            }
+                            if (li.id === 'help-li') {
                                 navToggle ? li.style.padding = '0px 0px 0px 10px' : null;
                                 li.classList.add('hovered');
                             }

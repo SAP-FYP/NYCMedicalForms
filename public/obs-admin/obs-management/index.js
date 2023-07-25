@@ -149,7 +149,6 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
   const formId = formData[i].formId;
   const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
   const checkBoxTop = document.querySelector('#checkBoxTop');
-
   function appendExportIcon() {
     if (!exportContainer.contains(exportIcon)) {
       document.getElementById('export-icon') ? document.getElementById('export-icon').remove() : null;
@@ -961,6 +960,14 @@ function displayArrowIcons() {
   sortIconName.classList.remove('d-none');
   sortIconSchool.classList.remove('d-none');
 }
+const tipButton = document.querySelector('#help-li');
+//tooltip
+const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl, { trigger: 'hover' });
+});
+
+
 document.addEventListener("DOMContentLoaded", function () {
   axios.get(`${API_URL}/all`)
     .then(function (response) {
@@ -1076,6 +1083,25 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log(error);
     });
 });
+
+if (tipButton) {
+  let tooltipsVisible = false;
+
+  tipButton.addEventListener('click', function () {
+    tooltipsVisible = !tooltipsVisible;
+
+    tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+      const tooltip = bootstrap.Tooltip.getInstance(tooltipTriggerEl);
+      if (tooltip) {
+        if (tooltipsVisible) {
+          tooltip.show();
+        } else {
+          tooltip.hide();
+        }
+      }
+    });
+  });
+}
 
 //Function to sort table
 function sortTable(columnIndex, ascending) {
