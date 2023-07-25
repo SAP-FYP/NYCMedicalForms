@@ -1797,6 +1797,7 @@ app.post('/obs-admin/pmt/filter/', authHelper.verifyToken, authHelper.checkIat, 
     let stuClass = req.body.class
     let eligibility = req.body.eligibility
     let courseDate = req.body.courseDate
+    let formStatus = req.body.formStatus
 
     // For each of courseDate, convert to Singapore Time
     if (courseDate) {
@@ -1809,7 +1810,8 @@ app.post('/obs-admin/pmt/filter/', authHelper.verifyToken, authHelper.checkIat, 
         school: school,
         class: stuClass,
         eligibility: eligibility,
-        courseDate: courseDate
+        courseDate: courseDate,
+        formStatus: formStatus
     }
 
     // AUTHORIZATION CHECK - PMT, MST

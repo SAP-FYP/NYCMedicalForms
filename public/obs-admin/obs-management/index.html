@@ -89,7 +89,7 @@
                         <!-- Template for status -->
 
                         <!-- Status -->
-                        <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePendingParent">
+                        <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePendingParent"  data-status="Pending Parent">
                             <div>
                                 <h2 class="text-center m-auto p-0">Pending Parent</h2>
                                 <h1 class="text-center m-auto p-0 pendingParentAmt"><span
@@ -98,21 +98,21 @@
                                 </h1>
                             </div>
                         </div>
-                        <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePending">
+                        <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePending" data-status="Pending">
                             <div>
                                 <h2 class="text-center m-auto p-0">Pending</h2>
                                 <h1 class="text-center m-auto p-0 pendingAmt"><span
                                         class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></h1>
                             </div>
                         </div>
-                        <div class="d-flex flex-wrap align-items-center justify-content-center rectangleApproved">
+                        <div class="d-flex flex-wrap align-items-center justify-content-center rectangleApproved"  data-status="Approved">
                             <div>
                                 <h2 class="text-center m-auto p-0">Approved</h2>
                                 <h1 class="text-center m-auto p-0 apprAmt"><span
                                         class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></h1>
                             </div>
                         </div>
-                        <div class="d-flex flex-wrap align-items-center justify-content-center rectangleRejected">
+                        <div class="d-flex flex-wrap align-items-center justify-content-center rectangleRejected"  data-status="Rejected">
                             <div>
                                 <h2 class="text-center m-auto p-0">Rejected</h2>
                                 <h1 class="text-center m-auto p-0 rejAmt"><span class="spinner-border spinner-border-lg"
@@ -147,7 +147,7 @@
 
                             </div>
                             <div class="displayFilters d-none">
-                                <div class="row custom-row">
+                                <div class="row">
 
                                     <div class="col-auto dropdown" id="schoolDropDown">
                                         <div class="custom-column dropdown-toggle" id="schoolMenuButton"

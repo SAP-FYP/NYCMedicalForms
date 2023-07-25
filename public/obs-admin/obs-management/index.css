@@ -275,11 +275,6 @@ margin-top: 1px;
     box-shadow: 7px 7px 7px 0px rgba(0, 0, 0, 0.2);
 }
 
-.custom-row {
-    max-width: 800px;
-}
-
-
 .custom-menu {
     min-width: 200px;
     background-color: #C7D3EF !important;
