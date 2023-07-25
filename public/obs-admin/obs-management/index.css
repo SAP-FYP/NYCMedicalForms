@@ -79,9 +79,20 @@ body {
     min-width: 40px;
     padding: 6px 8px;
 }
+#navbar-icons-permission,
+#navbar-icons-profile {
+    cursor: not-allowed;
+}
 
-.navbar-label {
-        visibility: visible;
+a.navbar-label:hover {
+ color: #f2f2f2 !important;
+}
+
+a.navbar-label-users,
+a.navbar-label-perms {
+    cursor: not-allowed;
+
+        opacity: 0.5 !important;
 }
 
 
@@ -132,13 +143,14 @@ body {
 }
 
 /*Status*/
-  .rectanglePending, .rectangleApproved, .rectangleRejected {
+  .rectanglePending, .rectangleApproved, .rectangleRejected, .rectanglePendingParent {
     margin: 10px;
     width: 280px;
     height: 170px;
     background-color: #f2c153;
     border:1px solid #485eab;  
     border-radius: 10px;   
+    cursor: pointer;
   }
 
   .rectangleApproved {
@@ -209,9 +221,6 @@ body {
 
 
 /*Filter*/
-a {
-    cursor: pointer;
-}
 
 #filter-icon-container {
     padding: 8px 9px;
@@ -320,7 +329,10 @@ th {
     top: 0 !important; 
     z-index: 1 !important; 
 }
-tr {
+#nricColumn, #fullNameColumn, #classColumn, #schColumn, #eligibilityColumn, #courseDateColumn {
+    cursor: pointer;
+}
+tbody {
     cursor: pointer !important;
 }
 
@@ -398,19 +410,29 @@ td:first-child {
   } */
   
 /*ICONS*/
+.header-container {
+  display: flex;
+ 
+}
 
+.arrow-icon {
+  margin-left: 2px; /* Adjust margin as needed */
+  transform: translateY(-2px);
+}
 
 #checkBoxTop {
-    transform: translateY(4px);
+    transform: translateY(1px);
     margin-left: 17px;
     width: 20px;
     height: 20px;
+    cursor: pointer;
 }
 #checkBox {
     transform: translateY(4px);
     margin-left: 12px;
     width: 20px;
     height: 20px;
+    cursor: pointer !important;
 }
 
 /*MODALS*/
@@ -476,11 +498,14 @@ fill: #485eab;
     color: #485eab !important;
 }
 .exportBtn,
-.submitReviewBtn{
+.submitReviewBtn,
+.undoStatusBtn{
     background-color: #f2f2f2 !important;
     border: 2px solid #485eab !important;
     color: #485eab !important;
 }
+
+
 
 
 /*FORM*/

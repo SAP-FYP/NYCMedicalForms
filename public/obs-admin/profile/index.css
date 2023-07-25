@@ -39,8 +39,7 @@ body {
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    padding-top: 2vh;
-    padding-bottom: 80px !important;
+    height: calc(100vh - 100px);
 }
 
 #profile-img-container {
@@ -131,7 +130,8 @@ body {
 }
 
 /* MODAL */
-#change-password-modal {
+#change-password-modal,
+#enter-password-modal {
     background-color: #C7D3EF;
     border: #485EAB 1px solid;
     border-radius: 25px;
@@ -155,14 +155,16 @@ body {
     font-size: 21px;
 }
 
-#change-password-modal .form-label {
+#change-password-modal .form-label,
+#enter-password-modal .form-label {
     color: #485EAB;
     margin-top: 0px;
     font-weight: 400;
     font-size: 18px;
 }
 
-#change-password-modal .form-input {
+#change-password-modal .form-input,
+#enter-password-modal .form-input {
     font-size: 1rem !important;
     border: #485EAB 1px solid;
     border-right: 0px !important;
@@ -175,7 +177,8 @@ body {
     border-bottom-right-radius: 0px !important;
 }
 
-#change-password-modal .form-input:active {
+#change-password-modal .form-input:active,
+#enter-password-modal .form-input:active {
     outline: none;
 }
 
@@ -197,7 +200,8 @@ body {
     margin-left: 10px;
 }
 
-#change-password-form button {
+#change-password-form button,
+#enter-password-form button {
     height: 45px;
     background-color: white;
     border: 1px solid #485EAB !important;
@@ -205,6 +209,19 @@ body {
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
     cursor: default !important;
+}
+
+#submit-password-btn {
+    margin-top: 30px;
+    border-radius: 10px;
+    border: 2px solid #485EAB;
+    background-color: white;
+    cursor: pointer;
+    padding: 8px 20px;
+}
+
+#enter-password-modal>#modal-footer {
+    margin-top: 0px;
 }
 
 .modal-button-icons {
@@ -225,6 +242,10 @@ body {
 
 #password-req text {
     padding: 5px;
+}
+
+#save-changes-button {
+    margin-bottom: 80px !important;
 }
 
 /* ALERT BOX */

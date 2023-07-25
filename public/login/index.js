@@ -44,6 +44,12 @@ window.addEventListener('DOMContentLoaded', () => {
             if (error && error.message != 'redirected') {
                 setErrMsg(error.message, 'visible');
             }
+        }).finally(() => {
+            document.querySelectorAll('.spinner-item').forEach(i => {
+                i.style.display = 'none';
+            });
+            document.getElementById('login-text').style.display = 'inline-block';
+            document.getElementById('login-button').style.backgroundColor = '#485EAB';
         })
     }
 
@@ -55,6 +61,11 @@ window.addEventListener('DOMContentLoaded', () => {
         if (!email || !password) {
             setErrMsg('Please fill in all fields.', 'visible');
         } else {
+            document.querySelectorAll('.spinner-item').forEach(i => {
+                i.style.display = 'inline-block';
+            });
+            document.getElementById('login-text').style.display = 'none';
+            document.getElementById('login-button').style.backgroundColor = '#4d4d4d';
             login(email, password)
         }
     };

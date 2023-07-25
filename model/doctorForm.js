@@ -4,77 +4,119 @@ const { query, pool } = conn;
 const {
   UserNotFoundError,
   DUPLICATE_ENTRY_ERROR,
-  EMPTY_RESULT_ERROR
+  EMPTY_RESULT_ERROR,
+  WRONG_VALUE_FOR_FIELD
 } = require('../errors');
 
 module.exports.matchDoctorInfo = function matchDoctorInfo(doctorMCR) {
   const sql = `SELECT * FROM doctor WHERE doctorMCR = ?;`;
-  return query(sql, [doctorMCR]).then(function (result) {
+  return query(sql, [doctorMCR])
+  .then(result =>{
     const rows = result[0];
     console.log(rows);
     if (rows.length === 0) {
       throw new UserNotFoundError('No doctor found with the provided MCR');
     }
     return rows;
-  });
+  })
 };
 
 module.exports.postDoctorInfo = function postDoctorInfo(doctorMCR, physicianName, encryptedsignatureInfo, clinicName, clinicAddress, doctorContact) {
-  const sql = `INSERT INTO doctor (doctorMCR,nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo) VALUES (?,?,?,?,?,?)`;
+  const sql = `INSERT INTO doctor (doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo) VALUES (?,?,?,?,?,?)`;
   return query(sql, [doctorMCR, physicianName, encryptedsignatureInfo, clinicName, clinicAddress, doctorContact])
-    .catch(function (error) {
+    .then(result =>{
+        const affectedRows = result[0].affectedRows;
+        if (affectedRows === 0) {
+          throw new Error("No rows inserted");
+        }
+        return result;
+    })
+    .catch(error => {
       console.error('Error in postDoctorInfo:', error);
       if (error.code === 'ER_DUP_ENTRY') {
         // Handle duplicate entry error
         throw new DUPLICATE_ENTRY_ERROR('Doctor Duplicate entry');
-      } else {
-        // Internal Server Error
-        throw new Error('Database error');
+      } 
+      else if(error.code === 'ER_TRUNCATED_WRONG_VALUE_FOR_FIELD'){
+        throw new WRONG_VALUE_FOR_FIELD('Wrong value type for field');
       }
+      else if(error.message === 'No rows inserted'){
+        throw new Error('No rows inserted');
+      }
+      throw new Error('Database error');
     });
 };
 
 module.exports.postStudentInfo = function postStudentInfo(studentNRIC, studentName, dateOfBirth, studentClass, schoolName, dateOfVaccine) {
   const sql = `INSERT INTO student (studentNRIC,nameOfStudent,dateOfBirth,class,school,dateOfVaccination) VALUES (?,?,?,?,?,?)`;
   return query(sql, [studentNRIC, studentName, dateOfBirth, studentClass, schoolName, dateOfVaccine])
-    .catch(function (error) {
-      console.error('Error in postStudentInfo:', error);
+  .then(result =>{
+      const affectedRows = result[0].affectedRows;
+      if (affectedRows === 0) {
+        throw new Error("No rows inserted");
+      }
+      return result;
+  })
+  .catch(error => {
+      console.error('Error in postFormInfo:', error);
       if (error.code === 'ER_DUP_ENTRY') {
         // Handle duplicate entry error
-        throw new DUPLICATE_ENTRY_ERROR('Student Duplicate entry');
-      } else {
-        // Internal Server Error
-        throw new Error('Database error');
+        throw new DUPLICATE_ENTRY_ERROR('Form Duplicate entry');
+      } 
+      else if(error.code === 'ER_TRUNCATED_WRONG_VALUE_FOR_FIELD'){
+        throw new WRONG_VALUE_FOR_FIELD('Wrong value type for field');
       }
-    });
+      else if(error.message === 'No rows inserted'){
+        throw new Error('No rows inserted');
+      }
+      throw new Error('Database error');
+  });
 };
 
 module.exports.postFormInfo = function postFormInfo(studentId, courseDate, doctorMCR, eligibility, comments, date) {
   const sql = `INSERT INTO form (studentId,courseDate,doctorMCR,eligibility,comments,examinationDate) VALUES (?,?,?,?,?,?)`;
   return query(sql, [studentId, courseDate, doctorMCR, eligibility, comments, date])
-    .catch(function (error) {
+    .then(result =>{
+      const affectedRows = result[0].affectedRows;
+      if (affectedRows === 0) {
+        throw new Error("No rows inserted");
+      }
+      return result;
+    })
+    .catch(error => {
       console.error('Error in postFormInfo:', error);
       if (error.code === 'ER_DUP_ENTRY') {
         // Handle duplicate entry error
         throw new DUPLICATE_ENTRY_ERROR('Form Duplicate entry');
-      } else {
-        // Internal Server Error
-        throw new Error('Database error');
+      } 
+      else if(error.code === 'ER_TRUNCATED_WRONG_VALUE_FOR_FIELD'){
+        throw new WRONG_VALUE_FOR_FIELD('Wrong value type for field');
       }
+      else if(error.message === 'No rows inserted'){
+        throw new Error('No rows inserted');
+      }
+      throw new Error('Database error');
     });
 };
 
 module.exports.updateFormStatus = function updateFormStatus(studentId) {
   const sql = `UPDATE form SET formStatus = 'Pending Parent' WHERE studentId = ?`;
   return query(sql, [studentId])
-    .then(function (result) {
+    .then(result =>{
       const affectedRows = result[0];
       if (affectedRows === 0) {
-        throw new EMPTY_RESULT_ERROR('Unable to update formStatus');
+        throw new Error("No rows updated");
       }
       return affectedRows;
     }).catch((error) => {
-      throw error;
+      if (error.code === 'ER_DUP_ENTRY') {
+        // Handle duplicate entry error
+        throw new DUPLICATE_ENTRY_ERROR('Student Duplicate entry');
+      }
+      else if(error.message === 'No rows updated'){
+        throw new Error('No rows updated');
+      }
+      throw new Error('Database error');
     });
 };
 
@@ -115,7 +157,8 @@ module.exports.getCourseDates = function getCourseDates() {
 
 module.exports.getSchools = function getSchools() {
   const sql = `SELECT schoolName FROM school`;
-  return query(sql).then(function (result) {
+  return query(sql)
+  .then(result =>{
     const rows = result;
     if (rows.length === 0) {
       throw new EMPTY_RESULT_ERROR('No Schools Found');
@@ -270,11 +313,17 @@ module.exports.getSchoolsByCourseDateAndClass = function getSchoolsByCourseDateA
 
 
 
-module.exports.getStudents = function getStudents(studentNRIC) {
-  const sql = `SELECT studentId FROM student WHERE studentNRIC = ?`;
-  return query(sql, [studentNRIC]).then(function (result) {
+module.exports.getStudentFormStatus = function getStudentFormStatus(studentNRIC) {
+  const sql = `
+    SELECT s.studentId, f.formStatus
+    FROM student s
+    JOIN form f ON s.studentId = f.studentId
+    WHERE s.studentNRIC = ?;
+
+  `;
+  return query(sql, [studentNRIC])
+  .then(result =>{
     const rows = result[0];
-    console.log(rows);
     if (rows.length === 0) {
       throw new EMPTY_RESULT_ERROR('No students Found');
     }
@@ -282,34 +331,44 @@ module.exports.getStudents = function getStudents(studentNRIC) {
   });
 }
 
-module.exports.deleteStudentForm = async function deleteStudentForm(studentIdArr) {
+module.exports.deleteStudentForm = async function deleteStudentForm(studentId,formStatus) {
   const connection = await pool.getConnection();
   try {
     await connection.beginTransaction();
+
+    if(formStatus === 'Pending Parent'){
+      console.log('deleting parentAcknowledgement...')
+      const sql0 = `DELETE FROM parentAcknowledgement WHERE studentId = ?`;
+      const result0 = await connection.query(sql0, [studentId])
+      const affectedRows0 = result0[0].affectedRows;
+      if (affectedRows0 === 0) {
+        throw new Error('Unable to delete parent acknowledgements');
+      }
+    }
+
     //delete students with id inside arr 
-    const sql1 = `DELETE FROM student WHERE studentId IN (?)`;
-    const result1 = await connection.query(sql1, [studentIdArr])
+    console.log('deleting student...')
+    const sql1 = `DELETE FROM student WHERE studentId = ?`;
+    const result1 = await connection.query(sql1, studentId)
     const affectedRows1 = result1[0].affectedRows;
-    console.log(affectedRows1)
-    console.log(studentIdArr.length)
-    if (affectedRows1 != studentIdArr.length) {
-      throw new Error('Unable to delete students');
+    if (affectedRows1 === 0) {
+      throw new Error('Unable to delete student');
     }
 
     // delete form with student id in arr
-    const sql2 = `DELETE FROM form WHERE studentId IN (?)`;
-    const result2 = await connection.query(sql2, [studentIdArr])
+    console.log('deleting form...')
+    const sql2 = `DELETE FROM form WHERE studentId = ?`;
+    const result2 = await connection.query(sql2, [studentId])
     const affectedRows2 = result2[0].affectedRows;
-    console.log(affectedRows2)
-    console.log(studentIdArr.length)
-    if (affectedRows2 != studentIdArr.length) {
-      throw new Error('Unable to delete forms');
+    if (affectedRows2 === 0) {
+      throw new Error('Unable to delete form');
     }
-
+  
     await connection.commit();
     return affectedRows2;
   }
   catch (error) {
+    console.log(error)
     await connection.rollback();
     throw error;
   }

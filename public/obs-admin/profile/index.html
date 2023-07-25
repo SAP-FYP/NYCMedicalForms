@@ -10,6 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="icon" href="../../assets//images/obs-logo-icon.png">
     <title>OBS | Profile</title>
 </head>
 
@@ -53,18 +54,21 @@
                     <li id="permission-li" onclick="window.location.href='/obs-admin/admin/permissions';"><img
                             id="navbar-icons-permission" src="../../../assets/images/permission-enabled-icon.png"><a
                             class="navbar-label">Permissions</a></li>
+
                     <li id="user-li" onclick="window.location.href='/obs-admin/admin';"><img id="navbar-icons-profile"
                             src="../../../assets/images/profile-enabled-icon.png"><a class="navbar-label">Users</a></li>
-                    <li id="form-li" style="cursor: default; opacity: 0.5;"><img id="navbar-icons-forms"
+
+                    <li id="form-li" style="opacity: 0.5;"><img id="navbar-icons-forms"
                             src="../../../assets/images/form-enabled-icon.png"><a class="navbar-label">Forms</a></li>
+
                     <li id="logout-li"><img id="navbar-icons-logout" src="../../../assets/images/logout-icon.png"><a
-                            class="navbar-label">Logout</a></li>
+                            style="cursor: default;" class="navbar-label">Logout</a></li>
                 </ul>
             </div>
         </div>
 
         <div class="row" id="row-container">
-            <div class="col-12" id="row-col">
+            <div class="col-12" id="row-col" style="height: 100vh;">
 
                 <!-- HEADER -->
                 <div id="header-bar" class="col-12">
@@ -112,12 +116,6 @@
                             <div class="input-group">
                                 <label class="col-12 form-label">Role</label>
                                 <input class="col-12 form-input" type="text" id="input-role" disabled>
-                            </div>
-
-                            <div class="input-group">
-                                <label class="col-12 form-label">Password</label>
-                                <input class="col-12 form-input form-control" type="password" id="input-password">
-                                <div class="invalid-tooltip" style="right: 0">Please enter your password</div>
                             </div>
 
                             <button class="col-12 form-button" id="change-password-button" data-bs-toggle="modal"
@@ -239,9 +237,55 @@
                             </div>
                             <div class="modal-footer" id="modal-footer">
                                 <input id="confirm-password-icon" alt="submit" type="image" form="change-password-form"
-                                    src="../../assets/images/confirm-change-password-icon.png"
-                                    style="background-color: white;">
+                                    src="../../assets/images/save-icon.png" style="background-color: white;"
+                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Save changes">
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ENTER PASSWORD MODAL -->
+
+                <div class="modal fade" id="enterPasswordModal" data-bs-backdrop="static" data-bs-keyboard="false"
+                    tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-md">
+                        <div class="modal-content" id="enter-password-modal">
+                            <div class="modal-header" id="modal-header">
+                                <img id="change-password-modal-icon"
+                                    src="../../assets/images/change-password-modal-icon.png">
+                                <h6 class="modal-title" id="staticBackdropLabel" style="font-size: 18px;">Enter password
+                                    to save changes</h6>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="container-fluid">
+                                    <div class="row">
+
+                                        <form id="enter-password-form" class="col-12">
+
+                                            <div class="input-group mb-3 col-7">
+                                                <input class="form-input form-control col-12" type="password"
+                                                    id="enter-password-input">
+
+                                                <button class="btn btn-outline-secondary modal-button"
+                                                    id="enter-password-btn" type="button">
+                                                    <i class="material-icons modal-button-icons"
+                                                        style="font-size:24px;color:#757575;">visibility</i></button>
+
+                                                <div class="invalid-tooltip" style="right: 0">Please enter your password
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12 d-flex justify-content-end"><input type="submit"
+                                                    id="submit-password-btn" alt="submit" form="enter-password-form"
+                                                    value="Submit" />
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
