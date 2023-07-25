@@ -5,6 +5,7 @@ module.exports.retrieveAllSubmissions = function retrieveAllSubmissions() {
     const sql = `SELECT F.formId, S.studentId, S.studentNRIC, S.nameOfStudent, S.class, S.school, F.eligibility, F.courseDate, F.formStatus, F.comments, F.review
     FROM form F
     LEFT JOIN student S ON F.studentId = S.studentId
+    RIGHT JOIN doctor D ON F.doctorMCR = D.doctorMCR
                     ;`;
   return query(sql)
     .then((result) => {
