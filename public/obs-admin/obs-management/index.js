@@ -962,10 +962,17 @@ function displayArrowIcons() {
 }
 const tipButton = document.querySelector('#help-li');
 //tooltip
-const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-tooltipTriggerList.map(function (tooltipTriggerEl) {
-    return new bootstrap.Tooltip(tooltipTriggerEl, { trigger: 'hover' });
+const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip-hover"]'));
+const tooltipTriggerList2 = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip-click-tips"]'));
+
+tooltipTriggerList.map(function (tooltipTrigger) {
+  return new bootstrap.Tooltip(tooltipTrigger, { trigger: 'hover' });
 });
+
+tooltipTriggerList2.map(function (tooltipTrigger) {
+  return new bootstrap.Tooltip(tooltipTrigger, { trigger: 'click' });
+});
+
 
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -1089,9 +1096,18 @@ if (tipButton) {
 
   tipButton.addEventListener('click', function () {
     tooltipsVisible = !tooltipsVisible;
-
-    tooltipTriggerList.forEach(function (tooltipTriggerEl) {
-      const tooltip = bootstrap.Tooltip.getInstance(tooltipTriggerEl);
+    tooltipTriggerList.forEach(function (tooltipTrigger) {
+      const tooltip = bootstrap.Tooltip.getInstance(tooltipTrigger);
+      if (tooltip) {
+        if (tooltipsVisible) {
+          tooltip.show();
+        } else {
+          tooltip.hide();
+        }
+      }
+    });
+    tooltipTriggerList2.forEach(function (tooltipTrigger) {
+      const tooltip = bootstrap.Tooltip.getInstance(tooltipTrigger);
       if (tooltip) {
         if (tooltipsVisible) {
           tooltip.show();
@@ -1101,6 +1117,7 @@ if (tipButton) {
       }
     });
   });
+  
 }
 
 //Function to sort table

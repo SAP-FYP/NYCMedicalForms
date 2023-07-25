@@ -91,7 +91,7 @@
                         <!-- Template for status -->
 
                         <!-- Status -->
-                        <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePendingParent">
+                        <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePendingParent" data-bs-toggle="tooltip-click-tips" data-bs-placement="top" data-bs-title="Clickable Status Widgets">
                             <div>
                                 <h2 class="text-center m-auto p-0">Pending Parent</h2>
                                 <h1 class="text-center m-auto p-0 pendingParentAmt"><span
@@ -100,21 +100,21 @@
                                 </h1>
                             </div>
                         </div>
-                        <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePending">
+                        <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePending" data-bs-toggle="tooltip-click-tips" data-bs-placement="top" data-bs-title="Clickable Status Widgets">
                             <div>
                                 <h2 class="text-center m-auto p-0">Pending</h2>
                                 <h1 class="text-center m-auto p-0 pendingAmt"><span
                                         class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></h1>
                             </div>
                         </div>
-                        <div class="d-flex flex-wrap align-items-center justify-content-center rectangleApproved">
+                        <div class="d-flex flex-wrap align-items-center justify-content-center rectangleApproved" data-bs-toggle="tooltip-click-tips" data-bs-placement="top" data-bs-title="Clickable Status Widgets">
                             <div>
                                 <h2 class="text-center m-auto p-0">Approved</h2>
                                 <h1 class="text-center m-auto p-0 apprAmt"><span
                                         class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></h1>
                             </div>
                         </div>
-                        <div class="d-flex flex-wrap align-items-center justify-content-center rectangleRejected">
+                        <div class="d-flex flex-wrap align-items-center justify-content-center rectangleRejected" data-bs-toggle="tooltip-click-tips" data-bs-placement="top" data-bs-title="Clickable Status Widgets">
                             <div>
                                 <h2 class="text-center m-auto p-0">Rejected</h2>
                                 <h1 class="text-center m-auto p-0 rejAmt"><span class="spinner-border spinner-border-lg"
@@ -128,7 +128,7 @@
                         <div class="col-8 input-group d-flex flex-wrap w-100 px-3 mx-auto my-0"
                             id="searchInputContainer">
                             <input id="searchInput" type="text" class="form-control bg-white"
-                                placeholder="Search by Name or Full Name" aria-label="Search">
+                                placeholder="Search by Name or Full Name" aria-label="Search"  data-bs-toggle="tooltip-click-tips" data-bs-placement="left" data-bs-title="Search Bar">
                             <div id="spacer"></div>
                             <button id="clear-button" class="btn btn-outline-secondary" type="button"><i
                                     class="material-icons" style="font-size:24px;color:#485EAB;">close</i></button>
@@ -143,7 +143,7 @@
                         <div class="d-flex">
                             <div>
 
-                                <button id="filter-icon-container" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Filter Button">
+                                <button id="filter-icon-container" data-bs-toggle="tooltip-click-tips" data-bs-placement="top" data-bs-title="Filter Button">
                                     <img src="../../assets/images/filter-icon.png" id="filter-icon" alt="filter-icon">
                                 </button>
 
@@ -263,7 +263,7 @@
                         <thead>
                             <th>
                                 <div class="header-container">
-                                    <input type="checkbox" id="checkBoxTop"  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Click To Select All">
+                                    <input type="checkbox" id="checkBoxTop"  data-bs-toggle="tooltip-hover" data-bs-placement="top" data-bs-title="Click To Select All">
                                     <i class="material-icons arrow-icon d-none">arrow_drop_down</i>
                                   </div>
                             </th>
