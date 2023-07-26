@@ -188,8 +188,8 @@ module.exports.retrieveSubmissionByFilter = function retrieveSubmissionByFilter(
 
   const sql = `SELECT F.formId, S.studentId, S.studentNRIC, S.nameOfStudent, S.class, S.school, F.courseDate, F.eligibility, F.formStatus
                     FROM form F
-                    JOIN student S ON F.studentId = S.studentId
-                    JOIN doctor D ON F.doctorMCR = D.doctorMCR
+                    INNER JOIN student S ON F.studentId = S.studentId
+                    INNER JOIN doctor D ON F.doctorMCR = D.doctorMCR
                     WHERE ${conditions}`;
   // console.log(sql);
   // console.log(values);

@@ -57,7 +57,8 @@
                                 src="../../assets/images/permission-disabled-icon.png"><a
                                 class="navbar-label navbar-label-perms">Permissions</a></li>
                         <li id="user-li"><img id="navbar-icons-profile"
-                                src="../../assets/images/profile-disabled-icon.png"><a class="navbar-label navbar-label-users">Users</a>
+                                src="../../assets/images/profile-disabled-icon.png"><a
+                                class="navbar-label navbar-label-users">Users</a>
                         </li>
                         <li id="form-li"><img id="navbar-icons-form" src="../../assets/images/form-enabled-icon.png"><a
                                 class="navbar-label navbar-label-forms">Forms</a></li>
@@ -89,7 +90,8 @@
                         <!-- Template for status -->
 
                         <!-- Status -->
-                        <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePendingParent"  data-status="Pending Parent">
+                        <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePendingParent"
+                            data-status="Pending Parent">
                             <div>
                                 <h2 class="text-center m-auto p-0">Pending Parent</h2>
                                 <h1 class="text-center m-auto p-0 pendingParentAmt"><span
@@ -98,21 +100,24 @@
                                 </h1>
                             </div>
                         </div>
-                        <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePending" data-status="Pending">
+                        <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePending"
+                            data-status="Pending">
                             <div>
                                 <h2 class="text-center m-auto p-0">Pending</h2>
                                 <h1 class="text-center m-auto p-0 pendingAmt"><span
                                         class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></h1>
                             </div>
                         </div>
-                        <div class="d-flex flex-wrap align-items-center justify-content-center rectangleApproved"  data-status="Approved">
+                        <div class="d-flex flex-wrap align-items-center justify-content-center rectangleApproved"
+                            data-status="Approved">
                             <div>
                                 <h2 class="text-center m-auto p-0">Approved</h2>
                                 <h1 class="text-center m-auto p-0 apprAmt"><span
                                         class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></h1>
                             </div>
                         </div>
-                        <div class="d-flex flex-wrap align-items-center justify-content-center rectangleRejected"  data-status="Rejected">
+                        <div class="d-flex flex-wrap align-items-center justify-content-center rectangleRejected"
+                            data-status="Rejected">
                             <div>
                                 <h2 class="text-center m-auto p-0">Rejected</h2>
                                 <h1 class="text-center m-auto p-0 rejAmt"><span class="spinner-border spinner-border-lg"
@@ -232,6 +237,13 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <!-- Clear filter button with the same style -->
+                                    <button id="filter-clear" class="col-auto custom-column d-flex d-none">
+                                        Clear Filter
+                                        <span id="filter-icon" class="material-icons">close</span>
+                                    </button>
+                                  
                                 </div>
                             </div>
                         </div>
@@ -242,7 +254,7 @@
 
                             </a>
                             <a id="export-btn-status">
-                                
+
                             </a>
                             <a id="export-btn-search">
 
@@ -250,7 +262,7 @@
                             <a id="export-btn-filter">
 
                             </a>
-                           
+
                         </div>
                     </div>
                 </div>
@@ -261,7 +273,7 @@
                                 <div class="header-container">
                                     <input type="checkbox" id="checkBoxTop">
                                     <i class="material-icons arrow-icon d-none">arrow_drop_down</i>
-                                  </div>
+                                </div>
                             </th>
                             <th id="nricColumn">NRIC</th>
                             <th id="fullNameColumn">FULL NAME</th>
@@ -533,14 +545,16 @@
 
                                             </div>
                                             <div class="col-12 mb-3">
-                                                <div class="form-group text-center mb-3 d-flex justify-content-center align-items-center" id="undoStatusContainer">
-                                                    
+                                                <div class="form-group text-center mb-3 d-flex justify-content-center align-items-center"
+                                                    id="undoStatusContainer">
+
                                                 </div>
                                             </div>
                                             <div class="col-12 mb-3 text-end">
                                                 <a>
-                                                    <button
-                                                        class="btn btn-primary btn-lg exportBtn d-none"><img src="../../assets/images/export-btn-form.png" id="export-btn-img"></button>
+                                                    <button class="btn btn-primary btn-lg exportBtn d-none"><img
+                                                            src="../../assets/images/export-btn-form.png"
+                                                            id="export-btn-img"></button>
                                                 </a>
                                             </div>
                                         </div>
@@ -568,7 +582,7 @@
                                                         Review</div>
                                                 </div>
                                             </div>
-                                           
+
                                         </form>
                                     </div>
                                 </div>

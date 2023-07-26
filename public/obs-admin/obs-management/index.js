@@ -1219,36 +1219,6 @@ searchClearBtn.onclick = () => {
   retrieveAllForms()
 }
 
-////////////////////////////
-//Big Status Buttons
-////////////////////////////
-
-//temp
-function formCountOfDataAll() {
-  axios.get(`${API_URL}/all`)
-    .then(function (response) {
-      const configURL = response.config.url;
-      const requestURL = response.request.responseURL;
-      if (configURL !== requestURL) {
-        window.location.href = requestURL;
-        throw new Error("redirected");
-      }
-      //call function to update status count
-      const formData = response.data;
-      //remove user permission from array of data
-      const userPermission = response.data.pop();
-      console.log(formData)
-      updateFormCounts(formData);
-
-    })
-    .catch(function (error) {
-      if (error && error.message !== "redirected") {
-        console.log(error);
-      }
-      console.log(error);
-    });
-}
-
 function retrieveAllForms() {
   axios.get(`${API_URL}/all`)
     .then(function (response) {
@@ -1401,6 +1371,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
   const classMenuBtn = document.querySelector('#classMenuButton');
   const courseDateMenuBtn = document.querySelector('#courseDateMenuButton');
   const eligibilityMenuBtn = document.querySelector('#eligibilityMenuButton');
+  const clearFilterBtn = document.querySelector('#filter-clear');
+  const rectangleButtons = [rectanglePendingParent, rectanglePending, rectangleApproved, rectangleRejected];
+
 
   // prevent menu from closing down 
   for (var i = 0; i < dropdownMenuStayOpen.length; i++) {
@@ -1415,6 +1388,51 @@ document.addEventListener('DOMContentLoaded', (event) => {
   let courseDatesArray = [];
   let eligibilityArray = [];
   let formStatusArray = [];
+
+  let schoolCount = 0;
+  let classCount = 0;
+  let courseDateCount = 0;
+  let eligibilityCount = 0;
+
+
+  // If array contains value, unhide clear filter button
+  const unhideClearFilterBtn = () => {
+    if (schoolsArray.length > 0 || classesArray.length > 0 || courseDatesArray.length > 0 || eligibilityArray.length > 0 || formStatusArray.length > 0) {
+      clearFilterBtn.classList.remove('d-none');
+    } else {
+      clearFilterBtn.classList.add('d-none');
+    }
+  }
+
+  // Clear all filters
+  clearFilterBtn.addEventListener('click', function () {
+    schoolsArray = [];
+    classesArray = [];
+    courseDatesArray = [];
+    eligibilityArray = [];
+    formStatusArray = [];
+    // Select each checkbox that is a child element of .filter-div
+    const checkBoxes = document.querySelectorAll('.filter-div input[type="checkbox"]');
+    checkBoxes.forEach(checkBox => {
+      checkBox.checked = false;
+    });
+    rectangleButtons.forEach(rectangleButton => {
+      rectangleButton.style.border = '1px solid #485eab';
+    });
+
+    schoolMenuBtn.textContent = 'School';
+    classMenuBtn.textContent = 'Class';
+    courseDateMenuBtn.textContent = 'Course Date';
+    eligibilityMenuBtn.textContent = 'Eligibility';
+    schoolCount = 0;
+    classCount = 0;
+    courseDateCount = 0;
+    eligibilityCount = 0;
+    unhideClearFilterBtn();
+    pullDataWithFilter();
+  });
+    
+
 
 function pullDataWithFilter() {
   // Pull data to display in table
@@ -1757,19 +1775,11 @@ function pullDataWithFilter() {
       console.log(error);
     });
 
-
-
-  let schoolCount = 0;
-  let classCount = 0;
-  let courseDateCount = 0;
-  let eligibilityCount = 0;
-
   Promise.all([fetchSchools, fetchClasses, fetchCourseDates, fetchEligiblity])
     // For each of the filters, add event listener to each checkbox
     .then(() => {
       // For all the checkbox, add event listener then every on click, fetch the data again
       const allCheckBoxes = document.querySelectorAll('.filter-div input[type="checkbox"]');
-      const rectangleButtons = [rectanglePendingParent, rectanglePending, rectangleApproved, rectangleRejected];
       rectangleButtons.forEach(rectangleButton => {
         rectangleButton.addEventListener('click', () => {
           // Check if this button was previously selected
@@ -1790,6 +1800,7 @@ function pullDataWithFilter() {
 
             formStatusArray.push(rectangleButton.getAttribute('data-status'));
           }
+            unhideClearFilterBtn();
             pullDataWithFilter();
         })
       })
@@ -1882,6 +1893,7 @@ function pullDataWithFilter() {
               eligibilityArray = eligibilityArray.filter(item => item !== checkbox.value);
             }
           }
+          unhideClearFilterBtn();
           pullDataWithFilter();
         })
       })
