@@ -966,6 +966,22 @@ app.post('/parent/acknowledged', parentAuthHelper.verifyToken, parentAuthHelper.
         })
 });
 
+app.get('/getRaces', (req, res, next) => {
+    return parentModel
+        .getRaces()
+        .then((result) => {
+            if (!result) {
+                const error = new Error("No races found")
+                error.status = 404;
+                throw error
+            }
+            return res.json({ result })
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        });
+});
+
 
 /**
  * User: Super Admin    

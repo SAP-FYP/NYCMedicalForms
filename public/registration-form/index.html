@@ -31,14 +31,18 @@
 
         <div class="row title-row">
             <div class="col-12 title-container containers">
-                <text id="form-title">2023 5D4N MOE-OBS Challenge Programme - Course Registration Form</text>
+                <text id="form-title">2023 5D4N MOE-OBS Challenge Programme</text>
+                <div id="subtitle-container"><text id="form-subtitle">Course Registration Form</text></div>
             </div>
         </div>
 
         <div class="row form-row">
+
+            <!-- INSTRUCTIONS -->
             <div class="col-12 form-container containers">
                 <h2>Instructions</h2>
-                <div class="instruction-container">
+                <div class="spacer"></div>
+                <div class="instruction-container section-container">
                     <ol>
                         <li>Only a Parent/Legal Guardian of the Applicant may complete this Registration Form on behalf
                             of the Applicant if the Applicant is below 18 years old.</li>
@@ -70,17 +74,283 @@
 
                     </ol>
                 </div>
+            </div>
 
+            <!-- PARENTS/GUARIDAN NOTE -->
+            <div class="col-12 form-container containers">
+                <h2>Note for Parent/Legal Guardian</h2>
+                <div class="spacer"></div>
+                <div class="note-container section-container">
+                    <text>
+                        <p>Thank you for taking the time to register your child for the MOE-OBS Challenge Programme.
+                            Please
+                            provide us with some information that will help us plan a safe learning experience for your
+                            child.</p>
+                        <p>The submission of a completed Registration Form by the Parent/Legal Guardian of the Applicant
+                            indicates your interest to enrol the Applicant into the MOE-OBS Challenge Programme (the
+                            “Course”). </p>
+
+                        <p>Only a Parent/Legal Guardian of the Applicant may complete this Registration Form.</p>
+                        <form id="registration-form">
+                            <!-- PARENT NAME -->
+                            <div class="mb-3">
+                                <label for="form-input-name" class="form-label"><span class="label-indexes">1.
+                                    </span>Name</label>
+                                <input type="text" class="form-control" id="form-input-name">
+                                <div class="invalid-feedback">This field is required.</div>
+                            </div>
+
+                            <!-- PARENT EMAIL -->
+                            <div class="mb-3">
+                                <label for="form-input-email" class="form-label help-text-parent"><span
+                                        class="label-indexes">2. </span>Email of the Parent/Legal Guardian</label>
+                                <div id="emailHelp" class="form-text help-text">An acknowledgement comprising full
+                                    details of the
+                                    declaration will be sent to the email address provided. Please ensure that the email
+                                    address provided below is accurate.
+                                </div>
+                                <input type="text" class="form-control" id="form-input-email"
+                                    aria-describedby="emailHelp">
+                                <div class="invalid-feedback">This field is required.</div>
+                            </div>
+
+                            <!-- PARENT CONTACT NUMBER -->
+                            <div class="mb-3">
+                                <label for="form-input-contact" class="form-label"><span class="label-indexes">3.
+                                    </span>Mobile number</label>
+                                <input type="text" class="form-control" id="form-input-contact" placeholder="8123 4567">
+                                <div class="invalid-feedback">This field is required.</div>
+                            </div>
+
+                            <!-- ALT CONTACT NUMBER -->
+                            <div class="mb-3">
+                                <label for="form-input-alt-contact" class="form-label"><span class="label-indexes">4.
+                                    </span>Alternate Contact Number</label><span
+                                    style="font-size: 14px; color: #636467; margin-left: 10px;">(optional)
+                                </span>
+                                <input type="text" class="form-control" id="form-input-alt-contact">
+                            </div>
+
+                            <!-- REALATION TO APPLICANT -->
+                            <div class="mb-3">
+                                <label for="form-input-relation" class="form-label"><span class="label-indexes">5.
+                                    </span>Relation to Applicant</label>
+                                <select class="form-select form-control" id="form-input-relation">
+                                    <option selected>Select an Option</option>
+                                    <option value="1">Parent</option>
+                                    <option value="2">Grandparent</option>
+                                    <option value="3">Other Family Member</option>
+                                    <option value="4">Other Non-Family Member</option>
+                                    <option value="5">Siblings</option>
+                                    <option value="6">Guardian</option>
+                                </select>
+                                <div class="invalid-feedback">This field is required.</div>
+                            </div>
+
+                            <!-- PARENT IS EMERGENCY CONTACT? -->
+                            <div class="mb-3">
+                                <label for="form-input-isEmergencyContact" class="form-label help-text-parent"><span
+                                        class="label-indexes">6.
+                                    </span>Are you also the Applicant's emergency contact during the Course?</label>
+                                <div class="form-text help-text">Ensure the contact person can be reached for the full
+                                    duration of the course</div>
+
+                                <div class="btn-group" id="form-input-isEmergencyContact"
+                                    style=" border: 0px !important;" role="group">
+
+                                    <input type="radio" class="btn-check" name="emergency-radio"
+                                        id="isEmergencyContact-no" value="0" required>
+                                    <label class="radio-btns btn btn-outline-secondary" for="isEmergencyContact-no">
+                                        <i class="material-icons">close</i> No
+                                    </label>
+
+                                    <input type="radio" class="btn-check" name="emergency-radio"
+                                        id="isEmergencyContact-yes" value="1" required>
+                                    <label class="radio-btns btn btn-outline-secondary" for="isEmergencyContact-yes">
+                                        <i class="material-icons">check</i> Yes
+                                    </label>
+
+                                </div>
+                                <div class="invalid-feedback">This field is required.</div>
+                            </div>
+
+                            <!-- PARENT IS EMERGENCY CONTACT? - OPTIONAL -->
+                            <div class="optional-div" id="emergency-contact-div">
+
+                                <div class="mb-3">
+                                    <h3>Please provide the Applicant's emergency contact during the Course.</h3>
+
+                                    <label for="form-input-emergency-name" class="form-label">Name of Contact
+                                        Person</label>
+                                    <input type="text" class="form-control" id="form-input-emergency-name">
+                                    <div class="invalid-feedback">This field is required.</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="form-input-emergency-contact" class="form-label">Primary Contact
+                                        Number</label>
+                                    <input type="text" class="form-control" id="form-input-emergency-contact">
+                                    <div class="invalid-feedback">This field is required.</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="form-input-emergency-relation" class="form-label">Relation to
+                                        Applicant</label>
+                                    <select class="form-select form-control" id="form-input-emergency-relation">
+                                        <option selected>Select an Option</option>
+                                        <option value="1">Parent</option>
+                                        <option value="2">Grandparent</option>
+                                        <option value="3">Other Family Member</option>
+                                        <option value="4">Other Non-Family Member</option>
+                                        <option value="5">Siblings</option>
+                                        <option value="6">Guardian</option>
+                                    </select>
+                                    <div class="invalid-feedback">This field is required.</div>
+                                </div>
+
+                                <div class="mb-3"></div>
+                                <label for="form-input-emergency-alt-contact" class="form-label">Alternate Contact
+                                    Number</label><span
+                                    style="font-size: 14px; color: #636467; margin-left: 10px;">(optional)
+                                </span>
+                                <input type="text" class="form-control" id="form-input-emergency-alt-contact">
+
+                            </div>
+                        </form>
+                    </text>
+                </div>
+            </div>
+
+            <!-- PART 1: APPLICANT'S PERSONAL INFORMATION -->
+            <div class="col-12 form-container containers">
+                <h2>Part 1: Applicant's Personal Information</h2>
+                <div class="spacer"></div>
+                <div class="part1-container section-container">
+
+                    <!-- APPLICANT ID -->
+                    <div class="mb-3">
+                        <label for="form-input-applicant-id" class="form-label"><span class="label-indexes">7.
+                            </span>Applicant's Birth Certificate Number / NRIC Number / Foreign Identification
+                            Number</label>
+                        <input type="text" class="form-control" id="form-input-applicant-id">
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="form-input-applicant-name" class="form-label help-text-parent"><span
+                                class="label-indexes">8.
+                            </span>Full Name of the Applicant</label>
+                        <div class="form-text help-text">as it appears in the Applicant's Personal Identification
+                            Document</div>
+                        <input type="text" class="form-control" id="form-input-applicant-name">
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="form-input-school" class="form-label"><span class="label-indexes">9.
+                            </span>School</label>
+                        <select class="form-select form-control" id="form-input-school">
+                            <option selected>Select an Option</option>
+                        </select>
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="form-input-class" class="form-label"><span class="label-indexes">10.
+                            </span>Class</label>
+                        <input type="text" class="form-control" id="form-input-class">
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="form-input-residential" class="form-label"><span class="label-indexes">11.
+                            </span>Residential Status</label>
+
+                        <div class="" id="form-input-residential" style="border: 0px !important;">
+
+                            <div class="form-check radio-check">
+                                <input class="radio-custom-dots" type="radio" name="residential-radio"
+                                    id="residential-citizen" value="0" required>
+                                <label class="form-check-label radio-custom-label" for="residential-citizen">Singapore
+                                    Citizen</label>
+                            </div>
+
+                            <div class="form-check radio-check">
+                                <input class="radio-custom-dots" type="radio" name="residential-radio"
+                                    id="residential-pr" value="1" required>
+                                <label class="form-check-label radio-custom-label" for="residential-pr">Singapore
+                                    PR</label>
+                            </div>
+
+                            <div class="form-check radio-check">
+                                <input class="radio-custom-dots" type="radio" name="residential-radio"
+                                    id="residential-foreigner" value="2" required>
+                                <label class="form-check-label radio-custom-label"
+                                    for="residential-foreigner">Foreigner</label>
+                            </div>
+
+                        </div>
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="form-input-dob" class="form-label"><span class="label-indexes">12.
+                            </span>Date of Birth</label>
+                        <input type="date" class="form-control" id="form-input-dob" placeholder="dd/mm/yyyy">
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="form-input-race" class="form-label"><span class="label-indexes">13.
+                            </span>Race</label>
+                        <select class="form-select form-control" id="form-input-race">
+                            <option selected>Select an Option</option>
+                        </select>
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="form-input-gender" class="form-label"><span class="label-indexes">14.
+                            </span>Gender</label>
+
+                        <div class="" id="form-input-gender" style="border: 0px !important;">
+
+                            <div class="form-check radio-check">
+                                <input class="radio-custom-dots" type="radio" name="gender-radio" id="gender-male"
+                                    value="0" required>
+                                <label class="form-check-label radio-custom-label" for="gender-male">Male</label>
+                            </div>
+
+                            <div class="form-check radio-check">
+                                <input class="radio-custom-dots" type="radio" name="gender-radio" id="gender-female"
+                                    value="1" required>
+                                <label class="form-check-label radio-custom-label" for="gender-female">Female</label>
+                            </div>
+
+                        </div>
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="form-input-applicant-email" class="form-label help-text-parent"><span
+                                class="label-indexes">15. </span>Email of the Applicant</label>
+                        <div id="emailHelp" class="form-text help-text">The email address provided will be used for
+                            pre-course preparation.
+                        </div>
+                        <input type="text" class="form-control" id="form-input-applicant-email"
+                            aria-describedby="emailHelp">
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
 
 
-    <script src="https://unpkg.com/validator@latest/validator.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
-        crossorigin="anonymous"></script>
-    <script src="index.js"></script>
+        <script src="https://unpkg.com/validator@latest/validator.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+            crossorigin="anonymous"></script>
+        <script src="index.js"></script>
 
 </body>
 
