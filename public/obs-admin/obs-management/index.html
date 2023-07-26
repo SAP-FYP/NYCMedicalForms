@@ -86,7 +86,7 @@
 
                     </div>
                     <!-- Title of page -->
-                    <h2 class="overviewText">Overview</h2>
+                    <h2 class="overviewText">Form Management</h2>
                     <div class="d-flex flex-wrap justify-content-center statusContainer">
                         <!-- Template for status -->
 
@@ -128,7 +128,7 @@
                         <div class="col-8 input-group d-flex flex-wrap w-100 px-3 mx-auto my-0"
                             id="searchInputContainer">
                             <input id="searchInput" type="text" class="form-control bg-white"
-                                placeholder="Search by Name or Full Name" aria-label="Search"  data-bs-toggle="tooltip-click-tips" data-bs-placement="left" data-bs-title="Search Bar">
+                                placeholder="Search by Name or Full Name" aria-label="Search">
                             <div id="spacer"></div>
                             <button id="clear-button" class="btn btn-outline-secondary" type="button"><i
                                     class="material-icons" style="font-size:24px;color:#485EAB;">close</i></button>
@@ -143,7 +143,7 @@
                         <div class="d-flex">
                             <div>
 
-                                <button id="filter-icon-container" data-bs-toggle="tooltip-click-tips" data-bs-placement="top" data-bs-title="Filter Button">
+                                <button id="filter-icon-container" data-bs-toggle="tooltip-hover" data-bs-placement="top" data-bs-title="Filter Button">
                                     <img src="../../assets/images/filter-icon.png" id="filter-icon" alt="filter-icon">
                                 </button>
 
@@ -263,19 +263,19 @@
                         <thead>
                             <th>
                                 <div class="header-container">
-                                    <input type="checkbox" id="checkBoxTop"  data-bs-toggle="tooltip-hover" data-bs-placement="top" data-bs-title="Click To Select All">
+                                    <input type="checkbox" id="checkBoxTop">
                                     <i class="material-icons arrow-icon d-none">arrow_drop_down</i>
                                   </div>
                             </th>
                             <th id="nricColumn">NRIC</th>
                             <th id="fullNameColumn">
-                                <div class="header-container">
-                                FULL NAME<i class="material-icons arrow-icon-name d-none">arrow_drop_down</i>
+                                <div class="header-container" >
+                                FULL NAME<i class="material-icons arrow-icon-name d-none" data-bs-toggle="tooltip-click-tips" data-bs-placement="top" data-bs-title="Sort Alphabetically">arrow_drop_down</i>
                                 </div>
                             </th>
                             <th id="classColumn">CLASS</th>
                             <th id="schColumn"><div class="header-container">
-                                SCHOOL<i class="material-icons arrow-icon-school d-none">arrow_drop_down</i>
+                                SCHOOL<i class="material-icons arrow-icon-school d-none" data-bs-toggle="tooltip-click-tips" data-bs-placement="right" data-bs-title="Sort Alphabetically">arrow_drop_down</i>
                                 </div</th>
                             <th id="eligibilityColumn">ELIGIBILITY</th>
                             <th id="courseDateColumn">COURSE DATE</th>

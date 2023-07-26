@@ -960,20 +960,74 @@ function displayArrowIcons() {
   sortIconName.classList.remove('d-none');
   sortIconSchool.classList.remove('d-none');
 }
-const tipButton = document.querySelector('#help-li');
-//tooltip
-const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip-hover"]'));
-const tooltipTriggerList2 = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip-click-tips"]'));
 
-tooltipTriggerList.map(function (tooltipTrigger) {
+//tooltip
+const tipButton = document.querySelector('#help-li');
+const tooltipTriggerListClick = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip-click-tips"]'));
+const tooltipTriggerListHover = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip-hover"]'));
+// Initialize Bootstrap tooltips
+tooltipTriggerListClick.forEach(function (tooltipTrigger) {
+  return new bootstrap.Tooltip(tooltipTrigger, { trigger: 'manaul' });
+});
+tooltipTriggerListHover.forEach(function (tooltipTrigger) {
   return new bootstrap.Tooltip(tooltipTrigger, { trigger: 'hover' });
 });
 
-tooltipTriggerList2.map(function (tooltipTrigger) {
-  return new bootstrap.Tooltip(tooltipTrigger, { trigger: 'click' });
-});
+let tooltipsVisible = false;
+// Function to show or hide the tooltip when the tipButton is clicked
+
+const checkBoxTop = document.querySelector('#checkBoxTop');
+const filterButton = document.querySelector('#filter-icon-container');
+function toggleTooltipVisibility() {
+  tooltipsVisible = !tooltipsVisible;
+
+  tooltipTriggerListClick.forEach(function (tooltipTrigger) {
+    const tooltip = bootstrap.Tooltip.getInstance(tooltipTrigger);
+    if (tooltip) {
+      if (tooltipsVisible) {
+        tooltip.show();
+      } else {
+        tooltip.hide();
+      }
+    }
+  });
+
+  tooltipTriggerListHover.forEach(function (tooltipTrigger) {
+    const tooltip = bootstrap.Tooltip.getInstance(tooltipTrigger);
+    if (tooltip) {
+      if (tooltipsVisible) {
+        tooltip.show();
+      } else {
+        tooltip.hide();
+      }
+    }
+  });
+  
+}
+
+// Add click event listener to the tipButton
+if (tipButton) {
+  tipButton.addEventListener('click', function () {
+    toggleTooltipVisibility();
+
+    const tooltip = bootstrap.Tooltip.getInstance(checkBoxTop);
+    if (tooltip) {
+      tooltip.toggle();
+    }
+  });
+}
 
 
+function tooltipForCheckBoxTop(checkBoxTop) {
+  checkBoxTop.setAttribute('data-bs-toggle', 'tooltip-hover');
+  checkBoxTop.setAttribute('data-bs-placement', 'top');
+  checkBoxTop.setAttribute('data-bs-title', 'Click To Select All');
+
+  if (checkBoxTop.hasAttribute('data-bs-toggle') ) {
+    new bootstrap.Tooltip(checkBoxTop, { trigger: 'hover' });
+  }
+  
+}
 
 document.addEventListener("DOMContentLoaded", function () {
   axios.get(`${API_URL}/all`)
@@ -1028,6 +1082,8 @@ document.addEventListener("DOMContentLoaded", function () {
         // Get references to the status container and template
         const getAllForms = document.querySelector('#getAllForms');
         const rowTemplate = document.querySelector('.row-table-template');
+        //checkbox
+   
 
         //clear html content in getAllForms once since using template
         if (i === 0) {
@@ -1055,7 +1111,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         //call function to handle checkboxes
-        if (userPermission.includes(5)) {
+        if (userPermission.includes(5)) { 
+      
+          tooltipForCheckBoxTop(checkBoxTop)
           arrowIcon.classList.remove('d-none');
           handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
         } else {
@@ -1091,34 +1149,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-if (tipButton) {
-  let tooltipsVisible = false;
-
-  tipButton.addEventListener('click', function () {
-    tooltipsVisible = !tooltipsVisible;
-    tooltipTriggerList.forEach(function (tooltipTrigger) {
-      const tooltip = bootstrap.Tooltip.getInstance(tooltipTrigger);
-      if (tooltip) {
-        if (tooltipsVisible) {
-          tooltip.show();
-        } else {
-          tooltip.hide();
-        }
-      }
-    });
-    tooltipTriggerList2.forEach(function (tooltipTrigger) {
-      const tooltip = bootstrap.Tooltip.getInstance(tooltipTrigger);
-      if (tooltip) {
-        if (tooltipsVisible) {
-          tooltip.show();
-        } else {
-          tooltip.hide();
-        }
-      }
-    });
-  });
-  
-}
 
 //Function to sort table
 function sortTable(columnIndex, ascending) {
@@ -1256,6 +1286,8 @@ function searchForms() {
           } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
           //call function to handle checkboxes
           if (userPermission.includes(5)) {
+            const checkBoxTop = document.querySelector('#checkBoxTop');
+            tooltipForCheckBoxTop(checkBoxTop)
             arrowIcon.classList.remove('d-none');
             handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
           } else {
@@ -1440,6 +1472,8 @@ function retrieveByStatus(apiUrl) {
       } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
       //call function to handle checkboxes
       if (userPermission.includes(5)) {
+        const checkBoxTop = document.querySelector('#checkBoxTop');
+        tooltipForCheckBoxTop(checkBoxTop)
         arrowIcon.classList.remove('d-none');
         handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
       } else {
@@ -1560,6 +1594,8 @@ function retrieveAllForms() {
       } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
       //call function to handle checkboxes
       if (userPermission.includes(5)) {
+        const checkBoxTop = document.querySelector('#checkBoxTop');
+        tooltipForCheckBoxTop(checkBoxTop)
         arrowIcon.classList.remove('d-none');
         handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
       } else {
@@ -2077,6 +2113,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
                 //call function to handle checkboxes
                 if (userPermission.includes(5)) {
+                  const checkBoxTop = document.querySelector('#checkBoxTop');
+                  tooltipForCheckBoxTop(checkBoxTop)
                   arrowIcon.classList.remove('d-none');
                   handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
                 } else {
