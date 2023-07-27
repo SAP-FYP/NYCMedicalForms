@@ -1,6 +1,6 @@
 window.addEventListener('DOMContentLoaded', () => {
-    const schoolInput = document.getElementById('form-input-school');
-    const raceInput = document.getElementById('form-input-race');
+    const schoolInput = document.getElementById('form-input-applicant-school');
+    const raceInput = document.getElementById('form-input-applicant-race');
 
     // === FETCHES ===
 

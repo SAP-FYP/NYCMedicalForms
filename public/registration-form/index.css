@@ -4,7 +4,8 @@ html {
 
 body {
     background-color: #F6F7FC !important;
-    font-family: 'Noto Sans', sans-serif !important;
+    /* font-family: 'Noto Sans', sans-serif !important; */
+    font-family: 'Inter var', sans-serif !important;
     cursor: default;
     margin: 0;
 }
@@ -139,7 +140,7 @@ body {
 
 .form-container {
     background-color: white;
-    font-family: 'Open Sans', sans-serif !important;
+    /* font-family: 'Open Sans', sans-serif !important; */
     box-shadow: 0px 0px 10px -10px rgba(0, 0, 0, 0.83);
     -webkit-box-shadow: 0px 0px 10px -10px rgba(0, 0, 0, 0.83);
     -moz-box-shadow: 0px 0px 10px -10px rgba(0, 0, 0, 0.83);
@@ -153,9 +154,9 @@ body {
 
 .form-container h2 {
     color: #4F5A12;
-    font-size: 1.75rem;
-    font-weight: 700 !important;
-    letter-spacing: -1px !important;
+    font-size: 1.7rem;
+    font-weight: 600 !important;
+    letter-spacing: -0.019em !important;
 }
 
 .section-container {
@@ -194,7 +195,7 @@ body {
 }
 
 .form-label {
-    font-size: 16px;
+    font-size: 1rem;
     font-weight: 500;
     margin-bottom: 15px !important;
     margin-top: 20px;
@@ -202,9 +203,10 @@ body {
 }
 
 .label-indexes {
-    font-size: 14px;
+    font-size: 0.85rem;
+    font-weight: 500;
     margin-right: 5px;
-    color: #1A202C !important;
+    color: #293044 !important;
 }
 
 .help-text-parent {
@@ -215,6 +217,9 @@ body {
     margin-bottom: 10px !important;
     color: #69738E !important;
     font-weight: 500;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    letter-spacing: -0.006em
 }
 
 .form-control {
@@ -272,12 +277,36 @@ body {
     padding: 10px 0px;
 }
 
+/* CHECKBOX CONTROL */
+.checkbox-check {
+    display: flex !important;
+    align-items: center;
+}
+
+.checkbox-check:hover {
+    background-color: #f6fce2;
+}
+
+.checkbox-custom {
+    margin-left: -18px;
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+    accent-color: #4F5A12;
+}
+
+.checkbox-custom-label {
+    width: 100%;
+    padding: 10px 0px;
+}
+
 /* OPTIONAL DIVS */
 .form-container h3 {
     color: #4F5A12;
     font-size: 1.55rem;
-    font-weight: 700 !important;
-    letter-spacing: -1px !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.019em !important;
+
 }
 
 .optional-div {

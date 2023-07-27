@@ -14,6 +14,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700;800&family=Open+Sans:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
+    <link rel="preconnect" href="https://rsms.me/">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <title>OBS | Registration Form</title>
 
@@ -104,13 +105,12 @@
                             <div class="mb-3">
                                 <label for="form-input-email" class="form-label help-text-parent"><span
                                         class="label-indexes">2. </span>Email of the Parent/Legal Guardian</label>
-                                <div id="emailHelp" class="form-text help-text">An acknowledgement comprising full
+                                <div class="form-text help-text">An acknowledgement comprising full
                                     details of the
                                     declaration will be sent to the email address provided. Please ensure that the email
                                     address provided below is accurate.
                                 </div>
-                                <input type="text" class="form-control" id="form-input-email"
-                                    aria-describedby="emailHelp">
+                                <input type="text" class="form-control" id="form-input-email">
                                 <div class="invalid-feedback">This field is required.</div>
                             </div>
 
@@ -236,6 +236,7 @@
                         <div class="invalid-feedback">This field is required.</div>
                     </div>
 
+                    <!-- APPLICANT ID -->
                     <div class="mb-3">
                         <label for="form-input-applicant-name" class="form-label help-text-parent"><span
                                 class="label-indexes">8.
@@ -246,27 +247,30 @@
                         <div class="invalid-feedback">This field is required.</div>
                     </div>
 
+                    <!-- APPLICANT SCHOOL -->
                     <div class="mb-3">
-                        <label for="form-input-school" class="form-label"><span class="label-indexes">9.
+                        <label for="form-input-applicant-school" class="form-label"><span class="label-indexes">9.
                             </span>School</label>
-                        <select class="form-select form-control" id="form-input-school">
+                        <select class="form-select form-control" id="form-input-applicant-school">
                             <option selected>Select an Option</option>
                         </select>
                         <div class="invalid-feedback">This field is required.</div>
                     </div>
 
+                    <!-- APPLICANT CLASS -->
                     <div class="mb-3">
-                        <label for="form-input-class" class="form-label"><span class="label-indexes">10.
+                        <label for="form-input-applicant-class" class="form-label"><span class="label-indexes">10.
                             </span>Class</label>
-                        <input type="text" class="form-control" id="form-input-class">
+                        <input type="text" class="form-control" id="form-input-applicant-class">
                         <div class="invalid-feedback">This field is required.</div>
                     </div>
 
+                    <!-- APPLICANT RESIDENTIAL STATUS -->
                     <div class="mb-3">
-                        <label for="form-input-residential" class="form-label"><span class="label-indexes">11.
+                        <label for="form-input-applicant-residential" class="form-label"><span class="label-indexes">11.
                             </span>Residential Status</label>
 
-                        <div class="" id="form-input-residential" style="border: 0px !important;">
+                        <div class="" id="form-input-applicant-residential" style="border: 0px !important;">
 
                             <div class="form-check radio-check">
                                 <input class="radio-custom-dots" type="radio" name="residential-radio"
@@ -293,27 +297,30 @@
                         <div class="invalid-feedback">This field is required.</div>
                     </div>
 
+                    <!-- APPLICANT DOB -->
                     <div class="mb-3">
-                        <label for="form-input-dob" class="form-label"><span class="label-indexes">12.
+                        <label for="form-input-applicant-dob" class="form-label"><span class="label-indexes">12.
                             </span>Date of Birth</label>
-                        <input type="date" class="form-control" id="form-input-dob" placeholder="dd/mm/yyyy">
+                        <input type="date" class="form-control" id="form-input-applicant-dob">
                         <div class="invalid-feedback">This field is required.</div>
                     </div>
 
+                    <!-- APPLICANT RACE -->
                     <div class="mb-3">
-                        <label for="form-input-race" class="form-label"><span class="label-indexes">13.
+                        <label for="form-input-applicant-race" class="form-label"><span class="label-indexes">13.
                             </span>Race</label>
-                        <select class="form-select form-control" id="form-input-race">
+                        <select class="form-select form-control" id="form-input-applicant-race">
                             <option selected>Select an Option</option>
                         </select>
                         <div class="invalid-feedback">This field is required.</div>
                     </div>
 
+                    <!-- APPLICANT GENDER -->
                     <div class="mb-3">
-                        <label for="form-input-gender" class="form-label"><span class="label-indexes">14.
+                        <label for="form-input-applicant-gender" class="form-label"><span class="label-indexes">14.
                             </span>Gender</label>
 
-                        <div class="" id="form-input-gender" style="border: 0px !important;">
+                        <div class="" id="form-input-applicant-gender" style="border: 0px !important;">
 
                             <div class="form-check radio-check">
                                 <input class="radio-custom-dots" type="radio" name="gender-radio" id="gender-male"
@@ -331,14 +338,66 @@
                         <div class="invalid-feedback">This field is required.</div>
                     </div>
 
+                    <!-- APPLICANT EMAIL -->
                     <div class="mb-3">
                         <label for="form-input-applicant-email" class="form-label help-text-parent"><span
                                 class="label-indexes">15. </span>Email of the Applicant</label>
-                        <div id="emailHelp" class="form-text help-text">The email address provided will be used for
+                        <div class="form-text help-text">The email address provided will be used for
                             pre-course preparation.
                         </div>
-                        <input type="text" class="form-control" id="form-input-applicant-email"
-                            aria-describedby="emailHelp">
+                        <input type="text" class="form-control" id="form-input-applicant-email">
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
+
+                    <!-- APPLICANT ADDRESS -->
+                    <div class="mb-3">
+                        <label for="form-input-applicant-address" class="form-label"><span class="label-indexes">16.
+                            </span>Registered address</label>
+                        <input type="text" class="form-control" id="form-input-applicant-address">
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
+
+                    <!-- APPLICANT DIETARY REQUIREMENTS -->
+                    <div class="mb-3">
+                        <label for="form-input-applicant-diet" class="form-label help-text-parent"><span
+                                class="label-indexes">17.
+                            </span>Dietary Requirements (if any)</label><span
+                            style="font-size: 14px; color: #636467; margin-left: 10px;">(optional)
+                        </span>
+                        <div class="form-text help-text">Please note that all meals provided will be Halal-certified and
+                            no beef will be provided.
+                        </div>
+
+                        <div class="" id="form-input-applicant-diet" style="border: 0px !important;">
+
+                            <div class="form-check checkbox-check">
+                                <input class="checkbox-custom" type="checkbox" name="vegeterian-checkbox"
+                                    id="diet-vegeterian" value="0" required>
+                                <label class="form-check-label checkbox-custom-label" for="diet-vegeterian">Vegeterian
+                                    (does not contain onion and garlic)</label>
+                            </div>
+
+                            <div class="form-check checkbox-check">
+                                <input class="checkbox-custom" type="checkbox" name="g6pd-checkbox" id="diet-g6pd"
+                                    value="1" required>
+                                <label class="form-check-label checkbox-custom-label" for="diet-g6pd">G6PD</label>
+                            </div>
+
+                            <div class="form-check checkbox-check">
+                                <input class="checkbox-custom" type="checkbox" name="gluten-checkbox" id="diet-gluten"
+                                    value="2" required>
+                                <label class="form-check-label checkbox-custom-label" for="diet-gluten">Gluten
+                                    Free</label>
+                            </div>
+
+                            <div class="form-check checkbox-check">
+                                <input class="checkbox-custom" type="checkbox" name="lactose-checkbox" id="diet-lactose"
+                                    value="3" required>
+                                <label class="form-check-label checkbox-custom-label" for="diet-lactose">Lactose
+                                    Intolerant</label>
+                            </div>
+                        </div>
+
                         <div class="invalid-feedback">This field is required.</div>
                     </div>
                 </div>
