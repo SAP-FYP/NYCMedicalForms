@@ -4,7 +4,6 @@ html {
 
 body {
     background-color: #F6F7FC !important;
-    /* font-family: 'Noto Sans', sans-serif !important; */
     font-family: 'Inter var', sans-serif !important;
     cursor: default;
     margin: 0;
@@ -72,7 +71,7 @@ body {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 41, 43, 0.1);
-    background-image: linear-gradient(to right, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0));
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0));
 }
 
 .title-container {
@@ -140,13 +139,12 @@ body {
 
 .form-container {
     background-color: white;
-    /* font-family: 'Open Sans', sans-serif !important; */
     box-shadow: 0px 0px 10px -10px rgba(0, 0, 0, 0.83);
     -webkit-box-shadow: 0px 0px 10px -10px rgba(0, 0, 0, 0.83);
     -moz-box-shadow: 0px 0px 10px -10px rgba(0, 0, 0, 0.83);
     padding: 50px !important;
     width: 37vw !important;
-    min-width: 940px !important;
+    min-width: 950px !important;
     margin: 30px auto auto auto !important;
     border-radius: 20px;
     color: #293044;
@@ -160,24 +158,36 @@ body {
 }
 
 .section-container {
-    margin-top: 20px;
     font-size: 1rem;
 }
 
-.instruction-container ol {
+.sub-section-title {
+    margin-top: 40px;
+    margin-bottom: 15px;
+}
+
+.instruction-container ol,
+.text-container ol {
     padding-left: 19px;
 }
 
-.instruction-container li {
+.instruction-container li,
+.text-container li {
     margin-top: 8px;
 }
 
-.instruction-container a {
-    color: #4a5ec0;
+.instruction-container a,
+.help-text-link {
+    color: #4A61C0;
     font-weight: 600;
 }
 
-.instruction-container a:hover {
+.help-text-link {
+    font-weight: 500;
+}
+
+.instruction-container a:hover,
+.help-text-link:hover {
     color: #384790;
 }
 
@@ -186,6 +196,10 @@ body {
     width: 40px;
     background-color: #FFC73C;
     margin: 20px 0px 25px 0px;
+}
+
+.text-container {
+    margin-bottom: 20px;
 }
 
 /* FORM COTNROLS AND LABELS */
@@ -234,11 +248,6 @@ body {
     border: #4F5A12 1.6px solid !important;
 }
 
-#registration-form {
-    margin-top: 40px !important;
-}
-
-
 /* RADIO CONTROL */
 .btn-group {
     width: 100%;
@@ -249,6 +258,20 @@ body {
     display: flex !important;
     align-items: center;
     justify-content: center;
+    background-color: #FBFCFD !important;
+    font-weight: 500 !important;
+    color: #293044 !important;
+    border: 1px solid #bebebe !important;
+}
+
+input[type="radio"].btn-check:checked+.radio-btns {
+    border: 1px solid #4F5A12 !important;
+    background-color: #f6fce2 !important;
+    z-index: 2;
+}
+
+input[type="radio"].btn-check:hover+.radio-btns {
+    background-color: #f6fce2 !important;
 }
 
 .radio-btns i {

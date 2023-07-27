@@ -71,6 +71,20 @@ window.addEventListener('DOMContentLoaded', () => {
         })
     });
 
+    document.querySelectorAll('input[name="emergency-radio"]').forEach(button => {
+        button.addEventListener("change", (e) => {
+            const targetElement = document.getElementById('tetanus-date-div');
+            const targetElement2 = document.getElementById('tetanus-note-div');
+            if (e.target.value == "0") {
+                targetElement.classList.add('optional-div');
+                targetElement2.classList.remove('optional-div');
+            } else if (e.target.value == "1") {
+                targetElement.classList.remove('optional-div');
+                targetElement2.classList.add('optional-div');
+            }
+        })
+    });
+
     // === EVENT HANDLERS ===
 
     handleParallax = () => {

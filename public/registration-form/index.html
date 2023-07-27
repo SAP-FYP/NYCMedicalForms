@@ -72,7 +72,6 @@
                             Registration Form and the start of the Course, the Applicant must update the teacher
                             coordinator and if necessary, consults a physician for re-assessment.
                         </li>
-
                     </ol>
                 </div>
             </div>
@@ -82,142 +81,139 @@
                 <h2>Note for Parent/Legal Guardian</h2>
                 <div class="spacer"></div>
                 <div class="note-container section-container">
-                    <text>
+                    <div class="text-container">
                         <p>Thank you for taking the time to register your child for the MOE-OBS Challenge Programme.
                             Please
                             provide us with some information that will help us plan a safe learning experience for your
                             child.</p>
                         <p>The submission of a completed Registration Form by the Parent/Legal Guardian of the Applicant
                             indicates your interest to enrol the Applicant into the MOE-OBS Challenge Programme (the
-                            “Course”). </p>
+                            “Course”).
 
                         <p>Only a Parent/Legal Guardian of the Applicant may complete this Registration Form.</p>
-                        <form id="registration-form">
-                            <!-- PARENT NAME -->
-                            <div class="mb-3">
-                                <label for="form-input-name" class="form-label"><span class="label-indexes">1.
-                                    </span>Name</label>
-                                <input type="text" class="form-control" id="form-input-name">
-                                <div class="invalid-feedback">This field is required.</div>
-                            </div>
+                    </div>
 
-                            <!-- PARENT EMAIL -->
-                            <div class="mb-3">
-                                <label for="form-input-email" class="form-label help-text-parent"><span
-                                        class="label-indexes">2. </span>Email of the Parent/Legal Guardian</label>
-                                <div class="form-text help-text">An acknowledgement comprising full
-                                    details of the
-                                    declaration will be sent to the email address provided. Please ensure that the email
-                                    address provided below is accurate.
-                                </div>
-                                <input type="text" class="form-control" id="form-input-email">
-                                <div class="invalid-feedback">This field is required.</div>
-                            </div>
+                    <!-- PARENT NAME -->
+                    <div class="mb-3">
+                        <label for="form-input-name" class="form-label"><span class="label-indexes">1.
+                            </span>Name</label>
+                        <input type="text" class="form-control" id="form-input-name">
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
 
-                            <!-- PARENT CONTACT NUMBER -->
-                            <div class="mb-3">
-                                <label for="form-input-contact" class="form-label"><span class="label-indexes">3.
-                                    </span>Mobile number</label>
-                                <input type="text" class="form-control" id="form-input-contact" placeholder="8123 4567">
-                                <div class="invalid-feedback">This field is required.</div>
-                            </div>
+                    <!-- PARENT EMAIL -->
+                    <div class="mb-3">
+                        <label for="form-input-email" class="form-label help-text-parent"><span class="label-indexes">2.
+                            </span>Email of the Parent/Legal Guardian</label>
+                        <div class="form-text help-text">An acknowledgement comprising full
+                            details of the
+                            declaration will be sent to the email address provided. Please ensure that the email
+                            address provided below is accurate.
+                        </div>
+                        <input type="text" class="form-control" id="form-input-email">
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
 
-                            <!-- ALT CONTACT NUMBER -->
-                            <div class="mb-3">
-                                <label for="form-input-alt-contact" class="form-label"><span class="label-indexes">4.
-                                    </span>Alternate Contact Number</label><span
-                                    style="font-size: 14px; color: #636467; margin-left: 10px;">(optional)
-                                </span>
-                                <input type="text" class="form-control" id="form-input-alt-contact">
-                            </div>
+                    <!-- PARENT CONTACT NUMBER -->
+                    <div class="mb-3">
+                        <label for="form-input-contact" class="form-label"><span class="label-indexes">3.
+                            </span>Mobile number</label>
+                        <input type="text" class="form-control" id="form-input-contact" placeholder="8123 4567">
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
 
-                            <!-- REALATION TO APPLICANT -->
-                            <div class="mb-3">
-                                <label for="form-input-relation" class="form-label"><span class="label-indexes">5.
-                                    </span>Relation to Applicant</label>
-                                <select class="form-select form-control" id="form-input-relation">
-                                    <option selected>Select an Option</option>
-                                    <option value="1">Parent</option>
-                                    <option value="2">Grandparent</option>
-                                    <option value="3">Other Family Member</option>
-                                    <option value="4">Other Non-Family Member</option>
-                                    <option value="5">Siblings</option>
-                                    <option value="6">Guardian</option>
-                                </select>
-                                <div class="invalid-feedback">This field is required.</div>
-                            </div>
+                    <!-- ALT CONTACT NUMBER -->
+                    <div class="mb-3">
+                        <label for="form-input-alt-contact" class="form-label"><span class="label-indexes">4.
+                            </span>Alternate Contact Number</label><span
+                            style="font-size: 14px; color: #636467; margin-left: 10px;">(optional)
+                        </span>
+                        <input type="text" class="form-control" id="form-input-alt-contact">
+                    </div>
 
-                            <!-- PARENT IS EMERGENCY CONTACT? -->
-                            <div class="mb-3">
-                                <label for="form-input-isEmergencyContact" class="form-label help-text-parent"><span
-                                        class="label-indexes">6.
-                                    </span>Are you also the Applicant's emergency contact during the Course?</label>
-                                <div class="form-text help-text">Ensure the contact person can be reached for the full
-                                    duration of the course</div>
+                    <!-- REALATION TO APPLICANT -->
+                    <div class="mb-3">
+                        <label for="form-input-relation" class="form-label"><span class="label-indexes">5.
+                            </span>Relation to Applicant</label>
+                        <select class="form-select form-control" id="form-input-relation">
+                            <option selected>Select an Option</option>
+                            <option value="1">Parent</option>
+                            <option value="2">Grandparent</option>
+                            <option value="3">Other Family Member</option>
+                            <option value="4">Other Non-Family Member</option>
+                            <option value="5">Siblings</option>
+                            <option value="6">Guardian</option>
+                        </select>
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
 
-                                <div class="btn-group" id="form-input-isEmergencyContact"
-                                    style=" border: 0px !important;" role="group">
+                    <!-- PARENT IS EMERGENCY CONTACT? -->
+                    <div class="mb-3">
+                        <label for="form-input-isEmergencyContact" class="form-label help-text-parent"><span
+                                class="label-indexes">6.
+                            </span>Are you also the Applicant's emergency contact during the Course?</label>
+                        <div class="form-text help-text">Ensure the contact person can be reached for the full
+                            duration of the course</div>
 
-                                    <input type="radio" class="btn-check" name="emergency-radio"
-                                        id="isEmergencyContact-no" value="0" required>
-                                    <label class="radio-btns btn btn-outline-secondary" for="isEmergencyContact-no">
-                                        <i class="material-icons">close</i> No
-                                    </label>
+                        <div class="btn-group" id="form-input-isEmergencyContact" style=" border: 0px !important;"
+                            role="group">
 
-                                    <input type="radio" class="btn-check" name="emergency-radio"
-                                        id="isEmergencyContact-yes" value="1" required>
-                                    <label class="radio-btns btn btn-outline-secondary" for="isEmergencyContact-yes">
-                                        <i class="material-icons">check</i> Yes
-                                    </label>
+                            <input type="radio" class="btn-check" name="emergency-radio" id="isEmergencyContact-no"
+                                value="0" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="isEmergencyContact-no">
+                                <i class="material-icons">close</i> No
+                            </label>
 
-                                </div>
-                                <div class="invalid-feedback">This field is required.</div>
-                            </div>
+                            <input type="radio" class="btn-check" name="emergency-radio" id="isEmergencyContact-yes"
+                                value="1" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="isEmergencyContact-yes">
+                                <i class="material-icons">check</i> Yes
+                            </label>
 
-                            <!-- PARENT IS EMERGENCY CONTACT? - OPTIONAL -->
-                            <div class="optional-div" id="emergency-contact-div">
+                        </div>
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
 
-                                <div class="mb-3">
-                                    <h3>Please provide the Applicant's emergency contact during the Course.</h3>
+                    <!-- PARENT IS EMERGENCY CONTACT? - OPTIONAL -->
+                    <div class="optional-div" id="emergency-contact-div">
 
-                                    <label for="form-input-emergency-name" class="form-label">Name of Contact
-                                        Person</label>
-                                    <input type="text" class="form-control" id="form-input-emergency-name">
-                                    <div class="invalid-feedback">This field is required.</div>
-                                </div>
+                        <div class="mb-3">
+                            <h3>Please provide the Applicant's emergency contact during the Course.</h3>
 
-                                <div class="mb-3">
-                                    <label for="form-input-emergency-contact" class="form-label">Primary Contact
-                                        Number</label>
-                                    <input type="text" class="form-control" id="form-input-emergency-contact">
-                                    <div class="invalid-feedback">This field is required.</div>
-                                </div>
+                            <label for="form-input-emergency-name" class="form-label">Name of Contact
+                                Person</label>
+                            <input type="text" class="form-control" id="form-input-emergency-name">
+                            <div class="invalid-feedback">This field is required.</div>
+                        </div>
 
-                                <div class="mb-3">
-                                    <label for="form-input-emergency-relation" class="form-label">Relation to
-                                        Applicant</label>
-                                    <select class="form-select form-control" id="form-input-emergency-relation">
-                                        <option selected>Select an Option</option>
-                                        <option value="1">Parent</option>
-                                        <option value="2">Grandparent</option>
-                                        <option value="3">Other Family Member</option>
-                                        <option value="4">Other Non-Family Member</option>
-                                        <option value="5">Siblings</option>
-                                        <option value="6">Guardian</option>
-                                    </select>
-                                    <div class="invalid-feedback">This field is required.</div>
-                                </div>
+                        <div class="mb-3">
+                            <label for="form-input-emergency-contact" class="form-label">Primary Contact
+                                Number</label>
+                            <input type="text" class="form-control" id="form-input-emergency-contact">
+                            <div class="invalid-feedback">This field is required.</div>
+                        </div>
 
-                                <div class="mb-3"></div>
-                                <label for="form-input-emergency-alt-contact" class="form-label">Alternate Contact
-                                    Number</label><span
-                                    style="font-size: 14px; color: #636467; margin-left: 10px;">(optional)
-                                </span>
-                                <input type="text" class="form-control" id="form-input-emergency-alt-contact">
+                        <div class="mb-3">
+                            <label for="form-input-emergency-relation" class="form-label">Relation to
+                                Applicant</label>
+                            <select class="form-select form-control" id="form-input-emergency-relation">
+                                <option selected>Select an Option</option>
+                                <option value="1">Parent</option>
+                                <option value="2">Grandparent</option>
+                                <option value="3">Other Family Member</option>
+                                <option value="4">Other Non-Family Member</option>
+                                <option value="5">Siblings</option>
+                                <option value="6">Guardian</option>
+                            </select>
+                            <div class="invalid-feedback">This field is required.</div>
+                        </div>
 
-                            </div>
-                        </form>
-                    </text>
+                        <div class="mb-3"></div>
+                        <label for="form-input-emergency-alt-contact" class="form-label">Alternate Contact
+                            Number</label><span style="font-size: 14px; color: #636467; margin-left: 10px;">(optional)
+                        </span>
+                        <input type="text" class="form-control" id="form-input-emergency-alt-contact">
+                    </div>
                 </div>
             </div>
 
@@ -236,7 +232,7 @@
                         <div class="invalid-feedback">This field is required.</div>
                     </div>
 
-                    <!-- APPLICANT ID -->
+                    <!-- APPLICANT NAME -->
                     <div class="mb-3">
                         <label for="form-input-applicant-name" class="form-label help-text-parent"><span
                                 class="label-indexes">8.
@@ -399,6 +395,123 @@
                         </div>
 
                         <div class="invalid-feedback">This field is required.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PART 2: APPLICANT'S HEALTH INFORMATION -->
+            <div class="col-12 form-container containers">
+                <h2>Part 2: Applicant's Health Information</h2>
+                <div class="spacer"></div>
+                <div class="part2-container section-container">
+                    <div class="text-container">
+                        Note:
+                        <ol>
+                            <li>Health information provided must be comprehensive and recent for the Physician's
+                                recommendation of fitness to attend the Course.</li>
+                            <li>Ensure the Medical Examination takes place within six (6) months before the start of the
+                                Course.</li>
+                            <li>A “physician” refers to a medical practitioner registered under the Medical Registration
+                                Act (Chapter 174)</li>
+                        </ol>
+                    </div>
+
+                    <h3 class="sub-section-title">About Tetanus</h3>
+                    <div class="text-container">
+                        Applicants are at significantly higher risk of tetanus infection if they have never been
+                        vaccinated or if the validity period of their tetanus vaccination has lapsed. Tetanus
+                        vaccination has a validity of 10 years and is compulsory for the Applicants’ participation in
+                        the Course. For more information on the Tetanus infection, you may refer to the Parent's letter
+                        provided by the school.
+                    </div>
+
+                    <!-- APPLICANT HAS TETANUS VACCINATION? -->
+                    <div class="mb-3">
+                        <label for="form-input-hasTetanus" class="form-label help-text-parent"><span
+                                class="label-indexes">18.
+                            </span>Does the Applicant have valid Tetanus Vaccination?</label>
+                        <div class="form-text help-text">Tetanus Vaccination is compulsory and has a validity of ten
+                            (10) years<br>
+                            Check the date of the Applicant’s Tetanus vaccination(s) at <a class="help-text-link"
+                                href="https://www.nir.hpb.gov.sg/">https://www.nir.hpb.gov.sg/</a><br>
+                            (immunisation records are only available for children born in or after 1996).</div>
+
+                        <div class="btn-group" id="form-input-hasTetanus" style=" border: 0px !important;" role="group">
+
+                            <input type="radio" class="btn-check" name="emergency-radio" id="hasTetanus-no" value="0"
+                                required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasTetanus-no">
+                                <i class="material-icons">close</i> No
+                            </label>
+
+                            <input type="radio" class="btn-check" name="emergency-radio" id="hasTetanus-yes" value="1"
+                                required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasTetanus-yes">
+                                <i class="material-icons">check</i> Yes
+                            </label>
+
+                        </div>
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
+
+                    <!-- TETANUS DATE - OPTIONAL -->
+                    <div class="optional-div" id="tetanus-date-div">
+                        <div class="mb-3">
+                            <label for="form-input-tetanus-date" class="form-label help-text-parent">Tetanus
+                                Vaccination Date</label>
+                            <div class="form-text help-text">If you are not sure of the exact date of the Vaccination,
+                                use first day of the month which it occurred.</div>
+                            <input type="date" class="form-control" id="form-input-tetanus-date">
+                            <div class="invalid-feedback">This field is required.</div>
+                        </div>
+                    </div>
+
+                    <!-- TETANUS NOTE - OPTIONAL -->
+                    <div class="optional-div" id="tetanus-note-div" style="margin-top: 30px;">
+                        <div class="mb-3">
+                            <div class="text-container">
+                                If the Applicant does not have a valid tetanus vaccination within the past 10 years, the
+                                Applicant will be required to be vaccinated or re-vaccinated (as the case may be)
+                                against tetanus before the Applicant may be enrolled in the Course.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- APPLICANT HEIGHT -->
+                    <div class="mb-3">
+                        <label for="form-input-applicant-height" class="form-label help-text-parent"><span
+                                class="label-indexes">19.
+                            </span>Height of the Applicant</label>
+                        <div class="form-text help-text">Provide information in metres (m)</div>
+                        <input type="number" class="form-control" id="form-input-applicant-height">
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
+
+                    <!-- APPLICANT WEIGHT -->
+                    <div class="mb-3">
+                        <label for="form-input-applicant-weight" class="form-label help-text-parent"><span
+                                class="label-indexes">20.
+                            </span>Weight of the Applicant</label>
+                        <div class="form-text help-text">Provide information in kilograms (kg)</div>
+                        <input type="number" class="form-control" id="form-input-applicant-weight">
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
+
+                    <!-- APPLICANT BMI -->
+                    <div class="mb-3">
+                        <label for="form-input-applicant-bmi" class="form-label help-text-parent"><span
+                                class="label-indexes">21.
+                            </span>Body Mass Index (BMI)</label>
+                        <div class="form-text help-text">Calculating Body Mass Index (BMI) = weight (kg) / (height x
+                            height) (m)</div>
+                        <input type="number" class="form-control" id="form-input-applicant-bmi">
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
+
+                    <h3 class="sub-section-title" style="margin-top: 60px;">Medical Condition Diagnosed by Physician
+                    </h3>
+                    <div class="text-container">
+                        Additional report(s) may be required depending on the information provided.
                     </div>
                 </div>
             </div>
