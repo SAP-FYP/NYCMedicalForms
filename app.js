@@ -798,7 +798,6 @@ app.post('/parent/login-verify', (req, res, next) => {
         return res.status(400).json({ error: 'Invalid URL' });
     }
 
-    console.log(studentID)
     return parentModel
         .verifyIfAcknowledged(studentID)
         .then((result) => {
@@ -828,15 +827,11 @@ app.post('/parent/login/', (req, res, next) => {
         return res.status(400).json({ error: 'Invalid URL or password' });
     }
 
-    console.log(studentID);
     return userModel
         .parentLogin(studentID)
         .then((result) => {
             // Convert dateofbirth to DD/MM/YYYY (Singapore format)
             result.dateOfBirth = new Date(result.dateOfBirth).toLocaleDateString('en-SG').replace(/\//g, '');
-            // Check if password entered is == to DOB + NRIC (password) in database
-            console.log(password);
-            console.log((result.dateOfBirth + result.studentNRIC).toUpperCase());
             if (password != (result.dateOfBirth + result.studentNRIC).toUpperCase()) {
                 const error = new Error("Invalid URL or password");
                 error.status = 401;
