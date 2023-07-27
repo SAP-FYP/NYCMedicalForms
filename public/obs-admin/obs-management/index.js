@@ -1068,156 +1068,156 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 //Function to search for forms
-function searchForms() {
-  if (searchInput.value.trim() === '') {
-    location.reload();
-  } else {
-    const encodedSearchInput = encodeURIComponent(searchInput.value);
-    axios.get(`${API_URL}/search/${encodedSearchInput}`)
-      .then(function (response) {
-        const configURL = response.config.url;
-        const requestURL = response.request.responseURL;
-        if (configURL !== requestURL) {
-          window.location.href = requestURL;
-          throw new Error("redirected");
-        }
+// function searchForms() {
+//   if (searchInput.value.trim() === '') {
+//     location.reload();
+//   } else {
+//     const encodedSearchInput = encodeURIComponent(searchInput.value);
+//     axios.get(`${API_URL}/search/${encodedSearchInput}`)
+//       .then(function (response) {
+//         const configURL = response.config.url;
+//         const requestURL = response.request.responseURL;
+//         if (configURL !== requestURL) {
+//           window.location.href = requestURL;
+//           throw new Error("redirected");
+//         }
 
-        //call function to update status count
-        const formData = response.data;
-        const userPermission = response.data.pop();
+//         //call function to update status count
+//         const formData = response.data;
+//         const userPermission = response.data.pop();
 
-        updateFormCounts(formData);
+//         updateFormCounts(formData);
 
-        //call function to create export button for
-        const exportBtnBulkContainer = document.querySelector('#export-btn-search');
-        const exportIcon = createExportButtonAll('export-icon');
-
-
-        const successBtn = document.querySelector('.successBtn');
-        const rejectBtn = document.querySelector('.rejectBtn');
-        if (successBtn) {
-          successBtn.addEventListener('click', function () {
-
-            const pillPending = document.querySelector('.changePill');
-            if (pillPending) {
-              pillPending.classList.remove('changePill');
-            }
+//         //call function to create export button for
+//         const exportBtnBulkContainer = document.querySelector('#export-btn-search');
+//         const exportIcon = createExportButtonAll('export-icon');
 
 
-          });
-        }
-        if (rejectBtn) {
-          rejectBtn.addEventListener('click', function () {
-            const pillPending = document.querySelector('.changePill');
-            pillPending.classList.remove('changePill');
+//         const successBtn = document.querySelector('.successBtn');
+//         const rejectBtn = document.querySelector('.rejectBtn');
+//         if (successBtn) {
+//           successBtn.addEventListener('click', function () {
 
-          });
-        }
-
-
-        // Loop through the data and add it to the page
-        for (i = 0; i < formData.length; i++) {
-
-          //call function to format date
-          const formattedDate = createFormattedDate(formData[i].courseDate);
-          // Get references to the status container and template
-          const getAllForms = document.querySelector('#getAllForms');
-          const rowTemplate = document.querySelector('.row-table-template');
-
-          //clear html content in getAllForms once since using template
-          if (i === 0) {
-            dataAll = [];
-            getAllForms.innerHTML = "";
-          }
-          // Clone the template and append it to the status container
-          const templateContent = rowTemplate.content;
-          const clonedRowTemplate = document.importNode(templateContent, true);
-
-          // Populate the cloned template function
-
-          const {
-            studentNRICCell,
-            nameOfStudentCell,
-            classCell,
-            schoolCell,
-            eligibilityCell,
-            formattedDateCell,
-            formStatusValue,
-            studentId,
-            mstReviewCell,
-            docReviewCell
-          } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
-          //call function to handle checkboxes
-          if (userPermission.includes(5)) {
-            arrowIcon.classList.remove('d-none');
-            handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
-          } else {
-            const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
-            const checkBoxTop = document.querySelector('#checkBoxTop');
-            checkBoxes.forEach(function (checkBox) {
-              checkBox.classList.add('d-none');
-            });
-            checkBoxTop.classList.add('d-none');
-          }
+//             const pillPending = document.querySelector('.changePill');
+//             if (pillPending) {
+//               pillPending.classList.remove('changePill');
+//             }
 
 
-          //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
-          handleModalButtons(clonedRowTemplate, studentId, formData, i);
-          ;
+//           });
+//         }
+//         if (rejectBtn) {
+//           rejectBtn.addEventListener('click', function () {
+//             const pillPending = document.querySelector('.changePill');
+//             pillPending.classList.remove('changePill');
+
+//           });
+//         }
 
 
-        }
-        //Outside of for loop 
-        //Export to Excel Bulk Once 
-        const exportBtnBulk = document.querySelector('#export-btn-search');
-        exportBtnBulk.removeEventListener('click', exportButtonHandler);
-        exportBtnBulk.addEventListener('click', exportButtonHandler);
+//         // Loop through the data and add it to the page
+//         for (i = 0; i < formData.length; i++) {
 
-      })
-      .catch(function (error) {
-        if (error && error.message !== "redirected") {
-          console.log(error);
-        }
-        if (error.response && error.response.status === 404) {
-          alertBox("No results found!", "danger")
-          allForms.innerHTML = ` <tr>
-          <td><input type="checkbox" id="checkBox"></td>
-          <td colspan="7" class="text-center" style="font-size: calc(1.275rem + .3vw) !important">
-          <div style="margin-right: 70px; display: inline-block;">No results found!</div></td>
-          </tr>`;
-        }
-        console.log(error);
-      });
-  }
+//           //call function to format date
+//           const formattedDate = createFormattedDate(formData[i].courseDate);
+//           // Get references to the status container and template
+//           const getAllForms = document.querySelector('#getAllForms');
+//           const rowTemplate = document.querySelector('.row-table-template');
 
-}
+//           //clear html content in getAllForms once since using template
+//           if (i === 0) {
+//             dataAll = [];
+//             getAllForms.innerHTML = "";
+//           }
+//           // Clone the template and append it to the status container
+//           const templateContent = rowTemplate.content;
+//           const clonedRowTemplate = document.importNode(templateContent, true);
 
-//Serach, click icon
-searchBtn.addEventListener('click', () => {
-  rectanglePendingParent.style.border = '1px solid #485eab';
-  rectangleApproved.style.border = '1px solid #485eab';
-  rectanglePending.style.border = '1px solid #485eab';
-  rectangleRejected.style.border = '1px solid #485eab';
-  searchForms();
-});
+//           // Populate the cloned template function
 
-//Search, press enter
-searchInput.addEventListener('keypress', event => {
-  rectanglePendingParent.style.border = '1px solid #485eab';
-  rectangleApproved.style.border = '1px solid #485eab';
-  rectanglePending.style.border = '1px solid #485eab';
-  rectangleRejected.style.border = '1px solid #485eab';
-  if (event.key === "Enter") {
-    event.preventDefault();
-    searchForms();
-  }
-});
+//           const {
+//             studentNRICCell,
+//             nameOfStudentCell,
+//             classCell,
+//             schoolCell,
+//             eligibilityCell,
+//             formattedDateCell,
+//             formStatusValue,
+//             studentId,
+//             mstReviewCell,
+//             docReviewCell
+//           } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
+//           //call function to handle checkboxes
+//           if (userPermission.includes(5)) {
+//             arrowIcon.classList.remove('d-none');
+//             handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
+//           } else {
+//             const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
+//             const checkBoxTop = document.querySelector('#checkBoxTop');
+//             checkBoxes.forEach(function (checkBox) {
+//               checkBox.classList.add('d-none');
+//             });
+//             checkBoxTop.classList.add('d-none');
+//           }
 
-//Search, clear button
-searchClearBtn.onclick = () => {
-  searchInput.value = "";
-  retrieveAllForms()
-}
+
+//           //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
+//           handleModalButtons(clonedRowTemplate, studentId, formData, i);
+//           ;
+
+
+//         }
+//         //Outside of for loop 
+//         //Export to Excel Bulk Once 
+//         const exportBtnBulk = document.querySelector('#export-btn-search');
+//         exportBtnBulk.removeEventListener('click', exportButtonHandler);
+//         exportBtnBulk.addEventListener('click', exportButtonHandler);
+
+//       })
+//       .catch(function (error) {
+//         if (error && error.message !== "redirected") {
+//           console.log(error);
+//         }
+//         if (error.response && error.response.status === 404) {
+//           alertBox("No results found!", "danger")
+//           allForms.innerHTML = ` <tr>
+//           <td><input type="checkbox" id="checkBox"></td>
+//           <td colspan="7" class="text-center" style="font-size: calc(1.275rem + .3vw) !important">
+//           <div style="margin-right: 70px; display: inline-block;">No results found!</div></td>
+//           </tr>`;
+//         }
+//         console.log(error);
+//       });
+//   }
+
+// }
+
+// //Serach, click icon
+// searchBtn.addEventListener('click', () => {
+//   rectanglePendingParent.style.border = '1px solid #485eab';
+//   rectangleApproved.style.border = '1px solid #485eab';
+//   rectanglePending.style.border = '1px solid #485eab';
+//   rectangleRejected.style.border = '1px solid #485eab';
+//   searchForms();
+// });
+
+// //Search, press enter
+// searchInput.addEventListener('keypress', event => {
+//   rectanglePendingParent.style.border = '1px solid #485eab';
+//   rectangleApproved.style.border = '1px solid #485eab';
+//   rectanglePending.style.border = '1px solid #485eab';
+//   rectangleRejected.style.border = '1px solid #485eab';
+//   if (event.key === "Enter") {
+//     event.preventDefault();
+//     searchForms();
+//   }
+// });
+
+// //Search, clear button
+// searchClearBtn.onclick = () => {
+//   searchInput.value = "";
+//   retrieveAllForms()
+// }
 
 function retrieveAllForms() {
   axios.get(`${API_URL}/all`)
@@ -1361,6 +1361,23 @@ navBarForms.addEventListener('click', function () {
   alertBox('You are already on this page', 'warn');
 });
 
+////////////////////////////
+// SEARCH Forms (FRONT-END) for team to see if its better to use this or backend
+////////////////////////////
+
+const searchFormByName = document.querySelector('#searchInput');
+searchFormByName.addEventListener('keyup', function () {
+  const searchValue = searchFormByName.value.toUpperCase();
+  const AllForm = document.querySelectorAll('#getAllForms tr');
+  AllForm.forEach(form => {
+    const textValue = form.textContent || form.innerText;
+    if (textValue.toUpperCase().indexOf(searchValue) > -1) {
+      form.style.display = "";
+    } else {
+      form.style.display = "none";
+    }
+  })
+})
 
 ////////////////////////////
 //Filters
@@ -1399,6 +1416,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
   const unhideClearFilterBtn = () => {
     if (schoolsArray.length > 0 || classesArray.length > 0 || courseDatesArray.length > 0 || eligibilityArray.length > 0 || formStatusArray.length > 0) {
       clearFilterBtn.classList.remove('d-none');
+      const searchFormByName = document.querySelector('#searchInput');
+      searchFormByName.value = "";
     } else {
       clearFilterBtn.classList.add('d-none');
     }
@@ -1431,139 +1450,138 @@ document.addEventListener('DOMContentLoaded', (event) => {
     unhideClearFilterBtn();
     pullDataWithFilter();
   });
-    
 
 
-function pullDataWithFilter() {
-  // Pull data to display in table
-  axios.post(`/obs-admin/pmt/filter`, {
-    school: schoolsArray,
-    class: classesArray,
-    courseDate: courseDatesArray,
-    eligibility: eligibilityArray,
-    formStatus: formStatusArray
-  })
-    .then(response => {
-      const formData = response.data;
 
-      //remove user permission from array of data
-      const userPermission = response.data.pop();
-      if (formData.length === 0) {
-        const getAllForms = document.querySelector('#getAllForms');
-        getAllForms.innerHTML = "";
-      }
-      
-      axios.post(`/obs-admin/pmt/filter`, {
-        school: schoolsArray,
-        class: classesArray,
-        courseDate: courseDatesArray,
-        eligibility: eligibilityArray,
-        formStatus: []
-      })
-        .then(response => {
-          const formData = response.data;
-          updateFormCounts(formData);
+  function pullDataWithFilter() {
+    // Pull data to display in table
+    axios.post(`/obs-admin/pmt/filter`, {
+      school: schoolsArray,
+      class: classesArray,
+      courseDate: courseDatesArray,
+      eligibility: eligibilityArray,
+      formStatus: formStatusArray
+    })
+      .then(response => {
+        const formData = response.data;
+
+        //remove user permission from array of data
+        const userPermission = response.data.pop();
+        if (formData.length === 0) {
+          const getAllForms = document.querySelector('#getAllForms');
+          getAllForms.innerHTML = "";
+        }
+
+        axios.post(`/obs-admin/pmt/filter`, {
+          school: schoolsArray,
+          class: classesArray,
+          courseDate: courseDatesArray,
+          eligibility: eligibilityArray,
+          formStatus: []
         })
+          .then(response => {
+            const formData = response.data;
+            updateFormCounts(formData);
+          })
 
-      //call function to create export button for
-      const exportBtnBulkContainer = document.querySelector('#export-btn-filter');
-      const exportIcon = createExportButtonAll('export-icon');
+        //call function to create export button for
+        const exportBtnBulkContainer = document.querySelector('#export-btn-filter');
+        const exportIcon = createExportButtonAll('export-icon');
 
-      const exportBtnAll = document.querySelector('#export-btn-all');
-      if (exportBtnAll) {
-        exportBtnAll.style.display = 'none';
-      }
+        const exportBtnAll = document.querySelector('#export-btn-all');
+        if (exportBtnAll) {
+          exportBtnAll.style.display = 'none';
+        }
 
-      const successBtn = document.querySelector('.successBtn');
-      const rejectBtn = document.querySelector('.rejectBtn');
-      if (successBtn) {
-        successBtn.addEventListener('click', function () {
+        const successBtn = document.querySelector('.successBtn');
+        const rejectBtn = document.querySelector('.rejectBtn');
+        if (successBtn) {
+          successBtn.addEventListener('click', function () {
 
-          const pillPending = document.querySelector('.changePill');
-          if (pillPending) {
+            const pillPending = document.querySelector('.changePill');
+            if (pillPending) {
+              pillPending.classList.remove('changePill');
+            }
+
+
+          });
+        }
+        if (rejectBtn) {
+          rejectBtn.addEventListener('click', function () {
+            const pillPending = document.querySelector('.changePill');
             pillPending.classList.remove('changePill');
+
+          });
+        }
+
+        //create array to store all data for export to excel bulk
+
+        // Loop through the data and add it to the page
+        for (i = 0; i < formData.length; i++) {
+
+          //call function to format date
+          const formattedDate = createFormattedDate(formData[i].courseDate);
+          // Get references to the status container and template
+          const getAllForms = document.querySelector('#getAllForms');
+          const rowTemplate = document.querySelector('.row-table-template');
+
+          //clear html content in getAllForms once since using template
+          if (i === 0) {
+            dataAll = [];
+            getAllForms.innerHTML = "";
+          }
+          // Clone the template and append it to the status container
+          const templateContent = rowTemplate.content;
+          const clonedRowTemplate = document.importNode(templateContent, true);
+
+          // Populate the cloned template function
+          // Populate the cloned template function
+          const {
+            studentNRICCell,
+            nameOfStudentCell,
+            classCell,
+            schoolCell,
+            eligibilityCell,
+            formattedDateCell,
+            formStatusValue,
+            studentId,
+            mstReviewCell,
+            docReviewCell
+          } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
+          //call function to handle checkboxes
+          if (userPermission.includes(5)) {
+            arrowIcon.classList.remove('d-none');
+            handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
+          } else {
+            const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
+            const checkBoxTop = document.querySelector('#checkBoxTop');
+            checkBoxes.forEach(function (checkBox) {
+              checkBox.classList.add('d-none');
+            });
+            checkBoxTop.classList.add('d-none');
           }
 
 
-        });
-      }
-      if (rejectBtn) {
-        rejectBtn.addEventListener('click', function () {
-          const pillPending = document.querySelector('.changePill');
-          pillPending.classList.remove('changePill');
+          //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
+          handleModalButtons(clonedRowTemplate, studentId, formData, i);
+          ;
 
-        });
-      }
 
-      //create array to store all data for export to excel bulk
-
-      // Loop through the data and add it to the page
-      for (i = 0; i < formData.length; i++) {
-
-        //call function to format date
-        const formattedDate = createFormattedDate(formData[i].courseDate);
-        // Get references to the status container and template
-        const getAllForms = document.querySelector('#getAllForms');
-        const rowTemplate = document.querySelector('.row-table-template');
-
-        //clear html content in getAllForms once since using template
-        if (i === 0) {
-          dataAll = [];
-          getAllForms.innerHTML = "";
         }
-        // Clone the template and append it to the status container
-        const templateContent = rowTemplate.content;
-        const clonedRowTemplate = document.importNode(templateContent, true);
-
-        // Populate the cloned template function
-        // Populate the cloned template function
-        const {
-          studentNRICCell,
-          nameOfStudentCell,
-          classCell,
-          schoolCell,
-          eligibilityCell,
-          formattedDateCell,
-          formStatusValue,
-          studentId,
-          mstReviewCell,
-          docReviewCell
-        } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
-        //call function to handle checkboxes
-        if (userPermission.includes(5)) {
-          arrowIcon.classList.remove('d-none');
-          handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
-        } else {
-          const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
-          const checkBoxTop = document.querySelector('#checkBoxTop');
-          checkBoxes.forEach(function (checkBox) {
-            checkBox.classList.add('d-none');
-          });
-          checkBoxTop.classList.add('d-none');
+        //Outside of for loop 
+        //Export to Excel Bulk Once
+        exportBtnBulkContainer.removeEventListener('click', exportButtonHandler);
+        exportBtnBulkContainer.addEventListener('click', exportButtonHandler);
+      })
+      .catch(function (error) {
+        if (error && error.message !== "redirected") {
+          console.log(error);
         }
-
-
-        //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
-        handleModalButtons(clonedRowTemplate, studentId, formData, i);
-        ;
-
-
-      }
-      //Outside of for loop 
-      //Export to Excel Bulk Once
-      exportBtnBulkContainer.removeEventListener('click', exportButtonHandler);
-      exportBtnBulkContainer.addEventListener('click', exportButtonHandler);
-    })
-    .catch(function (error) {
-      if (error && error.message !== "redirected") {
         console.log(error);
-      }
-      console.log(error);
-    });
-}
+      });
+  }
 
   // Clear searches when dropdown is closed
-  // For each dropdown, clear the search input
   const dropdowns = [schoolMenuBtn, classMenuBtn, courseDateMenuBtn, eligibilityMenuBtn];
   dropdowns.forEach(dropdown => {
     dropdown.addEventListener('hide.bs.dropdown', function () {
@@ -1800,8 +1818,8 @@ function pullDataWithFilter() {
 
             formStatusArray.push(rectangleButton.getAttribute('data-status'));
           }
-            unhideClearFilterBtn();
-            pullDataWithFilter();
+          unhideClearFilterBtn();
+          pullDataWithFilter();
         })
       })
       allCheckBoxes.forEach(checkbox => {
