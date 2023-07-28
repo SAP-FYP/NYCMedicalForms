@@ -404,6 +404,8 @@
                 <h2>Part 2: Applicant's Health Information</h2>
                 <div class="spacer"></div>
                 <div class="part2-container section-container">
+
+                    <!-- NOTE -->
                     <div class="text-container">
                         Note:
                         <ol>
@@ -416,6 +418,7 @@
                         </ol>
                     </div>
 
+                    <!-- TETANUS SUB SECTION -->
                     <h3 class="sub-section-title">About Tetanus</h3>
                     <div class="text-container">
                         Applicants are at significantly higher risk of tetanus infection if they have never been
@@ -438,13 +441,13 @@
 
                         <div class="btn-group" id="form-input-hasTetanus" style=" border: 0px !important;" role="group">
 
-                            <input type="radio" class="btn-check" name="emergency-radio" id="hasTetanus-no" value="0"
+                            <input type="radio" class="btn-check" name="tetanus-radio" id="hasTetanus-no" value="0"
                                 required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasTetanus-no">
                                 <i class="material-icons">close</i> No
                             </label>
 
-                            <input type="radio" class="btn-check" name="emergency-radio" id="hasTetanus-yes" value="1"
+                            <input type="radio" class="btn-check" name="tetanus-radio" id="hasTetanus-yes" value="1"
                                 required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasTetanus-yes">
                                 <i class="material-icons">check</i> Yes
@@ -508,22 +511,606 @@
                         <div class="invalid-feedback">This field is required.</div>
                     </div>
 
+                    <!-- MEDICAL CONDITION DIAGNOSED SUB SECTION -->
                     <h3 class="sub-section-title" style="margin-top: 60px;">Medical Condition Diagnosed by Physician
                     </h3>
                     <div class="text-container">
                         Additional report(s) may be required depending on the information provided.
                     </div>
+
+                    <!-- BREATHING CONDITION -->
+                    <div class="mb-3">
+                        <label for="form-input-hasBreathingCondi" class="form-label help-text-parent"><span
+                                class="label-indexes">22.
+                            </span>Breathing condition</label>
+                        <div class="form-text help-text">e.g. asthma / exercise induced asthma</div>
+
+                        <div class="btn-group" id="form-input-hasBreathingCondi" style=" border: 0px !important;"
+                            role="group">
+
+                            <input type="radio" class="btn-check" name="breathing-condition-radio"
+                                id="hasBreathingCondi-no" value="0" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasBreathingCondi-no">
+                                <i class="material-icons">close</i> No
+                            </label>
+
+                            <input type="radio" class="btn-check" name="breathing-condition-radio"
+                                id="hasBreathingCondi-yes" value="1" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasBreathingCondi-yes">
+                                <i class="material-icons">check</i> Yes
+                            </label>
+                        </div>
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
+
+                    <!-- BREATHING CONDITION - OPTIONAL -->
+                    <div class="optional-div" id="breathing-condition-div">
+
+                        <!-- DIAGNOSIS OF BREATHING CONDITION -->
+                        <div class="mb-3">
+                            <label for="form-input-breathing-condition" class="form-label help-text-parent">State the
+                                diagnosis
+                                of the breathing condition</label>
+                            <div class="form-text help-text">State in full sentence/word, avoid acronyms</div>
+                            <input type="text" class="form-control" id="form-input-breathing-condition">
+                            <div class="invalid-feedback">This field is required.</div>
+                        </div>
+
+                        <!-- LAST OCCURANCE OF BREATHING OCCURANCE -->
+                        <div class="mb-3">
+                            <label for="form-input-breathing-date" class="form-label help-text-parent">State the date
+                                of the breathing condition last occurrence:</label>
+                            <div class="form-text help-text">e.g. Last asthma attack<br>If you are not sure of the exact
+                                date, please select the first day of the month which it occurred.</div>
+                            <input type="date" class="form-control" id="form-input-breathing-date">
+                            <div class="invalid-feedback">This field is required.</div>
+                        </div>
+                    </div>
+
+                    <!-- HEART CONDITION -->
+                    <div class="mb-3">
+                        <label for="form-input-hasHeartCondi" class="form-label help-text-parent"><span
+                                class="label-indexes">23.
+                            </span>Heart condition</label>
+                        <div class="form-text help-text">e.g. angina / heart murmur / extra heartbeat / mitral valve
+                            prolapse</div>
+
+                        <div class="btn-group" id="form-input-hasHeartCondi" style=" border: 0px !important;"
+                            role="group">
+
+                            <input type="radio" class="btn-check" name="heart-condition-radio" id="hasHeartCondi-no"
+                                value="0" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasHeartCondi-no">
+                                <i class="material-icons">close</i> No
+                            </label>
+
+                            <input type="radio" class="btn-check" name="heart-condition-radio" id="hasHeartCondi-yes"
+                                value="1" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasHeartCondi-yes">
+                                <i class="material-icons">check</i> Yes
+                            </label>
+
+                        </div>
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
+
+                    <!-- HEART CONDITION - OPTIONAL -->
+                    <div class="optional-div" id="heart-condition-div">
+
+                        <!-- DIAGNOSIS OF HEART CONDITION -->
+                        <div class="mb-3">
+                            <label for="form-input-heart-condition" class="form-label help-text-parent">State the
+                                heart condition</label>
+                            <div class="form-text help-text">State in full sentence/word, avoid acronyms</div>
+                            <input type="text" class="form-control" id="form-input-heart-condition">
+                            <div class="invalid-feedback">This field is required.</div>
+                        </div>
+                    </div>
+
+                    <!-- BLOOD CONDITION -->
+                    <div class="mb-3">
+                        <label for="form-input-hasBloodCondi" class="form-label help-text-parent"><span
+                                class="label-indexes">24.
+                            </span>Blood condition</label>
+                        <div class="form-text help-text">e.g. thalassaemia major / thalassaemia minor / anaemia</div>
+
+                        <div class="btn-group" id="form-input-hasBloodCondi" style=" border: 0px !important;"
+                            role="group">
+
+                            <input type="radio" class="btn-check" name="blood-condition-radio" id="hasBloodCondi-no"
+                                value="0" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasBloodCondi-no">
+                                <i class="material-icons">close</i> No
+                            </label>
+
+                            <input type="radio" class="btn-check" name="blood-condition-radio" id="hasBloodCondi-yes"
+                                value="1" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasBloodCondi-yes">
+                                <i class="material-icons">check</i> Yes
+                            </label>
+
+                        </div>
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
+
+                    <!-- BLOOD CONDITION - OPTIONAL -->
+                    <div class="optional-div" id="blood-condition-div">
+
+                        <!-- DIAGNOSIS OF BLOOD CONDITION -->
+                        <div class="mb-3">
+                            <label for="form-input-blood-condition" class="form-label">The diagnosed blood condition
+                                is:</label>
+
+                            <div class="" id="form-input-blood-condition" style="border: 0px !important;">
+
+                                <div class="form-check radio-check">
+                                    <input class="radio-custom-dots" type="radio" name="blood-radio" id="blood-anaemia"
+                                        value="0" required>
+                                    <label class="form-check-label radio-custom-label"
+                                        for="blood-anaemia">Anaemia</label>
+                                </div>
+
+                                <div class="form-check radio-check">
+                                    <input class="radio-custom-dots" type="radio" name="blood-radio" id="blood-Tminor"
+                                        value="1" required>
+                                    <label class="form-check-label radio-custom-label" for="blood-Tminor">Thalassaemia
+                                        minor</label>
+                                </div>
+
+                                <div class="form-check radio-check">
+                                    <input class="radio-custom-dots" type="radio" name="blood-radio" id="blood-Tmajor"
+                                        value="2" required>
+                                    <label class="form-check-label radio-custom-label" for="blood-Tmajor">Thalassaemia
+                                        major</label>
+                                </div>
+
+                                <div class="form-check radio-check radio-others">
+                                    <input class="radio-custom-dots" type="radio" name="blood-radio" id="blood-other"
+                                        value="3" required>
+
+                                    <div class="radio-others-container">
+                                        <label class="form-check-label radio-custom-label radio-other-label"
+                                            for="form-input-blood-other">Others</label>
+
+                                        <input type="text" class="form-control radio-other-input"
+                                            id="form-input-blood-other">
+                                        <div class="invalid-feedback">Please specify a value for the "others" option
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="invalid-feedback">This field is required.</div>
+                        </div>
+
+                        <!-- BLOOD CONDITION - SUB OPTIONAL -->
+                        <div class="optional-div" id="blood-followup-div">
+
+                            <!-- BLOOD CONDITION FOLLOW UP -->
+                            <div class="mb-3">
+                                <label for="form-input-blood-follwup" class="form-label">Is the
+                                    Applicant on follow-up with a specialist for the blood condition?</label>
+
+                                <div class="btn-group" id="form-input-blood-follwup" style=" border: 0px !important;"
+                                    role="group">
+
+                                    <input type="radio" class="btn-check" name="blood-followup-radio"
+                                        id="blood-followup-no" value="0" required>
+                                    <label class="radio-btns btn btn-outline-secondary" for="blood-followup-no">
+                                        <i class="material-icons">close</i> No
+                                    </label>
+
+                                    <input type="radio" class="btn-check" name="blood-followup-radio"
+                                        id="blood-followup-yes" value="1" required>
+                                    <label class="radio-btns btn btn-outline-secondary" for="blood-followup-yes">
+                                        <i class="material-icons">check</i> Yes
+                                    </label>
+
+                                </div>
+                                <div class="invalid-feedback">This field is required.</div>
+                            </div>
+                        </div>
+                        <div class="insert-note-template"></div>
+                    </div>
+
+                    <!-- EPILEPSY, FITS OR SEIZURE CONDITION -->
+                    <div class="mb-3">
+                        <label for="form-input-hasEpilepsyCondi" class="form-label"><span class="label-indexes">25.
+                            </span>Epilepsy, fits or seizure condition</label>
+
+                        <div class="btn-group" id="form-input-hasEpilepsyCondi" style=" border: 0px !important;"
+                            role="group">
+
+                            <input type="radio" class="btn-check" name="epilepsy-condition-radio"
+                                id="hasEpilepsyCondi-no" value="0" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasEpilepsyCondi-no">
+                                <i class="material-icons">close</i> No
+                            </label>
+
+                            <input type="radio" class="btn-check" name="epilepsy-condition-radio"
+                                id="hasEpilepsyCondi-yes" value="1" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasEpilepsyCondi-yes">
+                                <i class="material-icons">check</i> Yes
+                            </label>
+
+                        </div>
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
+
+                    <!-- EPILEPSY, FITS OR SEIZURE CONDITION - OPTIONAL -->
+                    <div class="optional-div" id="epilepsy-condition-div">
+
+                        <!-- EPILEPSY, FITS OR SEIZURE IN PAST 24 MONTHS -->
+                        <div class="mb-3">
+                            <label for="form-input-epilepsy-past-months" class="form-label">Was there any episode in the
+                                last 24 months?</label>
+
+                            <div class="btn-group" id="form-input-epilepsy-past-months" style=" border: 0px !important;"
+                                role="group">
+
+                                <input type="radio" class="btn-check" name="epilepsy-past-months-radio"
+                                    id="epilepsyPastMonths-no" value="0" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="epilepsyPastMonths-no">
+                                    <i class="material-icons">close</i> No
+                                </label>
+
+                                <input type="radio" class="btn-check" name="epilepsy-past-months-radio"
+                                    id="epilepsyPastMonths-yes" value="1" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="epilepsyPastMonths-yes">
+                                    <i class="material-icons">check</i> Yes
+                                </label>
+
+                            </div>
+                            <div class="invalid-feedback">This field is required.</div>
+                        </div>
+
+                        <!-- EPILEPSY, FITS OR SEIZURE ON MEDICALTION PAST 24 MONTHS -->
+                        <div class="mb-3">
+                            <label for="form-input-epilepsy-medication" class="form-label">Has the Applicant been on
+                                medication for the epilepsy, fits or seizure condition in the last 24 months?</label>
+
+                            <div class="btn-group" id="form-input-epilepsy-medication" style=" border: 0px !important;"
+                                role="group">
+
+                                <input type="radio" class="btn-check" name="epilepsy-medication-radio"
+                                    id="epilepsyMedication-no" value="0" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="epilepsyMedication-no">
+                                    <i class="material-icons">close</i> No
+                                </label>
+
+                                <input type="radio" class="btn-check" name="epilepsy-medication-radio"
+                                    id="epilepsyMedication-yes" value="1" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="epilepsyMedication-yes">
+                                    <i class="material-icons">check</i> Yes
+                                </label>
+
+                            </div>
+                            <div class="invalid-feedback">This field is required.</div>
+                        </div>
+
+                        <!-- EPILEPSY, FITS OR SEIZURE CONDITION - SUB OPTIONAL -->
+                        <div class="optional-div" id="epilepsy-followup-div">
+
+                            <!-- EPILEPSY, FITS OR SEIZURE FOLLOW UP -->
+                            <div class="mb-3">
+                                <label for="form-input-epilepsy-followup" class="form-label">Is the Applicant on
+                                    follow-up
+                                    with a specialist for the epilepsy, fits or seizure condition?</label>
+
+                                <div class="btn-group" id="form-input-epilepsy-followup"
+                                    style=" border: 0px !important;" role="group">
+
+                                    <input type="radio" class="btn-check" name="epilepsy-followup-radio"
+                                        id="epilepsyFollowup-no" value="0" required>
+                                    <label class="radio-btns btn btn-outline-secondary" for="epilepsyFollowup-no">
+                                        <i class="material-icons">close</i> No
+                                    </label>
+
+                                    <input type="radio" class="btn-check" name="epilepsy-followup-radio"
+                                        id="epilepsyFollowup-yes" value="1" required>
+                                    <label class="radio-btns btn btn-outline-secondary" for="epilepsyFollowup-yes">
+                                        <i class="material-icons">check</i> Yes
+                                    </label>
+
+                                </div>
+                                <div class="invalid-feedback">This field is required.</div>
+                            </div>
+                        </div>
+
+                        <div class="insert-note-template"></div>
+                    </div>
+
+                    <!-- BONE / JOINT/ TENDON CONDITION -->
+                    <div class="mb-3">
+                        <label for="form-input-hasBoneCondi" class="form-label help-text-parent"><span
+                                class="label-indexes">26.
+                            </span>Bone / joint / tendon injury or condition</label>
+                        <div class="form-text help-text">e.g. dislocation / fracture / slip disc</div>
+
+                        <div class="btn-group" id="form-input-hasBoneCondi" style=" border: 0px !important;"
+                            role="group">
+
+                            <input type="radio" class="btn-check" name="bone-condition-radio" id="hasBoneCondi-no"
+                                value="0" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasBoneCondi-no">
+                                <i class="material-icons">close</i> No
+                            </label>
+
+                            <input type="radio" class="btn-check" name="bone-condition-radio" id="hasBoneCondi-yes"
+                                value="1" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasBoneCondi-yes">
+                                <i class="material-icons">check</i> Yes
+                            </label>
+
+                        </div>
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
+
+                    <!-- BONE CONDITION - OPTIONAL -->
+                    <div class="optional-div" id="bone-condition-div">
+
+                        <!-- DIAGNOSIS OF BONE CONDITION -->
+                        <div class="mb-3">
+                            <label for="form-input-bone-condition" class="form-label help-text-parent">State the bone /
+                                joint / tendon injury or condition</label>
+                            <div class="form-text help-text">State the body part with the injury or condition in full
+                                sentence/word, avoid acronyms e.g. right ankle fracture, left ring finger sprain.</div>
+                            <input type="text" class="form-control" id="form-input-bone-condition">
+                            <div class="invalid-feedback">This field is required.</div>
+                        </div>
+
+                        <!-- DATE OF BONE CONDITION -->
+                        <div class="mb-3">
+                            <label for="form-input-bone-date" class="form-label help-text-parent">State the date the
+                                bone / joint / tendon injury or condition was sustained</label>
+                            <div class="form-text help-text">If you are not sure of the exact date, please select the
+                                first day of the month which it occurred.</div>
+                            <input type="date" class="form-control" id="form-input-bone-date">
+                            <div class="invalid-feedback">This field is required.</div>
+                        </div>
+
+                        <!-- BONE CONDITION FOLLOW UP -->
+                        <div class="mb-3">
+                            <label for="form-input-bone-follwup" class="form-label">Is the Applicant on follow-up with
+                                a specialist for the bone/joint/tendon injury or condition?</label>
+
+                            <div class="btn-group" id="form-input-bone-follwup" style=" border: 0px !important;"
+                                role="group">
+
+                                <input type="radio" class="btn-check" name="bone-followup-radio" id="bone-followup-no"
+                                    value="0" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="bone-followup-no">
+                                    <i class="material-icons">close</i> No
+                                </label>
+
+                                <input type="radio" class="btn-check" name="bone-followup-radio" id="bone-followup-yes"
+                                    value="1" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="bone-followup-yes">
+                                    <i class="material-icons">check</i> Yes
+                                </label>
+
+                            </div>
+                            <div class="invalid-feedback">This field is required.</div>
+                        </div>
+                        <div class="insert-note-template"></div>
+                    </div>
+
+                    <!-- BEHAVIOURAL OR PSYCHOLOGICAL CONDITION -->
+                    <div class="mb-3">
+                        <label for="form-input-hasBehaviouralCondi" class="form-label help-text-parent"><span
+                                class="label-indexes">27.
+                            </span>Behavioural or psychological condition</label>
+                        <div class="form-text help-text">e.g. ADHD / ADD / ASD / OCD / eating disorders / anxiety /
+                            depression</div>
+
+                        <div class="btn-group" id="form-input-hasBehaviouralCondi" style=" border: 0px !important;"
+                            role="group">
+
+                            <input type="radio" class="btn-check" name="behavioural-condition-radio"
+                                id="hasBehaviouralCondi-no" value="0" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasBehaviouralCondi-no">
+                                <i class="material-icons">close</i> No
+                            </label>
+
+                            <input type="radio" class="btn-check" name="behavioural-condition-radio"
+                                id="hasBehaviouralCondi-yes" value="1" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasBehaviouralCondi-yes">
+                                <i class="material-icons">check</i> Yes
+                            </label>
+
+                        </div>
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
+
+                    <!-- BEHAVIOURAL OR PSYCHOLOGICAL CONDITION - OPTIONAL -->
+                    <div class="optional-div" id="behavioural-condition-div">
+
+                        <!-- DIAGNOSIS OF BEHAVIOURAL OR PSYCHOLOGICAL CONDITION -->
+                        <div class="mb-3">
+                            <label for="form-input-behavioural-condition" class="form-label">State the condition</label>
+                            <input type="text" class="form-control" id="form-input-behavioural-condition">
+                            <div class="invalid-feedback">This field is required.</div>
+                        </div>
+
+                        <!-- BEHAVIOURAL OR PSYCHOLOGICAL CONDITION FOLLOW UP -->
+                        <div class="mb-3">
+                            <label for="form-input-behavioural-followup" class="form-label">Is the Applicant on
+                                follow-up
+                                with a
+                                specialist for the diagnosed behavioural or psychological condition?</label>
+
+                            <div class="btn-group" id="form-input-behavioural-followup" style=" border: 0px !important;"
+                                role="group">
+
+                                <input type="radio" class="btn-check" name="behavioural-followup-radio"
+                                    id="behavioural-followup-no" value="0" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="behavioural-followup-no">
+                                    <i class="material-icons">close</i> No
+                                </label>
+
+                                <input type="radio" class="btn-check" name="behavioural-followup-radio"
+                                    id="behavioural-followup-yes" value="1" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="behavioural-followup-yes">
+                                    <i class="material-icons">check</i> Yes
+                                </label>
+
+                            </div>
+                            <div class="invalid-feedback">This field is required.</div>
+                        </div>
+
+                        <!-- BEHAVIOURAL OR PSYCHOLOGICAL - SUB OPTIONAL -->
+                        <div class="optional-div" id="behavioural-specialist-progress-div">
+
+                            <!-- BEHAVIOURAL OR PSYCHOLOGICAL PROGRESS WITH SPECIALIST -->
+                            <div class="mb-3">
+                                <label for="form-input-behavioural-specialist-progress" class="form-label">Describe the
+                                    progress of treatment with the specialist</label>
+                                <input type="text" class="form-control" id="form-input-behavioural-specialist-progress">
+                                <div class="invalid-feedback">This field is required.</div>
+                            </div>
+
+                            <!-- BEHAVIOURAL OR PSYCHOLOGICAL CONDITION AT HOME -->
+                            <div class="mb-3">
+                                <label for="form-input-behavioural-home" class="form-label help-text-parent">State the
+                                    Applicant's behaviour at home and provide information on how OBS can help the
+                                    Applicant manage the condition during the Course.</label>
+                                <div class="form-text help-text">Such information should include but is not limited
+                                    to:<br>
+                                    <ul>
+                                        <li><text>The last episode/relapse;</text></li>
+                                        <li><text>Possible trigger factors to avoid; and</text></li>
+                                        <li><text>How to help the Applicant cope with the condition and/or to prevent
+                                                worsening of the condition.</text></li>
+                                    </ul>
+                                </div>
+                                <input type="text" class="form-control" id="form-input-behavioural-home">
+                                <div class="invalid-feedback">This field is required.</div>
+                            </div>
+
+                            <!-- BEHAVIOURAL OR PSYCHOLOGICAL EXPERIENCE AND HELP -->
+                            <div class="mb-3">
+                                <label for="form-input-behavioural-experience" class="form-label">Considerable focus and
+                                    attention is needed from the Applicant to understand and execute safety
+                                    instructions. State what can OBS do to help the Applicant concentrate during safety
+                                    briefings to participate safely in outdoor activities such as sea-kayaking,
+                                    climbing, trekking/camping. If applicable, share the Applicant’s previous outdoor
+                                    experience.</label>
+                                <input type="text" class="form-control" id="form-input-behavioural-experience">
+                                <div class="invalid-feedback">This field is required.</div>
+                            </div>
+
+                            <h3 style="margin: 70px 0px 20px 0px">Note: A specialist memo is needed for further
+                                assessment. Complete this registration and
+                                get in touch with the Teacher Coordinator.</h3>
+                            <text>A specialist for behavioural / psychological condition may include psychologist,
+                                therapist or counsellor.</text>
+                        </div>
+
+                        <h3 style="margin: 70px 0px 20px 0px">Acknowledgement of Risks and Declaration</h3>
+                        <text>Applicable to Applicants with
+                            behavioural/psychological
+                            condition</text>
+
+                        <!-- DIAGNOSIS OF BEHAVIOURAL OR PSYCHOLOGICAL RISK ACKNOWLEDGEMENT -->
+                        <div class="mb-3" style="margin-top: 20px;">
+                            <label class="form-label">Given the Applicant's
+                                condition, and the nature of the Course, participation may involve additional risks
+                                arising from:</label>
+                            <div class="form-text help-text">
+                                <ol class="custom-list">
+                                    <p>
+                                        <li>Exposure to physical, mental, social and emotional challenges that may have
+                                            influence on the Applicant's ability to manage himself/herself; </li>
+                                    </p>
+                                    <p>
+                                        <li>Group supervision which requires the Applicant to be able to understand and
+                                            follow safety instructions and procedures without individualised attention
+                                            by
+                                            the OBS Group Instructor; </li>
+                                    </p>
+                                    <p>
+                                        <li>Possible adverse reaction of the Applicant to the Course and/or peers in the
+                                            same group due to the condition; and </li>
+                                    </p>
+                                    <p>
+                                        <li>Access to emergency medical services and/or special management of triggered
+                                            condition on mainland Singapore being delayed depending on the location of
+                                            the
+                                            Applicant, the nature of the terrain, prevailing weather conditions and
+                                            other
+                                            factors beyond OBS’ control, at times by up to 2 hours (please note that 2
+                                            hours
+                                            is an estimated timing as there could be factors beyond OBS's control that
+                                            may
+                                            increase the timing).</li>
+                                    </p>
+                                    </ul>
+                            </div>
+
+                            <div class="" id="form-input-behavioural-risk-acknowledgement"
+                                style="border: 0px !important;">
+
+                                <div class="form-check checkbox-check checkbox-overflow">
+                                    <input class="checkbox-custom" type="checkbox" name="risk-acknowledgement-checkbox"
+                                        id="behavioural-risk-acknowledgement" value="0" required>
+                                    <label class="form-check-label checkbox-custom-label checkbox-overflow-label"
+                                        for="behavioural-risk-acknowledgement">I
+                                        understand and accept the above and that safety procedures are in place to
+                                        minimise risks, but complete elimination of these risks is not possible in the
+                                        outdoor environment.</label>
+                                </div>
+                            </div>
+
+                            <div class="invalid-feedback">This field is required.</div>
+                        </div>
+
+                        <!-- DIAGNOSIS OF BEHAVIOURAL OR PSYCHOLOGICAL PARTICIPATION ACKNOWLEDGEMENT -->
+                        <div class="mb-3" style="margin-top: 20px;">
+                            <label class="form-label">Acknowledgement of Risks
+                                And Declaration for Applicants with behavioural/psychological conditions</label>
+                            <div class="form-text help-text">
+                                <ol class="custom-list">
+                                    <p>
+                                        <li>I acknowledge that participation in the MOE-OBS Course is voluntary. </li>
+                                    </p>
+                                    <p>
+                                        <li>I hereby give consent to MOE-OBS to disclose the Applicant's condition to
+                                            the peers in the group if MOE-OBS consider it necessary for the purpose of
+                                            safe peer and/or group management.</li>
+                                    </p>
+                                    </ul>
+                            </div>
+
+                            <div class="" id="form-input-behavioural-risk-acknowledgement"
+                                style="border: 0px !important;">
+
+                                <div class="form-check checkbox-check">
+                                    <input class="checkbox-custom" type="checkbox"
+                                        name="participation-risk-acknowledgement-checkbox"
+                                        id="participation-risk-acknowledgement" value="0" required>
+                                    <label class="form-check-label checkbox-custom-label"
+                                        for="participation-risk-acknowledgement">I acknowledge the above, and agree to,
+                                        the Applicant's participation in the Course.</label>
+                                </div>
+                            </div>
+
+                            <div class="invalid-feedback">This field is required.</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
+        <!-- TEMPLATES -->
+        <template id="note-template">
+            <h3 style="margin: 50px 0px 20px 0px"></h3>
+        </template>
 
         <script src="https://unpkg.com/validator@latest/validator.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
             crossorigin="anonymous"></script>
         <script src="index.js"></script>
-
 </body>
 
 </html>

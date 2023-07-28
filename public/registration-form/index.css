@@ -191,6 +191,29 @@ body {
     color: #384790;
 }
 
+.help-text ul {
+    margin-left: -18px;
+}
+
+.help-text li text {
+    padding-left: 20px;
+}
+
+.help-text ol {
+    margin-top: -30px;
+}
+
+.custom-list {
+    counter-reset: my-counter;
+    list-style: none;
+    padding-left: 0;
+}
+
+.custom-list li:before {
+    content: "(" counter(my-counter, lower-alpha) ") ";
+    counter-increment: my-counter;
+}
+
 .spacer {
     height: 3px;
     width: 40px;
@@ -230,7 +253,7 @@ body {
 .help-text {
     margin-bottom: 10px !important;
     color: #69738E !important;
-    font-weight: 500;
+    font-weight: 400;
     font-size: 0.875rem;
     line-height: 1.25rem;
     letter-spacing: -0.006em
@@ -240,7 +263,7 @@ body {
     font-size: 1rem;
     height: 2.75rem;
     box-shadow: none !important;
-    border: #bebebe 1px solid;
+    border: #c3c6c9 1px solid !important;
     margin-bottom: 0px;
 }
 
@@ -297,7 +320,29 @@ input[type="radio"].btn-check:hover+.radio-btns {
 
 .radio-custom-label {
     width: 100%;
-    padding: 10px 0px;
+    padding: 10px 5px;
+}
+
+.radio-others {
+    align-items: start;
+    padding-bottom: 10px;
+}
+
+.radio-others label {
+    padding: 10px 0px 10px 5px;
+}
+
+.radio-others-container {
+    width: 100%;
+}
+
+.radio-others input[type="text"] {
+    width: 98%;
+    margin-left: 5px;
+}
+
+.radio-others input[type="radio"] {
+    margin-top: 10px;
 }
 
 /* CHECKBOX CONTROL */
@@ -320,7 +365,16 @@ input[type="radio"].btn-check:hover+.radio-btns {
 
 .checkbox-custom-label {
     width: 100%;
-    padding: 10px 0px;
+    padding: 10px 5px;
+}
+
+.checkbox-overflow {
+    align-items: start;
+    padding-top: 10px;
+}
+
+.checkbox-overflow label {
+    padding-top: 0px;
 }
 
 /* OPTIONAL DIVS */
@@ -329,7 +383,6 @@ input[type="radio"].btn-check:hover+.radio-btns {
     font-size: 1.55rem;
     font-weight: 600 !important;
     letter-spacing: -0.019em !important;
-
 }
 
 .optional-div {
