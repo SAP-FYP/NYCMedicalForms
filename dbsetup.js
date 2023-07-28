@@ -91,7 +91,8 @@ const CREATE_TABLE_SQL = `
     );
 
     CREATE TABLE IF NOT EXISTS registrationForm (
-    formId INT NOT NULL AUTO_INCREMENT,
+    regFormId INT NOT NULL AUTO_INCREMENT,
+    raceId INT NOT NULL,
     parentName VARCHAR(100) NOT NULL,
     parentEmail VARCHAR(100) NOT NULL,
     parentNo INT NOT NULL,
@@ -108,11 +109,10 @@ const CREATE_TABLE_SQL = `
     applicantClass VARCHAR(100) NOT NULL,
     applicantResidentialStatus VARCHAR(100) NOT NULL,
     applicantDOB DATE NOT NULL,
-    applicantRace VARCHAR(100) NOT NULL,
     applicantGender VARCHAR(100) NOT NULL,
     applicantEmail VARCHAR(100) NOT NULL,
     applicantAddr VARCHAR(100) NOT NULL,
-    applicantDietary VARCHAR(100) NOT NULL,
+    applicantDietary VARCHAR(100) NULL,
     isApplicantVaccinationValid VARCHAR(3) NOT NULL,
     applicantVaccinationDate DATE NULL,
     applicantHeight INT NOT NULL,
@@ -137,11 +137,14 @@ const CREATE_TABLE_SQL = `
     stateBoneCondition VARCHAR(255) NULL,
     dateOfBoneCondition DATE NULL,
     isBoneSpecialist VARCHAR(3) NULL,
+    isBoneFullyRecovered VARCHAR(3) NULL,
+    furtherInfoOnBone VARCHAR(255) NULL,
     isBehaviouralCondition VARCHAR(3) NOT NULL,
     stateBehaviouralCondition VARCHAR(255) NULL,
     isBehaviouralSpecialist VARCHAR(3) NULL,
-    timeOfTreatingBehavioural VARCHAR(255) NULL,
-    stateBehaviouralTreatment VARCHAR(255) NULL, 
+    progressOfTreatingBehavioural VARCHAR(255) NULL,
+    stateBehaviouralAtHome VARCHAR(255) NULL, 
+    stateBehaviouralHelpTips VARCHAR(255) NULL, 
     isAcceptSafetyRisks VARCHAR(3) NOT NULL,
     isAcceptParticipation VARCHAR(3) NOT NULL,
     isOnLongTermMeds VARCHAR(3) NOT NULL,
@@ -167,7 +170,7 @@ const CREATE_TABLE_SQL = `
     isOtherCondition VARCHAR(3) NOT NULL,
     stateOtherCondition VARCHAR(255) NULL,
     dateOfOtherCondition DATE NULL,
-    stateDetailsOtherCondition VARCHAR(255) NULL,
+    stateOtherConditionAffectsPhysical VARCHAR(255) NULL,
     stateTriggerOtherCondition VARCHAR(255) NULL,
     statePrecautionOtherCondition VARCHAR(255) NULL,
     stateMedsOtherCondition VARCHAR(255) NULL,
@@ -181,7 +184,19 @@ const CREATE_TABLE_SQL = `
     isAcceptPersonalData VARCHAR(3) NOT NULL,
     isDeclineUseOfContactInfo VARCHAR(3) NULL,
     isDeclineUseOfPhoto VARCHAR(3) NULL,
-    PRIMARY KEY (formId)
+    PRIMARY KEY (regFormId)
+    )
+
+    CREATE TABLE IF NOT EXISTS race (
+    raceId INT NOT NULL AUTO_INCREMENT,
+    raceName VARCHAR(255) NOT NULL,
+    PRIMARY KEY (raceId)
+    )
+    
+    CREATE TABLE IF NOT EXISTS school (
+    schoolId INT NOT NULL AUTO_INCREMENT,
+    schoolName VARCHAR(255) NOT NULL,
+    PRIMARY KEY (schoolId)
     )
 
 `;
