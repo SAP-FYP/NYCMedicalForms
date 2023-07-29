@@ -65,6 +65,8 @@ window.addEventListener('DOMContentLoaded', () => {
             note = "A specialist memo is needed for further assessment. Complete this registration and get in touch with the Teacher Coordinator."
         } else if (note == "physiotherapist memo") {
             note = "A specialist/physiotherapist memo is needed for further assessment. Complete this registration and get in touch with the Teacher Coordinator."
+        } else if (note == "treating memo") {
+            note = "A specialist/treating doctor memo is needed for further assessment. Complete this registration and get in touch with the Teacher Coordinator."
         } else if (note == "unable to enrol") {
             note = "OBS is unable to enrol the Applicant with the stated condition. Complete this registration and get in touch with the Teacher Coordinator for advice."
         }
@@ -312,8 +314,188 @@ window.addEventListener('DOMContentLoaded', () => {
         })
     });
 
+    // LONG TERM PRESCRIBTION MEDICATION
+    document.querySelectorAll('input[name="medication-condition-radio"]').forEach(button => {
+        button.addEventListener("change", (e) => {
+            const targetElement = document.getElementById('medication-condition-div');
+            if (e.target.value == "0") {
+                targetElement.classList.add('optional-div');
+            } else if (e.target.value == "1") {
+                targetElement.classList.remove('optional-div');
+            }
+        })
+    });
 
+    // CARRIER STATUS FOR ANY INFECTIOUS DISEASE
+    document.querySelectorAll('input[name="disease-condition-radio"]').forEach(button => {
+        button.addEventListener("change", (e) => {
+            const targetElement = document.getElementById('disease-condition-div');
+            if (e.target.value == "0") {
+                targetElement.classList.add('optional-div');
+            } else if (e.target.value == "1") {
+                targetElement.classList.remove('optional-div');
+            }
+        })
+    });
 
+    // SLEEP WALKING
+    document.querySelectorAll('input[name="sleepwalk-condition-radio"]').forEach(button => {
+        button.addEventListener("change", (e) => {
+            const targetElement = document.getElementById('sleepwalk-condition-div');
+            if (e.target.value == "0") {
+                targetElement.classList.add('optional-div');
+            } else if (e.target.value == "1") {
+                targetElement.classList.remove('optional-div');
+            }
+        })
+    });
+
+    // ALLERGY OR ADVERSE REACTIONS TO MEDICATIONS
+    document.querySelectorAll('input[name="medication-allergy-condition-radio"]').forEach(button => {
+        button.addEventListener("change", (e) => {
+            const targetElement = document.getElementById('medication-allergy-condition-div');
+            const riskAcknowledgement = document.getElementById('allergy-acknowledgement-div');
+
+            const foodAllergyRadio = document.querySelector('input[name="food-allergy-condition-radio"]:checked');
+            const environmentalAllergyRadio = document.querySelector('input[name="environmental-allergy-condition-radio"]:checked');
+
+            if (e.target.value == "0") {
+                targetElement.classList.add('optional-div');
+
+                if ((!foodAllergyRadio || foodAllergyRadio.value == "0") && (!environmentalAllergyRadio || environmentalAllergyRadio.value == "0")) {
+                    riskAcknowledgement.classList.add('optional-div');
+                }
+
+            } else if (e.target.value == "1") {
+                targetElement.classList.remove('optional-div');
+                riskAcknowledgement.classList.remove('optional-div');
+            }
+        })
+    });
+
+    // ALLERGY TO ENVIRONMENTAL FACTOR(S)
+    document.querySelectorAll('input[name="environmental-allergy-condition-radio"]').forEach(button => {
+        button.addEventListener("change", (e) => {
+            const targetElement = document.getElementById('environmental-allergy-condition-div');
+            const riskAcknowledgement = document.getElementById('allergy-acknowledgement-div');
+
+            const foodAllergyRadio = document.querySelector('input[name="food-allergy-condition-radio"]:checked');
+            const medicationAllergyRadio = document.querySelector('input[name="medication-allergy-condition-radio"]:checked');
+
+            if (e.target.value == "0") {
+                targetElement.classList.add('optional-div');
+
+                if ((!foodAllergyRadio || foodAllergyRadio.value == "0") && (!medicationAllergyRadio || medicationAllergyRadio.value == "0")) {
+                    riskAcknowledgement.classList.add('optional-div');
+                }
+
+            } else if (e.target.value == "1") {
+                targetElement.classList.remove('optional-div');
+                riskAcknowledgement.classList.remove('optional-div');
+            }
+        })
+    });
+
+    // > ALLERGY TO ENVIRONMENTAL FACTOR(S) - ALLERGY MEDICATION
+    document.querySelectorAll('input[name="environmental-medication-condition-radio"]').forEach(button => {
+        button.addEventListener("change", (e) => {
+            const targetElement = document.getElementById('allergy-medication-div');
+            if (e.target.value == "0") {
+                targetElement.classList.add('optional-div');
+            } else if (e.target.value == "1") {
+                targetElement.classList.remove('optional-div');
+            }
+        })
+    });
+
+    // ALLERGY TO FOOD ITEM(S) / INGREDIENT(S)
+    document.querySelectorAll('input[name="food-allergy-condition-radio"]').forEach(button => {
+        button.addEventListener("change", (e) => {
+            const targetElement = document.getElementById('food-allergy-condition-div');
+            const riskAcknowledgement = document.getElementById('allergy-acknowledgement-div');
+
+            const environmentalAllergyRadio = document.querySelector('input[name="environmental-allergy-condition-radio"]:checked');
+            const medicationAllergyRadio = document.querySelector('input[name="medication-allergy-condition-radio"]:checked');
+
+            if (e.target.value == "0") {
+                targetElement.classList.add('optional-div');
+
+                if ((!environmentalAllergyRadio || environmentalAllergyRadio.value == "0") && (!medicationAllergyRadio || medicationAllergyRadio.value == "0")) {
+                    riskAcknowledgement.classList.add('optional-div');
+                }
+
+            } else if (e.target.value == "1") {
+                targetElement.classList.remove('optional-div');
+                riskAcknowledgement.classList.remove('optional-div');
+            }
+        })
+    });
+
+    // > ALLERGY TO FOOD ITEM(S) - ALLERGY MEDICATION
+    document.querySelectorAll('input[name="food-medication-condition-radio"]').forEach(button => {
+        button.addEventListener("change", (e) => {
+            const targetElement = document.getElementById('food-allergy-medication-div');
+            if (e.target.value == "0") {
+                targetElement.classList.add('optional-div');
+            } else if (e.target.value == "1") {
+                targetElement.classList.remove('optional-div');
+            }
+        })
+    });
+
+    // OTHER KIND OF CONDITION(S) OR ISSUE(S)
+    document.querySelectorAll('input[name="other-condition-radio"]').forEach(button => {
+        button.addEventListener("change", (e) => {
+            const targetElement = document.getElementById('other-condition-div');
+            if (e.target.value == "0") {
+                targetElement.classList.add('optional-div');
+            } else if (e.target.value == "1") {
+                targetElement.classList.remove('optional-div');
+            }
+        })
+    });
+
+    // > OTHER KIND OF CONDITION(S) OR ISSUE(S) - FOLLOW UP CONDITION
+    document.querySelectorAll('input[name="other-followup-radio"]').forEach(button => {
+        button.addEventListener("change", (e) => {
+            if (e.target.value == "0") {
+                displayNote(document.getElementById('other-condition-div'), "", 0)
+            } else if (e.target.value == "1") {
+                displayNote(document.getElementById('other-condition-div'), "treating memo", 1)
+            }
+        })
+    });
+
+    // > OTHER KIND OF CONDITION(S) OR ISSUE(S) - PROVIDE MEASURES
+    document.querySelectorAll('input[name="affect-understand-radio"]').forEach(button => {
+        button.addEventListener("change", (e) => {
+            const targetElement = document.getElementById('focus-understand-div');
+            if (e.target.value == "0") {
+                if (document.querySelector('input[name="affect-focus-radio"]:checked') &&
+                    document.querySelector('input[name="affect-focus-radio"]:checked').value == 0) {
+                    targetElement.classList.add('optional-div');
+                }
+            } else if (e.target.value == "1") {
+                targetElement.classList.remove('optional-div');
+            }
+        })
+    });
+
+    // > OTHER KIND OF CONDITION(S) OR ISSUE(S) - PROVIDE MEASURES
+    document.querySelectorAll('input[name="affect-focus-radio"]').forEach(button => {
+        button.addEventListener("change", (e) => {
+            const targetElement = document.getElementById('focus-understand-div');
+            if (e.target.value == "0") {
+                if (document.querySelector('input[name="affect-understand-radio"]:checked') &&
+                    document.querySelector('input[name="affect-understand-radio"]:checked').value == 0) {
+                    targetElement.classList.add('optional-div');
+                }
+
+            } else if (e.target.value == "1") {
+                targetElement.classList.remove('optional-div');
+            }
+        })
+    });
 
     // RADIO OTHER LABEL EVENT HANDLER
     document.querySelectorAll('.radio-other-label').forEach(button => {
@@ -345,6 +527,38 @@ window.addEventListener('DOMContentLoaded', () => {
         })
     });
 
+    // CHECKBOX OTHER LABEL EVENT HANDLER
+    document.querySelectorAll('.checkbox-other-label').forEach(button => {
+        button.addEventListener("click", (e) => {
+            const containerDiv = e.target.closest('.checkbox-others');
+            if (containerDiv) {
+                // Find the checkbox button within the container div
+                const checkboxElement = containerDiv.querySelector('input[type="checkbox"]');
+                if (checkboxElement && !checkboxElement.checked) {
+                    checkboxElement.checked = true;
+                } else if (checkboxElement && checkboxElement.checked) {
+                    checkboxElement.checked = false;
+                    setTimeout(() => {
+                        containerDiv.querySelector('input[type="text"]').blur();
+                    }, 0);
+                }
+            }
+        })
+    });
+
+    // CHECKBOX OTHER INPUT EVENT HANDLER
+    document.querySelectorAll('.checkbox-other-input').forEach(button => {
+        button.addEventListener("input", (e) => {
+            const containerDiv = e.target.closest('.checkbox-others');
+            if (containerDiv) {
+                // Find the checkbox button within the container div
+                const checkboxElement = containerDiv.querySelector('input[type="checkbox"]');
+                if (checkboxElement && !checkboxElement.checked) {
+                    checkboxElement.checked = true;
+                }
+            }
+        })
+    });
     // === EVENT HANDLERS ===
 
     handleParallax = () => {

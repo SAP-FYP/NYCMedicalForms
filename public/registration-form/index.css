@@ -210,8 +210,11 @@ body {
 }
 
 .custom-list li:before {
-    content: "(" counter(my-counter, lower-alpha) ") ";
+    content: "(" counter(my-counter, lower-alpha) "). ";
     counter-increment: my-counter;
+    padding-right: 5px;
+    /* Add 10px of space after the closing parenthesis */
+
 }
 
 .spacer {
@@ -323,25 +326,30 @@ input[type="radio"].btn-check:hover+.radio-btns {
     padding: 10px 5px;
 }
 
-.radio-others {
-    align-items: start;
+.radio-others,
+.checkbox-others {
+    align-items: start !important;
     padding-bottom: 10px;
 }
 
-.radio-others label {
+.radio-others label,
+.checkbox-others label {
     padding: 10px 0px 10px 5px;
 }
 
-.radio-others-container {
+.radio-others-container,
+.checkbox-others-container {
     width: 100%;
 }
 
-.radio-others input[type="text"] {
+.radio-others input[type="text"],
+.checkbox-others input[type="text"] {
     width: 98%;
     margin-left: 5px;
 }
 
-.radio-others input[type="radio"] {
+.radio-others input[type="radio"],
+.checkbox-others input[type="checkbox"] {
     margin-top: 10px;
 }
 
