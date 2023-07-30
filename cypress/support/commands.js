@@ -38,7 +38,7 @@ Cypress.Commands.add('managementLogin', (email, pass) => {
     cy.get('input[id=login-password]').type(pass);
     cy.get('button[id=login-button]').click();
     cy.url().should('include', '/obs-management');
-    cy.contains('Overview');
+    cy.contains('Form Management');
 })
 
 Cypress.Commands.add('parentLogin', (encrypted, password) => {

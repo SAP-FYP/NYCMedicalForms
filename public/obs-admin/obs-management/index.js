@@ -61,7 +61,7 @@ function updateFormCounts(formData) {
     },
     { pendingParent: 0, pending: 0, approved: 0, rejected: 0}
   );
-  // console.log(formCounts); // Log the formCounts object to the console
+   console.log(formCounts); // Log the formCounts object to the console
   const pendingParentAmtElement = document.querySelector('.pendingParentAmt');
   const pendingAmtElement = document.querySelector('.pendingAmt');
   const apprAmtElement = document.querySelector('.apprAmt');
