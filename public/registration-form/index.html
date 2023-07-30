@@ -97,8 +97,8 @@
                     <div class="mb-3">
                         <label for="form-input-name" class="form-label"><span class="label-indexes">1.
                             </span>Name</label>
-                        <input type="text" class="form-control" id="form-input-name">
-                        <div class="invalid-feedback">This field is required.</div>
+                        <input type="text" class="form-control required-field" id="form-input-name">
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- PARENT EMAIL -->
@@ -110,16 +110,17 @@
                             declaration will be sent to the email address provided. Please ensure that the email
                             address provided below is accurate.
                         </div>
-                        <input type="text" class="form-control" id="form-input-email">
-                        <div class="invalid-feedback">This field is required.</div>
+                        <input type="text" class="form-control required-field" id="form-input-email">
+                        <div class="invalid-feedback">Please enter a valid email</div>
                     </div>
 
                     <!-- PARENT CONTACT NUMBER -->
                     <div class="mb-3">
                         <label for="form-input-contact" class="form-label"><span class="label-indexes">3.
                             </span>Mobile number</label>
-                        <input type="text" class="form-control" id="form-input-contact" placeholder="8123 4567">
-                        <div class="invalid-feedback">This field is required.</div>
+                        <input type="text" class="form-control required-field" id="form-input-contact"
+                            placeholder="(SG) 8123 4567" min="0">
+                        <div class="invalid-feedback">Please enter a valid mobile number</div>
                     </div>
 
                     <!-- ALT CONTACT NUMBER -->
@@ -128,15 +129,15 @@
                             </span>Alternate Contact Number</label><span
                             style="font-size: 14px; color: #636467; margin-left: 10px;">(optional)
                         </span>
-                        <input type="text" class="form-control" id="form-input-alt-contact">
+                        <input type="text" class="form-control" id="form-input-alt-contact" min="0">
                     </div>
 
                     <!-- REALATION TO APPLICANT -->
                     <div class="mb-3">
                         <label for="form-input-relation" class="form-label"><span class="label-indexes">5.
                             </span>Relation to Applicant</label>
-                        <select class="form-select form-control" id="form-input-relation">
-                            <option selected>Select an option</option>
+                        <select class="form-select form-control required-field" id="form-input-relation">
+                            <option value="" selected>Select an option</option>
                             <option value="1">Parent</option>
                             <option value="2">Grandparent</option>
                             <option value="3">Other Family Member</option>
@@ -144,7 +145,7 @@
                             <option value="5">Siblings</option>
                             <option value="6">Guardian</option>
                         </select>
-                        <div class="invalid-feedback">This field is required.</div>
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- PARENT IS EMERGENCY CONTACT? -->
@@ -155,49 +156,52 @@
                         <div class="form-text help-text">Ensure the contact person can be reached for the full
                             duration of the course</div>
 
-                        <div class="btn-group" id="form-input-isEmergencyContact" style=" border: 0px !important;"
-                            role="group">
+                        <div class="btn-group required-field" id="form-input-isEmergencyContact"
+                            style=" border: 0px !important;" role="group">
 
-                            <input type="radio" class="btn-check" name="emergency-radio" id="isEmergencyContact-no"
-                                value="0" required>
+                            <input type="radio" class="btn-check yesno-radio" name="emergency-radio"
+                                id="isEmergencyContact-no" value="0" required>
                             <label class="radio-btns btn btn-outline-secondary" for="isEmergencyContact-no">
                                 <i class="material-icons">close</i> No
                             </label>
 
-                            <input type="radio" class="btn-check" name="emergency-radio" id="isEmergencyContact-yes"
-                                value="1" required>
+                            <input type="radio" class="btn-check yesno-radio" name="emergency-radio"
+                                id="isEmergencyContact-yes" value="1" required>
                             <label class="radio-btns btn btn-outline-secondary" for="isEmergencyContact-yes">
                                 <i class="material-icons">check</i> Yes
                             </label>
 
                         </div>
-                        <div class="invalid-feedback">This field is required.</div>
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- PARENT IS EMERGENCY CONTACT? - OPTIONAL -->
                     <div class="optional-div" id="emergency-contact-div">
 
+                        <!-- GUARDIAN NAME -->
                         <div class="mb-3">
                             <h3>Please provide the Applicant's emergency contact during the Course.</h3>
 
                             <label for="form-input-emergency-name" class="form-label">Name of Contact
                                 Person</label>
                             <input type="text" class="form-control" id="form-input-emergency-name">
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
 
+                        <!-- GUARDIAN CONTACT -->
                         <div class="mb-3">
                             <label for="form-input-emergency-contact" class="form-label">Primary Contact
                                 Number</label>
-                            <input type="text" class="form-control" id="form-input-emergency-contact">
-                            <div class="invalid-feedback">This field is required.</div>
+                            <input type="text" class="form-control" id="form-input-emergency-contact" min="0">
+                            <div class="invalid-feedback">Please enter a valid mobile number</div>
                         </div>
 
+                        <!-- GUARDIAN RELATION -->
                         <div class="mb-3">
                             <label for="form-input-emergency-relation" class="form-label">Relation to
                                 Applicant</label>
                             <select class="form-select form-control" id="form-input-emergency-relation">
-                                <option selected>Select an option</option>
+                                <option value="" selected>Select an option</option>
                                 <option value="1">Parent</option>
                                 <option value="2">Grandparent</option>
                                 <option value="3">Other Family Member</option>
@@ -205,14 +209,15 @@
                                 <option value="5">Siblings</option>
                                 <option value="6">Guardian</option>
                             </select>
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
 
+                        <!-- GUARDIAN ALT CONTACT -->
                         <div class="mb-3"></div>
                         <label for="form-input-emergency-alt-contact" class="form-label">Alternate Contact
                             Number</label><span style="font-size: 14px; color: #636467; margin-left: 10px;">(optional)
                         </span>
-                        <input type="text" class="form-control" id="form-input-emergency-alt-contact">
+                        <input type="text" class="form-control" id="form-input-emergency-alt-contact" min="0">
                     </div>
                 </div>
             </div>
@@ -228,8 +233,8 @@
                         <label for="form-input-applicant-id" class="form-label"><span class="label-indexes">7.
                             </span>Applicant's Birth Certificate Number / NRIC Number / Foreign Identification
                             Number</label>
-                        <input type="text" class="form-control" id="form-input-applicant-id">
-                        <div class="invalid-feedback">This field is required.</div>
+                        <input type="text" class="form-control required-field" id="form-input-applicant-id">
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- APPLICANT NAME -->
@@ -239,26 +244,26 @@
                             </span>Full Name of the Applicant</label>
                         <div class="form-text help-text">as it appears in the Applicant's Personal Identification
                             Document</div>
-                        <input type="text" class="form-control" id="form-input-applicant-name">
-                        <div class="invalid-feedback">This field is required.</div>
+                        <input type="text" class="form-control required-field" id="form-input-applicant-name">
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- APPLICANT SCHOOL -->
                     <div class="mb-3">
                         <label for="form-input-applicant-school" class="form-label"><span class="label-indexes">9.
                             </span>School</label>
-                        <select class="form-select form-control" id="form-input-applicant-school">
-                            <option selected>Select an option</option>
+                        <select class="form-select form-control required-field" id="form-input-applicant-school">
+                            <option value="" selected>Select an option</option>
                         </select>
-                        <div class="invalid-feedback">This field is required.</div>
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- APPLICANT CLASS -->
                     <div class="mb-3">
                         <label for="form-input-applicant-class" class="form-label"><span class="label-indexes">10.
                             </span>Class</label>
-                        <input type="text" class="form-control" id="form-input-applicant-class">
-                        <div class="invalid-feedback">This field is required.</div>
+                        <input type="text" class="form-control required-field" id="form-input-applicant-class">
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- APPLICANT RESIDENTIAL STATUS -->
@@ -266,49 +271,50 @@
                         <label for="form-input-applicant-residential" class="form-label"><span class="label-indexes">11.
                             </span>Residential Status</label>
 
-                        <div class="" id="form-input-applicant-residential" style="border: 0px !important;">
+                        <div class="required-field radio-field" id="form-input-applicant-residential"
+                            style="border: 0px !important;">
 
                             <div class="form-check radio-check">
                                 <input class="radio-custom-dots" type="radio" name="residential-radio"
-                                    id="residential-citizen" value="0" required>
+                                    id="residential-citizen" value="Singapore Citizen" required>
                                 <label class="form-check-label radio-custom-label" for="residential-citizen">Singapore
                                     Citizen</label>
                             </div>
 
                             <div class="form-check radio-check">
                                 <input class="radio-custom-dots" type="radio" name="residential-radio"
-                                    id="residential-pr" value="1" required>
+                                    id="residential-pr" value="Singapore PR" required>
                                 <label class="form-check-label radio-custom-label" for="residential-pr">Singapore
                                     PR</label>
                             </div>
 
                             <div class="form-check radio-check">
                                 <input class="radio-custom-dots" type="radio" name="residential-radio"
-                                    id="residential-foreigner" value="2" required>
+                                    id="residential-foreigner" value="Foreigner" required>
                                 <label class="form-check-label radio-custom-label"
                                     for="residential-foreigner">Foreigner</label>
                             </div>
 
                         </div>
-                        <div class="invalid-feedback">This field is required.</div>
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- APPLICANT DOB -->
                     <div class="mb-3">
                         <label for="form-input-applicant-dob" class="form-label"><span class="label-indexes">12.
                             </span>Date of Birth</label>
-                        <input type="date" class="form-control" id="form-input-applicant-dob">
-                        <div class="invalid-feedback">This field is required.</div>
+                        <input type="date" class="form-control required-field" id="form-input-applicant-dob">
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- APPLICANT RACE -->
                     <div class="mb-3">
                         <label for="form-input-applicant-race" class="form-label"><span class="label-indexes">13.
                             </span>Race</label>
-                        <select class="form-select form-control" id="form-input-applicant-race">
-                            <option selected>Select an option</option>
+                        <select class="form-select form-control required-field" id="form-input-applicant-race">
+                            <option value="" selected>Select an option</option>
                         </select>
-                        <div class="invalid-feedback">This field is required.</div>
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- APPLICANT GENDER -->
@@ -316,22 +322,23 @@
                         <label for="form-input-applicant-gender" class="form-label"><span class="label-indexes">14.
                             </span>Gender</label>
 
-                        <div class="" id="form-input-applicant-gender" style="border: 0px !important;">
+                        <div class="required-field radio-field" id="form-input-applicant-gender"
+                            style="border: 0px !important;">
 
                             <div class="form-check radio-check">
                                 <input class="radio-custom-dots" type="radio" name="gender-radio" id="gender-male"
-                                    value="0" required>
+                                    value="Male" required>
                                 <label class="form-check-label radio-custom-label" for="gender-male">Male</label>
                             </div>
 
                             <div class="form-check radio-check">
                                 <input class="radio-custom-dots" type="radio" name="gender-radio" id="gender-female"
-                                    value="1" required>
+                                    value="Female" required>
                                 <label class="form-check-label radio-custom-label" for="gender-female">Female</label>
                             </div>
 
                         </div>
-                        <div class="invalid-feedback">This field is required.</div>
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- APPLICANT EMAIL -->
@@ -341,16 +348,16 @@
                         <div class="form-text help-text">The email address provided will be used for
                             pre-course preparation.
                         </div>
-                        <input type="text" class="form-control" id="form-input-applicant-email">
-                        <div class="invalid-feedback">This field is required.</div>
+                        <input type="text" class="form-control required-field" id="form-input-applicant-email">
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- APPLICANT ADDRESS -->
                     <div class="mb-3">
                         <label for="form-input-applicant-address" class="form-label"><span class="label-indexes">16.
                             </span>Registered address</label>
-                        <input type="text" class="form-control" id="form-input-applicant-address">
-                        <div class="invalid-feedback">This field is required.</div>
+                        <input type="text" class="form-control required-field" id="form-input-applicant-address">
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- APPLICANT DIETARY REQUIREMENTS -->
@@ -368,7 +375,7 @@
 
                             <div class="form-check checkbox-check checkbox-overflow">
                                 <input class="checkbox-custom" type="checkbox" name="vegeterian-checkbox"
-                                    id="diet-vegeterian" value="0" required>
+                                    id="diet-vegeterian" value="Vegeterian">
                                 <label class="form-check-label checkbox-custom-label checkbox-overflow-label"
                                     for="diet-vegeterian">Vegeterian
                                     (does not contain onion and garlic)</label>
@@ -376,20 +383,20 @@
 
                             <div class="form-check checkbox-check">
                                 <input class="checkbox-custom" type="checkbox" name="g6pd-checkbox" id="diet-g6pd"
-                                    value="1" required>
+                                    value="G6PD">
                                 <label class="form-check-label checkbox-custom-label" for="diet-g6pd">G6PD</label>
                             </div>
 
                             <div class="form-check checkbox-check">
                                 <input class="checkbox-custom" type="checkbox" name="gluten-checkbox" id="diet-gluten"
-                                    value="2" required>
+                                    value="Gluten Free">
                                 <label class="form-check-label checkbox-custom-label" for="diet-gluten">Gluten
                                     Free</label>
                             </div>
 
                             <div class="form-check checkbox-check">
                                 <input class="checkbox-custom" type="checkbox" name="lactose-checkbox" id="diet-lactose"
-                                    value="3" required>
+                                    value="Lactose Intolerant">
                                 <label class="form-check-label checkbox-custom-label" for="diet-lactose">Lactose
                                     Intolerant</label>
                             </div>
@@ -440,20 +447,20 @@
 
                         <div class="btn-group" id="form-input-hasTetanus" style=" border: 0px !important;" role="group">
 
-                            <input type="radio" class="btn-check" name="tetanus-radio" id="hasTetanus-no" value="0"
-                                required>
+                            <input type="radio" class="btn-check yesno-radio" name="tetanus-radio" id="hasTetanus-no"
+                                value="0" required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasTetanus-no">
                                 <i class="material-icons">close</i> No
                             </label>
 
-                            <input type="radio" class="btn-check" name="tetanus-radio" id="hasTetanus-yes" value="1"
-                                required>
+                            <input type="radio" class="btn-check yesno-radio" name="tetanus-radio" id="hasTetanus-yes"
+                                value="1" required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasTetanus-yes">
                                 <i class="material-icons">check</i> Yes
                             </label>
 
                         </div>
-                        <div class="invalid-feedback">This field is required.</div>
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- TETANUS DATE - OPTIONAL -->
@@ -464,7 +471,7 @@
                             <div class="form-text help-text">If you are not sure of the exact date of the Vaccination,
                                 use first day of the month which it occurred.</div>
                             <input type="date" class="form-control" id="form-input-tetanus-date">
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
                     </div>
 
@@ -485,8 +492,8 @@
                                 class="label-indexes">19.
                             </span>Height of the Applicant</label>
                         <div class="form-text help-text">Provide information in metres (m)</div>
-                        <input type="number" class="form-control" id="form-input-applicant-height">
-                        <div class="invalid-feedback">This field is required.</div>
+                        <input type="number" class="form-control" id="form-input-applicant-height" min="0">
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- APPLICANT WEIGHT -->
@@ -495,8 +502,8 @@
                                 class="label-indexes">20.
                             </span>Weight of the Applicant</label>
                         <div class="form-text help-text">Provide information in kilograms (kg)</div>
-                        <input type="number" class="form-control" id="form-input-applicant-weight">
-                        <div class="invalid-feedback">This field is required.</div>
+                        <input type="number" class="form-control" id="form-input-applicant-weight" min="0">
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- APPLICANT BMI -->
@@ -506,8 +513,8 @@
                             </span>Body Mass Index (BMI)</label>
                         <div class="form-text help-text">Calculating Body Mass Index (BMI) = weight (kg) / (height x
                             height) (m)</div>
-                        <input type="number" class="form-control" id="form-input-applicant-bmi">
-                        <div class="invalid-feedback">This field is required.</div>
+                        <input type="number" class="form-control" id="form-input-applicant-bmi" min="0">
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- MEDICAL CONDITION DIAGNOSED SUB SECTION -->
@@ -527,19 +534,19 @@
                         <div class="btn-group" id="form-input-hasBreathingCondi" style=" border: 0px !important;"
                             role="group">
 
-                            <input type="radio" class="btn-check" name="breathing-condition-radio"
+                            <input type="radio" class="btn-check yesno-radio" name="breathing-condition-radio"
                                 id="hasBreathingCondi-no" value="0" required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasBreathingCondi-no">
                                 <i class="material-icons">close</i> No
                             </label>
 
-                            <input type="radio" class="btn-check" name="breathing-condition-radio"
+                            <input type="radio" class="btn-check yesno-radio" name="breathing-condition-radio"
                                 id="hasBreathingCondi-yes" value="1" required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasBreathingCondi-yes">
                                 <i class="material-icons">check</i> Yes
                             </label>
                         </div>
-                        <div class="invalid-feedback">This field is required.</div>
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- BREATHING CONDITION - OPTIONAL -->
@@ -552,7 +559,7 @@
                                 of the breathing condition</label>
                             <div class="form-text help-text">State in full sentence/word, avoid acronyms</div>
                             <input type="text" class="form-control" id="form-input-breathing-condition">
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
 
                         <!-- LAST OCCURANCE OF BREATHING OCCURANCE -->
@@ -562,7 +569,7 @@
                             <div class="form-text help-text">e.g. Last asthma attack<br>If you are not sure of the exact
                                 date, please select the first day of the month which it occurred.</div>
                             <input type="date" class="form-control" id="form-input-breathing-date">
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
                     </div>
 
@@ -577,20 +584,20 @@
                         <div class="btn-group" id="form-input-hasHeartCondi" style=" border: 0px !important;"
                             role="group">
 
-                            <input type="radio" class="btn-check" name="heart-condition-radio" id="hasHeartCondi-no"
-                                value="0" required>
+                            <input type="radio" class="btn-check yesno-radio" name="heart-condition-radio"
+                                id="hasHeartCondi-no" value="0" required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasHeartCondi-no">
                                 <i class="material-icons">close</i> No
                             </label>
 
-                            <input type="radio" class="btn-check" name="heart-condition-radio" id="hasHeartCondi-yes"
-                                value="1" required>
+                            <input type="radio" class="btn-check yesno-radio" name="heart-condition-radio"
+                                id="hasHeartCondi-yes" value="1" required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasHeartCondi-yes">
                                 <i class="material-icons">check</i> Yes
                             </label>
 
                         </div>
-                        <div class="invalid-feedback">This field is required.</div>
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- HEART CONDITION - OPTIONAL -->
@@ -602,7 +609,7 @@
                                 heart condition</label>
                             <div class="form-text help-text">State in full sentence/word, avoid acronyms</div>
                             <input type="text" class="form-control" id="form-input-heart-condition">
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
                     </div>
 
@@ -616,20 +623,20 @@
                         <div class="btn-group" id="form-input-hasBloodCondi" style=" border: 0px !important;"
                             role="group">
 
-                            <input type="radio" class="btn-check" name="blood-condition-radio" id="hasBloodCondi-no"
-                                value="0" required>
+                            <input type="radio" class="btn-check yesno-radio" name="blood-condition-radio"
+                                id="hasBloodCondi-no" value="0" required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasBloodCondi-no">
                                 <i class="material-icons">close</i> No
                             </label>
 
-                            <input type="radio" class="btn-check" name="blood-condition-radio" id="hasBloodCondi-yes"
-                                value="1" required>
+                            <input type="radio" class="btn-check yesno-radio" name="blood-condition-radio"
+                                id="hasBloodCondi-yes" value="1" required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasBloodCondi-yes">
                                 <i class="material-icons">check</i> Yes
                             </label>
 
                         </div>
-                        <div class="invalid-feedback">This field is required.</div>
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- BLOOD CONDITION - OPTIONAL -->
@@ -640,7 +647,8 @@
                             <label for="form-input-blood-condition" class="form-label">The diagnosed blood condition
                                 is:</label>
 
-                            <div class="" id="form-input-blood-condition" style="border: 0px !important;">
+                            <div class="required-field radio-field" id="form-input-blood-condition"
+                                style="border: 0px !important;">
 
                                 <div class="form-check radio-check">
                                     <input class="radio-custom-dots" type="radio" name="blood-radio" id="blood-anaemia"
@@ -679,7 +687,7 @@
 
                                 </div>
                             </div>
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
 
                         <!-- BLOOD CONDITION - SUB OPTIONAL -->
@@ -693,20 +701,20 @@
                                 <div class="btn-group" id="form-input-blood-followup" style=" border: 0px !important;"
                                     role="group">
 
-                                    <input type="radio" class="btn-check" name="blood-followup-radio"
+                                    <input type="radio" class="btn-check yesno-radio" name="blood-followup-radio"
                                         id="blood-followup-no" value="0" required>
                                     <label class="radio-btns btn btn-outline-secondary" for="blood-followup-no">
                                         <i class="material-icons">close</i> No
                                     </label>
 
-                                    <input type="radio" class="btn-check" name="blood-followup-radio"
+                                    <input type="radio" class="btn-check yesno-radio" name="blood-followup-radio"
                                         id="blood-followup-yes" value="1" required>
                                     <label class="radio-btns btn btn-outline-secondary" for="blood-followup-yes">
                                         <i class="material-icons">check</i> Yes
                                     </label>
 
                                 </div>
-                                <div class="invalid-feedback">This field is required.</div>
+                                <div class="invalid-feedback">This field is required</div>
                             </div>
                         </div>
                         <div class="insert-note-template"></div>
@@ -720,20 +728,20 @@
                         <div class="btn-group" id="form-input-hasEpilepsyCondi" style=" border: 0px !important;"
                             role="group">
 
-                            <input type="radio" class="btn-check" name="epilepsy-condition-radio"
+                            <input type="radio" class="btn-check yesno-radio" name="epilepsy-condition-radio"
                                 id="hasEpilepsyCondi-no" value="0" required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasEpilepsyCondi-no">
                                 <i class="material-icons">close</i> No
                             </label>
 
-                            <input type="radio" class="btn-check" name="epilepsy-condition-radio"
+                            <input type="radio" class="btn-check yesno-radio" name="epilepsy-condition-radio"
                                 id="hasEpilepsyCondi-yes" value="1" required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasEpilepsyCondi-yes">
                                 <i class="material-icons">check</i> Yes
                             </label>
 
                         </div>
-                        <div class="invalid-feedback">This field is required.</div>
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- EPILEPSY, FITS OR SEIZURE CONDITION - OPTIONAL -->
@@ -747,20 +755,20 @@
                             <div class="btn-group" id="form-input-epilepsy-past-months" style=" border: 0px !important;"
                                 role="group">
 
-                                <input type="radio" class="btn-check" name="epilepsy-past-months-radio"
+                                <input type="radio" class="btn-check yesno-radio" name="epilepsy-past-months-radio"
                                     id="epilepsyPastMonths-no" value="0" required>
                                 <label class="radio-btns btn btn-outline-secondary" for="epilepsyPastMonths-no">
                                     <i class="material-icons">close</i> No
                                 </label>
 
-                                <input type="radio" class="btn-check" name="epilepsy-past-months-radio"
+                                <input type="radio" class="btn-check yesno-radio" name="epilepsy-past-months-radio"
                                     id="epilepsyPastMonths-yes" value="1" required>
                                 <label class="radio-btns btn btn-outline-secondary" for="epilepsyPastMonths-yes">
                                     <i class="material-icons">check</i> Yes
                                 </label>
 
                             </div>
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
 
                         <!-- EPILEPSY, FITS OR SEIZURE ON MEDICALTION PAST 24 MONTHS -->
@@ -771,20 +779,20 @@
                             <div class="btn-group" id="form-input-epilepsy-medication" style=" border: 0px !important;"
                                 role="group">
 
-                                <input type="radio" class="btn-check" name="epilepsy-medication-radio"
+                                <input type="radio" class="btn-check yesno-radio" name="epilepsy-medication-radio"
                                     id="epilepsyMedication-no" value="0" required>
                                 <label class="radio-btns btn btn-outline-secondary" for="epilepsyMedication-no">
                                     <i class="material-icons">close</i> No
                                 </label>
 
-                                <input type="radio" class="btn-check" name="epilepsy-medication-radio"
+                                <input type="radio" class="btn-check yesno-radio" name="epilepsy-medication-radio"
                                     id="epilepsyMedication-yes" value="1" required>
                                 <label class="radio-btns btn btn-outline-secondary" for="epilepsyMedication-yes">
                                     <i class="material-icons">check</i> Yes
                                 </label>
 
                             </div>
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
 
                         <!-- EPILEPSY, FITS OR SEIZURE CONDITION - SUB OPTIONAL -->
@@ -799,20 +807,20 @@
                                 <div class="btn-group" id="form-input-epilepsy-followup"
                                     style=" border: 0px !important;" role="group">
 
-                                    <input type="radio" class="btn-check" name="epilepsy-followup-radio"
+                                    <input type="radio" class="btn-check yesno-radio" name="epilepsy-followup-radio"
                                         id="epilepsyFollowup-no" value="0" required>
                                     <label class="radio-btns btn btn-outline-secondary" for="epilepsyFollowup-no">
                                         <i class="material-icons">close</i> No
                                     </label>
 
-                                    <input type="radio" class="btn-check" name="epilepsy-followup-radio"
+                                    <input type="radio" class="btn-check yesno-radio" name="epilepsy-followup-radio"
                                         id="epilepsyFollowup-yes" value="1" required>
                                     <label class="radio-btns btn btn-outline-secondary" for="epilepsyFollowup-yes">
                                         <i class="material-icons">check</i> Yes
                                     </label>
 
                                 </div>
-                                <div class="invalid-feedback">This field is required.</div>
+                                <div class="invalid-feedback">This field is required</div>
                             </div>
                         </div>
 
@@ -829,20 +837,20 @@
                         <div class="btn-group" id="form-input-hasBoneCondi" style=" border: 0px !important;"
                             role="group">
 
-                            <input type="radio" class="btn-check" name="bone-condition-radio" id="hasBoneCondi-no"
-                                value="0" required>
+                            <input type="radio" class="btn-check yesno-radio" name="bone-condition-radio"
+                                id="hasBoneCondi-no" value="0" required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasBoneCondi-no">
                                 <i class="material-icons">close</i> No
                             </label>
 
-                            <input type="radio" class="btn-check" name="bone-condition-radio" id="hasBoneCondi-yes"
-                                value="1" required>
+                            <input type="radio" class="btn-check yesno-radio" name="bone-condition-radio"
+                                id="hasBoneCondi-yes" value="1" required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasBoneCondi-yes">
                                 <i class="material-icons">check</i> Yes
                             </label>
 
                         </div>
-                        <div class="invalid-feedback">This field is required.</div>
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- BONE CONDITION - OPTIONAL -->
@@ -855,7 +863,7 @@
                             <div class="form-text help-text">State the body part with the injury or condition in full
                                 sentence/word, avoid acronyms e.g. right ankle fracture, left ring finger sprain.</div>
                             <input type="text" class="form-control" id="form-input-bone-condition">
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
 
                         <!-- DATE OF BONE CONDITION -->
@@ -865,7 +873,7 @@
                             <div class="form-text help-text">If you are not sure of the exact date, please select the
                                 first day of the month which it occurred.</div>
                             <input type="date" class="form-control" id="form-input-bone-date">
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
 
                         <!-- BONE CONDITION FOLLOW UP -->
@@ -876,20 +884,20 @@
                             <div class="btn-group" id="form-input-bone-followup" style=" border: 0px !important;"
                                 role="group">
 
-                                <input type="radio" class="btn-check" name="bone-followup-radio" id="bone-followup-no"
-                                    value="0" required>
+                                <input type="radio" class="btn-check yesno-radio" name="bone-followup-radio"
+                                    id="bone-followup-no" value="0" required>
                                 <label class="radio-btns btn btn-outline-secondary" for="bone-followup-no">
                                     <i class="material-icons">close</i> No
                                 </label>
 
-                                <input type="radio" class="btn-check" name="bone-followup-radio" id="bone-followup-yes"
-                                    value="1" required>
+                                <input type="radio" class="btn-check yesno-radio" name="bone-followup-radio"
+                                    id="bone-followup-yes" value="1" required>
                                 <label class="radio-btns btn btn-outline-secondary" for="bone-followup-yes">
                                     <i class="material-icons">check</i> Yes
                                 </label>
 
                             </div>
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
                         <div class="insert-note-template"></div>
                     </div>
@@ -905,20 +913,20 @@
                         <div class="btn-group" id="form-input-hasBehaviouralCondi" style=" border: 0px !important;"
                             role="group">
 
-                            <input type="radio" class="btn-check" name="behavioural-condition-radio"
+                            <input type="radio" class="btn-check yesno-radio" name="behavioural-condition-radio"
                                 id="hasBehaviouralCondi-no" value="0" required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasBehaviouralCondi-no">
                                 <i class="material-icons">close</i> No
                             </label>
 
-                            <input type="radio" class="btn-check" name="behavioural-condition-radio"
+                            <input type="radio" class="btn-check yesno-radio" name="behavioural-condition-radio"
                                 id="hasBehaviouralCondi-yes" value="1" required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasBehaviouralCondi-yes">
                                 <i class="material-icons">check</i> Yes
                             </label>
 
                         </div>
-                        <div class="invalid-feedback">This field is required.</div>
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- BEHAVIOURAL OR PSYCHOLOGICAL CONDITION - OPTIONAL -->
@@ -928,7 +936,7 @@
                         <div class="mb-3">
                             <label for="form-input-behavioural-condition" class="form-label">State the condition</label>
                             <input type="text" class="form-control" id="form-input-behavioural-condition">
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
 
                         <!-- BEHAVIOURAL OR PSYCHOLOGICAL CONDITION FOLLOW UP -->
@@ -941,20 +949,20 @@
                             <div class="btn-group" id="form-input-behavioural-followup" style=" border: 0px !important;"
                                 role="group">
 
-                                <input type="radio" class="btn-check" name="behavioural-followup-radio"
+                                <input type="radio" class="btn-check yesno-radio" name="behavioural-followup-radio"
                                     id="behavioural-followup-no" value="0" required>
                                 <label class="radio-btns btn btn-outline-secondary" for="behavioural-followup-no">
                                     <i class="material-icons">close</i> No
                                 </label>
 
-                                <input type="radio" class="btn-check" name="behavioural-followup-radio"
+                                <input type="radio" class="btn-check yesno-radio" name="behavioural-followup-radio"
                                     id="behavioural-followup-yes" value="1" required>
                                 <label class="radio-btns btn btn-outline-secondary" for="behavioural-followup-yes">
                                     <i class="material-icons">check</i> Yes
                                 </label>
 
                             </div>
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
 
                         <!-- BEHAVIOURAL OR PSYCHOLOGICAL - SUB OPTIONAL -->
@@ -965,7 +973,7 @@
                                 <label for="form-input-behavioural-specialist-progress" class="form-label">Describe the
                                     progress of treatment with the specialist</label>
                                 <input type="text" class="form-control" id="form-input-behavioural-specialist-progress">
-                                <div class="invalid-feedback">This field is required.</div>
+                                <div class="invalid-feedback">This field is required</div>
                             </div>
 
                             <!-- BEHAVIOURAL OR PSYCHOLOGICAL CONDITION AT HOME -->
@@ -983,7 +991,7 @@
                                     </ul>
                                 </div>
                                 <input type="text" class="form-control" id="form-input-behavioural-home">
-                                <div class="invalid-feedback">This field is required.</div>
+                                <div class="invalid-feedback">This field is required</div>
                             </div>
 
                             <!-- BEHAVIOURAL OR PSYCHOLOGICAL EXPERIENCE AND HELP -->
@@ -995,7 +1003,7 @@
                                     climbing, trekking/camping. If applicable, share the Applicant’s previous outdoor
                                     experience.</label>
                                 <input type="text" class="form-control" id="form-input-behavioural-experience">
-                                <div class="invalid-feedback">This field is required.</div>
+                                <div class="invalid-feedback">This field is required</div>
                             </div>
 
                             <h3 style="margin: 70px 0px 20px 0px">Note: A specialist memo is needed for further
@@ -1060,7 +1068,7 @@
                                 </div>
                             </div>
 
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
 
                         <!-- DIAGNOSIS OF BEHAVIOURAL OR PSYCHOLOGICAL PARTICIPATION ACKNOWLEDGEMENT -->
@@ -1093,7 +1101,7 @@
                                 </div>
                             </div>
 
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
                     </div>
 
@@ -1105,20 +1113,20 @@
                         <div class="btn-group" id="form-input-hasMedication" style=" border: 0px !important;"
                             role="group">
 
-                            <input type="radio" class="btn-check" name="medication-condition-radio"
+                            <input type="radio" class="btn-check yesno-radio" name="medication-condition-radio"
                                 id="hasMedication-no" value="0" required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasMedication-no">
                                 <i class="material-icons">close</i> No
                             </label>
 
-                            <input type="radio" class="btn-check" name="medication-condition-radio"
+                            <input type="radio" class="btn-check yesno-radio" name="medication-condition-radio"
                                 id="hasMedication-yes" value="1" required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasMedication-yes">
                                 <i class="material-icons">check</i> Yes
                             </label>
 
                         </div>
-                        <div class="invalid-feedback">This field is required.</div>
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- LONG TERM PRESCRIBTION MEDICATION - OPTIONAL -->
@@ -1129,7 +1137,7 @@
                             <label for="form-input-bone-condition" class="form-label">State the medication and
                                 dosage</label>
                             <input type="text" class="form-control" id="form-input-medication">
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
 
                         <div style="margin-bottom: 20px;">
@@ -1152,20 +1160,20 @@
 
                         <div class="btn-group" id="form-input-hasDisease" style=" border: 0px !important;" role="group">
 
-                            <input type="radio" class="btn-check" name="disease-condition-radio" id="hasDisease-no"
-                                value="0" required>
+                            <input type="radio" class="btn-check yesno-radio" name="disease-condition-radio"
+                                id="hasDisease-no" value="0" required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasDisease-no">
                                 <i class="material-icons">close</i> No
                             </label>
 
-                            <input type="radio" class="btn-check" name="disease-condition-radio" id="hasDisease-yes"
-                                value="1" required>
+                            <input type="radio" class="btn-check yesno-radio" name="disease-condition-radio"
+                                id="hasDisease-yes" value="1" required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasDisease-yes">
                                 <i class="material-icons">check</i> Yes
                             </label>
 
                         </div>
-                        <div class="invalid-feedback">This field is required.</div>
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- CARRIER STATUS FOR ANY INFECTIOUS DISEASE - OPTIONAL -->
@@ -1177,7 +1185,7 @@
                                 condition</label>
                             <div class="form-text help-text">State in full sentence/word, avoid acronyms.</div>
                             <input type="text" class="form-control" id="form-input-disease">
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
                     </div>
 
@@ -1194,20 +1202,20 @@
                         <div class="btn-group" id="form-input-hasSleepWalk" style=" border: 0px !important;"
                             role="group">
 
-                            <input type="radio" class="btn-check" name="sleepwalk-condition-radio" id="hasSleepWalk-no"
-                                value="0" required>
+                            <input type="radio" class="btn-check yesno-radio" name="sleepwalk-condition-radio"
+                                id="hasSleepWalk-no" value="0" required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasSleepWalk-no">
                                 <i class="material-icons">close</i> No
                             </label>
 
-                            <input type="radio" class="btn-check" name="sleepwalk-condition-radio" id="hasSleepWalk-yes"
-                                value="1" required>
+                            <input type="radio" class="btn-check yesno-radio" name="sleepwalk-condition-radio"
+                                id="hasSleepWalk-yes" value="1" required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasSleepWalk-yes">
                                 <i class="material-icons">check</i> Yes
                             </label>
 
                         </div>
-                        <div class="invalid-feedback">This field is required.</div>
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- SLEEP WALKING - OPTIONAL -->
@@ -1220,7 +1228,7 @@
                             <div class="form-text help-text">If you are not sure of the exact date, please select the
                                 first day of the month which it occurred.</div>
                             <input type="date" class="form-control" id="form-input-sleepwalk-date">
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
                     </div>
 
@@ -1232,20 +1240,20 @@
                         <div class="btn-group" id="form-input-hasMedicationAllergy" style=" border: 0px !important;"
                             role="group">
 
-                            <input type="radio" class="btn-check" name="medication-allergy-condition-radio"
+                            <input type="radio" class="btn-check yesno-radio" name="medication-allergy-condition-radio"
                                 id="hasMedicationAllergy-no" value="0" required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasMedicationAllergy-no">
                                 <i class="material-icons">close</i> No
                             </label>
 
-                            <input type="radio" class="btn-check" name="medication-allergy-condition-radio"
+                            <input type="radio" class="btn-check yesno-radio" name="medication-allergy-condition-radio"
                                 id="hasMedicationAllergy-yes" value="1" required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasMedicationAllergy-yes">
                                 <i class="material-icons">check</i> Yes
                             </label>
 
                         </div>
-                        <div class="invalid-feedback">This field is required.</div>
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- ALLERGY OR ADVERSE REACTIONS TO MEDICATIONS - OPTIONAL -->
@@ -1256,7 +1264,7 @@
                             <label for="form-input-medication-name" class="form-label">State the medication that the
                                 Applicant is allergic to</label>
                             <input type="text" class="form-control" id="form-input-medication-name">
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
 
                         <div class="text-container" style="margin-top: 40px;">
@@ -1299,20 +1307,22 @@
                         <div class="btn-group" id="form-input-hasEnvironmentalAllergy" style=" border: 0px !important;"
                             role="group">
 
-                            <input type="radio" class="btn-check" name="environmental-allergy-condition-radio"
-                                id="hasEnvironmentalAllergy-no" value="0" required>
+                            <input type="radio" class="btn-check yesno-radio"
+                                name="environmental-allergy-condition-radio" id="hasEnvironmentalAllergy-no" value="0"
+                                required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasEnvironmentalAllergy-no">
                                 <i class="material-icons">close</i> No
                             </label>
 
-                            <input type="radio" class="btn-check" name="environmental-allergy-condition-radio"
-                                id="hasEnvironmentalAllergy-yes" value="1" required>
+                            <input type="radio" class="btn-check yesno-radio"
+                                name="environmental-allergy-condition-radio" id="hasEnvironmentalAllergy-yes" value="1"
+                                required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasEnvironmentalAllergy-yes">
                                 <i class="material-icons">check</i> Yes
                             </label>
 
                         </div>
-                        <div class="invalid-feedback">This field is required.</div>
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- ALLERGY TO ENVIRONMENTAL FACTOR(S) - OPTIONAL -->
@@ -1374,7 +1384,7 @@
                                     </div>
 
                                 </div>
-                                <div class="invalid-feedback">This field is required.</div>
+                                <div class="invalid-feedback">This field is required</div>
                         </div>
 
                         <!-- DETAILS OF THE ENVIRONMENT APPLICANT IS ALLERGIC TO -->
@@ -1385,7 +1395,7 @@
                                 Applicant is allergic to:</label>
                             <div class="form-text help-text">e.g. pollen causes rashes when in contact</div>
                             <input type="text" class="form-control" id="form-input-enviroment-details">
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
 
                         <!-- HAVE MEDICATION TO RELIEVE ALLERGIC REACTION -->
@@ -1396,20 +1406,22 @@
                             <div class="btn-group" id="form-input-hasAllergyMedication" style=" border: 0px !important;"
                                 role="group">
 
-                                <input type="radio" class="btn-check" name="environmental-medication-condition-radio"
-                                    id="hasAllergyMedication-no" value="0" required>
+                                <input type="radio" class="btn-check yesno-radio"
+                                    name="environmental-medication-condition-radio" id="hasAllergyMedication-no"
+                                    value="0" required>
                                 <label class="radio-btns btn btn-outline-secondary" for="hasAllergyMedication-no">
                                     <i class="material-icons">close</i> No
                                 </label>
 
-                                <input type="radio" class="btn-check" name="environmental-medication-condition-radio"
-                                    id="hasAllergyMedication-yes" value="1" required>
+                                <input type="radio" class="btn-check yesno-radio"
+                                    name="environmental-medication-condition-radio" id="hasAllergyMedication-yes"
+                                    value="1" required>
                                 <label class="radio-btns btn btn-outline-secondary" for="hasAllergyMedication-yes">
                                     <i class="material-icons">check</i> Yes
                                 </label>
 
                             </div>
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
 
                         <!-- HAVE MEDICATION TO RELIEVE ALLERGIC REACTION - SUB OPTIONAL -->
@@ -1420,7 +1432,7 @@
                                 <label for="form-input-allergy-medication" class="form-label">State medication and
                                     dosage</label>
                                 <input type="text" class="form-control" id="form-input-allergy-medication">
-                                <div class="invalid-feedback">This field is required.</div>
+                                <div class="invalid-feedback">This field is required</div>
                             </div>
                         </div>
                     </div>
@@ -1432,20 +1444,20 @@
                         <div class="btn-group" id="form-input-hasFoodAllergy" style=" border: 0px !important;"
                             role="group">
 
-                            <input type="radio" class="btn-check" name="food-allergy-condition-radio"
+                            <input type="radio" class="btn-check yesno-radio" name="food-allergy-condition-radio"
                                 id="hasFoodAllergy-no" value="0" required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasFoodAllergy-no">
                                 <i class="material-icons">close</i> No
                             </label>
 
-                            <input type="radio" class="btn-check" name="food-allergy-condition-radio"
+                            <input type="radio" class="btn-check yesno-radio" name="food-allergy-condition-radio"
                                 id="hasFoodAllergy-yes" value="1" required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasFoodAllergy-yes">
                                 <i class="material-icons">check</i> Yes
                             </label>
 
                         </div>
-                        <div class="invalid-feedback">This field is required.</div>
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- ALLERGY TO FOOD ITEM(S) / INGREDIENT(S) - OPTIONAL -->
@@ -1527,7 +1539,7 @@
                                 </div>
 
                             </div>
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
 
                         <!-- DETAILS OF THE FOOD APPLICANT IS ALLERGIC TO -->
@@ -1537,7 +1549,7 @@
                                 ingredient that the Applicant is allergic to:</label>
                             <div class="form-text help-text">e.g. peanut causes swelling of the airway</div>
                             <input type="text" class="form-control" id="form-input-food-details">
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
 
                         <!-- EXPOSURE TO TRACES OF ALLERGEN -->
@@ -1551,7 +1563,8 @@
                                 other food items that contain peanuts. If you are unsure about the severity of your
                                 child’s food allergy, you may seek advice from a doctor.</div>
 
-                            <div class="" id="form-input-food-traces" style="border: 0px !important;">
+                            <div class="required-field radio-field" id="form-input-food-traces"
+                                style="border: 0px !important;">
 
                                 <div class="form-check radio-check checkbox-overflow">
                                     <input class="radio-custom-dots" type="radio" name="traces-radio" id="traces-can"
@@ -1573,7 +1586,7 @@
                                 </div>
 
                             </div>
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
 
                         <!-- HAVE MEDICATION TO RELIEVE FOOD ALLERGIC REACTION -->
@@ -1584,20 +1597,20 @@
                             <div class="btn-group" id="form-input-hasFoodAllergyMedication"
                                 style=" border: 0px !important;" role="group">
 
-                                <input type="radio" class="btn-check" name="food-medication-condition-radio"
+                                <input type="radio" class="btn-check yesno-radio" name="food-medication-condition-radio"
                                     id="hasFoodAllergyMedication-no" value="0" required>
                                 <label class="radio-btns btn btn-outline-secondary" for="hasFoodAllergyMedication-no">
                                     <i class="material-icons">close</i> No
                                 </label>
 
-                                <input type="radio" class="btn-check" name="food-medication-condition-radio"
+                                <input type="radio" class="btn-check yesno-radio" name="food-medication-condition-radio"
                                     id="hasFoodAllergyMedication-yes" value="1" required>
                                 <label class="radio-btns btn btn-outline-secondary" for="hasFoodAllergyMedication-yes">
                                     <i class="material-icons">check</i> Yes
                                 </label>
 
                             </div>
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
 
                         <!-- HAVE MEDICATION TO RELIEVE FOOD ALLERGIC REACTION - SUB OPTIONAL -->
@@ -1608,7 +1621,7 @@
                                 <label for="form-input-food-allergy-medication" class="form-label">State medication and
                                     dosage</label>
                                 <input type="text" class="form-control" id="form-input-food-allergy-medication">
-                                <div class="invalid-feedback">This field is required.</div>
+                                <div class="invalid-feedback">This field is required</div>
                             </div>
                         </div>
                     </div>
@@ -1634,7 +1647,7 @@
                                     there could be factors beyond OBS' control that may increase the timing.)</label>
                             </div>
 
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
                     </div>
 
@@ -1649,20 +1662,20 @@
                         <div class="btn-group" id="form-input-hasOtherConditions" style=" border: 0px !important;"
                             role="group">
 
-                            <input type="radio" class="btn-check" name="other-condition-radio"
+                            <input type="radio" class="btn-check yesno-radio" name="other-condition-radio"
                                 id="hasOtherConditions-no" value="0" required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasOtherConditions-no">
                                 <i class="material-icons">close</i> No
                             </label>
 
-                            <input type="radio" class="btn-check" name="other-condition-radio"
+                            <input type="radio" class="btn-check yesno-radio" name="other-condition-radio"
                                 id="hasOtherConditions-yes" value="1" required>
                             <label class="radio-btns btn btn-outline-secondary" for="hasOtherConditions-yes">
                                 <i class="material-icons">check</i> Yes
                             </label>
 
                         </div>
-                        <div class="invalid-feedback">This field is required.</div>
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- OTHER KIND OF CONDITION(S) OR ISSUE(S) - OPTIONAL -->
@@ -1675,7 +1688,7 @@
                                 condition</label>
                             <div class="form-text help-text">State in full sentence/word, avoid acronyms</div>
                             <input type="text" class="form-control" id="form-input-other-details">
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
 
                         <!-- WHEN THE OTHER CONDITION(S) OR ISSUE(S) WERE DIAGNOSED -->
@@ -1685,7 +1698,7 @@
                             <div class="form-text help-text">If you are not sure of the exact date, please select the
                                 first day of the month which it occurred</div>
                             <input type="date" class="form-control" id="form-input-diagnosed-date">
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
 
                         <!-- AFFECT PHYSICAL ACTIVITIES -->
@@ -1694,7 +1707,7 @@
                                 condition affects the Applicant's ability to engage in physical activities in the
                                 outdoors or interact with others in an unfamiliar social setting:</label>
                             <input type="text" class="form-control" id="form-input-physical-engagement">
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
 
                         <!-- CONDITION TRIGGER -->
@@ -1702,7 +1715,7 @@
                             <label for="form-input-condition-trigger" class="form-label">State factors that may
                                 trigger the Applicant's condition:</label>
                             <input type="text" class="form-control" id="form-input-condition-trigger">
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
 
                         <!-- PRECAUTIONARY MEASURES  -->
@@ -1710,7 +1723,7 @@
                             <label for="form-input-precautionary-measures" class="form-label">State precautionary
                                 measures that should be taken to prevent triggering the Applicant's condition:</label>
                             <input type="text" class="form-control" id="form-input-precautionary-measures">
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
 
                         <!-- MEDICAL EQUIPMENT -->
@@ -1721,7 +1734,7 @@
                             </span>
                             <div class="form-text help-text">State the name and dosage / usage:</div>
                             <input type="text" class="form-control" id="form-input-medical-equipment">
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
 
                         <!-- OTHER KIND OF CONDITION(S) OR ISSUE(S) FOLLOW UP -->
@@ -1732,20 +1745,20 @@
                             <div class="btn-group" id="form-input-other-followup" style=" border: 0px !important;"
                                 role="group">
 
-                                <input type="radio" class="btn-check" name="other-followup-radio" id="other-followup-no"
-                                    value="0" required>
+                                <input type="radio" class="btn-check yesno-radio" name="other-followup-radio"
+                                    id="other-followup-no" value="0" required>
                                 <label class="radio-btns btn btn-outline-secondary" for="other-followup-no">
                                     <i class="material-icons">close</i> No
                                 </label>
 
-                                <input type="radio" class="btn-check" name="other-followup-radio"
+                                <input type="radio" class="btn-check yesno-radio" name="other-followup-radio"
                                     id="other-followup-yes" value="1" required>
                                 <label class="radio-btns btn btn-outline-secondary" for="other-followup-yes">
                                     <i class="material-icons">check</i> Yes
                                 </label>
 
                             </div>
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
                         <div class="insert-note-template"></div>
 
@@ -1756,20 +1769,20 @@
                             <div class="btn-group" id="form-input-affect-focus" style=" border: 0px !important;"
                                 role="group">
 
-                                <input type="radio" class="btn-check" name="affect-focus-radio" id="affect-focus-no"
-                                    value="0" required>
+                                <input type="radio" class="btn-check yesno-radio" name="affect-focus-radio"
+                                    id="affect-focus-no" value="0" required>
                                 <label class="radio-btns btn btn-outline-secondary" for="affect-focus-no">
                                     <i class="material-icons">close</i> No
                                 </label>
 
-                                <input type="radio" class="btn-check" name="affect-focus-radio" id="affect-focus-yes"
-                                    value="1" required>
+                                <input type="radio" class="btn-check yesno-radio" name="affect-focus-radio"
+                                    id="affect-focus-yes" value="1" required>
                                 <label class="radio-btns btn btn-outline-secondary" for="affect-focus-yes">
                                     <i class="material-icons">check</i> Yes
                                 </label>
 
                             </div>
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
 
                         <!-- AFFECT UNDERSTANDABILITY ABILITY -->
@@ -1779,20 +1792,20 @@
                             <div class="btn-group" id="form-input-affect-understand" style=" border: 0px !important;"
                                 role="group">
 
-                                <input type="radio" class="btn-check" name="affect-understand-radio"
+                                <input type="radio" class="btn-check yesno-radio" name="affect-understand-radio"
                                     id="affect-understand-no" value="0" required>
                                 <label class="radio-btns btn btn-outline-secondary" for="affect-understand-no">
                                     <i class="material-icons">close</i> No
                                 </label>
 
-                                <input type="radio" class="btn-check" name="affect-understand-radio"
+                                <input type="radio" class="btn-check yesno-radio" name="affect-understand-radio"
                                     id="affect-understand-yes" value="1" required>
                                 <label class="radio-btns btn btn-outline-secondary" for="affect-understand-yes">
                                     <i class="material-icons">check</i> Yes
                                 </label>
 
                             </div>
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback">This field is required</div>
                         </div>
 
                         <!-- FOCUS AND UNDERSTANDABILITY - SUB OPTIONAL -->
@@ -1804,7 +1817,7 @@
                                     will allow OBS to help the Applicant to focus and/or understand and execute safety
                                     instructions.</label>
                                 <input type="text" class="form-control" id="form-input-focus-understand">
-                                <div class="invalid-feedback">This field is required.</div>
+                                <div class="invalid-feedback">This field is required</div>
                             </div>
                         </div>
                     </div>
@@ -1856,7 +1869,7 @@
                                 for="form-input-information-declaration">I acknowledge and agree to the above</label>
                         </div>
 
-                        <div class="invalid-feedback">This field is required.</div>
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- MEDICAL DECLARATION -->
@@ -1880,7 +1893,7 @@
                                 personnel to provide the Applicant with appropriate treatment.</label>
                         </div>
 
-                        <div class="invalid-feedback">This field is required.</div>
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- ACKNOWLEDGEMENT OF RISK -->
@@ -1934,7 +1947,7 @@
                                 participation as stated above.</label>
                         </div>
 
-                        <div class="invalid-feedback">This field is required.</div>
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- CONSENT FOR COLLECTION -->
@@ -1971,7 +1984,7 @@
                                 above</label>
                         </div>
 
-                        <div class="invalid-feedback">This field is required.</div>
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- SEND UPCOMING EVENTS DECLARATION -->
@@ -1993,7 +2006,7 @@
                                 provided in this registration form being used for NYC publicity</label>
                         </div>
 
-                        <div class="invalid-feedback">This field is required.</div>
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- PHOTO / VIDEO PUBLICITY DECLARATION -->
@@ -2014,7 +2027,7 @@
                                 publicity materials.</label>
                         </div>
 
-                        <div class="invalid-feedback">This field is required.</div>
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
                 </div>
 

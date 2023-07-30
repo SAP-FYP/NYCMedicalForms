@@ -1,7 +1,6 @@
 window.addEventListener('DOMContentLoaded', () => {
     const schoolInput = document.getElementById('form-input-applicant-school');
     const raceInput = document.getElementById('form-input-applicant-race');
-
     // === FETCHES ===
 
     const fetchSchools = fetch('/getSchools')
@@ -86,16 +85,282 @@ window.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
+
+    // PARENT VALIDATIONS
+    const validateParentSection = () => {
+        let sectionIsValid = true;
+
+        let parentSectionInputs = {
+            parentName: "form-input-name",
+            parentEmail: "form-input-email",
+            parentNumber: "form-input-contact",
+            parentAltNumber: "form-input-alt-contact", // OPTIONAL
+            parentRelation: "form-input-relation",
+            parentIsEmergencyContact: "form-input-isEmergencyContact",
+            emergencyName: "form-input-emergency-name", // *OPTIONAL
+            emergencyNumber: "form-input-emergency-contact", // *OPTIONAL
+            emergencyRelation: "form-input-emergency-relation", // *OPTIONAL
+            emergencyAltNumber: "form-input-emergency-alt-contact" // OPTIONAL
+        }
+
+        let optionalFields = ["parentAltNumber", "emergencyAltNumber"]
+        let parentSectionValues = {};
+
+        // SET VALUES
+        for (const input in parentSectionInputs) {
+            const inputEl = document.getElementById(parentSectionInputs[input]);
+            inputEl.classList.remove("is-invalid");
+
+            // RADIO INPUT
+            if (input == "parentIsEmergencyContact") {
+                const radioButtons = document.querySelectorAll('input[name="emergency-radio"]');
+                for (const radioButton of radioButtons) {
+                    if (radioButton.checked) {
+                        parentSectionValues[input] = radioButton.value;
+                        break;
+                    }
+                }
+            } else {
+                parentSectionValues[input] = inputEl.value;
+            }
+        }
+
+        // FILTER OPTIONAL FIELDS
+        if (parentSectionValues.parentIsEmergencyContact != 0) {
+            optionalFields.push("emergencyName", "emergencyNumber", "emergencyRelation")
+        }
+
+        // VALIDATE FIELDS
+        for (const input in parentSectionInputs) {
+            const value = parentSectionValues[input]
+            const inputEl = document.getElementById(parentSectionInputs[input]);
+            if (!value && !optionalFields.includes(input)) {
+                inputEl.classList.add("is-invalid");
+                sectionIsValid = false;
+            }
+        }
+
+        return sectionIsValid;
+    }
+
+    // APPLICANT'S PERSONAL INFORMATION VALIDATIONS
+    const validateApplicantSection = () => {
+        let sectionIsValid = true;
+
+        let applicantSectionInputs = {
+            applicantId: "form-input-applicant-id",
+            applicantName: "form-input-applicant-name",
+            applicantSchool: "form-input-applicant-school",
+            applicantClass: "form-input-applicant-class",
+            applicantResidential: "form-input-applicant-residential",
+            applicantDob: "form-input-applicant-dob",
+            applicantRace: "form-input-applicant-race",
+            applicantGender: "form-input-applicant-gender",
+            applicantEmail: "form-input-applicant-email",
+            applicantAddress: "form-input-applicant-address",
+            applicantDiet: "form-input-applicant-diet",
+
+        }
+
+        let optionalFields = ["applicantDiet"]
+        let applicantSectionValues = {};
+
+        // SET VALUES
+        for (const input in applicantSectionInputs) {
+            const inputEl = document.getElementById(applicantSectionInputs[input]);
+            inputEl.classList.remove("is-invalid");
+
+            if (input == "applicantResidential") {
+                const residentialRadioButtons = document.querySelectorAll('input[name="residential-radio"]');
+                for (const radioButton of residentialRadioButtons) {
+                    if (radioButton.checked) {
+                        applicantSectionValues[input] = radioButton.value;
+                        break;
+                    }
+                }
+            } else if (input == "applicantGender") {
+                const genderRadioButtons = document.querySelectorAll('input[name="gender-radio"]');
+                for (const radioButton of genderRadioButtons) {
+                    if (radioButton.checked) {
+                        applicantSectionValues[input] = radioButton.value;
+                        break;
+                    }
+                }
+            } else if (input == "applicantDiet") {
+                const dietCheckboxes = document.querySelectorAll('#form-input-applicant-diet input[type="checkbox"]');
+                let dietArr = [];
+                for (const checkbox of dietCheckboxes) {
+                    if (checkbox.checked) {
+                        dietArr.push(checkbox.value);
+                    }
+                }
+                applicantSectionValues[input] = dietArr;
+            } else {
+                applicantSectionValues[input] = inputEl.value;
+            }
+        }
+
+        // VALIDATE FIELDS
+        for (const input in applicantSectionInputs) {
+            const value = applicantSectionValues[input]
+            const inputEl = document.getElementById(applicantSectionInputs[input]);
+            if (!value && !optionalFields.includes(input)) {
+                inputEl.classList.add("is-invalid");
+                sectionIsValid = false;
+            }
+        }
+
+        return sectionIsValid;
+    }
+
+    // INPUT VALIDATIONS
+    const validateEmail = (target) => {
+        if (!target.value && target.classList.contains("required-field") || !validator.isEmail(target.value)) {
+            target.classList.add("is-invalid");
+        } else {
+            target.classList.remove("is-invalid");
+        }
+    }
+
+    const validateContact = (target) => {
+        let numberRegex = /^[986]\d{7}$/
+        let value = target.value.replace(/\s/g, '');
+        if (!value && target.classList.contains("required-field") ||
+            (!numberRegex.test(value) && target.classList.contains("required-field"))) {
+            target.classList.add("is-invalid");
+        } else {
+            target.classList.remove("is-invalid");
+        }
+
+        const inputValue = target.value;
+        const digitsOnly = inputValue.replace(/\D/g, '');
+        const formattedValue = digitsOnly.replace(/(\d{4})(?=\d)/g, '$1 ');
+        target.value = formattedValue;
+    }
+
+    const validateInputTextNumbers = (target) => {
+        if (!target.value && target.classList.contains("required-field")) {
+            target.classList.add("is-invalid");
+        } else {
+            target.classList.remove("is-invalid");
+        }
+    }
+
+    const validateRadio = (target) => {
+        if (target.classList.contains("yesno-radio")) {
+            if (!target.value) {
+                target.closest('.btn-group').classList.add("is-invalid");
+            } else {
+                target.closest('.btn-group').classList.remove("is-invalid");
+            }
+
+        } else if (!target.value) {
+            target.closest('.radio-field').classList.add("is-invalid");
+        } else {
+            target.closest('.radio-field').classList.remove("is-invalid");;
+        }
+
+
+    }
+
+    const validateDate = (target) => {
+        if (!target.value && target.classList.contains("required-field")) {
+            target.classList.add("is-invalid");
+        } else {
+            target.classList.remove("is-invalid");
+        }
+    }
+
+    const validateInputSelect = (target) => {
+        if (!target.value && target.classList.contains("required-field")) {
+            target.classList.add("is-invalid");
+        } else {
+            target.classList.remove("is-invalid");
+        }
+    }
+
+    // === EVENT HANDLERS ===
+
+    document.getElementById('submit-button').onclick = (e) => {
+        e.preventDefault();
+        console.log(validateParentSection());
+        console.log(validateApplicantSection());
+    }
+
+    document.querySelectorAll('input[type=text]').forEach(element => {
+        if (element.id.includes('email')) {
+            element.addEventListener('input', (e) => {
+                validateEmail(e.target)
+            })
+        } else if (element.id.includes('contact')) {
+            element.addEventListener('input', (e) => {
+                validateContact(e.target)
+            })
+        } else {
+            element.addEventListener('input', (e) => {
+                validateInputTextNumbers(e.target)
+            })
+        }
+
+    });
+
+    document.querySelectorAll('input[type=number]').forEach(element => {
+        element.addEventListener('input', (e) => {
+            validateInputTextNumbers(e.target)
+        })
+    });
+
+    document.querySelectorAll('input[type=radio]').forEach(element => {
+        element.addEventListener('change', (e) => {
+            validateRadio(e.target)
+        })
+    });
+
+    document.querySelectorAll('input[type=date]').forEach(element => {
+        element.addEventListener('input', (e) => {
+            validateDate(e.target)
+        })
+    });
+
+    document.querySelectorAll('select').forEach(element => {
+        element.addEventListener('change', (e) => {
+            validateInputSelect(e.target)
+        })
+    });
+
+    handleParallax = () => {
+        const titleRow = document.querySelector(".title-row");
+        const scrollValue = window.scrollY;
+
+        titleRow.style.backgroundPositionY = -scrollValue * 0.4 + "px";
+    }
+
+    window.addEventListener("scroll", handleParallax);
+
+
     // === OPTIONAL DIV HANDLERS ===
 
     // EMERGENCY CONTACT
     document.querySelectorAll('input[name="emergency-radio"]').forEach(button => {
+        const subFields = ["form-input-emergency-name", "form-input-emergency-contact", "form-input-emergency-relation"]
         button.addEventListener("change", (e) => {
+
             const targetElement = document.getElementById('emergency-contact-div');
+
             if (e.target.value == "1") {
                 targetElement.classList.add('optional-div');
+
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove('required-field')
+                });
+
             } else if (e.target.value == "0") {
                 targetElement.classList.remove('optional-div');
+
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove("is-invalid");
+                    document.getElementById(element).classList.add('required-field')
+                });
             }
         })
     });
@@ -559,15 +824,4 @@ window.addEventListener('DOMContentLoaded', () => {
             }
         })
     });
-    // === EVENT HANDLERS ===
-
-    handleParallax = () => {
-        const titleRow = document.querySelector(".title-row");
-        const scrollValue = window.scrollY;
-
-        titleRow.style.backgroundPositionY = -scrollValue * 0.4 + "px";
-    }
-
-    window.addEventListener("scroll", handleParallax);
-
 })

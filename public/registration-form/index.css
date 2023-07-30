@@ -188,7 +188,7 @@ body {
     margin-bottom: -10px !important;
 }
 
-/* FORM COTNROLS AND LABELS */
+/* FORM CONTROLS AND LABELS */
 .is-invalid {
     border: #f50505 1.6px solid !important;
     margin-bottom: 10px !important;
@@ -226,7 +226,7 @@ body {
     font-size: 1rem;
     height: 2.75rem;
     box-shadow: none !important;
-    border: #c3c6c9 1px solid !important;
+    border: #c3c6c9 1px solid;
     margin-bottom: 0px;
 }
 
