@@ -78,7 +78,8 @@ module.exports.getSubmissionByStatus = function getSubmissionByStatus(formStatus
   const sql = `SELECT F.formId, S.studentId, S.studentNRIC, S.nameOfStudent, S.class, S.school, F.eligibility, F.courseDate, F.formStatus, F.comments, F.review
   FROM form F
   INNER JOIN student S ON F.studentId = S.studentId
-    WHERE F.formStatus = ?`;
+  INNER JOIN doctor D ON F.doctorMCR = D.doctorMCR
+  WHERE F.formStatus = ?`;
   return query(sql, [formStatus])
     .then((result) => {
       return result;
