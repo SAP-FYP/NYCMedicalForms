@@ -21,6 +21,9 @@
 </head>
 
 <body>
+    <button id="button2" style="position: fixed; z-index: 100; height: 400px; width: 200px; right: 0; top: 30%;">
+        submit
+    </button>
 
     <div class="container-fluid m-0">
 
@@ -424,7 +427,7 @@
                         </ol>
                     </div>
 
-                    <!-- TETANUS SUB SECTION -->
+                    <!-- ABOUT TETANUS -->
                     <h3 class="sub-section-title">About Tetanus</h3>
                     <div class="text-container">
                         Applicants are at significantly higher risk of tetanus infection if they have never been
@@ -445,7 +448,8 @@
                                 href="https://www.nir.hpb.gov.sg/">https://www.nir.hpb.gov.sg/</a><br>
                             (immunisation records are only available for children born in or after 1996).</div>
 
-                        <div class="btn-group" id="form-input-hasTetanus" style=" border: 0px !important;" role="group">
+                        <div class="btn-group tetanusStatus" id="form-input-hasTetanus" style=" border: 0px !important;"
+                            role="group">
 
                             <input type="radio" class="btn-check yesno-radio" name="tetanus-radio" id="hasTetanus-no"
                                 value="0" required>
@@ -492,7 +496,8 @@
                                 class="label-indexes">19.
                             </span>Height of the Applicant</label>
                         <div class="form-text help-text">Provide information in metres (m)</div>
-                        <input type="number" class="form-control" id="form-input-applicant-height" min="0">
+                        <input type="number" class="form-control required-field" id="form-input-applicant-height"
+                            min="0">
                         <div class="invalid-feedback">This field is required</div>
                     </div>
 
@@ -502,7 +507,8 @@
                                 class="label-indexes">20.
                             </span>Weight of the Applicant</label>
                         <div class="form-text help-text">Provide information in kilograms (kg)</div>
-                        <input type="number" class="form-control" id="form-input-applicant-weight" min="0">
+                        <input type="number" class="form-control required-field" id="form-input-applicant-weight"
+                            min="0">
                         <div class="invalid-feedback">This field is required</div>
                     </div>
 
@@ -513,7 +519,7 @@
                             </span>Body Mass Index (BMI)</label>
                         <div class="form-text help-text">Calculating Body Mass Index (BMI) = weight (kg) / (height x
                             height) (m)</div>
-                        <input type="number" class="form-control" id="form-input-applicant-bmi" min="0">
+                        <input type="number" class="form-control required-field" id="form-input-applicant-bmi" min="0">
                         <div class="invalid-feedback">This field is required</div>
                     </div>
 
@@ -531,8 +537,8 @@
                             </span>Breathing condition</label>
                         <div class="form-text help-text">e.g. asthma / exercise induced asthma</div>
 
-                        <div class="btn-group" id="form-input-hasBreathingCondi" style=" border: 0px !important;"
-                            role="group">
+                        <div class="btn-group breathingStatus" id="form-input-hasBreathingCondi"
+                            style=" border: 0px !important;" role="group">
 
                             <input type="radio" class="btn-check yesno-radio" name="breathing-condition-radio"
                                 id="hasBreathingCondi-no" value="0" required>
@@ -581,8 +587,8 @@
                         <div class="form-text help-text">e.g. angina / heart murmur / extra heartbeat / mitral valve
                             prolapse</div>
 
-                        <div class="btn-group" id="form-input-hasHeartCondi" style=" border: 0px !important;"
-                            role="group">
+                        <div class="btn-group heartStatus" id="form-input-hasHeartCondi"
+                            style=" border: 0px !important;" role="group">
 
                             <input type="radio" class="btn-check yesno-radio" name="heart-condition-radio"
                                 id="hasHeartCondi-no" value="0" required>
@@ -620,8 +626,8 @@
                             </span>Blood condition</label>
                         <div class="form-text help-text">e.g. thalassaemia major / thalassaemia minor / anaemia</div>
 
-                        <div class="btn-group" id="form-input-hasBloodCondi" style=" border: 0px !important;"
-                            role="group">
+                        <div class="btn-group bloodStatus" id="form-input-hasBloodCondi"
+                            style=" border: 0px !important;" role="group">
 
                             <input type="radio" class="btn-check yesno-radio" name="blood-condition-radio"
                                 id="hasBloodCondi-no" value="0" required>
@@ -652,28 +658,28 @@
 
                                 <div class="form-check radio-check">
                                     <input class="radio-custom-dots" type="radio" name="blood-radio" id="blood-anaemia"
-                                        value="0" required>
+                                        value="Anaemia" required>
                                     <label class="form-check-label radio-custom-label"
                                         for="blood-anaemia">Anaemia</label>
                                 </div>
 
                                 <div class="form-check radio-check">
                                     <input class="radio-custom-dots" type="radio" name="blood-radio" id="blood-Tminor"
-                                        value="1" required>
+                                        value="Thalassaemia minor" required>
                                     <label class="form-check-label radio-custom-label" for="blood-Tminor">Thalassaemia
                                         minor</label>
                                 </div>
 
                                 <div class="form-check radio-check">
                                     <input class="radio-custom-dots" type="radio" name="blood-radio" id="blood-Tmajor"
-                                        value="2" required>
+                                        value="Thalassaemia major" required>
                                     <label class="form-check-label radio-custom-label" for="blood-Tmajor">Thalassaemia
                                         major</label>
                                 </div>
 
                                 <div class="form-check radio-check radio-others">
                                     <input class="radio-custom-dots" type="radio" name="blood-radio" id="blood-other"
-                                        value="3" required>
+                                        value="Others" required>
 
                                     <div class="radio-others-container">
                                         <label class="form-check-label radio-custom-label radio-other-label"
@@ -698,8 +704,8 @@
                                 <label for="form-input-blood-followup" class="form-label">Is the
                                     Applicant on follow-up with a specialist for the blood condition?</label>
 
-                                <div class="btn-group" id="form-input-blood-followup" style=" border: 0px !important;"
-                                    role="group">
+                                <div class="btn-group bloodFollowup" id="form-input-blood-followup"
+                                    style=" border: 0px !important;" role="group">
 
                                     <input type="radio" class="btn-check yesno-radio" name="blood-followup-radio"
                                         id="blood-followup-no" value="0" required>
@@ -725,8 +731,8 @@
                         <label for="form-input-hasEpilepsyCondi" class="form-label"><span class="label-indexes">25.
                             </span>Epilepsy, fits or seizure condition</label>
 
-                        <div class="btn-group" id="form-input-hasEpilepsyCondi" style=" border: 0px !important;"
-                            role="group">
+                        <div class="btn-group epilepsyStatus" id="form-input-hasEpilepsyCondi"
+                            style=" border: 0px !important;" role="group">
 
                             <input type="radio" class="btn-check yesno-radio" name="epilepsy-condition-radio"
                                 id="hasEpilepsyCondi-no" value="0" required>
@@ -752,8 +758,8 @@
                             <label for="form-input-epilepsy-past-months" class="form-label">Was there any episode in the
                                 last 24 months?</label>
 
-                            <div class="btn-group" id="form-input-epilepsy-past-months" style=" border: 0px !important;"
-                                role="group">
+                            <div class="btn-group epilepsyEpisode" id="form-input-epilepsy-past-months"
+                                style=" border: 0px !important;" role="group">
 
                                 <input type="radio" class="btn-check yesno-radio" name="epilepsy-past-months-radio"
                                     id="epilepsyPastMonths-no" value="0" required>
@@ -776,8 +782,8 @@
                             <label for="form-input-epilepsy-medication" class="form-label">Has the Applicant been on
                                 medication for the epilepsy, fits or seizure condition in the last 24 months?</label>
 
-                            <div class="btn-group" id="form-input-epilepsy-medication" style=" border: 0px !important;"
-                                role="group">
+                            <div class="btn-group epilepsyMedication" id="form-input-epilepsy-medication"
+                                style=" border: 0px !important;" role="group">
 
                                 <input type="radio" class="btn-check yesno-radio" name="epilepsy-medication-radio"
                                     id="epilepsyMedication-no" value="0" required>
@@ -804,7 +810,7 @@
                                     follow-up
                                     with a specialist for the epilepsy, fits or seizure condition?</label>
 
-                                <div class="btn-group" id="form-input-epilepsy-followup"
+                                <div class="btn-group epilepsyFollowup" id="form-input-epilepsy-followup"
                                     style=" border: 0px !important;" role="group">
 
                                     <input type="radio" class="btn-check yesno-radio" name="epilepsy-followup-radio"
@@ -834,7 +840,7 @@
                             </span>Bone / joint / tendon injury or condition</label>
                         <div class="form-text help-text">e.g. dislocation / fracture / slip disc</div>
 
-                        <div class="btn-group" id="form-input-hasBoneCondi" style=" border: 0px !important;"
+                        <div class="btn-group boneStatus" id="form-input-hasBoneCondi" style=" border: 0px !important;"
                             role="group">
 
                             <input type="radio" class="btn-check yesno-radio" name="bone-condition-radio"
@@ -881,8 +887,8 @@
                             <label for="form-input-bone-followup" class="form-label">Is the Applicant on follow-up with
                                 a specialist for the bone/joint/tendon injury or condition?</label>
 
-                            <div class="btn-group" id="form-input-bone-followup" style=" border: 0px !important;"
-                                role="group">
+                            <div class="btn-group boneFollowup" id="form-input-bone-followup"
+                                style=" border: 0px !important;" role="group">
 
                                 <input type="radio" class="btn-check yesno-radio" name="bone-followup-radio"
                                     id="bone-followup-no" value="0" required>
@@ -910,8 +916,8 @@
                         <div class="form-text help-text">e.g. ADHD / ADD / ASD / OCD / eating disorders / anxiety /
                             depression</div>
 
-                        <div class="btn-group" id="form-input-hasBehaviouralCondi" style=" border: 0px !important;"
-                            role="group">
+                        <div class="btn-group behaviouralStatus" id="form-input-hasBehaviouralCondi"
+                            style=" border: 0px !important;" role="group">
 
                             <input type="radio" class="btn-check yesno-radio" name="behavioural-condition-radio"
                                 id="hasBehaviouralCondi-no" value="0" required>
@@ -946,8 +952,8 @@
                                 with a
                                 specialist for the diagnosed behavioural or psychological condition?</label>
 
-                            <div class="btn-group" id="form-input-behavioural-followup" style=" border: 0px !important;"
-                                role="group">
+                            <div class="btn-group behaviouralFollowup" id="form-input-behavioural-followup"
+                                style=" border: 0px !important;" role="group">
 
                                 <input type="radio" class="btn-check yesno-radio" name="behavioural-followup-radio"
                                     id="behavioural-followup-no" value="0" required>
@@ -1054,12 +1060,12 @@
                                 </ol>
                             </div>
 
-                            <div class="" id="form-input-behavioural-risk-acknowledgement"
-                                style="border: 0px !important;">
+                            <div class="checkbox-field riskAcknowledgement"
+                                id="form-input-behavioural-risk-acknowledgement" style="border: 0px !important;">
 
                                 <div class="form-check checkbox-check checkbox-overflow">
                                     <input class="checkbox-custom" type="checkbox" name="risk-acknowledgement-checkbox"
-                                        id="behavioural-risk-acknowledgement" value="0" required>
+                                        id="behavioural-risk-acknowledgement" value="1" required>
                                     <label class="form-check-label checkbox-custom-label checkbox-overflow-label"
                                         for="behavioural-risk-acknowledgement">I
                                         understand and accept the above and that safety procedures are in place to
@@ -1088,13 +1094,13 @@
                                 </ol>
                             </div>
 
-                            <div class="" id="form-input-behavioural-risk-acknowledgement"
-                                style="border: 0px !important;">
+                            <div class="checkbox-field participationAcknowledgement"
+                                id="form-input-participation-risk-acknowledgement" style="border: 0px !important;">
 
                                 <div class="form-check checkbox-check checkbox-overflow">
                                     <input class="checkbox-custom" type="checkbox"
                                         name="participation-risk-acknowledgement-checkbox"
-                                        id="participation-risk-acknowledgement" value="0" required>
+                                        id="participation-risk-acknowledgement" value="1" required>
                                     <label class="form-check-label checkbox-custom-label checkbox-overflow-label"
                                         for="participation-risk-acknowledgement">I acknowledge the above, and agree to,
                                         the Applicant's participation in the Course.</label>
@@ -1110,8 +1116,8 @@
                         <label for="form-input-hasMedication" class="form-label"><span class="label-indexes">28.
                             </span>Currently on long term prescribed medication</label>
 
-                        <div class="btn-group" id="form-input-hasMedication" style=" border: 0px !important;"
-                            role="group">
+                        <div class="btn-group longMedicationStatus" id="form-input-hasMedication"
+                            style=" border: 0px !important;" role="group">
 
                             <input type="radio" class="btn-check yesno-radio" name="medication-condition-radio"
                                 id="hasMedication-no" value="0" required>
@@ -1134,7 +1140,7 @@
 
                         <!-- MEDICATION AND DOSAGE -->
                         <div class="mb-3">
-                            <label for="form-input-bone-condition" class="form-label">State the medication and
+                            <label for="form-input-medication" class="form-label">State the medication and
                                 dosage</label>
                             <input type="text" class="form-control" id="form-input-medication">
                             <div class="invalid-feedback">This field is required</div>
@@ -1158,7 +1164,8 @@
                         <label for="form-input-hasDisease" class="form-label"><span class="label-indexes">29.
                             </span>A carrier status for any infectious disease</label>
 
-                        <div class="btn-group" id="form-input-hasDisease" style=" border: 0px !important;" role="group">
+                        <div class="btn-group diseaseStatus" id="form-input-hasDisease" style=" border: 0px !important;"
+                            role="group">
 
                             <input type="radio" class="btn-check yesno-radio" name="disease-condition-radio"
                                 id="hasDisease-no" value="0" required>
@@ -1179,7 +1186,7 @@
                     <!-- CARRIER STATUS FOR ANY INFECTIOUS DISEASE - OPTIONAL -->
                     <div class="optional-div" id="disease-condition-div">
 
-                        <!-- MEDICATION AND DOSAGE -->
+                        <!-- CARRIER STATUS FOR ANY INFECTIOUS DISEASE CONDITION -->
                         <div class="mb-3">
                             <label for="form-input-disease" class="form-label help-text-parent">State the
                                 condition</label>
@@ -1199,8 +1206,8 @@
                             Arrangements must be made for the Applicant to be picked up daily and to return to the
                             Course the next morning. The Teacher Coordinator will be in contact to discuss these
                             arrangements.</div>
-                        <div class="btn-group" id="form-input-hasSleepWalk" style=" border: 0px !important;"
-                            role="group">
+                        <div class="btn-group sleepwalkStatus" id="form-input-hasSleepWalk"
+                            style=" border: 0px !important;" role="group">
 
                             <input type="radio" class="btn-check yesno-radio" name="sleepwalk-condition-radio"
                                 id="hasSleepWalk-no" value="0" required>
@@ -1237,8 +1244,8 @@
                         <label for="form-input-hasMedicationAllergy" class="form-label"><span class="label-indexes">31.
                             </span>Allergy or adverse reactions to medication(s) (including over-the-counter
                             oral/topical medication)</label>
-                        <div class="btn-group" id="form-input-hasMedicationAllergy" style=" border: 0px !important;"
-                            role="group">
+                        <div class="btn-group medicationAllergyStatus" id="form-input-hasMedicationAllergy"
+                            style=" border: 0px !important;" role="group">
 
                             <input type="radio" class="btn-check yesno-radio" name="medication-allergy-condition-radio"
                                 id="hasMedicationAllergy-no" value="0" required>
@@ -1304,8 +1311,8 @@
                         <label for="form-input-hasEnvironmentalAllergy" class="form-label"><span
                                 class="label-indexes">32.
                             </span>Allergy to environmental factor(s)</label>
-                        <div class="btn-group" id="form-input-hasEnvironmentalAllergy" style=" border: 0px !important;"
-                            role="group">
+                        <div class="btn-group enviromentAllergyStatus" id="form-input-hasEnvironmentalAllergy"
+                            style=" border: 0px !important;" role="group">
 
                             <input type="radio" class="btn-check yesno-radio"
                                 name="environmental-allergy-condition-radio" id="hasEnvironmentalAllergy-no" value="0"
@@ -1338,25 +1345,26 @@
                                     right to refuse admission for the safety of the Applicant.
                                 </div>
 
-                                <div class="" id="form-input-environmental-allergy" style="border: 0px !important;">
+                                <div class="checkbox-field" id="form-input-environmental-allergy"
+                                    style="border: 0px !important;">
 
                                     <div class="form-check checkbox-check">
                                         <input class="checkbox-custom" type="checkbox" name="heat-checkbox"
-                                            id="environment-heat" value="0" required>
+                                            id="environment-heat" value="Heat" required>
                                         <label class="form-check-label checkbox-custom-label"
                                             for="environment-heat">Heat</label>
                                     </div>
 
                                     <div class="form-check checkbox-check">
                                         <input class="checkbox-custom" type="checkbox" name="sea-checkbox"
-                                            id="environment-sea" value="1" required>
+                                            id="environment-sea" value="Sea-water" required>
                                         <label class="form-check-label checkbox-custom-label"
                                             for="environment-sea">Sea-water</label>
                                     </div>
 
                                     <div class="form-check checkbox-check">
                                         <input class="checkbox-custom" type="checkbox" name="bee-checkbox"
-                                            id="environment-bee" value="2" required>
+                                            id="environment-bee" value="Bee / Wasp sting" required>
                                         <label class="form-check-label checkbox-custom-label" for="environment-bee">Bee
                                             /
                                             Wasp sting</label>
@@ -1364,14 +1372,14 @@
 
                                     <div class="form-check checkbox-check">
                                         <input class="checkbox-custom" type="checkbox" name="grass-checkbox"
-                                            id="environment-grass" value="3" required>
+                                            id="environment-grass" value="Grass" required>
                                         <label class="form-check-label checkbox-custom-label"
                                             for="environment-grass">Grass</label>
                                     </div>
 
                                     <div class="form-check checkbox-check checkbox-others">
                                         <input class="checkbox-custom" type="checkbox" name="others-checkbox"
-                                            id="environment-others" value="4" required>
+                                            id="environment-others" value="Others" required>
 
                                         <div class="checkbox-others-container">
                                             <label class="form-check-label checkbox-custom-label checkbox-other-label"
@@ -1403,8 +1411,8 @@
                             <label for="form-input-hasAllergyMedication" class="form-label">Does the
                                 Applicant have medication to relieve the allergic reaction?</label>
 
-                            <div class="btn-group" id="form-input-hasAllergyMedication" style=" border: 0px !important;"
-                                role="group">
+                            <div class="btn-group environmentMedicineStatus" id="form-input-hasAllergyMedication"
+                                style=" border: 0px !important;" role="group">
 
                                 <input type="radio" class="btn-check yesno-radio"
                                     name="environmental-medication-condition-radio" id="hasAllergyMedication-no"
@@ -1441,8 +1449,8 @@
                     <div class="mb-3">
                         <label for="form-input-hasFoodAllergy" class="form-label"><span class="label-indexes">33.
                             </span>Allergy to food item(s) / ingredient(s)</label>
-                        <div class="btn-group" id="form-input-hasFoodAllergy" style=" border: 0px !important;"
-                            role="group">
+                        <div class="btn-group foodAllergyStatus" id="form-input-hasFoodAllergy"
+                            style=" border: 0px !important;" role="group">
 
                             <input type="radio" class="btn-check yesno-radio" name="food-allergy-condition-radio"
                                 id="hasFoodAllergy-no" value="0" required>
@@ -1468,65 +1476,65 @@
                             <label for="form-input-food-allergy" class="form-label">Select the food Item(s) /
                                 ingredient(s) that the Applicant is allergic to:</label>
 
-                            <div class="" id="form-input-food-allergy" style="border: 0px !important;">
+                            <div class="checkbox-field" id="form-input-food-allergy" style="border: 0px !important;">
 
                                 <div class="form-check checkbox-check">
                                     <input class="checkbox-custom" type="checkbox" name="seafood-checkbox"
-                                        id="food-seafood" value="0" required>
+                                        id="food-seafood" value="Seafood, excluding fish" required>
                                     <label class="form-check-label checkbox-custom-label" for="food-seafood">Seafood,
                                         excluding fish</label>
                                 </div>
 
                                 <div class="form-check checkbox-check">
                                     <input class="checkbox-custom" type="checkbox" name="fish-checkbox" id="food-fish"
-                                        value="1" required>
+                                        value="Fish" required>
                                     <label class="form-check-label checkbox-custom-label" for="food-fish">Fish</label>
                                 </div>
 
                                 <div class="form-check checkbox-check">
                                     <input class="checkbox-custom" type="checkbox" name="peanuts-checkbox"
-                                        id="food-peanuts" value="2" required>
+                                        id="food-peanuts" value="Peanuts" required>
                                     <label class="form-check-label checkbox-custom-label"
                                         for="food-peanuts">Peanuts</label>
                                 </div>
 
                                 <div class="form-check checkbox-check">
                                     <input class="checkbox-custom" type="checkbox" name="treenuts-checkbox"
-                                        id="food-treenuts" value="3" required>
+                                        id="food-treenuts" value="Tree-nuts" required>
                                     <label class="form-check-label checkbox-custom-label"
                                         for="food-treenuts">Tree-nuts</label>
                                 </div>
 
                                 <div class="form-check checkbox-check">
                                     <input class="checkbox-custom" type="checkbox" name="milk-checkbox"
-                                        id="milk-treenuts" value="4" required>
+                                        id="milk-treenuts" value="Fresh milk" required>
                                     <label class="form-check-label checkbox-custom-label" for="milk-treenuts">Fresh
                                         milk</label>
                                 </div>
 
                                 <div class="form-check checkbox-check">
                                     <input class="checkbox-custom" type="checkbox" name="creamer-checkbox"
-                                        id="creamer-treenuts" value="5" required>
+                                        id="creamer-treenuts" value="Creamer" required>
                                     <label class="form-check-label checkbox-custom-label"
                                         for="creamer-treenuts">Creamer</label>
                                 </div>
 
                                 <div class="form-check checkbox-check">
                                     <input class="checkbox-custom" type="checkbox" name="soy-checkbox" id="soy-treenuts"
-                                        value="6" required>
+                                        value="Soy" required>
                                     <label class="form-check-label checkbox-custom-label" for="soy-treenuts">Soy</label>
                                 </div>
 
                                 <div class="form-check checkbox-check">
                                     <input class="checkbox-custom" type="checkbox" name="wheat-checkbox"
-                                        id="wheat-treenuts" value="7" required>
+                                        id="wheat-treenuts" value="Wheat" required>
                                     <label class="form-check-label checkbox-custom-label"
                                         for="wheat-treenuts">Wheat</label>
                                 </div>
 
                                 <div class="form-check checkbox-check checkbox-others">
                                     <input class="checkbox-custom" type="checkbox" name="others-checkbox"
-                                        id="food-others" value="8" required>
+                                        id="food-others" value="Others" required>
 
                                     <div class="checkbox-others-container">
                                         <label class="form-check-label checkbox-custom-label checkbox-other-label"
@@ -1568,7 +1576,7 @@
 
                                 <div class="form-check radio-check checkbox-overflow">
                                     <input class="radio-custom-dots" type="radio" name="traces-radio" id="traces-can"
-                                        value="0" required>
+                                        value="Can take traces" required>
                                     <label class="form-check-label radio-custom-label checkbox-overflow-label"
                                         for="traces-can">My child CAN
                                         take traces. I acknowledge the risks of, and agree to, the Applicant’s
@@ -1578,7 +1586,7 @@
 
                                 <div class="form-check radio-check checkbox-overflow">
                                     <input class="radio-custom-dots" type="radio" name="traces-radio" id="traces-cannot"
-                                        value="1" required>
+                                        value="Cannot take traces" required>
                                     <label class="form-check-label radio-custom-label checkbox-overflow-label"
                                         for="traces-cannot">My child
                                         CANNOT take traces. I acknowledge that the Applicant will not be enrolled in the
@@ -1594,7 +1602,7 @@
                             <label for="form-input-hasFoodAllergyMedication" class="form-label">Does the
                                 Applicant have medication to relieve the allergic reaction?</label>
 
-                            <div class="btn-group" id="form-input-hasFoodAllergyMedication"
+                            <div class="btn-group foodMedicineStatus" id="form-input-hasFoodAllergyMedication"
                                 style=" border: 0px !important;" role="group">
 
                                 <input type="radio" class="btn-check yesno-radio" name="food-medication-condition-radio"
@@ -1629,7 +1637,8 @@
                     <!-- ALLERGY RISK ACKNOWLEDGEMENT -->
                     <div class="optional-div" id="allergy-acknowledgement-div">
 
-                        <div class="mb-3">
+                        <div class="mb-3 checkbox-field allergyRiskAcknowledgement"
+                            id="form-input-allergy-risk-acknowledgement" style="border: 0px !important;">
                             <label class="form-label">Given the level of the Applicant's sensitivity to medication,
                                 environmental and/or food allergen(s), the Applicant's ability to manage the condition,
                                 and OBS's limited ability to control the Applicant's contact with either known or
@@ -1638,7 +1647,7 @@
                             <div class="form-check checkbox-check checkbox-overflow" style="border: none !important">
 
                                 <input class="checkbox-custom" type="checkbox" name="allergy-acknowledgement-checkbox"
-                                    id="form-input-allergy-acknowledgement" value="0" required>
+                                    id="form-input-allergy-acknowledgement" value="1" required>
 
                                 <label class="form-check-label checkbox-custom-label checkbox-overflow-label"
                                     for="form-input-allergy-acknowledgement">I acknowledge the risks of, and agree to,
@@ -1646,9 +1655,8 @@
                                     services could be up to 2 hours away. (Note that 2 hours is an estimated timing as
                                     there could be factors beyond OBS' control that may increase the timing.)</label>
                             </div>
-
-                            <div class="invalid-feedback">This field is required</div>
                         </div>
+                        <div class="invalid-feedback">This field is required</div>
                     </div>
 
                     <!-- OTHER KIND OF CONDITION(S) OR ISSUE(S) -->
@@ -1860,10 +1868,11 @@
                             </ol>
                         </div>
 
-                        <div class="form-check checkbox-check checkbox-overflow" style="border: none !important">
+                        <div class="form-check checkbox-check checkbox-overflow checkbox-field"
+                            style="border: none !important">
 
                             <input class="checkbox-custom" type="checkbox" name="information-declaration-checkbox"
-                                id="form-input-information-declaration" value="0" required>
+                                id="form-input-information-declaration" value="1" required>
 
                             <label class="form-check-label checkbox-custom-label checkbox-overflow-label"
                                 for="form-input-information-declaration">I acknowledge and agree to the above</label>
@@ -1877,10 +1886,11 @@
                         <label class="form-label"><span class="label-indexes">36.
                             </span>Medical Declaration</label>
 
-                        <div class="form-check checkbox-check checkbox-overflow" style="border: none !important">
+                        <div class="form-check checkbox-check checkbox-overflow checkbox-field"
+                            style="border: none !important">
 
                             <input class="checkbox-custom" type="checkbox" name="medical-declaration-checkbox"
-                                id="form-input-medical-declaration" value="0" required>
+                                id="form-input-medical-declaration" value="1" required>
 
                             <label class="form-check-label checkbox-custom-label checkbox-overflow-label"
                                 for="form-input-medical-declaration">I
@@ -1937,10 +1947,11 @@
                             </ol>
                         </div>
 
-                        <div class="form-check checkbox-check checkbox-overflow" style="border: none !important">
+                        <div class="form-check checkbox-check checkbox-overflow checkbox-field"
+                            style="border: none !important">
 
                             <input class="checkbox-custom" type="checkbox" name="risk-acknowledgement-checkbox"
-                                id="form-input-risk-acknowledgement" value="0" required>
+                                id="form-input-risk-acknowledgement" value="1" required>
 
                             <label class="form-check-label checkbox-custom-label checkbox-overflow-label"
                                 for="form-input-risk-acknowledgement">I acknowledge and agree to the terms of
@@ -1974,10 +1985,11 @@
                             </ol>
                         </div>
 
-                        <div class="form-check checkbox-check checkbox-overflow" style="border: none !important">
+                        <div class="form-check checkbox-check checkbox-overflow checkbox-field"
+                            style="border: none !important">
 
                             <input class="checkbox-custom" type="checkbox" name="collection-acknowledgement-checkbox"
-                                id="form-input-collection-acknowledgement" value="0" required>
+                                id="form-input-collection-acknowledgement" value="1" required>
 
                             <label class="form-check-label checkbox-custom-label checkbox-overflow-label"
                                 for="form-input-collection-acknowledgement">I understand and agree to the
@@ -1999,7 +2011,7 @@
                         <div class="form-check checkbox-check checkbox-overflow" style="border: none !important">
 
                             <input class="checkbox-custom" type="checkbox" name="events-declaration-checkbox"
-                                id="form-input-events-declaration" value="0" required>
+                                id="form-input-events-declaration" value="1" required>
 
                             <label class="form-check-label checkbox-custom-label checkbox-overflow-label"
                                 for="form-input-events-declaration">I DO NOT consent to the contact information
@@ -2019,7 +2031,7 @@
                         <div class="form-check checkbox-check checkbox-overflow" style="border: none !important">
 
                             <input class="checkbox-custom" type="checkbox" name="photo-declaration-checkbox"
-                                id="form-input-photo-declaration" value="0" required>
+                                id="form-input-photo-declaration" value="1" required>
 
                             <label class="form-check-label checkbox-custom-label checkbox-overflow-label"
                                 for="form-input-photo-declaration">I DO NOT consent to photographs and videos of the

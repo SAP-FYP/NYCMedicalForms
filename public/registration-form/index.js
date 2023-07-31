@@ -111,13 +111,15 @@ window.addEventListener('DOMContentLoaded', () => {
             const inputEl = document.getElementById(parentSectionInputs[input]);
             inputEl.classList.remove("is-invalid");
 
-            // RADIO INPUT
+            // YES-NO RADIO INPUT
             if (input == "parentIsEmergencyContact") {
                 const radioButtons = document.querySelectorAll('input[name="emergency-radio"]');
                 for (const radioButton of radioButtons) {
                     if (radioButton.checked) {
                         parentSectionValues[input] = radioButton.value;
                         break;
+                    } else {
+                        parentSectionValues[input] = "";
                     }
                 }
             } else {
@@ -134,6 +136,10 @@ window.addEventListener('DOMContentLoaded', () => {
         for (const input in parentSectionInputs) {
             const value = parentSectionValues[input]
             const inputEl = document.getElementById(parentSectionInputs[input]);
+            if (optionalFields.includes(input)) {
+                parentSectionValues[input] = "";
+            }
+
             if (!value && !optionalFields.includes(input)) {
                 inputEl.classList.add("is-invalid");
                 sectionIsValid = false;
@@ -176,6 +182,8 @@ window.addEventListener('DOMContentLoaded', () => {
                     if (radioButton.checked) {
                         applicantSectionValues[input] = radioButton.value;
                         break;
+                    } else {
+                        applicantSectionValues[input] = "";
                     }
                 }
             } else if (input == "applicantGender") {
@@ -184,13 +192,16 @@ window.addEventListener('DOMContentLoaded', () => {
                     if (radioButton.checked) {
                         applicantSectionValues[input] = radioButton.value;
                         break;
+                    } else {
+                        applicantSectionValues[input] = "";
                     }
                 }
             } else if (input == "applicantDiet") {
                 const dietCheckboxes = document.querySelectorAll('#form-input-applicant-diet input[type="checkbox"]');
-                let dietArr = [];
+                let dietArr;
                 for (const checkbox of dietCheckboxes) {
                     if (checkbox.checked) {
+                        if (!dietArr) { dietArr = []; }
                         dietArr.push(checkbox.value);
                     }
                 }
@@ -204,6 +215,251 @@ window.addEventListener('DOMContentLoaded', () => {
         for (const input in applicantSectionInputs) {
             const value = applicantSectionValues[input]
             const inputEl = document.getElementById(applicantSectionInputs[input]);
+            if (optionalFields.includes(input)) {
+                applicantSectionValues[input] = "";
+            }
+            if (!value && !optionalFields.includes(input)) {
+                inputEl.classList.add("is-invalid");
+                sectionIsValid = false;
+            }
+        }
+
+        return sectionIsValid;
+    }
+
+    // APPLICANT'S HEALTH INFORMATION VALIDATIONS
+    const validateHealthSection = () => {
+        let sectionIsValid = true;
+
+        let healthSectionInputs = {
+            // HEALTH SECTION
+            tetanusStatus: "form-input-hasTetanus",
+            tetanusDate: "form-input-tetanus-date", //*OPTIONAL
+            applicantHeight: "form-input-applicant-height",
+            applicantWeight: "form-input-applicant-weight",
+            applicantBmi: "form-input-applicant-bmi",
+
+            //BREATHING SECTION
+            breathingStatus: "form-input-hasBreathingCondi",
+            breathingCondition: "form-input-breathing-condition", //*OPTIONAL
+            breathingDate: "form-input-breathing-date", //*OPTIONAL
+
+            //HEART SECTION
+            heartStatus: "form-input-hasHeartCondi",
+            heartCondition: "form-input-heart-condition", //*OPTIONAL
+
+            //BLOOD SECTION
+            bloodStatus: "form-input-hasBloodCondi",
+            bloodCondition: "form-input-blood-condition", //*OPTIONAL
+            bloodOther: "form-input-blood-other", //*OPTIONAL
+            bloodFollowup: "form-input-blood-followup", //*SUB OPTIONAL
+
+            //EPILEPSY SECTION
+            epilepsyStatus: "form-input-hasEpilepsyCondi",
+            epilepsyEpisode: "form-input-epilepsy-past-months", //*OPTIONAL
+            epilepsyMedication: "form-input-epilepsy-medication", //*OPTIONAL
+            epilepsyFollowup: "form-input-epilepsy-followup", //*OPTIONAL
+
+            //BONE SECTION
+            boneStatus: "form-input-hasBoneCondi",
+            boneCondition: "form-input-bone-condition", //*OPTIONAL
+            boneDate: "form-input-bone-date", //*OPTIONAL
+            boneFollowup: "form-input-bone-followup", //*OPTIONAL
+
+            // BEHAVIOURAL SECTION
+            behaviouralStatus: "form-input-hasBehaviouralCondi",
+            behaviouralCondition: "form-input-behavioural-condition", //*OPTIONAL
+            behaviouralFollowup: "form-input-behavioural-followup", //*OPTIONAL
+            specialistProgress: "form-input-behavioural-specialist-progress", //*SUB OPTIONAL
+            homeBehaviour: "form-input-behavioural-home", //*SUB OPTIONAL
+            outdoorExperience: "form-input-behavioural-experience", //*SUB OPTIONAL
+            riskAcknowledgement: "form-input-behavioural-risk-acknowledgement",  //*OPTIONAL
+            participationAcknowledgement: "form-input-participation-risk-acknowledgement",  //*OPTIONAL
+
+            // LONG TERM MEDICATION SECTION
+            longMedicationStatus: "form-input-hasMedication",
+            longMedicationDetails: "form-input-medication", //*OPTIONAL
+
+            // LONG TERM MEDICATION SECTION
+            diseaseStatus: "form-input-hasDisease",
+            diseaseDetails: "form-input-disease", //*OPTIONAL
+
+            // SLEEP WALK SECTION
+            sleepwalkStatus: "form-input-hasSleepWalk",
+            sleepwalkDate: "form-input-sleepwalk-date", //*OPTIONAL
+
+            // ALLERGY RISK ACKNOWLEDGEMENT
+            allergyRiskAcknowledgement: "form-input-allergy-risk-acknowledgement",
+
+            // MEDICATION ALLERGIES
+            medicationAllergyStatus: "form-input-hasMedicationAllergy",
+            medicationName: "form-input-medication-name", //*OPTIONAL
+
+            // ENVIRONMENTAL ALLERGIES
+            enviromentAllergyStatus: "form-input-hasEnvironmentalAllergy",
+            environmentCondition: "form-input-environmental-allergy", //*OPTIONAL
+            environmentOther: "form-input-environment-other", //*OPTIONAL
+            environmentDetails: "form-input-enviroment-details", //*OPTIONAL
+            environmentMedicineStatus: "form-input-hasAllergyMedication", //*OPTIONAL
+            environmentMedicineDetails: "form-input-allergy-medication", //* SUB OPTIONAL
+
+            // FOOD ALLERGIES
+            foodAllergyStatus: "form-input-hasFoodAllergy",
+            foodCondition: "form-input-food-allergy", //*OPTIONAL
+            foodOther: "form-input-food-other", //*OPTIONAL
+            foodDetails: "form-input-food-details", //*OPTIONAL
+            foodTraces: "form-input-food-traces", //*OPTIONAL
+            foodMedicineStatus: "form-input-hasFoodAllergyMedication", //*OPTIONAL
+            foodMedicineDetails: "form-input-food-allergy-medication" //* SUB OPTIONAL
+        }
+
+        let optionalFields = []
+        let healthSectionValues = {};
+
+        // SET VALUES
+        for (const input in healthSectionInputs) {
+            const inputEl = document.getElementById(healthSectionInputs[input]);
+            inputEl.classList.remove("is-invalid");
+
+            if (input == "tetanusStatus" || input == "breathingStatus" || input == "heartStatus" || input == "bloodStatus" || input == "bloodFollowup" ||
+                input == "epilepsyStatus" || input == "epilepsyEpisode" || input == "epilepsyMedication" || input == "epilepsyFollowup" ||
+                input == "boneStatus" || input == "boneFollowup" || input == "behaviouralStatus" || input == "behaviouralFollowup" ||
+                input == "longMedicationStatus" || input == "diseaseStatus" || input == "sleepwalkStatus" || input == "medicationAllergyStatus" ||
+                input == "enviromentAllergyStatus" || input == "environmentMedicineStatus" || input == "foodAllergyStatus" || input == "foodMedicineStatus") {
+                const radioButtons = document.querySelectorAll(`.${input} input[type="radio"]`);
+                for (const radioButton of radioButtons) {
+                    if (radioButton.checked) {
+                        healthSectionValues[input] = radioButton.value;
+                        break;
+                    } else {
+                        healthSectionValues[input] = "";
+                    }
+                }
+            } else if (input == "bloodCondition" || input == "foodTraces") {
+                const radioButtons = document.querySelectorAll(`#${healthSectionInputs[input]} input[type="radio"]`);
+                for (const radioButton of radioButtons) {
+                    if (radioButton.checked) {
+                        healthSectionValues[input] = radioButton.value;
+                        break;
+                    } else {
+                        healthSectionValues[input] = "";
+                    }
+                }
+            } else if (input == "riskAcknowledgement" || input == "participationAcknowledgement" || input == "allergyRiskAcknowledgement") { // ack checkboxes
+                const checkBoxes = document.querySelectorAll(`.${input} input[type="checkbox"]`);
+                for (const checkbox of checkBoxes) {
+                    if (checkbox.checked) {
+                        healthSectionValues[input] = checkbox.value;
+                        break;
+                    } else {
+                        healthSectionValues[input] = "";
+                    }
+                }
+            } else if (input == "environmentCondition" || input == "foodCondition") { //multi checkboxes
+                const checkBoxes = document.querySelectorAll(`#${healthSectionInputs[input]} input[type="checkbox"]`);
+                let checkboxArr;
+                for (const checkbox of checkBoxes) {
+                    if (checkbox.checked) {
+                        if (!checkboxArr) { checkboxArr = []; }
+                        checkboxArr.push(checkbox.value);
+                    }
+                }
+                healthSectionValues[input] = checkboxArr;
+            } else {
+                healthSectionValues[input] = inputEl.value;
+            }
+        }
+
+        // FILTER OPTIONAL FIELDS
+        if (healthSectionValues.tetanusStatus != 1) {
+            optionalFields.push("tetanusDate")
+        }
+
+        if (healthSectionValues.breathingStatus != 1) {
+            optionalFields.push("breathingCondition", "breathingDate")
+        }
+
+        if (healthSectionValues.heartStatus != 1) {
+            optionalFields.push("heartCondition")
+        }
+
+        if (healthSectionValues.bloodStatus == 1 && healthSectionValues.bloodCondition.includes("Thalassaemia")) {
+            optionalFields.push("bloodOther", "bloodFollowup")
+        } else if (healthSectionValues.bloodStatus == 1 && !healthSectionValues.bloodCondition.includes("Other")) {
+            optionalFields.push("bloodOther")
+        } else if (healthSectionValues.bloodStatus != 1) {
+            optionalFields.push("bloodCondition", "bloodOther", "bloodFollowup")
+        }
+
+        if (healthSectionValues.epilepsyStatus != 1) {
+            optionalFields.push("epilepsyEpisode", "epilepsyMedication", "epilepsyFollowup")
+        } else if (healthSectionValues.epilepsyStatus == 1 && !(healthSectionValues.epilepsyEpisode == 0 && healthSectionValues.epilepsyMedication == 0)) {
+            optionalFields.push("epilepsyFollowup")
+        }
+
+        if (healthSectionValues.boneStatus != 1) {
+            optionalFields.push("boneCondition", "boneDate", "boneFollowup")
+        }
+
+        if (healthSectionValues.behaviouralStatus != 1) {
+            optionalFields.push("behaviouralCondition", "behaviouralFollowup", "specialistProgress", "homeBehaviour",
+                "outdoorExperience", "riskAcknowledgement", "participationAcknowledgement")
+        } else if (healthSectionValues.behaviouralStatus == 1 && healthSectionValues.behaviouralFollowup == 0) {
+            optionalFields.push("specialistProgress", "homeBehaviour", "outdoorExperience")
+        }
+
+        if (healthSectionValues.longMedicationStatus != 1) {
+            optionalFields.push("longMedicationDetails")
+        }
+
+        if (healthSectionValues.diseaseStatus != 1) {
+            optionalFields.push("diseaseDetails")
+        }
+
+        if (healthSectionValues.sleepwalkStatus != 1) {
+            optionalFields.push("sleepwalkDate")
+        }
+
+        if (healthSectionValues.medicationAllergyStatus != 1) {
+            optionalFields.push("medicationName")
+        }
+
+        if (healthSectionValues.enviromentAllergyStatus != 1) {
+            optionalFields.push("environmentCondition", "environmentOther", "environmentDetails", "environmentMedicineStatus",
+                "environmentMedicineDetails")
+        } else if (!healthSectionValues.environmentCondition || !healthSectionValues.environmentCondition.includes("Others")) {
+            optionalFields.push("environmentOther");
+        }
+
+        if (healthSectionValues.enviromentAllergyStatus == 1 && healthSectionValues.environmentMedicineStatus == 0) {
+            optionalFields.push("environmentMedicineDetails")
+        }
+
+        if (healthSectionValues.foodAllergyStatus != 1) {
+            optionalFields.push("foodCondition", "foodOther", "foodDetails", "foodTraces", "foodMedicineStatus", "foodMedicineDetails")
+        } else if (!healthSectionValues.foodCondition || !healthSectionValues.foodCondition.includes("Others")) {
+            optionalFields.push("foodOther");
+        }
+
+        if (healthSectionValues.foodAllergyStatus == 1 && healthSectionValues.foodMedicineStatus == 0) {
+            optionalFields.push("foodMedicineDetails")
+        }
+
+        if (healthSectionValues.enviromentAllergyStatus == 0 && healthSectionValues.medicationAllergyStatus == 0 && healthSectionValues.foodAllergyStatus == 0) {
+            optionalFields.push("allergyRiskAcknowledgement")
+        }
+
+        console.log(healthSectionValues)
+        //console.log(optionalFields)
+
+        // VALIDATE FIELDS
+        for (const input in healthSectionInputs) {
+            const value = healthSectionValues[input]
+            const inputEl = document.getElementById(healthSectionInputs[input]);
+            if (optionalFields.includes(input)) {
+                healthSectionValues[input] = "";
+            }
+
             if (!value && !optionalFields.includes(input)) {
                 inputEl.classList.add("is-invalid");
                 sectionIsValid = false;
@@ -279,12 +535,38 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    const validateCheckbox = (target) => {
+        if (!target.checked) {
+            const checkboxField = target.closest('.checkbox-field');
+            if (checkboxField) {
+                const getChecked = checkboxField.querySelectorAll('input[type="checkbox"]:checked');
+                if (getChecked.length < 1) {
+                    target.closest('.checkbox-field').classList.add("is-invalid");
+                }
+            }
+        } else {
+            const checkboxField = target.closest('.checkbox-field');
+            if (checkboxField) {
+                checkboxField.classList.remove("is-invalid");;
+            }
+        }
+    }
+
     // === EVENT HANDLERS ===
+
+    //test button
+    document.getElementById('button2').onclick = (e) => {
+        e.preventDefault();
+        // console.log(validateParentSection());
+        // console.log(validateApplicantSection());
+        console.log(validateHealthSection());
+    }
 
     document.getElementById('submit-button').onclick = (e) => {
         e.preventDefault();
-        console.log(validateParentSection());
-        console.log(validateApplicantSection());
+        //console.log(validateParentSection());
+        //console.log(validateApplicantSection());
+        console.log(validateHealthSection());
     }
 
     document.querySelectorAll('input[type=text]').forEach(element => {
@@ -328,6 +610,12 @@ window.addEventListener('DOMContentLoaded', () => {
         })
     });
 
+    document.querySelectorAll('input[type=checkbox]').forEach(element => {
+        element.addEventListener('change', (e) => {
+            validateCheckbox(e.target)
+        })
+    });
+
     handleParallax = () => {
         const titleRow = document.querySelector(".title-row");
         const scrollValue = window.scrollY;
@@ -367,39 +655,70 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // TETANUS VACCINATION
     document.querySelectorAll('input[name="tetanus-radio"]').forEach(button => {
+        const subFields = ["form-input-tetanus-date"]
         button.addEventListener("change", (e) => {
             const targetElement = document.getElementById('tetanus-date-div');
             const targetElement2 = document.getElementById('tetanus-note-div');
             if (e.target.value == "0") {
                 targetElement.classList.add('optional-div');
                 targetElement2.classList.remove('optional-div');
+
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove('required-field')
+                });
+
             } else if (e.target.value == "1") {
                 targetElement.classList.remove('optional-div');
                 targetElement2.classList.add('optional-div');
+
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove("is-invalid");
+                    document.getElementById(element).classList.add('required-field')
+                });
             }
         })
     });
 
     // BREATHING CONDITION
     document.querySelectorAll('input[name="breathing-condition-radio"]').forEach(button => {
+        const subFields = ["form-input-breathing-date", "form-input-breathing-condition"]
         button.addEventListener("change", (e) => {
             const targetElement = document.getElementById('breathing-condition-div');
             if (e.target.value == "0") {
                 targetElement.classList.add('optional-div');
+
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove('required-field')
+                });
             } else if (e.target.value == "1") {
                 targetElement.classList.remove('optional-div');
+
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove("is-invalid");
+                    document.getElementById(element).classList.add('required-field')
+                });
             }
         })
     });
 
     // HEART CONDITION
     document.querySelectorAll('input[name="heart-condition-radio"]').forEach(button => {
+        const subFields = ["form-input-heart-condition"]
         button.addEventListener("change", (e) => {
             const targetElement = document.getElementById('heart-condition-div');
             if (e.target.value == "0") {
                 targetElement.classList.add('optional-div');
+
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove('required-field')
+                });
             } else if (e.target.value == "1") {
                 targetElement.classList.remove('optional-div');
+
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove("is-invalid");
+                    document.getElementById(element).classList.add('required-field')
+                });
             }
         })
     });
@@ -418,20 +737,33 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // > CHOOSE BLOOD CONDITION
     document.querySelectorAll('input[name="blood-radio"]').forEach(button => {
+        const subFields = ["form-input-blood-other"]
         button.addEventListener("change", (e) => {
-            if (e.target.value == "0" || e.target.value == "3") { // ANAEMIA / OTHERS
+            if (e.target.value == "Anaemia" || e.target.value == "Others") { // ANAEMIA / OTHERS
                 displayNote(document.getElementById('blood-condition-div'), "", 0)
                 if (document.querySelector('input[name="blood-followup-radio"]:checked') != null &&
                     document.querySelector('input[name="blood-followup-radio"]:checked').value == 1) {
                     displayNote(document.getElementById('blood-condition-div'), "specialist memo", 1)
                 }
                 document.getElementById('blood-followup-div').classList.remove('optional-div');
-            } else if (e.target.value == "2") { // T MAJOR
+            } else if (e.target.value == "Thalassaemia major") { // T MAJOR
                 displayNote(document.getElementById('blood-condition-div'), "unable to enrol", 1)
                 document.getElementById('blood-followup-div').classList.add('optional-div');
-            } else if (e.target.value == "1") { // T MINOR
+            } else if (e.target.value == "Thalassaemia minor") { // T MINOR
                 displayNote(document.getElementById('blood-condition-div'), "", 0)
                 document.getElementById('blood-followup-div').classList.add('optional-div');
+            }
+
+            if (e.target.value != "Others") {
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove("is-invalid");
+                    document.getElementById(element).classList.remove('required-field')
+                });
+            } else {
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove("is-invalid");
+                    document.getElementById(element).classList.add('required-field')
+                });
             }
         })
     });
@@ -531,12 +863,22 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // BONE / JOINT/ TENDON CONDITION
     document.querySelectorAll('input[name="bone-condition-radio"]').forEach(button => {
+        const subFields = ["form-input-bone-date", "form-input-bone-condition"]
         button.addEventListener("change", (e) => {
             const targetElement = document.getElementById('bone-condition-div');
             if (e.target.value == "0") {
                 targetElement.classList.add('optional-div');
+
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove('required-field')
+                });
             } else if (e.target.value == "1") {
                 targetElement.classList.remove('optional-div');
+
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove("is-invalid");
+                    document.getElementById(element).classList.add('required-field')
+                });
             }
         })
     });
@@ -557,66 +899,117 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // BEHAVIOURAL OR PSYCHOLOGICAL CONDITION
     document.querySelectorAll('input[name="behavioural-condition-radio"]').forEach(button => {
+        const subFields = ["form-input-behavioural-condition"]
         button.addEventListener("change", (e) => {
             const targetElement = document.getElementById('behavioural-condition-div');
             if (e.target.value == "0") {
                 targetElement.classList.add('optional-div');
+
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove('required-field')
+                });
             } else if (e.target.value == "1") {
                 targetElement.classList.remove('optional-div');
+
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove("is-invalid");
+                    document.getElementById(element).classList.add('required-field')
+                });
             }
         })
     });
 
     // > BEHAVIOURAL OR PSYCHOLOGICAL CONDITION - FOLLOW UP CONDITION
     document.querySelectorAll('input[name="behavioural-followup-radio"]').forEach(button => {
+        const subFields = ["form-input-behavioural-experience", "form-input-behavioural-specialist-progress", "form-input-behavioural-home"]
         button.addEventListener("change", (e) => {
             const targetElement = document.getElementById('behavioural-specialist-progress-div');
             if (e.target.value == "0") {
                 targetElement.classList.add('optional-div');
+
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove('required-field')
+                });
             } else if (e.target.value == "1") {
                 targetElement.classList.remove('optional-div');
+
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove("is-invalid");
+                    document.getElementById(element).classList.add('required-field')
+                });
             }
         })
     });
 
     // LONG TERM PRESCRIBTION MEDICATION
     document.querySelectorAll('input[name="medication-condition-radio"]').forEach(button => {
+        const subFields = ["form-input-medication"]
         button.addEventListener("change", (e) => {
             const targetElement = document.getElementById('medication-condition-div');
             if (e.target.value == "0") {
                 targetElement.classList.add('optional-div');
+
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove('required-field')
+                });
             } else if (e.target.value == "1") {
                 targetElement.classList.remove('optional-div');
+
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove("is-invalid");
+                    document.getElementById(element).classList.add('required-field')
+                });
             }
         })
     });
 
     // CARRIER STATUS FOR ANY INFECTIOUS DISEASE
     document.querySelectorAll('input[name="disease-condition-radio"]').forEach(button => {
+        const subFields = ["form-input-disease"]
         button.addEventListener("change", (e) => {
             const targetElement = document.getElementById('disease-condition-div');
             if (e.target.value == "0") {
                 targetElement.classList.add('optional-div');
+
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove('required-field')
+                });
             } else if (e.target.value == "1") {
                 targetElement.classList.remove('optional-div');
+
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove("is-invalid");
+                    document.getElementById(element).classList.add('required-field')
+                });
             }
         })
     });
 
     // SLEEP WALKING
     document.querySelectorAll('input[name="sleepwalk-condition-radio"]').forEach(button => {
+        const subFields = ["form-input-sleepwalk-date"]
         button.addEventListener("change", (e) => {
             const targetElement = document.getElementById('sleepwalk-condition-div');
             if (e.target.value == "0") {
                 targetElement.classList.add('optional-div');
+
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove('required-field')
+                });
             } else if (e.target.value == "1") {
                 targetElement.classList.remove('optional-div');
+
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove("is-invalid");
+                    document.getElementById(element).classList.add('required-field')
+                });
             }
         })
     });
 
     // ALLERGY OR ADVERSE REACTIONS TO MEDICATIONS
     document.querySelectorAll('input[name="medication-allergy-condition-radio"]').forEach(button => {
+        const subFields = ["form-input-medication-name"]
         button.addEventListener("change", (e) => {
             const targetElement = document.getElementById('medication-allergy-condition-div');
             const riskAcknowledgement = document.getElementById('allergy-acknowledgement-div');
@@ -631,15 +1024,26 @@ window.addEventListener('DOMContentLoaded', () => {
                     riskAcknowledgement.classList.add('optional-div');
                 }
 
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove('required-field')
+                });
+
             } else if (e.target.value == "1") {
                 targetElement.classList.remove('optional-div');
                 riskAcknowledgement.classList.remove('optional-div');
+
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove("is-invalid");
+                    document.getElementById(element).classList.add('required-field')
+                });
             }
         })
     });
 
     // ALLERGY TO ENVIRONMENTAL FACTOR(S)
     document.querySelectorAll('input[name="environmental-allergy-condition-radio"]').forEach(button => {
+        const subFields = ["form-input-environmental-allergy", "form-input-environment-other", "form-input-enviroment-details",
+            "form-input-hasAllergyMedication"]
         button.addEventListener("change", (e) => {
             const targetElement = document.getElementById('environmental-allergy-condition-div');
             const riskAcknowledgement = document.getElementById('allergy-acknowledgement-div');
@@ -654,27 +1058,47 @@ window.addEventListener('DOMContentLoaded', () => {
                     riskAcknowledgement.classList.add('optional-div');
                 }
 
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove('required-field')
+                });
             } else if (e.target.value == "1") {
                 targetElement.classList.remove('optional-div');
                 riskAcknowledgement.classList.remove('optional-div');
+
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove("is-invalid");
+                    document.getElementById(element).classList.add('required-field')
+                });
             }
         })
     });
 
     // > ALLERGY TO ENVIRONMENTAL FACTOR(S) - ALLERGY MEDICATION
     document.querySelectorAll('input[name="environmental-medication-condition-radio"]').forEach(button => {
+        const subFields = ["form-input-allergy-medication"]
         button.addEventListener("change", (e) => {
             const targetElement = document.getElementById('allergy-medication-div');
             if (e.target.value == "0") {
                 targetElement.classList.add('optional-div');
+
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove('required-field')
+                });
             } else if (e.target.value == "1") {
                 targetElement.classList.remove('optional-div');
+
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove("is-invalid");
+                    document.getElementById(element).classList.add('required-field')
+                });
             }
         })
     });
 
     // ALLERGY TO FOOD ITEM(S) / INGREDIENT(S)
     document.querySelectorAll('input[name="food-allergy-condition-radio"]').forEach(button => {
+        const subFields = ["form-input-food-allergy", "form-input-food-other", "form-input-food-details", "form-input-food-traces",
+            "form-input-hasFoodAllergyMedication"]
         button.addEventListener("change", (e) => {
             const targetElement = document.getElementById('food-allergy-condition-div');
             const riskAcknowledgement = document.getElementById('allergy-acknowledgement-div');
@@ -689,21 +1113,39 @@ window.addEventListener('DOMContentLoaded', () => {
                     riskAcknowledgement.classList.add('optional-div');
                 }
 
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove('required-field')
+                });
             } else if (e.target.value == "1") {
                 targetElement.classList.remove('optional-div');
                 riskAcknowledgement.classList.remove('optional-div');
+
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove("is-invalid");
+                    document.getElementById(element).classList.add('required-field')
+                });
             }
         })
     });
 
     // > ALLERGY TO FOOD ITEM(S) - ALLERGY MEDICATION
     document.querySelectorAll('input[name="food-medication-condition-radio"]').forEach(button => {
+        const subFields = ["form-input-food-allergy-medication"]
         button.addEventListener("change", (e) => {
             const targetElement = document.getElementById('food-allergy-medication-div');
             if (e.target.value == "0") {
                 targetElement.classList.add('optional-div');
+
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove('required-field')
+                });
             } else if (e.target.value == "1") {
                 targetElement.classList.remove('optional-div');
+
+                subFields.forEach(element => {
+                    document.getElementById(element).classList.remove("is-invalid");
+                    document.getElementById(element).classList.add('required-field')
+                });
             }
         })
     });
@@ -762,6 +1204,8 @@ window.addEventListener('DOMContentLoaded', () => {
         })
     });
 
+
+
     // RADIO OTHER LABEL EVENT HANDLER
     document.querySelectorAll('.radio-other-label').forEach(button => {
         button.addEventListener("click", (e) => {
@@ -773,6 +1217,18 @@ window.addEventListener('DOMContentLoaded', () => {
                     radioElement.checked = true;
                     radioElement.dispatchEvent(new Event('change'));
                 }
+            }
+        })
+    });
+
+    // RADIO DOT EVENT HANDLER 
+    document.querySelectorAll('.radio-others input[type="radio"]').forEach(button => {
+        button.addEventListener("click", (e) => {
+            const containerDiv = e.target.closest('.radio-others');
+            if (e.target.checked) {
+                setTimeout(() => {
+                    containerDiv.querySelector('input[type="text"]').focus();
+                }, 0);
             }
         })
     });
@@ -797,7 +1253,6 @@ window.addEventListener('DOMContentLoaded', () => {
         button.addEventListener("click", (e) => {
             const containerDiv = e.target.closest('.checkbox-others');
             if (containerDiv) {
-                // Find the checkbox button within the container div
                 const checkboxElement = containerDiv.querySelector('input[type="checkbox"]');
                 if (checkboxElement && !checkboxElement.checked) {
                     checkboxElement.checked = true;
@@ -807,6 +1262,21 @@ window.addEventListener('DOMContentLoaded', () => {
                         containerDiv.querySelector('input[type="text"]').blur();
                     }, 0);
                 }
+                checkboxElement.dispatchEvent(new Event('change'));
+            }
+        })
+    });
+
+    // CHECKBOX BOX EVENT HANDLER
+    document.querySelectorAll('.checkbox-others input[type="checkbox"]').forEach(button => {
+        button.addEventListener("change", (e) => {
+            const containerDiv = e.target.closest('.checkbox-others');
+            if (!e.target.checked) {
+                containerDiv.querySelector('input[type="text"]').classList.remove("is-invalid");
+            } else {
+                setTimeout(() => {
+                    containerDiv.querySelector('input[type="text"]').focus();
+                }, 0);
             }
         })
     });
@@ -821,6 +1291,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 if (checkboxElement && !checkboxElement.checked) {
                     checkboxElement.checked = true;
                 }
+                checkboxElement.dispatchEvent(new Event('change'));
             }
         })
     });
