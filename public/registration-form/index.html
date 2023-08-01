@@ -21,9 +21,9 @@
 </head>
 
 <body>
-    <button id="button2" style="position: fixed; z-index: 100; height: 400px; width: 200px; right: 0; top: 30%;">
+    <!-- <button id="button2" style="position: fixed; z-index: 100; height: 400px; width: 200px; right: 0; top: 30%;">
         submit
-    </button>
+    </button> -->
 
     <div class="container-fluid m-0">
 
@@ -577,6 +577,101 @@
                             <input type="date" class="form-control" id="form-input-breathing-date">
                             <div class="invalid-feedback">This field is required</div>
                         </div>
+
+                        <!-- BREATHING MEDICATION STATUS -->
+                        <div class="mb-3">
+                            <label for="form-input-hasBreathingMedication" class="form-label">Is the
+                                Applicant on medication for the breathing condition?</label>
+
+                            <div class="btn-group breathingMedicineStatus" id="form-input-hasBreathingMedication"
+                                style=" border: 0px !important;" role="group">
+
+                                <input type="radio" class="btn-check yesno-radio" name="hasBreathingMedication-radio"
+                                    id="hasBreathingMedication-no" value="0" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="hasBreathingMedication-no">
+                                    <i class="material-icons">close</i> No
+                                </label>
+
+                                <input type="radio" class="btn-check yesno-radio" name="hasBreathingMedication-radio"
+                                    id="hasBreathingMedication-yes" value="1" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="hasBreathingMedication-yes">
+                                    <i class="material-icons">check</i> Yes
+                                </label>
+                            </div>
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- BREATHING MEDICATION - SUB OPTIONAL -->
+                        <div class="optional-div" id="breathing-medication-div">
+
+                            <!-- BREATHING MEDICATION DETAILS -->
+                            <div class="mb-3">
+                                <label for="form-input-medication-details" class="form-label">State the medication and
+                                    dosage</label>
+                                <input type="text" class="form-control" id="form-input-medication-details">
+                                <div class="invalid-feedback">This field is required</div>
+                            </div>
+
+                            <div style="margin-bottom: 20px;">
+                                <h3 style="margin: 55px 0px 20px 0px">Note: The Applicant is responsible for bringing
+                                    the
+                                    medication for the Course in a clearly-labelled plastic bag. The medication must be
+                                    prescribed in the Applicant’s name, with time validity and with sufficient quantity
+                                    for
+                                    the
+                                    full duration of the Course.</h3>
+                                <text>If the Applicant fails to do so, the Applicant may not
+                                    be able to participate in the
+                                    Course.</text>
+                            </div>
+                        </div>
+
+                        <!-- BREATHING CONDITION FOLLOWUP -->
+                        <div class="mb-3">
+                            <label for="form-input-breathingExcercise" class="form-label">Is Applicant on follow-up
+                                with a specialist for the breathing condition?</label>
+
+                            <div class="btn-group breathingFollowup" id="form-input-breathing-followup"
+                                style=" border: 0px !important;" role="group">
+
+                                <input type="radio" class="btn-check yesno-radio" name="breathing-followup-radio"
+                                    id="breathing-followup-no" value="0" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="breathing-followup-no">
+                                    <i class="material-icons">close</i> No
+                                </label>
+
+                                <input type="radio" class="btn-check yesno-radio" name="breathing-followup-radio"
+                                    id="breathing-followup-yes" value="1" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="breathing-followup-yes">
+                                    <i class="material-icons">check</i> Yes
+                                </label>
+                            </div>
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- BREATHING EXCERCISE -->
+                        <div class="mb-3">
+                            <label for="form-input-breathing-excercise" class="form-label help-text-parent">Is the
+                                breathing condition triggered by exercise?</label>
+                            <div class="form-text help-text">e.g. exercise-induced asthma</div>
+                            <div class="btn-group breathingExcercise" id="form-input-breathing-excercise"
+                                style=" border: 0px !important;" role="group">
+
+                                <input type="radio" class="btn-check yesno-radio" name="breathing-excercise-radio"
+                                    id="breathing-excercise-no" value="0" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="breathing-excercise-no">
+                                    <i class="material-icons">close</i> No
+                                </label>
+
+                                <input type="radio" class="btn-check yesno-radio" name="breathing-excercise-radio"
+                                    id="breathing-excercise-yes" value="1" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="breathing-excercise-yes">
+                                    <i class="material-icons">check</i> Yes
+                                </label>
+                            </div>
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+                        <div class="insert-note-template"></div>
                     </div>
 
                     <!-- HEART CONDITION -->
@@ -617,6 +712,31 @@
                             <input type="text" class="form-control" id="form-input-heart-condition">
                             <div class="invalid-feedback">This field is required</div>
                         </div>
+
+                        <!-- HEART CONDITION FOLLOW UP -->
+                        <div class="mb-3">
+                            <label for="form-input-heart-followup" class="form-label">Is the Applicant on follow-up with
+                                a specialist for the heart condition?</label>
+
+                            <div class="btn-group heartFollowup" id="form-input-heart-followup"
+                                style=" border: 0px !important;" role="group">
+
+                                <input type="radio" class="btn-check yesno-radio" name="heart-followup-radio"
+                                    id="heart-followup-no" value="0" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="heart-followup-no">
+                                    <i class="material-icons">close</i> No
+                                </label>
+
+                                <input type="radio" class="btn-check yesno-radio" name="heart-followup-radio"
+                                    id="heart-followup-yes" value="1" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="heart-followup-yes">
+                                    <i class="material-icons">check</i> Yes
+                                </label>
+
+                            </div>
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+                        <div class="insert-note-template"></div>
                     </div>
 
                     <!-- BLOOD CONDITION -->
@@ -905,6 +1025,47 @@
                             </div>
                             <div class="invalid-feedback">This field is required</div>
                         </div>
+
+                        <!-- BONE CONDITION FOLLOWUP- SUB OPTIONAL -->
+                        <div class="optional-div" id="bone-followup-div">
+
+                            <!-- FULLY RECOVERED -->
+                            <div class="mb-3">
+                                <label for="form-input-bone-recovered" class="form-label">Has the Applicant fully
+                                    recovered?</label>
+                                <div class="btn-group boneRecovered" id="form-input-bone-recovered"
+                                    style=" border: 0px !important;" role="group">
+
+                                    <input type="radio" class="btn-check yesno-radio" name="bone-recovered-radio"
+                                        id="bone-recovered-no" value="0" required>
+                                    <label class="radio-btns btn btn-outline-secondary" for="bone-recovered-no">
+                                        <i class="material-icons">close</i> No
+                                    </label>
+
+                                    <input type="radio" class="btn-check yesno-radio" name="bone-recovered-radio"
+                                        id="bone-recovered-yes" value="1" required>
+                                    <label class="radio-btns btn btn-outline-secondary" for="bone-recovered-yes">
+                                        <i class="material-icons">check</i> Yes
+                                    </label>
+                                </div>
+                                <div class="invalid-feedback">This field is required</div>
+                            </div>
+
+                            <!-- FULLY RECOVERED - SUB INNER OPTIONAL -->
+                            <div class="optional-div" id="bone-recovered-div">
+
+                                <!-- PROVIDE INFORMATION -->
+                                <div class="mb-3">
+                                    <label for="form-input-bone-information" class="form-label">Provide
+                                        further information about the condition, state any restrictions or precautionary
+                                        measures to be taken when the Applicant engages in outdoor physical
+                                        activities</label>
+                                    <input type="text" class="form-control" id="form-input-bone-information">
+                                    <div class="invalid-feedback">This field is required</div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="insert-note-template"></div>
                     </div>
 
@@ -1667,8 +1828,8 @@
                         <label class="form-text help-text">e.g. restrictions on movement, carrying heavy loads, outdoor
                             camping, any medical devices/implant required or difficulty in interacting with others in an
                             unfamiliar setting</label>
-                        <div class="btn-group" id="form-input-hasOtherConditions" style=" border: 0px !important;"
-                            role="group">
+                        <div class="btn-group otherConditionStatus" id="form-input-hasOtherConditions"
+                            style=" border: 0px !important;" role="group">
 
                             <input type="radio" class="btn-check yesno-radio" name="other-condition-radio"
                                 id="hasOtherConditions-no" value="0" required>
@@ -1742,7 +1903,6 @@
                             </span>
                             <div class="form-text help-text">State the name and dosage / usage:</div>
                             <input type="text" class="form-control" id="form-input-medical-equipment">
-                            <div class="invalid-feedback">This field is required</div>
                         </div>
 
                         <!-- OTHER KIND OF CONDITION(S) OR ISSUE(S) FOLLOW UP -->
@@ -1750,8 +1910,8 @@
                             <label for="form-input-other-followup" class="form-label">Is the Applicant on
                                 follow-up with a specialist for the condition?</label>
 
-                            <div class="btn-group" id="form-input-other-followup" style=" border: 0px !important;"
-                                role="group">
+                            <div class="btn-group otherFollowup" id="form-input-other-followup"
+                                style=" border: 0px !important;" role="group">
 
                                 <input type="radio" class="btn-check yesno-radio" name="other-followup-radio"
                                     id="other-followup-no" value="0" required>
@@ -1774,8 +1934,8 @@
                         <div class="mb-3">
                             <label for="form-input-affect-focus" class="form-label">Does the
                                 condition affect the Applicant's ability to focus?</label>
-                            <div class="btn-group" id="form-input-affect-focus" style=" border: 0px !important;"
-                                role="group">
+                            <div class="btn-group otherFocusAbility" id="form-input-affect-focus"
+                                style=" border: 0px !important;" role="group">
 
                                 <input type="radio" class="btn-check yesno-radio" name="affect-focus-radio"
                                     id="affect-focus-no" value="0" required>
@@ -1797,8 +1957,8 @@
                         <div class="mb-3">
                             <label for="form-input-affect-understand" class="form-label">Does the condition affect the
                                 Applicant's ability to understand and execute safety instructions?</label>
-                            <div class="btn-group" id="form-input-affect-understand" style=" border: 0px !important;"
-                                role="group">
+                            <div class="btn-group otherUnderstandAbility" id="form-input-affect-understand"
+                                style=" border: 0px !important;" role="group">
 
                                 <input type="radio" class="btn-check yesno-radio" name="affect-understand-radio"
                                     id="affect-understand-no" value="0" required>
@@ -2057,7 +2217,7 @@
 
             <!-- TEMPLATES -->
             <template id="note-template">
-                <h3 style="margin: 50px 0px 20px 0px"></h3>
+                <h3 style="margin: 55px 0px 20px 0px"></h3>
             </template>
 
             <script src="https://unpkg.com/validator@latest/validator.min.js"></script>
