@@ -35,7 +35,7 @@ function alertBox(message, type) {
     alertContainer.classList.add('alert-hidden');
     alertContainer.classList.remove('alert-visible');
     alertContainer.classList.remove(alertColor);
-  }, 6000);
+  }, 3000);
 };
 function handleError(error) {
   if (error && error.message !== 'redirected') {
@@ -579,7 +579,7 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
     }
     //if Approved create undo button
     if (formData.formStatus === "Approved" || formData.formStatus === "Rejected") {
-      undoStatusContainer.innerHTML = `<div class="btn btn-primary btn-sm undoStatusBtn"data-bs-dismiss="modal">Undo
+      undoStatusContainer.innerHTML = `<div class="btn btn-primary btn-sm undoStatusBtn"data-bs-dismiss="modal" id="undoStatusBtn-studentid-${studentId}">Undo
      Back To Pending</div>`
     }
     //check if form is rejected

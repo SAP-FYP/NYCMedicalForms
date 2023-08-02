@@ -39,44 +39,40 @@ beforeEach(() => {
 describe('Approving and rejecting of forms', () => {
     //use cy.intercept
     it('should approve the selected form', () => {
-        cy.wait(500);
+        cy.wait(2000);
         cy.get('td[id=modalBtn-studentId-1]').eq(0).click(); 
         cy.wait(1000);
-        cy.get('#approveBtn-studentid-1').eq(0).contains('Approve').click({force: true})
+        cy.get('button[id=approveBtn-studentid-1]').eq(0).contains('Approve').click({force: true})
+        cy.get('.alert-success').should('be.visible');
+        cy.wait(1000); 
+        
+        //undo status to pending
+        cy.get('td[id=modalBtn-studentId-1]').eq(0).click({force: true}); 
+        cy.get('.alert-success').should('be.visible').contains('Form already approved!');
+        cy.wait(500);
+        cy.get('div[id=undoStatusBtn-studentid-1]').eq(0).contains('Undo Back To Pending').click({force: true})
         cy.get('.alert-success').should('be.visible');
         cy.get('td[id=modalBtn-studentId-1]').eq(0).click();
         cy.wait(500);
-        cy.get('.alert-success').should('be.visible');
-        cy.wait(500);
-        
-        // Put form status back to pending
-        cy.request({
-            method: 'PUT',
-            url: '/obs-admin/pmt/1',
-            body: {
-                formStatus: 'Pending'
-            }
-        })
     })
 
     it('should reject the selected form', () => {
         cy.wait(500);
         cy.get('td[id=modalBtn-studentId-2]').eq(0).click();
         cy.wait(1000);
-        cy.get('#rejectBtn-studentid-2').eq(0).contains('Reject').click({force: true})
+        cy.get('button[id=rejectBtn-studentid-2]').eq(0).contains('Reject').click({force: true})
         cy.get('td[id=modalBtn-studentId-2]').eq(0).click();
         cy.wait(500);
         cy.get('.alert-success').should('be.visible');
-        cy.wait(500);
+        cy.wait(1000);
 
-        // Put form status back to pending
-        cy.request({
-            method: 'PUT',
-            url: '/obs-admin/pmt/2',
-            body: {
-                formStatus: 'Pending'
-            }
-        })
+        cy.get('td[id=modalBtn-studentId-2]').eq(0).click({force: true}); 
+        cy.get('.alert-success').should('be.visible').contains('Form already rejected!');
+        cy.wait(500);
+        cy.get('div[id=undoStatusBtn-studentid-2]').eq(0).contains('Undo Back To Pending').click({force: true})
+        cy.get('.alert-success').should('be.visible');
+        cy.get('td[id=modalBtn-studentId-2]').eq(0).click();
+        cy.wait(500);
 
     })
 })
