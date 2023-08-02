@@ -968,6 +968,22 @@ app.post('/parent/acknowledged', parentAuthHelper.verifyToken, parentAuthHelper.
         })
 });
 
+app.get('/getRaces', (req, res, next) => {
+    return parentModel
+        .getRaces()
+        .then((result) => {
+            if (!result) {
+                const error = new Error("No races found")
+                error.status = 404;
+                throw error
+            }
+            return res.json({ result })
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        });
+});
+
 
 /**
  * User: Super Admin    
@@ -1002,6 +1018,8 @@ app.post('/obs-admin/newuser', authHelper.verifyToken, authHelper.checkIat, (req
     if (newuser.role == 1) {
         newuser.permissionGroup = 0
     }
+
+    console.log(`Email: ${newuser.email} | Generated Password: ${newuser.password}`)
 
     // HASHING PASSWORD
     bcrypt.hash(newuser.password, 10, async function (err, hash) {
@@ -1052,7 +1070,7 @@ app.post('/obs-admin/newuser', authHelper.verifyToken, authHelper.checkIat, (req
 });
 
 // Get All Users
-app.get('/obs-admin/users/:search/:limit/:offset', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+app.get('/obs-admin/users/:search/:limit/:offset/:order', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
@@ -1064,12 +1082,24 @@ app.get('/obs-admin/users/:search/:limit/:offset', authHelper.verifyToken, authH
         searchInput = req.params.search
     }
 
+    let orderInput;
+
+    if (req.params.order == 2) {
+        orderInput = 'email'
+    } else if (req.params.order == 3) {
+        orderInput = 'isDisabled'
+    } else if (req.params.order == 4) {
+        orderInput = 'created_at DESC'
+    } else {
+        orderInput = 'nameOfUser'
+    }
+
     const { email } = req.decodedToken
     const offset = parseInt(req.params.offset);
     const limit = parseInt(req.params.limit);
 
     return adminModel
-        .getAllUsers(email, searchInput, limit, offset)
+        .getAllUsers(email, searchInput, limit, offset, orderInput)
         .then((result) => {
             if (!result) {
                 const error = new Error("No users found")

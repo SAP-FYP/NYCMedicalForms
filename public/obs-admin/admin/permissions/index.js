@@ -125,6 +125,17 @@ window.addEventListener('DOMContentLoaded', () => {
             .then(handleResponse)
             .then((jsonData) => {
                 const permGroup = jsonData.result;
+
+                if (offset == 0) {
+                    permGroup.findIndex((item, i) => {
+                        if (item.groupId == 155) {
+                            permGroup.splice(i, 1);
+                            permGroup.unshift(item)
+                            return;
+                        }
+                    })
+                }
+
                 !permGroup ? eof = true : buildPermGroups(permGroup);
 
                 offset += 20;
