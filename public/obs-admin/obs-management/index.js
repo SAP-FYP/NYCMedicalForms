@@ -208,7 +208,7 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
         if (tooltipInstance) {
           tooltipInstance.dispose();
         }
-        checkBoxTop.setAttribute('data-bs-title', `Click To Select All`);
+        checkBoxTop.setAttribute('data-bs-title', `Click To Select All (0 Selected)`);
         new bootstrap.Tooltip(checkBoxTop, { trigger: 'hover' });
       }
     });
@@ -270,7 +270,7 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
         if (tooltipInstance) {
           tooltipInstance.dispose();
         }
-        checkBoxTop.setAttribute('data-bs-title', `Click To Select All`);
+        checkBoxTop.setAttribute('data-bs-title', `Click To Select All (0 Selected)`);
         new bootstrap.Tooltip(checkBoxTop, { trigger: 'hover' });
       }
     });
@@ -1055,7 +1055,7 @@ if (tipButton) {
 function tooltipForCheckBoxTop(checkBoxTop) {
   checkBoxTop.setAttribute('data-bs-toggle', 'tooltip-hover');
   checkBoxTop.setAttribute('data-bs-placement', 'top');
-  checkBoxTop.setAttribute('data-bs-title', `Click To Select All`);
+  checkBoxTop.setAttribute('data-bs-title', `Click To Select All (0 Selected)`);
   if (checkBoxTop.hasAttribute('data-bs-toggle') ) {
     new bootstrap.Tooltip(checkBoxTop, { trigger: 'hover' });
   }
@@ -1224,37 +1224,65 @@ function changeBackSortIcon() {
 }
 
 //Event listner for sorting by fullname, alphabetically, ascending and descending
+
 fullNameColumn.addEventListener('click', () => {
   let nameAscending = true;
   if (fullNameColumn !== document.activeElement) {
     nameAscending = true;
+    dataAll.sort((a, b) => {
+      const aValue = a["Name of Applicant"].toLowerCase();
+      const bValue = b["Name of Applicant"].toLowerCase();
+      return ascending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+    });
+    console.log(dataAll)
   } else {
     nameAscending = !nameAscending;
+    dataAll.sort((a, b) => {
+      const aValue = a["Name of Applicant"].toLowerCase();
+      const bValue = b["Name of Applicant"].toLowerCase();
+      return ascending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+    });
+    console.log(dataAll)
   }
+  
 
   sortIconSchool.textContent = 'arrow_drop_down';
   sortTable(2, ascending); // The index of the FULL NAME column is 2 (0-based index)
   ascending = !ascending; // Toggle the sorting order
   sortIconName.textContent = ascending ? 'arrow_drop_down' : 'arrow_drop_up';
+
+  
 });
 
+//Event listner for sorting by school, alphabetically, ascending and descending
 schoolColumn.addEventListener('click', () => {
   let schoolAscending = true;
   if (schoolColumn !== document.activeElement) {
     schoolAscending = true;
+    dataAll.sort((a, b) => {
+      const aValue = a["Organization/School"].toLowerCase();
+      const bValue = b["Organization/School"].toLowerCase();
+      return ascending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+    });
+    console.log(dataAll)
   } else {
     schoolAscending = !schoolAscending;
+    dataAll.sort((a, b) => {
+      const aValue = a["Organization/School"].toLowerCase();
+      const bValue = b["Organization/School"].toLowerCase();
+      return ascending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+    });
+    console.log(dataAll)
   }
   sortIconName.textContent = 'arrow_drop_down';
   sortTable(4, ascending); // The index of the FULL NAME column is 2 (0-based index)
   ascending = !ascending; // Toggle the sorting order
   sortIconSchool.textContent = ascending ? 'arrow_drop_down' : 'arrow_drop_up';
+
+
+
 });
 
-//function to display amount selected 
-
-
-//Function to search for forms
 
 ////////////////////////////
 //SHOW FILTERS ON CLICK

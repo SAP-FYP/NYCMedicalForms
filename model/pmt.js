@@ -6,8 +6,7 @@ module.exports.retrieveAllSubmissions = function retrieveAllSubmissions() {
     FROM form F
     INNER JOIN student S ON F.studentId = S.studentId
     INNER JOIN doctor D ON F.doctorMCR = D.doctorMCR
-    ORDER BY F.formId;
-                    ;`;
+    ORDER BY F.formId;`;
   return query(sql)
     .then((result) => {
       if (result.length === 0) {
