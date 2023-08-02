@@ -1,12 +1,14 @@
 window.addEventListener('DOMContentLoaded', () => {
     const schoolInput = document.getElementById('form-input-applicant-school');
     const raceInput = document.getElementById('form-input-applicant-race');
+    const alertContainer = document.getElementById('alertbox');
+
     // === FETCHES ===
 
     const fetchSchools = fetch('/getSchools')
         .then((response) => {
             if (!response) {
-                const error = new Error("No schools found");
+                const error = new Error("Failed to load schools. Please try again later.");
                 error.status = response.status;
                 throw error;
             }
@@ -23,7 +25,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const fetchRaces = fetch('/getRaces')
         .then((response) => {
             if (!response) {
-                const error = new Error("No races found");
+                const error = new Error("Failed to load races. Please try again later.");
                 error.status = response.status;
                 throw error;
             }
@@ -34,10 +36,41 @@ window.addEventListener('DOMContentLoaded', () => {
             populateRace(dataJson.result);
         })
         .catch((error) => {
-            alert(error)
+            alertBox(error.message, 'danger');
         })
 
     // === FUNCTIONS ===
+
+    const alertBox = (message, type) => {
+        const alertIcon = document.getElementById('alert-icon');
+        const alertMessage = document.getElementById('alert-message');
+        let alertColor;
+
+        if (type === 'danger') {
+            alertIcon.setAttribute('xlink:href', '#exclamation-triangle-fill');
+            alertColor = 'alert-danger';
+        } else if (type === 'success') {
+            alertIcon.setAttribute('xlink:href', '#check-circle-fill');
+            alertColor = 'alert-success';
+        } else if (type === 'warn') {
+            alertIcon.setAttribute('xlink:href', '#exclamation-triangle-fill');
+            alertColor = 'alert-warning';
+        } else if (type === 'info') {
+            alertIcon.setAttribute('xlink:href', '#info-fill');
+            alertColor = 'alert-primary';
+        }
+
+        alertMessage.textContent = message;
+        alertContainer.classList.add(alertColor)
+        alertContainer.classList.add('alert-visible');
+        alertContainer.classList.remove('alert-hidden');
+
+        setTimeout(() => {
+            alertContainer.classList.add('alert-hidden');
+            alertContainer.classList.remove('alert-visible');
+            alertContainer.classList.remove(alertColor);
+        }, 5000);
+    };
 
     const populateSchool = (schoolList) => {
         schoolList.forEach(school => {
@@ -70,7 +103,6 @@ window.addEventListener('DOMContentLoaded', () => {
             note = "OBS is unable to enrol the Applicant with the stated condition. Complete this registration and get in touch with the Teacher Coordinator for advice."
         }
 
-        // Check for the child element with class "insert-note-template"
         const insertNoteTemplateDiv = callingEl.querySelector('.insert-note-template');
 
         if (insertNoteTemplateDiv) {
@@ -86,9 +118,40 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    const submitForm = () => {
-
+    const submitForm = (data) => {
+        fetch('/obs-reg-form/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ data })
+        }).then((response) => {
+            if (response.status != 200) {
+                const error = new Error("Failed to submit form. Please try again later.");
+                error.status = response.status
+                throw error;
+            }
+            displayLanding();
+        }).catch((error) => {
+            alertBox(error.message, 'danger');
+        })
     }
+
+    const displayLanding = () => {
+        const template = document.querySelector("#landing-template");
+        const landingTemplateDiv = document.getElementsByClassName("container-fluid")[0];
+        landingTemplateDiv.classList.add('landing')
+
+        if (landingTemplateDiv) {
+            while (landingTemplateDiv.firstChild) {
+                landingTemplateDiv.removeChild(landingTemplateDiv.firstChild);
+            }
+        }
+
+        const content = template.content.cloneNode(true);
+        landingTemplateDiv.appendChild(content);
+    }
+
     // PARENT VALIDATIONS
     const validateParentSection = () => {
         let sectionIsValid = true;
@@ -719,7 +782,13 @@ window.addEventListener('DOMContentLoaded', () => {
             const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
             window.scrollTo({ top: y, behavior: 'instant' });
         } else {
-            submitForm();
+            let formData = {
+                parentData: parentValidation,
+                applicantData: applicantValidation,
+                healthData: healthValidation,
+                declarationData: declarationValidation
+            }
+            submitForm(formData);
         }
     }
 

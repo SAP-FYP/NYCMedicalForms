@@ -21,11 +21,33 @@
 </head>
 
 <body>
-    <!-- <button id="button2" style="position: fixed; z-index: 100; height: 400px; width: 200px; right: 0; top: 30%;">
-        submit
-    </button> -->
 
     <div class="container-fluid m-0">
+
+        <!-- ALERT BOX -->
+        <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+            <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+                <path
+                    d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+            </symbol>
+            <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
+                <path
+                    d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+            </symbol>
+            <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+                <path
+                    d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+            </symbol>
+        </svg>
+
+        <div class="alert d-flex align-items-center alert-hidden" role="alert" id="alertbox">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:">
+                <use id="alert-icon" xlink:href="#exclamation-triangle-fill" />
+            </svg>
+            <div id="alert-message">
+                An example alert with an icon
+            </div>
+        </div>
 
         <div class="row header-row">
             <div class="col-12 header-container">
@@ -55,14 +77,15 @@
                             Programme (the “Course”). </li>
                         <li>The information you have provided is taken as true and accurate to the best of your
                             knowledge, and you are taken to have read the "Important Note" provided at
-                            <a
-                                href="https://file.go.gov.sg/moeobs-importantnotes5d4n.pdf">https://file.go.gov.sg/moeobs-importantnotes5d4n.pdf</a>
+                            <a href="https://file.go.gov.sg/moeobs-importantnotes5d4n.pdf"
+                                target="_blank">https://file.go.gov.sg/moeobs-importantnotes5d4n.pdf</a>
                             and to have understood the Course
                             participation requirements, including permission to administer over-the-counter medication
                             to Applicant if necessary.
                         </li>
                         <li>Applicant's Tetanus Vaccination date is required and can be checked at
-                            <a href="https://www.nir.hpb.gov.sg">https://www.nir.hpb.gov.sg</a> or via the HealthHub
+                            <a href="https://www.nir.hpb.gov.sg" target="_blank">https://www.nir.hpb.gov.sg</a> or via
+                            the HealthHub
                             App.
                         </li>
                         <li>The Applicant has to be certified fit by a physician and/or specialist for the Course.
@@ -445,7 +468,7 @@
                         <div class="form-text help-text">Tetanus Vaccination is compulsory and has a validity of ten
                             (10) years<br>
                             Check the date of the Applicant’s Tetanus vaccination(s) at <a class="help-text-link"
-                                href="https://www.nir.hpb.gov.sg/">https://www.nir.hpb.gov.sg/</a><br>
+                                href="https://www.nir.hpb.gov.sg/" target="_blank">https://www.nir.hpb.gov.sg/</a><br>
                             (immunisation records are only available for children born in or after 1996).</div>
 
                         <div class="btn-group tetanusStatus" id="form-input-hasTetanus" style=" border: 0px !important;"
@@ -1452,7 +1475,7 @@
                                     For a full list of over-the-counter oral/topical medication that may be
                                     administered
                                     during the Course if necessary, refer to <a class="help-text-link"
-                                        href="www.go.gov.sg/OBSOTC">www.go.gov.sg/OBSOTC</a>
+                                        href="https://www.go.gov.sg/OBSOTC" target="_blank">www.go.gov.sg/OBSOTC</a>
                                 </li>
                                 <li>
                                     You are required to inform us through the Teacher Coordinator if your child
@@ -2214,17 +2237,50 @@
             <button id="submit-button">
                 Submit now
             </button>
+        </div>
+    </div>
 
-            <!-- TEMPLATES -->
-            <template id="note-template">
-                <h3 style="margin: 55px 0px 20px 0px"></h3>
-            </template>
+    <!-- TEMPLATES -->
+    <template id="note-template">
+        <h3 style="margin: 55px 0px 20px 0px"></h3>
+    </template>
 
-            <script src="https://unpkg.com/validator@latest/validator.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
-                integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
-                crossorigin="anonymous"></script>
-            <script src="index.js"></script>
+    <template id="landing-template">
+        <div class="col-12 form-container containers landing-div">
+            <h2>Thank you for registering your child/ward for the MOE-OBS Challenge</h2><br>
+            <div class="note-container section-container">
+                <div class="text-container">
+                    <p>An email with the submission will be sent to the email address provided. Please contact
+                        the Coordinator for more information regarding the medical examination.</p>
+                    <p>The submission of a completed Registration Form by the Parent/Legal Guardian of the
+                        Applicant
+                        indicates your interest to enrol the Applicant into the MOE-OBS Challenge Programme (the
+                        “Course”).
+
+                    <p><b>FREQUENTLY ASKED QUESTIONS</b><br>
+                        Qn.1 When will the Applicant know he/she is accepted into the
+                        OBS Course?</p>
+                    <p>We will process the Registration Form and inform the Coordinator of the Applicant’s
+                        enrolment status for the Course at least 3 weeks before the course. If you need more
+                        information please contact the Coordinator.</p>
+                    <p>Qn. 2 Where can I find out more about OBS?</p>
+                    <p>To find out more about OBS, visit <a class="help-text-link"
+                            href="https://www.nyc.gov.sg/en/obs">https://www.nyc.gov.sg/en/obs</a> or connect
+                        via our social
+                        media on<br>
+                        Facebook: outwardboundsingapore<br>
+                        Instagram: OutwardBoundSG<br>
+                        YouTube: OutwardBoundSpore</p>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script src="https://unpkg.com/validator@latest/validator.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+        crossorigin="anonymous"></script>
+    <script src="index.js"></script>
 </body>
 
 </html>
