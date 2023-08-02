@@ -35,7 +35,7 @@ function alertBox(message, type) {
     alertContainer.classList.add('alert-hidden');
     alertContainer.classList.remove('alert-visible');
     alertContainer.classList.remove(alertColor);
-  }, 4000);
+  }, 6000);
 };
 function handleError(error) {
   if (error && error.message !== 'redirected') {
@@ -61,7 +61,6 @@ function updateFormCounts(formData) {
     },
     { pendingParent: 0, pending: 0, approved: 0, rejected: 0 }
   );
-   console.log(formCounts); // Log the formCounts object to the console
   const pendingParentAmtElement = document.querySelector('.pendingParentAmt');
   const pendingAmtElement = document.querySelector('.pendingAmt');
   const apprAmtElement = document.querySelector('.apprAmt');
@@ -250,7 +249,6 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
 
       if (checkbox.checked) {
         targetDataArray.push(data);
-        console.log(targetDataArray.length)
         const tooltipInstance = bootstrap.Tooltip.getInstance(checkBoxTop);
         if (tooltipInstance) {
           tooltipInstance.dispose();
@@ -1036,7 +1034,6 @@ function toggleTooltipVisibility() {
       }
     }
   });
-  
 }
 
 // Add click event listener to the tipButton
@@ -1051,7 +1048,6 @@ if (tipButton) {
   });
 }
 
-
 function tooltipForCheckBoxTop(checkBoxTop) {
   checkBoxTop.setAttribute('data-bs-toggle', 'tooltip-hover');
   checkBoxTop.setAttribute('data-bs-placement', 'top');
@@ -1061,8 +1057,110 @@ function tooltipForCheckBoxTop(checkBoxTop) {
   }
   
 }
+//Function to sort table
+function sortTable(columnIndex, ascending) {
+  var table, rows, switching, i, x, y, shouldSwitch;
+  table = document.getElementById("dashboard-table");
+  switching = true;
+
+  while (switching) {
+    switching = false;
+    rows = table.rows;
+
+    for (i = 1; i < (rows.length - 1); i++) {
+      shouldSwitch = false;
+      x = rows[i].getElementsByTagName("TD")[columnIndex];
+      y = rows[i + 1].getElementsByTagName("TD")[columnIndex];
+
+      // Compare the values based on the sorting order (ascending or descending)
+      if (ascending) {
+        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+          shouldSwitch = true;
+          break;
+        }
+      } else {
+        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+          shouldSwitch = true;
+          break;
+        }
+      }
+    }
+
+    if (shouldSwitch) {
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+    }
+  }
+}
+
+//Function to change sort icon back to normal when other elements are clicked
+function changeBackSortIcon() {
+  ascending = true;
+  sortIconName.textContent = 'arrow_drop_down';
+  sortIconSchool.textContent = 'arrow_drop_down';
+}
 
 document.addEventListener("DOMContentLoaded", function () {
+  //Event listner for sorting by fullname, alphabetically, ascending and descending
+
+fullNameColumn.addEventListener('click', () => {
+  let nameAscending = true;
+  if (fullNameColumn !== document.activeElement) {
+    nameAscending = true;
+    dataAll.sort((a, b) => {
+      const aValue = a["Name of Applicant"].toLowerCase();
+      const bValue = b["Name of Applicant"].toLowerCase();
+      return ascending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+    });
+    console.log(dataAll)
+  } else {
+    nameAscending = !nameAscending;
+    dataAll.sort((a, b) => {
+      const aValue = a["Name of Applicant"].toLowerCase();
+      const bValue = b["Name of Applicant"].toLowerCase();
+      return ascending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+    });
+    console.log(dataAll)
+  }
+  
+
+  sortIconSchool.textContent = 'arrow_drop_down';
+  sortTable(2, ascending); // The index of the FULL NAME column is 2 (0-based index)
+  ascending = !ascending; // Toggle the sorting order
+  sortIconName.textContent = ascending ? 'arrow_drop_down' : 'arrow_drop_up';
+
+  
+});
+
+//Event listner for sorting by school, alphabetically, ascending and descending
+schoolColumn.addEventListener('click', () => {
+  alertBox("Click select all, then you can sort!", "warn")
+  let schoolAscending = true;
+  if (schoolColumn !== document.activeElement) {
+    schoolAscending = true;
+    dataAll.sort((a, b) => {
+      const aValue = a["Organization/School"].toLowerCase();
+      const bValue = b["Organization/School"].toLowerCase();
+      return ascending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+    });
+    console.log(dataAll)
+  } else {
+    schoolAscending = !schoolAscending;
+    dataAll.sort((a, b) => {
+      const aValue = a["Organization/School"].toLowerCase();
+      const bValue = b["Organization/School"].toLowerCase();
+      return ascending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+    });
+    console.log(dataAll)
+  }
+  sortIconName.textContent = 'arrow_drop_down';
+  sortTable(4, ascending); // The index of the FULL NAME column is 2 (0-based index)
+  ascending = !ascending; // Toggle the sorting order
+  sortIconSchool.textContent = ascending ? 'arrow_drop_down' : 'arrow_drop_up';
+
+
+
+});
   axios.get(`${API_URL}/all`)
     .then(function (response) {
       const configURL = response.config.url;
@@ -1077,7 +1175,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
       //remove user permission from array of data
       const userPermission = response.data.pop();
-      console.log(formData)
       updateFormCounts(formData);
 
       //call function to create export button for
@@ -1167,9 +1264,9 @@ document.addEventListener("DOMContentLoaded", function () {
       //Export to Excel Bulk Once
       const exportBtnBulk = document.querySelector('#export-btn-all');
       exportBtnBulk.addEventListener('click', function () {
-        console.log(dataAll);
         exportToExcelBulk(dataAll);
       });
+      
 
     })
     .catch(function (error) {
@@ -1178,194 +1275,11 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       console.log(error);
     });
-});
-
-
-//Function to sort table
-function sortTable(columnIndex, ascending) {
-  var table, rows, switching, i, x, y, shouldSwitch;
-  table = document.getElementById("dashboard-table");
-  switching = true;
-
-  while (switching) {
-    switching = false;
-    rows = table.rows;
-
-    for (i = 1; i < (rows.length - 1); i++) {
-      shouldSwitch = false;
-      x = rows[i].getElementsByTagName("TD")[columnIndex];
-      y = rows[i + 1].getElementsByTagName("TD")[columnIndex];
-
-      // Compare the values based on the sorting order (ascending or descending)
-      if (ascending) {
-        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-          shouldSwitch = true;
-          break;
-        }
-      } else {
-        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-          shouldSwitch = true;
-          break;
-        }
-      }
-    }
-
-    if (shouldSwitch) {
-      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-      switching = true;
-    }
-  }
-}
-//Function to change sort icon back to normal when other elements are clicked
-function changeBackSortIcon() {
-  ascending = true;
-  sortIconName.textContent = 'arrow_drop_down';
-  sortIconSchool.textContent = 'arrow_drop_down';
-}
-
-//Event listner for sorting by fullname, alphabetically, ascending and descending
-
-fullNameColumn.addEventListener('click', () => {
-  let nameAscending = true;
-  if (fullNameColumn !== document.activeElement) {
-    nameAscending = true;
-    dataAll.sort((a, b) => {
-      const aValue = a["Name of Applicant"].toLowerCase();
-      const bValue = b["Name of Applicant"].toLowerCase();
-      return ascending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
-    });
-    console.log(dataAll)
-  } else {
-    nameAscending = !nameAscending;
-    dataAll.sort((a, b) => {
-      const aValue = a["Name of Applicant"].toLowerCase();
-      const bValue = b["Name of Applicant"].toLowerCase();
-      return ascending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
-    });
-    console.log(dataAll)
-  }
-  
-
-  sortIconSchool.textContent = 'arrow_drop_down';
-  sortTable(2, ascending); // The index of the FULL NAME column is 2 (0-based index)
-  ascending = !ascending; // Toggle the sorting order
-  sortIconName.textContent = ascending ? 'arrow_drop_down' : 'arrow_drop_up';
-
-  
-});
-
-//Event listner for sorting by school, alphabetically, ascending and descending
-schoolColumn.addEventListener('click', () => {
-  let schoolAscending = true;
-  if (schoolColumn !== document.activeElement) {
-    schoolAscending = true;
-    dataAll.sort((a, b) => {
-      const aValue = a["Organization/School"].toLowerCase();
-      const bValue = b["Organization/School"].toLowerCase();
-      return ascending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
-    });
-    console.log(dataAll)
-  } else {
-    schoolAscending = !schoolAscending;
-    dataAll.sort((a, b) => {
-      const aValue = a["Organization/School"].toLowerCase();
-      const bValue = b["Organization/School"].toLowerCase();
-      return ascending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
-    });
-    console.log(dataAll)
-  }
-  sortIconName.textContent = 'arrow_drop_down';
-  sortTable(4, ascending); // The index of the FULL NAME column is 2 (0-based index)
-  ascending = !ascending; // Toggle the sorting order
-  sortIconSchool.textContent = ascending ? 'arrow_drop_down' : 'arrow_drop_up';
-
-
-
-});
-
-
-////////////////////////////
-//SHOW FILTERS ON CLICK
-////////////////////////////
-const filterIcons = document.querySelector('#filter-icon');
-const filterDropDowns = document.querySelector('.displayFilters');
-filterIcons.addEventListener('click', () => {
-  if (filterDropDowns.classList.contains('d-none')) {
-    filterDropDowns.classList.remove('d-none');
-  } else {
-    filterDropDowns.classList.add('d-none');
-  }
-});
-
-////////////////////////////
-//Navbar Error Handling
-////////////////////////////
-const navBarPerms = document.querySelector('#permission-li')
-const navBarUsers = document.querySelector('#user-li')
-const navBarForms = document.querySelector('#form-li')
-navBarPerms.addEventListener('click', function () {
-  alertBox('You do not have permission to access this page!', 'danger');
-});
-navBarUsers.addEventListener('click', function () {
-  alertBox('You do not have permission to access this page!', 'danger');
-});
-navBarForms.addEventListener('click', function () {
-  alertBox('You are already on this page', 'warn');
-});
-
-////////////////////////////
-// SEARCH Forms
-////////////////////////////
-
-const searchFormByName = document.querySelector('#searchInput');
-
-searchClearBtn.addEventListener('click', function () {
-  changeBackSortIcon()
-  searchFormByName.value = "";
-  const AllForm = document.querySelectorAll('#getAllForms tr');
-  AllForm.forEach(form => {
-    form.style.display = "";
-  })
-});
-
-searchBtn.addEventListener('click', function () {
-  changeBackSortIcon()
-  const searchValue = searchFormByName.value.toUpperCase();
-  const AllForm = document.querySelectorAll('#getAllForms tr');
-  AllForm.forEach(form => {
-    const textValue = form.textContent || form.innerText;
-    if (textValue.toUpperCase().indexOf(searchValue) > -1) {
-      form.style.display = "";
-    } else {
-      form.style.display = "none";
-    }
-  })
-})
-
-
-searchFormByName.addEventListener('keyup', function () {
-  changeBackSortIcon()
-  const searchValue = searchFormByName.value.toUpperCase();
-  const AllForm = document.querySelectorAll('#getAllForms tr');
-  AllForm.forEach(form => {
-    const textValue = form.textContent || form.innerText;
-    if (textValue.toUpperCase().indexOf(searchValue) > -1) {
-      form.style.display = "";
-    } else {
-      form.style.display = "none";
-    }
-  })
-})
-const exportBtnBulk = document.querySelector('#export-btn-search');
-  exportBtnBulk.removeEventListener('click', exportButtonHandler);
-  exportBtnBulk.addEventListener('click', exportButtonHandler);
-
-
 
 ////////////////////////////
 //Filters
 ////////////////////////////
-document.addEventListener('DOMContentLoaded', (event) => {
+
   var dropdownMenuStayOpen = document.querySelectorAll('.dropdown-menu-stay');
   const schoolMenuBtn = document.querySelector('#schoolMenuButton');
   const classMenuBtn = document.querySelector('#classMenuButton');
@@ -1914,7 +1828,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
     });
 
 const exportButtonHandler = () => {
-    console.log(dataAll);
     exportToExcelBulk(dataAll);
     alertBox("You have successfully exported the data to excel!", "success")
   }
@@ -1938,3 +1851,79 @@ const exportButtonHandler = () => {
     })
   })
 })
+
+////////////////////////////
+//SHOW FILTERS ON CLICK
+////////////////////////////
+const filterIcons = document.querySelector('#filter-icon');
+const filterDropDowns = document.querySelector('.displayFilters');
+filterIcons.addEventListener('click', () => {
+  if (filterDropDowns.classList.contains('d-none')) {
+    filterDropDowns.classList.remove('d-none');
+  } else {
+    filterDropDowns.classList.add('d-none');
+  }
+});
+
+////////////////////////////
+//Navbar Error Handling
+////////////////////////////
+const navBarPerms = document.querySelector('#permission-li')
+const navBarUsers = document.querySelector('#user-li')
+const navBarForms = document.querySelector('#form-li')
+navBarPerms.addEventListener('click', function () {
+  alertBox('You do not have permission to access this page!', 'danger');
+});
+navBarUsers.addEventListener('click', function () {
+  alertBox('You do not have permission to access this page!', 'danger');
+});
+navBarForms.addEventListener('click', function () {
+  alertBox('You are already on this page', 'warn');
+});
+
+////////////////////////////
+// SEARCH Forms
+////////////////////////////
+
+const searchFormByName = document.querySelector('#searchInput');
+
+searchClearBtn.addEventListener('click', function () {
+  changeBackSortIcon()
+  searchFormByName.value = "";
+  const AllForm = document.querySelectorAll('#getAllForms tr');
+  AllForm.forEach(form => {
+    form.style.display = "";
+  })
+});
+
+searchBtn.addEventListener('click', function () {
+  changeBackSortIcon()
+  const searchValue = searchFormByName.value.toUpperCase();
+  const AllForm = document.querySelectorAll('#getAllForms tr');
+  AllForm.forEach(form => {
+    const textValue = form.textContent || form.innerText;
+    if (textValue.toUpperCase().indexOf(searchValue) > -1) {
+      form.style.display = "";
+    } else {
+      form.style.display = "none";
+    }
+  })
+})
+
+
+searchFormByName.addEventListener('keyup', function () {
+  changeBackSortIcon()
+  const searchValue = searchFormByName.value.toUpperCase();
+  const AllForm = document.querySelectorAll('#getAllForms tr');
+  AllForm.forEach(form => {
+    const textValue = form.textContent || form.innerText;
+    if (textValue.toUpperCase().indexOf(searchValue) > -1) {
+      form.style.display = "";
+    } else {
+      form.style.display = "none";
+    }
+  })
+})
+const exportBtnBulk = document.querySelector('#export-btn-search');
+  exportBtnBulk.removeEventListener('click', exportButtonHandler);
+  exportBtnBulk.addEventListener('click', exportButtonHandler);
