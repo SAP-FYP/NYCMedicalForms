@@ -207,7 +207,7 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
         if (tooltipInstance) {
           tooltipInstance.dispose();
         }
-        checkBoxTop.setAttribute('data-bs-title', `Click To Select All (0 Selected)`);
+        checkBoxTop.setAttribute('data-bs-title', `Click To Select All (${targetDataArray.length} Selected)`);
         new bootstrap.Tooltip(checkBoxTop, { trigger: 'hover' });
       }
     });
@@ -268,7 +268,7 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
         if (tooltipInstance) {
           tooltipInstance.dispose();
         }
-        checkBoxTop.setAttribute('data-bs-title', `Click To Select All (0 Selected)`);
+        checkBoxTop.setAttribute('data-bs-title', `Click To Select All (${targetDataArray.length} Selected)`);
         new bootstrap.Tooltip(checkBoxTop, { trigger: 'hover' });
       }
     });
