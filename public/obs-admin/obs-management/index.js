@@ -1191,14 +1191,30 @@ function changeBackSortIcon() {
   sortIconName.textContent = 'arrow_drop_down';
   sortIconSchool.textContent = 'arrow_drop_down';
 }
+
 //Event listner for sorting by fullname, alphabetically, ascending and descending
 fullNameColumn.addEventListener('click', () => {
+  let nameAscending = true;
+  if (fullNameColumn !== document.activeElement) {
+    nameAscending = true;
+  } else {
+    nameAscending = !nameAscending;
+  }
+
+  sortIconSchool.textContent = 'arrow_drop_down';
   sortTable(2, ascending); // The index of the FULL NAME column is 2 (0-based index)
   ascending = !ascending; // Toggle the sorting order
   sortIconName.textContent = ascending ? 'arrow_drop_down' : 'arrow_drop_up';
 });
 
 schoolColumn.addEventListener('click', () => {
+  let schoolAscending = true;
+  if (schoolColumn !== document.activeElement) {
+    schoolAscending = true;
+  } else {
+    schoolAscending = !schoolAscending;
+  }
+  sortIconName.textContent = 'arrow_drop_down';
   sortTable(4, ascending); // The index of the FULL NAME column is 2 (0-based index)
   ascending = !ascending; // Toggle the sorting order
   sortIconSchool.textContent = ascending ? 'arrow_drop_down' : 'arrow_drop_up';
