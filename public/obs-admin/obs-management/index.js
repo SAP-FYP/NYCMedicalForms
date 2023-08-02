@@ -1241,6 +1241,14 @@ navBarForms.addEventListener('click', function () {
 
 const searchFormByName = document.querySelector('#searchInput');
 
+searchClearBtn.addEventListener('click', function () {
+  searchFormByName.value = "";
+  const AllForm = document.querySelectorAll('#getAllForms tr');
+  AllForm.forEach(form => {
+    form.style.display = "";
+  })
+});
+
 searchBtn.addEventListener('click', function () {
   changeBackSortIcon()
   const searchValue = searchFormByName.value.toUpperCase();
