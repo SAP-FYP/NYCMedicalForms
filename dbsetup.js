@@ -130,9 +130,11 @@ const CREATE_TABLE_SQL = `
     isHeartSpecialist VARCHAR(3) NULL,
     isBloodCondition VARCHAR(3) NOT NULL,
     diagnosisBlood VARCHAR(255) NULL,
+    isBloodSpecialist VARCHAR(3) NULL,
     isEpilepsyCondition VARCHAR(3) NOT NULL,
     isEpliepsyEpisode VARCHAR(3) NULL,
-    isOnEpliepsyMeds VARCHAR(3) NULL,  
+    isOnEpliepsyMeds VARCHAR(3) NULL,
+    isEpliepsySpecialist VARCHAR(3) NULL,  
     isBoneCondition VARCHAR(3) NOT NULL,
     stateBoneCondition VARCHAR(255) NULL,
     dateOfBoneCondition DATE NULL,
@@ -208,7 +210,6 @@ const CREATE_TABLE_SQL = `
     .catch(function (error) {
         if (error.code === 'ER_TABLE_EXISTS_ERROR') {
             throw new Error('Table already exists');
-        }
-        
+        }    
         throw error;
     });
