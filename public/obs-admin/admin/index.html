@@ -98,7 +98,8 @@
                 </div>
 
                 <div class="col-12 d-flex">
-                    <div class="col-11 d-flex justify-content-start align-items-center" id="bulk-action">
+                    <!-- BULK ACTIONS -->
+                    <div class="col-10 d-flex justify-content-start align-items-center" id="bulk-action">
                         <button class="bulk-dropdown dropdown-toggle" data-bs-toggle="dropdown">
                             Bulk Actions
                         </button>
@@ -113,13 +114,27 @@
                         <label id="bulk-delete-selected">1 User Selected</label>
                     </div>
 
-                    <div class="col-1 d-flex justify-content-end">
-                        <span data-bs-toggle="modal" data-bs-target="#createUserModal">
-                            <button style="border:none; cursor: default;" id="open-modal-button"
-                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Create new user">
-                                <img id="create-user-icon" src="../../assets/images/create-user-icon.png">
-                            </button>
-                        </span>
+                    <!-- CREATE / SORT USER BUTTON -->
+                    <div class="col-2 d-flex justify-content-end">
+                        <div id="sort-btn-container">
+                            <span>
+                                <select id="sort-select">
+                                    <option value="0" selected>Sort users</option>
+                                    <option value="1">Name</option>
+                                    <option value="2">Email</option>
+                                    <option value="3">Status</option>
+                                    <option value="4">Date Created</option>
+                                </select>
+                            </span>
+                        </div>
+                        <div id="create-btn-container">
+                            <span data-bs-toggle="modal" data-bs-target="#createUserModal">
+                                <button style="border:none; cursor: default;" id="open-modal-button"
+                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Create new user">
+                                    <img id="create-user-icon" src="../../assets/images/create-user-icon.png">
+                                </button>
+                            </span>
+                        </div>
                     </div>
                 </div>
 

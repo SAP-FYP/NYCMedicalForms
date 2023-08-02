@@ -968,6 +968,22 @@ app.post('/parent/acknowledged', parentAuthHelper.verifyToken, parentAuthHelper.
         })
 });
 
+app.get('/getRaces', (req, res, next) => {
+    return parentModel
+        .getRaces()
+        .then((result) => {
+            if (!result) {
+                const error = new Error("No races found")
+                error.status = 404;
+                throw error
+            }
+            return res.json({ result })
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        });
+});
+
 
 /**
  * User: Super Admin    
@@ -1002,6 +1018,8 @@ app.post('/obs-admin/newuser', authHelper.verifyToken, authHelper.checkIat, (req
     if (newuser.role == 1) {
         newuser.permissionGroup = 0
     }
+
+    console.log(`Email: ${newuser.email} | Generated Password: ${newuser.password}`)
 
     // HASHING PASSWORD
     bcrypt.hash(newuser.password, 10, async function (err, hash) {
@@ -1052,7 +1070,7 @@ app.post('/obs-admin/newuser', authHelper.verifyToken, authHelper.checkIat, (req
 });
 
 // Get All Users
-app.get('/obs-admin/users/:search/:limit/:offset', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+app.get('/obs-admin/users/:search/:limit/:offset/:order', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
 
     // AUTHORIZATION CHECK - ADMIN
     if (req.decodedToken.role != 1) {
@@ -1064,12 +1082,24 @@ app.get('/obs-admin/users/:search/:limit/:offset', authHelper.verifyToken, authH
         searchInput = req.params.search
     }
 
+    let orderInput;
+
+    if (req.params.order == 2) {
+        orderInput = 'email'
+    } else if (req.params.order == 3) {
+        orderInput = 'isDisabled'
+    } else if (req.params.order == 4) {
+        orderInput = 'created_at DESC'
+    } else {
+        orderInput = 'nameOfUser'
+    }
+
     const { email } = req.decodedToken
     const offset = parseInt(req.params.offset);
     const limit = parseInt(req.params.limit);
 
     return adminModel
-        .getAllUsers(email, searchInput, limit, offset)
+        .getAllUsers(email, searchInput, limit, offset, orderInput)
         .then((result) => {
             if (!result) {
                 const error = new Error("No users found")
@@ -1830,21 +1860,70 @@ app.post('/obs-admin/pmt/filter/', authHelper.verifyToken, authHelper.checkIat, 
 // Endpoint for exporting the Excel file
 app.get('/export', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
     // AUTHORIZATION CHECK - PMT
-    if (req.decodedToken.role != 2) {
-        return res.redirect('/error?code=403&type=obs-admin')
-    }
-    // IF NO PERMISSIONS
-    if (!req.decodedToken.permissions.includes(5)) {
-        return res.redirect('/error?code=403&type=obs-admin')
+    if (req.decodedToken.role !== 2) {
+        return res.redirect('/error?code=403&type=obs-admin');
     }
 
-    // Extract the form data from the request
-    const { applicantName, schoolOrg, classNo, courseDate, formStatus, mstReview, docReview } = req.query;
-    // Create a new workbook
-    const workbook = XLSX.utils.book_new();
-    // Create a new worksheet with the form data
-    const worksheet = XLSX.utils.json_to_sheet([
-        {
+    // IF NO PERMISSIONS
+    if (!req.decodedToken.permissions.includes(5)) {
+        return res.redirect('/error?code=403&type=obs-admin');
+    }
+
+    try {
+        // Extract the form data from the request
+        const { applicantName, schoolOrg, classNo, courseDate, formStatus, mstReview, docReview } = req.query;
+        // Create a new workbook
+        const workbook = XLSX.utils.book_new();
+        // Create a new worksheet with the form data
+        const worksheet = XLSX.utils.json_to_sheet([
+            {
+                "Name of Applicant": applicantName,
+                "Organization/School": schoolOrg,
+                "Designation/Class": classNo,
+                "Course Date": courseDate,
+                "Form Status": formStatus,
+                "MST Review": mstReview,
+                "Doctor Review": docReview
+            },
+        ], {
+            header: [
+                "Name of Applicant",
+                "Organization/School",
+                "Designation/Class",
+                "Course Date",
+                "Form Status",
+                "MST Review",
+                "Doctor Review",
+            ],
+        });
+        // Set the column widths
+        const columnWidths = [
+            { wch: 30 }, // Name of Applicant (30 characters width)
+            { wch: 20 }, // Organization/School (20 characters width)
+            { wch: 15 }, // Designation/Class (15 characters width)
+            { wch: 15 }, // Course Date (15 characters width)
+            { wch: 15 }, // Form Status (15 characters width)
+            { wch: 15 }, // MST Review (15 characters width)
+            { wch: 15 }, // Doctor Review (15 characters width)
+        ];
+
+        // Apply column widths to the worksheet
+        worksheet['!cols'] = columnWidths;
+        // Add the worksheet to the workbook
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Student Data");
+
+        // Generate the Excel file buffer
+        const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+
+        // Set the response headers for downloading the file
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', 'attachment; filename="' + encodeURIComponent(applicantName) + '.xlsx"');
+
+        // Send the Excel file buffer as the response
+        res.send(excelBuffer);
+
+        // Log successful export
+        console.log('Data successfully exported to Excel:', {
             "Name of Applicant": applicantName,
             "Organization/School": schoolOrg,
             "Designation/Class": classNo,
@@ -1852,36 +1931,17 @@ app.get('/export', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
             "Form Status": formStatus,
             "MST Review": mstReview,
             "Doctor Review": docReview
-        },
-    ], {
-        header: [
-            "Name of Applicant",
-            "Organization/School",
-            "Designation/Class",
-            "Course Date",
-            "Form Status",
-            "MST Review",
-            "Doctor Review",
-        ],
-    });
-    // Add the worksheet to the workbook
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Student Data");
+        },);
 
-    // Generate the Excel file buffer
-    const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-
-    // Set the response headers for downloading the file
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename="' + encodeURIComponent(applicantName) + '.xlsx"');
-
-    // Send the Excel file buffer as the response
-    res.send(excelBuffer);
+    } catch (error) {
+        console.error('Export request failed:', error);
+        res.status(400).send('Export request failed');
+    }
 });
-
 // Endpoint for exporting the Excel file in bulk
 app.post('/export-bulk', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
     // AUTHORIZATION CHECK - PMT
-    if (req.decodedToken.role != 2) {
+    if (req.decodedToken.role !== 2) {
         return res.redirect('/error?code=403&type=obs-admin');
     }
 
@@ -1892,8 +1952,17 @@ app.post('/export-bulk', authHelper.verifyToken, authHelper.checkIat, (req, res)
 
     // Retrieve the bulk data from the request body
     const data = req.body.data;
-
     const dataArray = JSON.parse(data);
+    try {
+        console.log('Data successfully exported to Excel:',dataArray)
+        console.log('Total rows in dataArray:', dataArray.length);
+        if (dataArray.length === 0) {
+            throw new Error('Invalid or empty data array');
+        }
+    } catch (error) {
+        console.log('Data parsing error:', error);
+        return res.status(400).json({ error: 'Invalid data format' });
+    }
 
     // Create a new worksheet with the formatted data
     const worksheet = XLSX.utils.json_to_sheet(dataArray, {
@@ -1908,6 +1977,20 @@ app.post('/export-bulk', authHelper.verifyToken, authHelper.checkIat, (req, res)
         ],
     });
 
+    // Set the column widths
+    const columnWidths = [
+        { wch: 30 }, // Name of Applicant (30 characters width)
+        { wch: 20 }, // Organization/School (20 characters width)
+        { wch: 15 }, // Designation/Class (15 characters width)
+        { wch: 15 }, // Course Date (15 characters width)
+        { wch: 15 }, // Form Status (15 characters width)
+        { wch: 15 }, // MST Review (15 characters width)
+        { wch: 15 }, // Doctor Review (15 characters width)
+    ];
+
+    // Apply column widths to the worksheet
+    worksheet['!cols'] = columnWidths;
+
     // Create a new workbook and add the worksheet to it
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Bulk Data');
@@ -1919,10 +2002,7 @@ app.post('/export-bulk', authHelper.verifyToken, authHelper.checkIat, (req, res)
     });
 
     // Set the response headers for downloading the file
-    res.setHeader(
-        'Content-Type',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    );
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', 'attachment; filename="exported-Bulk.xlsx"');
 
     // Send the Excel file buffer as the response
@@ -2268,6 +2348,7 @@ app.delete('/deleteStudentForm', authHelper.verifyToken, authHelper.checkIat, (r
 //Submit Registration Form
 app.post('/obs-reg-form/submit', (req, res, next) => {
     const formData = req.body;
+    // console.log(formData.raceId)
     return regFormModel
         .submitRegForm(formData) // Assuming the function in regFormModel is named submitRegForm
         .then((result) => {
@@ -2276,7 +2357,7 @@ app.post('/obs-reg-form/submit', (req, res, next) => {
         .catch((error) => {
             console.error('Error submitting form:', error);
             if (error.status === 401) {
-                return res.status(401).json({ error: 'Unauthorized' });
+                return res.status(401).json({ error: 'Unauthorized' }); t
             } else if (error.code === 'ER_DUP_ENTRY') {
                 return res.status(409).json({ error: 'Duplicate entry in the database' });
             } else {

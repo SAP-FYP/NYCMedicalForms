@@ -129,6 +129,17 @@ body {
     margin-top: 60px;
 }
 
+#load-overlay {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    height: 100vh;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.671);
+}
+
 /* MODAL */
 #change-password-modal,
 #enter-password-modal {
@@ -218,6 +229,7 @@ body {
     background-color: white;
     cursor: pointer;
     padding: 8px 20px;
+    width: 120px;
 }
 
 #enter-password-modal>#modal-footer {

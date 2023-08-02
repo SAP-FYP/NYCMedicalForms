@@ -5,11 +5,11 @@ module.exports.submitRegForm = function submitRegForm(data) {
     const columns = [
       "raceId", "parentName", "parentEmail", "parentNo", "altParentNo", "relationToApplicant", "isYouEmergencyContact",
       "emergencyContactName", "emergencyContactNo", "relationToEmergencyContact", "altEmergencyContactNo", "applicantNRIC", "applicantName",
-      "aplicantSchool", "applicantClass", "applicantResidentialStatus", "applicantDOB", "applicantGender", "applicantEmail", "applicantAddr",
+      "applicantSchool", "applicantClass", "applicantResidentialStatus", "applicantDOB", "applicantGender", "applicantEmail", "applicantAddr",
       "applicantDietary", "isApplicantVaccinationValid", "applicantVaccinationDate", "applicantHeight", "applicantWeight", "applicantBMI",
       "isBreathingCondition", "diagnosisBreathing", "lastDateBreathing", "isOnBreathingMeds", "stateBreathingMeds", "isBreathingSpecialist",
-      "isBreathingExercise", "isHeartCondition", "stateHeartCondition", "isHeartSpecialist", "isBloodCondition", "diagnosisBlood",
-      "isEpilepsyCondition", "isEpliepsyEpisode", "isOnEpliepsyMeds", "isBoneCondition", "stateBoneCondition", "dateOfBoneCondition",
+      "isBreathingExercise", "isHeartCondition", "stateHeartCondition", "isHeartSpecialist", "isBloodCondition", "diagnosisBlood","isBloodSpecialist",
+      "isEpilepsyCondition", "isEpliepsyEpisode", "isOnEpliepsyMeds", "isEpliepsySpecialist","isBoneCondition", "stateBoneCondition", "dateOfBoneCondition",
       "isBoneSpecialist", "isBoneFullyRecovered", "furtherInfoOnBone","isBehaviouralCondition", "stateBehaviouralCondition", "isBehaviouralSpecialist", "progressOfTreatingBehavioural",
       "stateBehaviouralAtHome","stateBehaviouralHelpTips", "isAcceptSafetyRisks", "isAcceptParticipation", "isOnLongTermMeds", "stateLongTermMeds", "isInfectiousCondition",
       "stateInfectiousCondition", "isSleepWalking", "lastDateSleepWalking", "isAllergicToMeds", "stateAllergicToMeds", "isAllergicToEnvironment",
@@ -21,7 +21,7 @@ module.exports.submitRegForm = function submitRegForm(data) {
       "isAcceptAllRisk", "isAcceptPersonalData", "isDeclineUseOfContactInfo", "isDeclineUseOfPhoto"
     ];
 
-     const values = [];
+    const values = [];
     columns.forEach((column) => {
         values.push(data[column]);
     });

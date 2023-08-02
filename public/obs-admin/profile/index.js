@@ -159,6 +159,9 @@ window.addEventListener('DOMContentLoaded', () => {
             }
         })
         .catch(handleError)
+        .finally(() => {
+            document.getElementById('load-overlay').style.display = 'none';
+        })
 
     // UPDATE PASSWORD
     const updateUserPassword = (password) => {
@@ -197,7 +200,11 @@ window.addEventListener('DOMContentLoaded', () => {
                 alertBox('Successfully updated profile.', 'success');
                 enterPasswordModal.hide();
             })
-            .catch(handleError);
+            .catch(handleError)
+            .finally(() => {
+                document.getElementById('submit-password-btn').disabled = false;
+                document.getElementById('submit-password-btn').value = "Submit";
+            })
     }
 
     // === EVENT HANDLERS ===
@@ -212,6 +219,8 @@ window.addEventListener('DOMContentLoaded', () => {
             if (!password) {
                 passwordInput.classList.add('is-invalid');
             } else {
+                document.getElementById('submit-password-btn').disabled = true;
+                document.getElementById('submit-password-btn').value = "Saving";
                 const webFormData = new FormData();
 
                 webFormData.append('name', nameInput.value.trim());

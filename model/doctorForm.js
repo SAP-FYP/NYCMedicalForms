@@ -11,36 +11,36 @@ const {
 module.exports.matchDoctorInfo = function matchDoctorInfo(doctorMCR) {
   const sql = `SELECT * FROM doctor WHERE doctorMCR = ?;`;
   return query(sql, [doctorMCR])
-  .then(result =>{
-    const rows = result[0];
-    console.log(rows);
-    if (rows.length === 0) {
-      throw new UserNotFoundError('No doctor found with the provided MCR');
-    }
-    return rows;
-  })
+    .then(result => {
+      const rows = result[0];
+      console.log(rows);
+      if (rows.length === 0) {
+        throw new UserNotFoundError('No doctor found with the provided MCR');
+      }
+      return rows;
+    })
 };
 
 module.exports.postDoctorInfo = function postDoctorInfo(doctorMCR, physicianName, encryptedsignatureInfo, clinicName, clinicAddress, doctorContact) {
   const sql = `INSERT INTO doctor (doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo) VALUES (?,?,?,?,?,?)`;
   return query(sql, [doctorMCR, physicianName, encryptedsignatureInfo, clinicName, clinicAddress, doctorContact])
-    .then(result =>{
-        const affectedRows = result[0].affectedRows;
-        if (affectedRows === 0) {
-          throw new Error("No rows inserted");
-        }
-        return result;
+    .then(result => {
+      const affectedRows = result[0].affectedRows;
+      if (affectedRows === 0) {
+        throw new Error("No rows inserted");
+      }
+      return result;
     })
     .catch(error => {
       console.error('Error in postDoctorInfo:', error);
       if (error.code === 'ER_DUP_ENTRY') {
         // Handle duplicate entry error
         throw new DUPLICATE_ENTRY_ERROR('Doctor Duplicate entry');
-      } 
-      else if(error.code === 'ER_TRUNCATED_WRONG_VALUE_FOR_FIELD'){
+      }
+      else if (error.code === 'ER_TRUNCATED_WRONG_VALUE_FOR_FIELD') {
         throw new WRONG_VALUE_FOR_FIELD('Wrong value type for field');
       }
-      else if(error.message === 'No rows inserted'){
+      else if (error.message === 'No rows inserted') {
         throw new Error('No rows inserted');
       }
       throw new Error('Database error');
@@ -50,33 +50,7 @@ module.exports.postDoctorInfo = function postDoctorInfo(doctorMCR, physicianName
 module.exports.postStudentInfo = function postStudentInfo(studentNRIC, studentName, dateOfBirth, studentClass, schoolName, dateOfVaccine) {
   const sql = `INSERT INTO student (studentNRIC,nameOfStudent,dateOfBirth,class,school,dateOfVaccination) VALUES (?,?,?,?,?,?)`;
   return query(sql, [studentNRIC, studentName, dateOfBirth, studentClass, schoolName, dateOfVaccine])
-  .then(result =>{
-      const affectedRows = result[0].affectedRows;
-      if (affectedRows === 0) {
-        throw new Error("No rows inserted");
-      }
-      return result;
-  })
-  .catch(error => {
-      console.error('Error in postFormInfo:', error);
-      if (error.code === 'ER_DUP_ENTRY') {
-        // Handle duplicate entry error
-        throw new DUPLICATE_ENTRY_ERROR('Form Duplicate entry');
-      } 
-      else if(error.code === 'ER_TRUNCATED_WRONG_VALUE_FOR_FIELD'){
-        throw new WRONG_VALUE_FOR_FIELD('Wrong value type for field');
-      }
-      else if(error.message === 'No rows inserted'){
-        throw new Error('No rows inserted');
-      }
-      throw new Error('Database error');
-  });
-};
-
-module.exports.postFormInfo = function postFormInfo(studentId, courseDate, doctorMCR, eligibility, comments, date) {
-  const sql = `INSERT INTO form (studentId,courseDate,doctorMCR,eligibility,comments,examinationDate) VALUES (?,?,?,?,?,?)`;
-  return query(sql, [studentId, courseDate, doctorMCR, eligibility, comments, date])
-    .then(result =>{
+    .then(result => {
       const affectedRows = result[0].affectedRows;
       if (affectedRows === 0) {
         throw new Error("No rows inserted");
@@ -88,11 +62,37 @@ module.exports.postFormInfo = function postFormInfo(studentId, courseDate, docto
       if (error.code === 'ER_DUP_ENTRY') {
         // Handle duplicate entry error
         throw new DUPLICATE_ENTRY_ERROR('Form Duplicate entry');
-      } 
-      else if(error.code === 'ER_TRUNCATED_WRONG_VALUE_FOR_FIELD'){
+      }
+      else if (error.code === 'ER_TRUNCATED_WRONG_VALUE_FOR_FIELD') {
         throw new WRONG_VALUE_FOR_FIELD('Wrong value type for field');
       }
-      else if(error.message === 'No rows inserted'){
+      else if (error.message === 'No rows inserted') {
+        throw new Error('No rows inserted');
+      }
+      throw new Error('Database error');
+    });
+};
+
+module.exports.postFormInfo = function postFormInfo(studentId, courseDate, doctorMCR, eligibility, comments, date) {
+  const sql = `INSERT INTO form (studentId,courseDate,doctorMCR,eligibility,comments,examinationDate) VALUES (?,?,?,?,?,?)`;
+  return query(sql, [studentId, courseDate, doctorMCR, eligibility, comments, date])
+    .then(result => {
+      const affectedRows = result[0].affectedRows;
+      if (affectedRows === 0) {
+        throw new Error("No rows inserted");
+      }
+      return result;
+    })
+    .catch(error => {
+      console.error('Error in postFormInfo:', error);
+      if (error.code === 'ER_DUP_ENTRY') {
+        // Handle duplicate entry error
+        throw new DUPLICATE_ENTRY_ERROR('Form Duplicate entry');
+      }
+      else if (error.code === 'ER_TRUNCATED_WRONG_VALUE_FOR_FIELD') {
+        throw new WRONG_VALUE_FOR_FIELD('Wrong value type for field');
+      }
+      else if (error.message === 'No rows inserted') {
         throw new Error('No rows inserted');
       }
       throw new Error('Database error');
@@ -102,7 +102,7 @@ module.exports.postFormInfo = function postFormInfo(studentId, courseDate, docto
 module.exports.updateFormStatus = function updateFormStatus(studentId) {
   const sql = `UPDATE form SET formStatus = 'Pending Parent' WHERE studentId = ?`;
   return query(sql, [studentId])
-    .then(result =>{
+    .then(result => {
       const affectedRows = result[0];
       if (affectedRows === 0) {
         throw new Error("No rows updated");
@@ -113,7 +113,7 @@ module.exports.updateFormStatus = function updateFormStatus(studentId) {
         // Handle duplicate entry error
         throw new DUPLICATE_ENTRY_ERROR('Student Duplicate entry');
       }
-      else if(error.message === 'No rows updated'){
+      else if (error.message === 'No rows updated') {
         throw new Error('No rows updated');
       }
       throw new Error('Database error');
@@ -156,9 +156,8 @@ module.exports.getCourseDates = function getCourseDates() {
 };
 
 module.exports.getSchools = function getSchools() {
-  const sql = `SELECT schoolName FROM school`;
-  return query(sql)
-  .then(result =>{
+  const sql = `SELECT * FROM school`;
+  return query(sql).then(function (result) {
     const rows = result;
     if (rows.length === 0) {
       throw new EMPTY_RESULT_ERROR('No Schools Found');
@@ -322,21 +321,21 @@ module.exports.getStudentFormStatus = function getStudentFormStatus(studentNRIC)
 
   `;
   return query(sql, [studentNRIC])
-  .then(result =>{
-    const rows = result[0];
-    if (rows.length === 0) {
-      throw new EMPTY_RESULT_ERROR('No students Found');
-    }
-    return rows;
-  });
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No students Found');
+      }
+      return rows;
+    });
 }
 
-module.exports.deleteStudentForm = async function deleteStudentForm(studentId,formStatus) {
+module.exports.deleteStudentForm = async function deleteStudentForm(studentId, formStatus) {
   const connection = await pool.getConnection();
   try {
     await connection.beginTransaction();
 
-    if(formStatus === 'Pending Parent'){
+    if (formStatus === 'Pending Parent') {
       console.log('deleting parentAcknowledgement...')
       const sql0 = `DELETE FROM parentAcknowledgement WHERE studentId = ?`;
       const result0 = await connection.query(sql0, [studentId])
@@ -363,7 +362,7 @@ module.exports.deleteStudentForm = async function deleteStudentForm(studentId,fo
     if (affectedRows2 === 0) {
       throw new Error('Unable to delete form');
     }
-  
+
     await connection.commit();
     return affectedRows2;
   }
