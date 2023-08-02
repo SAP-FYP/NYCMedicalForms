@@ -189,6 +189,12 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
 
       if (isChecked) {
         targetDataArray.push(data);
+        const tooltipInstance = bootstrap.Tooltip.getInstance(checkBoxTop);
+        if (tooltipInstance) {
+          tooltipInstance.dispose();
+        }
+        checkBoxTop.setAttribute('data-bs-title', `Click To Select All (${targetDataArray.length} Selected)`);
+        new bootstrap.Tooltip(checkBoxTop, { trigger: 'hover' });
         appendExportIcon();
       } else {
         const index = targetDataArray.findIndex((item) => item["Name of Applicant"] === applicantName);
@@ -198,6 +204,12 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
         if (targetDataArray.length === 0) {
           removeExportIcon();
         }
+        const tooltipInstance = bootstrap.Tooltip.getInstance(checkBoxTop);
+        if (tooltipInstance) {
+          tooltipInstance.dispose();
+        }
+        checkBoxTop.setAttribute('data-bs-title', `Click To Select All`);
+        new bootstrap.Tooltip(checkBoxTop, { trigger: 'hover' });
       }
     });
   });
@@ -210,6 +222,13 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
       if (checkbox.checked === isChecked) {
         return;
       }
+      //parent element
+      const parentElement = checkbox.parentElement.parentElement;
+      const isHidden = parentElement.style.display === 'none';
+      if (isHidden) {
+        return;
+      }
+    
       checkbox.checked = isChecked;
       const applicantName = nameOfStudentCell.textContent;
       const schoolOrg = schoolCell.textContent;
@@ -231,6 +250,13 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
 
       if (checkbox.checked) {
         targetDataArray.push(data);
+        console.log(targetDataArray.length)
+        const tooltipInstance = bootstrap.Tooltip.getInstance(checkBoxTop);
+        if (tooltipInstance) {
+          tooltipInstance.dispose();
+        }
+        checkBoxTop.setAttribute('data-bs-title', `Click To Select All (${targetDataArray.length} Selected)`);
+        new bootstrap.Tooltip(checkBoxTop, { trigger: 'hover' });
         appendExportIcon();
       } else {
         const index = targetDataArray.findIndex((item) => item["Name of Applicant"] === applicantName);
@@ -240,6 +266,12 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
         if (targetDataArray.length === 0) {
           removeExportIcon();
         }
+        const tooltipInstance = bootstrap.Tooltip.getInstance(checkBoxTop);
+        if (tooltipInstance) {
+          tooltipInstance.dispose();
+        }
+        checkBoxTop.setAttribute('data-bs-title', `Click To Select All`);
+        new bootstrap.Tooltip(checkBoxTop, { trigger: 'hover' });
       }
     });
 
@@ -911,20 +943,22 @@ function exportToExcelBulk(data) {
         URL.revokeObjectURL(url);
         link.remove();
         alertBox("You have successfully exported the data to excel!", "success")
-      } else {
+      }
+      else {
         console.error("Invalid file format received:", contentType);
         alertBox("You do not have permission to export!", "danger")
         location.reload();
       }
     })
     .catch(error => {
-      // error.response.status === 431
+      if (error.response.status === 400){
+        alertBox("You did not select any rows to export!", "danger")
+      }
       console.error("Export request failed:", error);
     });
 }
 //expportButtonHandler
 const exportButtonHandler = () => {
-  console.log(dataAll);
   exportToExcelBulk(dataAll);
   alertBox("You have successfully exported the data to excel!", "success")
 }
@@ -967,7 +1001,7 @@ const tooltipTriggerListClick = [].slice.call(document.querySelectorAll('[data-b
 const tooltipTriggerListHover = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip-hover"]'));
 // Initialize Bootstrap tooltips
 tooltipTriggerListClick.forEach(function (tooltipTrigger) {
-  return new bootstrap.Tooltip(tooltipTrigger, { trigger: 'manaul' });
+  return new bootstrap.Tooltip(tooltipTrigger, { trigger: 'manual' });
 });
 tooltipTriggerListHover.forEach(function (tooltipTrigger) {
   return new bootstrap.Tooltip(tooltipTrigger, { trigger: 'hover' });
@@ -1021,8 +1055,7 @@ if (tipButton) {
 function tooltipForCheckBoxTop(checkBoxTop) {
   checkBoxTop.setAttribute('data-bs-toggle', 'tooltip-hover');
   checkBoxTop.setAttribute('data-bs-placement', 'top');
-  checkBoxTop.setAttribute('data-bs-title', 'Click To Select All');
-
+  checkBoxTop.setAttribute('data-bs-title', `Click To Select All`);
   if (checkBoxTop.hasAttribute('data-bs-toggle') ) {
     new bootstrap.Tooltip(checkBoxTop, { trigger: 'hover' });
   }
@@ -1112,7 +1145,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         //call function to handle checkboxes
         if (userPermission.includes(5)) { 
-      
           tooltipForCheckBoxTop(checkBoxTop)
           arrowIcon.classList.remove('d-none');
           handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
@@ -1128,7 +1160,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
         handleModalButtons(clonedRowTemplate, studentId, formData, i);
-        ;
 
 
       }
@@ -1220,6 +1251,9 @@ schoolColumn.addEventListener('click', () => {
   sortIconSchool.textContent = ascending ? 'arrow_drop_down' : 'arrow_drop_up';
 });
 
+//function to display amount selected 
+
+
 //Function to search for forms
 
 ////////////////////////////
@@ -1258,6 +1292,7 @@ navBarForms.addEventListener('click', function () {
 const searchFormByName = document.querySelector('#searchInput');
 
 searchClearBtn.addEventListener('click', function () {
+  changeBackSortIcon()
   searchFormByName.value = "";
   const AllForm = document.querySelectorAll('#getAllForms tr');
   AllForm.forEach(form => {
@@ -1293,6 +1328,9 @@ searchFormByName.addEventListener('keyup', function () {
     }
   })
 })
+const exportBtnBulk = document.querySelector('#export-btn-search');
+  exportBtnBulk.removeEventListener('click', exportButtonHandler);
+  exportBtnBulk.addEventListener('click', exportButtonHandler);
 
 
 
@@ -1365,12 +1403,12 @@ document.addEventListener('DOMContentLoaded', (event) => {
     courseDateCount = 0;
     eligibilityCount = 0;
     unhideClearFilterBtn();
-    pullDataWithFilter();
+    pullDataWithFilter(exportButtonHandler);
   });
 
 
 
-  function pullDataWithFilter() {
+  function pullDataWithFilter(exportButtonHandler) {
     changeBackSortIcon()
     // Pull data to display in table
     axios.post(`/obs-admin/pmt/filter`, {
@@ -1442,7 +1480,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
           // Get references to the status container and template
           const getAllForms = document.querySelector('#getAllForms');
           const rowTemplate = document.querySelector('.row-table-template');
-
+          //checkbox
+     
+  
           //clear html content in getAllForms once since using template
           if (i === 0) {
             dataAll = [];
@@ -1451,49 +1491,49 @@ document.addEventListener('DOMContentLoaded', (event) => {
           // Clone the template and append it to the status container
           const templateContent = rowTemplate.content;
           const clonedRowTemplate = document.importNode(templateContent, true);
-
-      // Populate the cloned template function
-      const {
-        studentNRICCell,
-        nameOfStudentCell,
-        classCell,
-        schoolCell,
-        eligibilityCell,
-        formattedDateCell,
-        formStatusValue,
-        studentId,
-        mstReviewCell,
-        docReviewCell
-      } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
-      //call function to handle checkboxes
-      if (userPermission.includes(5)) {
-        const checkBoxTop = document.querySelector('#checkBoxTop');
-        tooltipForCheckBoxTop(checkBoxTop);
-        arrowIcon.classList.remove('d-none');
-        handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
-      } else {
-        const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
-        const checkBoxTop = document.querySelector('#checkBoxTop');
-        checkBoxes.forEach(function (checkBox) {
-          checkBox.classList.add('d-none');
-        });
-        checkBoxTop.classList.add('d-none');
-      }
-
-
+  
+          // Populate the cloned template function
+          const {
+            studentNRICCell,
+            nameOfStudentCell,
+            classCell,
+            schoolCell,
+            eligibilityCell,
+            formattedDateCell,
+            formStatusValue,
+            studentId,
+            mstReviewCell,
+            docReviewCell
+          } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
+          displayArrowIcons()
+  
+  
+          //call function to handle checkboxes
+          if (userPermission.includes(5)) { 
+        
+            tooltipForCheckBoxTop(checkBoxTop)
+            arrowIcon.classList.remove('d-none');
+            handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
+          } else {
+            const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
+            const checkBoxTop = document.querySelector('#checkBoxTop');
+            checkBoxes.forEach(function (checkBox) {
+              checkBox.classList.add('d-none');
+            });
+            checkBoxTop.classList.add('d-none');
+          }
+  
+  
           //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
           handleModalButtons(clonedRowTemplate, studentId, formData, i);
-          ;
-
-
+  
+  
         }
+       
         //Outside of for loop 
         //Export to Excel Bulk Once
-        const exportBtnBulk = document.querySelector('#export-btn-all');
-    exportBtnBulk.addEventListener('click', function () {
-      console.log(dataAll);
-      exportToExcelBulk(dataAll);
-    });
+        exportBtnBulkContainer.removeEventListener('click', exportButtonHandler);
+        exportBtnBulkContainer.addEventListener('click', exportButtonHandler);
 
   })
       .catch(function (error) {
@@ -1742,7 +1782,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             formStatusArray.push(rectangleButton.getAttribute('data-status'));
           }
           unhideClearFilterBtn();
-          pullDataWithFilter();
+          pullDataWithFilter(exportButtonHandler);
         })
       })
       allCheckBoxes.forEach(checkbox => {
@@ -1835,7 +1875,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             }
           }
           unhideClearFilterBtn();
-          pullDataWithFilter();
+          pullDataWithFilter(exportButtonHandler);
         })
       })
     })
@@ -1845,7 +1885,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
       }
     });
 
-
+const exportButtonHandler = () => {
+    console.log(dataAll);
+    exportToExcelBulk(dataAll);
+    alertBox("You have successfully exported the data to excel!", "success")
+  }
 
 
   // Search bar to search for filters in the respective .filter-div
