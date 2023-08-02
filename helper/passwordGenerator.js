@@ -31,6 +31,5 @@ module.exports.generatePassword = function generatePassword() {
     }
 
     const shuffledPassword = password.split('').sort(() => 0.5 - Math.random()).join('');
-    console.log('Generated Password: ' + shuffledPassword)
     return shuffledPassword;
 };
