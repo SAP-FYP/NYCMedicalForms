@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const elasticEmail = require('elasticemail');
 const cloudinary = require("cloudinary").v2;
-const { UserNotFoundError, DUPLICATE_ENTRY_ERROR, EMPTY_RESULT_ERROR } = require("./errors");
+const { UserNotFoundError, DUPLICATE_ENTRY_ERROR, EMPTY_RESULT_ERROR, WRONG_VALUE_FOR_FIELD } = require("./errors");
 const crypto = require('crypto');
 
 const key = Buffer.from(process.env.encryptKey, 'hex');
@@ -23,15 +23,13 @@ const formModel = require('./model/form');
 const adminModel = require('./model/admin');
 const pmtModel = require('./model/pmt');
 const mstModel = require('./model/mst');
+const regFormModel = require('./model/regForm');
 const cloudinaryModel = require('./model/cloudinary');
 const passwordGenerator = require('./helper/passwordGenerator');
 const momentHelper = require('./helper/epochConverter');
 const cronJob = require('./helper/cron');
-const { env } = require("process");
-const e = require("express");
 
 const app = express();
-const port = process.env.PORT || 3000;
 const JWT_SECRET = process.env.SECRETKEY;
 
 const twilioClient = require('twilio')(process.env.twilioSID, process.env.twilioToken);
@@ -62,6 +60,9 @@ app.get('/', (req, res) => {
     res.redirect(`/login`);
 });
 
+app.get('/obs-admin', (req, res) => {
+    res.redirect(`/obs-admin/login`);
+});
 // callback function - directs back to home page
 app.get('/callback', function (req, res) {
     res.sendFile(__dirname + '/public/index.html');
@@ -278,6 +279,7 @@ app.put('/user/password', authHelper.verifyToken, authHelper.checkIat, authHelpe
     const user = req.decodedToken;
 
     if (!user) {
+        console.log('UPDATE PASSWORD ERROR: User not found.')
         return res.redirect('/error?code=401&type=obs-admin')
     }
 
@@ -507,6 +509,7 @@ app.put('/user/profile', authHelper.verifyToken, authHelper.checkIat, authHelper
     const user = req.decodedToken;
 
     if (!user) {
+        console.log('UPDATE USER ERROR: User not found.')
         return res.redirect('/error?code=401&type=obs-admin')
     }
 
@@ -1017,12 +1020,14 @@ app.post('/obs-admin/newuser', authHelper.verifyToken, authHelper.checkIat, (req
                     throw error;
                 }
 
+                let urlLink;
+                newuser.role == 4 ? urlLink = 'https://form-obs.onrender.com' : urlLink = 'https://form-obs.onrender.com/obs-admin'
+
                 const emailOptions = {
                     to: newuser.email,
                     subject: "Welcome to the OBS Team!",
                     from: 'sg.outwardbound@gmail.com',
-                    body: `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Forget Password</title><style>body{font-family:Arial,sans-serif;padding:20px;background-color:#f5f5f5}.container{max-width:600px;margin:0 auto;background-color:#fff;padding:20px;border-radius:5px;box-shadow:0 2px 5px rgba(0,0,0,.1)}.logo{text-align:left;margin-bottom:40px}.logo img{max-width:300px}.message{margin-bottom:20px;font-size:16px}.password-block{background-color:#f5f5f5;padding:10px;border-radius:5px;text-align:center}.password{font-weight:700;font-size:24px;color:#007bff}.btn{display:inline-block;padding:10px 20px;background-color:#007bff;color:#fff;text-decoration:none;border-radius:5px;font-weight:700}.btn:hover{background-color:#0056b3}.footer{text-align:center;color:#888;font-size:14px;margin-top:20px;border-top:1px solid #ccc;padding-top:20px}.footer hr{margin-bottom:10px}.footer p{margin-bottom:10px}</style></head><body><div class="container"><div class="logo"><img src="https://res.cloudinary.com/sp-esde-2100030/image/upload/v1688051640/obs-logo_pi70gy.png" alt="Logo"></div><div class="message"><p><b>Hello ${newuser.name}, Welcome to the team!</b></p><p>Your account have been successfully created and you may now login with your email and the given password below.</p><div class="password-block"><span class="password" id="new-password">${generatedPassword}</span></div><p>Please use this password to log in to your account. We recommend changing your password after logging in for security reasons.</p><p>If you did not initiate this request, please ignore this email or contact our support team.</p></div><div class="footer"><p>This email was sent to you by the Administrative Team. If you have any questions, please contact our support team.</p><p>© National Youth Council | Outward Bound Singapore.</p></div></div></body></html>
-                    `,
+                    body: `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Forget Password</title><style>body{font-family:Arial,sans-serif;padding:20px;background-color:#f5f5f5}.container{max-width:600px;margin:0 auto;background-color:#fff;padding:20px;border-radius:5px;box-shadow:0 2px 5px rgba(0,0,0,.1)}.logo{text-align:left;margin-bottom:40px}.logo img{max-width:300px}.message{margin-bottom:20px;font-size:16px}.password-block{background-color:#f5f5f5;padding:10px;border-radius:5px;text-align:center}.password{font-weight:700;font-size:24px;color:#007bff}.btn{display:inline-block;padding:10px 20px;background-color:#007bff;color:#fff;text-decoration:none;border-radius:5px;font-weight:700}.btn:hover{background-color:#0056b3}.footer{text-align:center;color:#888;font-size:14px;margin-top:20px;border-top:1px solid #ccc;padding-top:20px}.footer hr{margin-bottom:10px}.footer p{margin-bottom:10px}.login-btn{display:inline-block;padding:10px 20px;background-color:#007bff;color:#fff;text-decoration:none;border-radius:5px;font-weight:700;margin-top:20px;margin-bottom:20px}.login-btn:hover{background-color:#0056b3}</style></head><body><div class="container"><div class="logo"><img src="https://res.cloudinary.com/sp-esde-2100030/image/upload/v1688051640/obs-logo_pi70gy.png" alt="Logo"></div><div class="message"><p><b>Hello ${newuser.name}, Welcome to the team!</b></p><p>Your account have been successfully created and you may now login with your email and the given password below.</p><div class="password-block"><span class="password" id="new-password">${generatedPassword}</span></div><p>Please use this password to log in to your account. We recommend changing your password after logging in for security reasons.</p><p>If you did not initiate this request, please ignore this email or contact our support team.</p></div><div style="text-align:center"><a class="login-btn" href="${urlLink}">Login Now</a></div><div class="footer"><p>This email was sent to you by the Administrative Team. If you have any questions, please contact our support team.</p><p>© National Youth Council | Outward Bound Singapore.</p></div></div></body></html>`,
                 };
 
                 elasticEmailClient.mailer.send(emailOptions, (error, result) => {
@@ -1551,12 +1556,14 @@ app.post('/obs-admin/reset/:email', authHelper.verifyToken, authHelper.checkIat,
             throw error;
         }
 
+        let urlLink;
+        result.roleId == 4 ? urlLink = 'https://form-obs.onrender.com' : urlLink = 'https://form-obs.onrender.com/obs-admin'
+
         const emailOptions = {
             to: email,
             subject: "Reset your OBS password",
             from: 'sg.outwardbound@gmail.com',
-            body: `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Forget Password</title><style>body{font-family:Arial,sans-serif;padding:20px;background-color:#f5f5f5}.container{max-width:600px;margin:0 auto;background-color:#fff;padding:20px;border-radius:5px;box-shadow:0 2px 5px rgba(0,0,0,.1)}.logo{text-align:left;margin-bottom:40px}.logo img{max-width:300px}.message{margin-bottom:20px; font-size: 16px;}.password-block{background-color:#f5f5f5;padding:10px;border-radius:5px;text-align:center}.password{font-weight:700;font-size:24px;color:#007bff}.btn{display:inline-block;padding:10px 20px;background-color:#007bff;color:#fff;text-decoration:none;border-radius:5px;font-weight:700}.btn:hover{background-color:#0056b3}.footer{text-align:center;color:#888;font-size:14px;margin-top:20px;border-top:1px solid #ccc;padding-top:20px}.footer hr{margin-bottom:10px}.footer p{margin-bottom:10px}</style></head><body><div class="container"><div class="logo"><img src="https://res.cloudinary.com/sp-esde-2100030/image/upload/v1688051640/obs-logo_pi70gy.png" alt="Logo"></div><div class="message"><p><b>Hello ${name},</b></p><p>You have requested a new password for your account. Below is your new password:</p><div class="password-block"><span class="password" id="new-password">${password}</span></div><p>Please use this password to log in to your account. We recommend changing your password after logging in for security reasons.</p><p>If you did not request a password reset, email or contact our support team immediately.</p></div><div class="footer"><p>This email was sent to you by the Administrative Team. If you have any questions, please contact our support team.</p><p>© National Youth Council | Outward Bound Singapore.</p></div></div></body></html>
-            `,
+            body: `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Forget Password</title><style>body{font-family:Arial,sans-serif;padding:20px;background-color:#f5f5f5}.container{max-width:600px;margin:0 auto;background-color:#fff;padding:20px;border-radius:5px;box-shadow:0 2px 5px rgba(0,0,0,.1)}.logo{text-align:left;margin-bottom:40px}.logo img{max-width:300px}.message{margin-bottom:20px;font-size:16px}.password-block{background-color:#f5f5f5;padding:10px;border-radius:5px;text-align:center}.password{font-weight:700;font-size:24px;color:#007bff}.btn{display:inline-block;padding:10px 20px;background-color:#007bff;color:#fff;text-decoration:none;border-radius:5px;font-weight:700}.btn:hover{background-color:#0056b3}.footer{text-align:center;color:#888;font-size:14px;margin-top:20px;border-top:1px solid #ccc;padding-top:20px}.footer hr{margin-bottom:10px}.footer p{margin-bottom:10px}.login-btn{display:inline-block;padding:10px 20px;background-color:#007bff;color:#fff;text-decoration:none;border-radius:5px;font-weight:700;margin-top:20px;margin-bottom:20px}.login-btn:hover{background-color:#0056b3}</style></head><body><div class="container"><div class="logo"><img src="https://res.cloudinary.com/sp-esde-2100030/image/upload/v1688051640/obs-logo_pi70gy.png" alt="Logo"></div><div class="message"><p><b>Hello ${name},</b></p><p>You have requested a new password for your account. Below is your new password:</p><div class="password-block"><span class="password" id="new-password">${password}</span></div><p>Please use this password to log in to your account. We recommend changing your password after logging in for security reasons.</p><p>If you did not request a password reset, email or contact our support team immediately.</p></div><div style="text-align:center"><a class="login-btn" href="${urlLink}">Login Now</a></div><div class="footer"><p>This email was sent to you by the Administrative Team. If you have any questions, please contact our support team.</p><p>© National Youth Council | Outward Bound Singapore.</p></div></div></body></html>`,
         };
 
         elasticEmailClient.mailer.send(emailOptions, (error, result) => {
@@ -1592,6 +1599,33 @@ app.get('/obs-admin/pmt/all', authHelper.verifyToken, authHelper.checkIat, async
     return pmtModel
         .retrieveAllSubmissions()
         .then((result) => {
+
+            if (result.length === 0) {
+                throw new Error("No submissions found");
+            }
+
+
+            result[0].push(req.decodedToken.permissions);
+            return res.json(result[0]);
+        })
+        .catch((error) => {
+            return res.status(error.status || 500).json({ error: error.message });
+        });
+});
+app.get('/obs-admin/pmt/formStatus/:formStatus', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
+    // AUTHORIZATION CHECK - PMT, MST 
+    const formStatus = req.params.formStatus;
+    if (req.decodedToken.role != 2 && req.decodedToken.role != 3) {
+        return res.redirect('/error?code=403&type=obs-admin')
+    }
+    // IF NO PERMISSIONS
+    if (!req.decodedToken.permissions.includes(1)) {
+        return res.redirect('/error?code=403&type=obs-admin')
+    }
+    return pmtModel
+        .getSubmissionByStatus(formStatus)
+        .then((result) => {
+
             if (result.length === 0) {
                 throw new Error("No submissions found");
             }
@@ -1619,21 +1653,34 @@ app.get('/obs-admin/pmt/:studentId', authHelper.verifyToken, authHelper.checkIat
 
     return pmtModel.retrieveSubmission(studentId)
         .then((result) => {
-            if (result.length === 0) {
+            if (result[0].length === 0) {
+
                 throw new Error(`${studentId}'s submission not found`);
             }
 
             const encryptedSignInfo = result[0][0].signature;
-            const key = Buffer.from('qW3eRt5yUiOpAsDfqW3eRt5yUiOpAsDf', 'utf8'); // must be 32 characters
-            const iv = Buffer.from('qW3eRt5yUiOpAsDf', 'utf8'); // must be 16 characters
+            const encryptedParentSignInfo = result[0][0].parentSignature;
+            const key = Buffer.from(process.env.signatureKey, 'utf8'); // must be 32 characters
+            const iv = Buffer.from(process.env.signatureIV, 'utf8'); // must be 16 characters
 
             // Create the decipher object
             const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
             let decrypted = decipher.update(encryptedSignInfo, 'hex', 'utf8');
             decrypted += decipher.final('utf8');
 
+            if (encryptedParentSignInfo !== null) {
+                const decipherParent = crypto.createDecipheriv('aes-256-cbc', key, iv);
+                let decryptedParent = decipherParent.update(encryptedParentSignInfo, 'hex', 'utf8');
+                decryptedParent += decipherParent.final('utf8');
+                result[0][0].parentSignature = decryptedParent
+            }
+
             result[0][0].signature = decrypted;
+
+
+
             result[0].push(req.decodedToken.permissions);
+
             return res.json(result[0]);
         })
         .catch((error) => {
@@ -1682,8 +1729,9 @@ app.get('/obs-admin/pmt/search/:search', authHelper.verifyToken, authHelper.chec
     return pmtModel
         .retrieveSubmissionBySearch(searchInput)
         .then((result) => {
-            if (result.length === 0) {
-                throw new Error("No submission found");
+
+            if (result[0].length === 0) {
+                return res.status(404).json({ error: "No submissions found" });
             }
             result[0].push(req.decodedToken.permissions);
             return res.json(result[0]);
@@ -1779,99 +1827,155 @@ app.post('/obs-admin/pmt/filter/', authHelper.verifyToken, authHelper.checkIat, 
 // Endpoint for exporting the Excel file
 app.get('/export', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
     // AUTHORIZATION CHECK - PMT
-    if (req.decodedToken.role != 2) {
-        return res.redirect('/error?code=403&type=obs-admin')
-    }
-    // IF NO PERMISSIONS
-    if (!req.decodedToken.permissions.includes(5)) {
-        return res.redirect('/error?code=403&type=obs-admin')
+    if (req.decodedToken.role !== 2) {
+        return res.redirect('/error?code=403&type=obs-admin');
     }
 
-    // Extract the form data from the request
-    const { applicantName, schoolOrg, classNo, courseDate, formStatus } = req.query;
-    // Create a new workbook
-    const workbook = XLSX.utils.book_new();
-    // Create a new worksheet with the form data
-    const worksheet = XLSX.utils.json_to_sheet([
-        {
+    // IF NO PERMISSIONS
+    if (!req.decodedToken.permissions.includes(5)) {
+        return res.redirect('/error?code=403&type=obs-admin');
+    }
+
+    try {
+        // Extract the form data from the request
+        const { applicantName, schoolOrg, classNo, courseDate, formStatus, mstReview, docReview } = req.query;
+        // Create a new workbook
+        const workbook = XLSX.utils.book_new();
+        // Create a new worksheet with the form data
+        const worksheet = XLSX.utils.json_to_sheet([
+            {
+                "Name of Applicant": applicantName,
+                "Organization/School": schoolOrg,
+                "Designation/Class": classNo,
+                "Course Date": courseDate,
+                "Form Status": formStatus,
+                "MST Review": mstReview,
+                "Doctor Review": docReview
+            },
+        ], {
+            header: [
+                "Name of Applicant",
+                "Organization/School",
+                "Designation/Class",
+                "Course Date",
+                "Form Status",
+                "MST Review",
+                "Doctor Review",
+            ],
+        });
+        // Set the column widths
+        const columnWidths = [
+            { wch: 30 }, // Name of Applicant (30 characters width)
+            { wch: 20 }, // Organization/School (20 characters width)
+            { wch: 15 }, // Designation/Class (15 characters width)
+            { wch: 15 }, // Course Date (15 characters width)
+            { wch: 15 }, // Form Status (15 characters width)
+            { wch: 15 }, // MST Review (15 characters width)
+            { wch: 15 }, // Doctor Review (15 characters width)
+        ];
+
+        // Apply column widths to the worksheet
+        worksheet['!cols'] = columnWidths;
+        // Add the worksheet to the workbook
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Student Data");
+
+        // Generate the Excel file buffer
+        const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+
+        // Set the response headers for downloading the file
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', 'attachment; filename="' + encodeURIComponent(applicantName) + '.xlsx"');
+
+        // Send the Excel file buffer as the response
+        res.send(excelBuffer);
+
+        // Log successful export
+        console.log('Data successfully exported to Excel:', {
             "Name of Applicant": applicantName,
             "Organization/School": schoolOrg,
             "Designation/Class": classNo,
             "Course Date": courseDate,
             "Form Status": formStatus,
-        },
-    ], {
+            "MST Review": mstReview,
+            "Doctor Review": docReview
+        },);
+
+    } catch (error) {
+        console.error('Export request failed:', error);
+        res.status(400).send('Export request failed');
+    }
+});
+// Endpoint for exporting the Excel file in bulk
+app.post('/export-bulk', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
+    // AUTHORIZATION CHECK - PMT
+    if (req.decodedToken.role !== 2) {
+        return res.redirect('/error?code=403&type=obs-admin');
+    }
+
+    // IF NO PERMISSIONS
+    if (!req.decodedToken.permissions.includes(5)) {
+        return res.redirect('/error?code=403&type=obs-admin');
+    }
+
+    // Retrieve the bulk data from the request body
+    const data = req.body.data;
+    const dataArray = JSON.parse(data);
+    try {
+        console.log('Data successfully exported to Excel:',dataArray)
+        console.log('Total rows in dataArray:', dataArray.length);
+        if (dataArray.length === 0) {
+            throw new Error('Invalid or empty data array');
+        }
+    } catch (error) {
+        console.log('Data parsing error:', error);
+        return res.status(400).json({ error: 'Invalid data format' });
+    }
+
+    // Create a new worksheet with the formatted data
+    const worksheet = XLSX.utils.json_to_sheet(dataArray, {
         header: [
-            "Name of Applicant",
-            "Organization/School",
-            "Designation/Class",
-            "Course Date",
-            "Form Status",
+            'Name of Applicant',
+            'Organization/School',
+            'Designation/Class',
+            'Course Date',
+            'Form Status',
+            'MST Review',
+            'Doctor Review',
         ],
     });
-    // Add the worksheet to the workbook
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Student Data");
+
+    // Set the column widths
+    const columnWidths = [
+        { wch: 30 }, // Name of Applicant (30 characters width)
+        { wch: 20 }, // Organization/School (20 characters width)
+        { wch: 15 }, // Designation/Class (15 characters width)
+        { wch: 15 }, // Course Date (15 characters width)
+        { wch: 15 }, // Form Status (15 characters width)
+        { wch: 15 }, // MST Review (15 characters width)
+        { wch: 15 }, // Doctor Review (15 characters width)
+    ];
+
+    // Apply column widths to the worksheet
+    worksheet['!cols'] = columnWidths;
+
+    // Create a new workbook and add the worksheet to it
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Bulk Data');
 
     // Generate the Excel file buffer
-    const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+    const excelBuffer = XLSX.write(workbook, {
+        type: 'buffer',
+        bookType: 'xlsx',
+    });
 
     // Set the response headers for downloading the file
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename="' + encodeURIComponent(applicantName) + '.xlsx"');
+    res.setHeader('Content-Disposition', 'attachment; filename="exported-Bulk.xlsx"');
 
     // Send the Excel file buffer as the response
     res.send(excelBuffer);
 });
 
-// Endpoint for exporting the Excel file in bulk
-app.post('/export-bulk', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
-    // AUTHORIZATION CHECK - PMT
-    if (req.decodedToken.role != 2) {
-      return res.redirect('/error?code=403&type=obs-admin');
-    }
-  
-    // IF NO PERMISSIONS
-    if (!req.decodedToken.permissions.includes(5)) {
-      return res.redirect('/error?code=403&type=obs-admin');
-    }
-  
-    // Retrieve the bulk data from the request body
-    const data = req.body.data;
-  
-    const dataArray = JSON.parse(data);
-  
-    // Create a new worksheet with the formatted data
-    const worksheet = XLSX.utils.json_to_sheet(dataArray, {
-      header: [
-        'Name of Applicant',
-        'Organization/School',
-        'Designation/Class',
-        'Course Date',
-        'Form Status',
-      ],
-    });
-  
-    // Create a new workbook and add the worksheet to it
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Bulk Data');
-  
-    // Generate the Excel file buffer
-    const excelBuffer = XLSX.write(workbook, {
-      type: 'buffer',
-      bookType: 'xlsx',
-    });
-  
-    // Set the response headers for downloading the file
-    res.setHeader(
-      'Content-Type',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    );
-    res.setHeader('Content-Disposition', 'attachment; filename="exported-Bulk.xlsx"');
-  
-    // Send the Excel file buffer as the response
-    res.send(excelBuffer);
-  });
-  
 
 //MST Update Submission Comment
 app.put('/obs-admin/mst/review/:studentId', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
@@ -1974,7 +2078,11 @@ app.post('/postDoctorInfo', authHelper.verifyToken, authHelper.checkIat, (req, r
             .catch(error => {
                 if (error instanceof DUPLICATE_ENTRY_ERROR) {
                     res.status(409).json({ message: error.message });
-                } else {
+                }
+                else if (error instanceof WRONG_VALUE_FOR_FIELD) {
+                    res.status(409).json({ message: error.message });
+                }
+                else {
                     res.status(500).json({ message: 'Internal server error' });
                 }
             })
@@ -1991,6 +2099,7 @@ app.post('/postStudentInfo', authHelper.verifyToken, authHelper.checkIat, (req, 
         return res.redirect('/error?code=403');
     }
     const { studentName, schoolName, dateOfBirth, studentNRIC, studentClass, dateOfVaccine } = req.body;
+    console.log(req.body);
     return doctorFormModel
         .postStudentInfo(studentNRIC, studentName, dateOfBirth, studentClass, schoolName, dateOfVaccine)
         .then(data => {
@@ -1999,7 +2108,11 @@ app.post('/postStudentInfo', authHelper.verifyToken, authHelper.checkIat, (req, 
         .catch(error => {
             if (error instanceof DUPLICATE_ENTRY_ERROR) {
                 res.status(409).json({ message: error.message });
-            } else {
+            }
+            else if (error instanceof WRONG_VALUE_FOR_FIELD) {
+                res.status(409).json({ message: error.message });
+            }
+            else {
                 res.status(500).json({ message: 'Internal server error' });
             }
         });
@@ -2020,7 +2133,11 @@ app.post('/postFormInfo', authHelper.verifyToken, authHelper.checkIat, (req, res
         .catch(error => {
             if (error instanceof DUPLICATE_ENTRY_ERROR) {
                 res.status(409).json({ message: error.message });
-            } else {
+            }
+            else if (error instanceof WRONG_VALUE_FOR_FIELD) {
+                res.status(409).json({ message: error.message });
+            }
+            else {
                 res.status(500).json({ message: 'Internal server error' });
             }
         });
@@ -2056,7 +2173,6 @@ app.post('/checkDoctorMCR', authHelper.verifyToken, authHelper.checkIat, (req, r
             }
         })
         .catch(err => {
-            console.error(err);
             if (err instanceof UserNotFoundError) {
                 // user is not found
                 res.status(404).json({ message: 'DoctorNotFound' });
@@ -2153,7 +2269,7 @@ app.post('/checkStudentNRIC', authHelper.verifyToken, authHelper.checkIat, (req,
     const { studentNRIC } = req.body;
     //continue to database...
     return doctorFormModel
-        .getStudents(studentNRIC)
+        .getStudentFormStatus(studentNRIC)
         .then(data => {
             console.log(data);
             res.json(data);
@@ -2175,10 +2291,11 @@ app.delete('/deleteStudentForm', authHelper.verifyToken, authHelper.checkIat, (r
     if (req.decodedToken.role != 4) {
         return res.redirect('/error?code=403');
     }
-    const { studentIds } = req.body;
-    console.log(studentIds)
+    const { studentId } = req.body;
+    const { formStatus } = req.body;
+
     return doctorFormModel
-        .deleteStudentForm(studentIds)
+        .deleteStudentForm(studentId, formStatus)
         .then((result) => {
             console.log(result)
             if (!result) {
@@ -2190,8 +2307,33 @@ app.delete('/deleteStudentForm', authHelper.verifyToken, authHelper.checkIat, (r
         })
         .catch((error) => {
             return res.status(error.status || 500).json({ error: error.message });
+        });
+});
+/**
+ * Registration Form
+ */
+//Submit Registration Form
+app.post('/obs-reg-form/submit', (req, res, next) => {
+    const formData = req.body;
+    // console.log(formData.raceId)
+    return regFormModel
+        .submitRegForm(formData) // Assuming the function in regFormModel is named submitRegForm
+        .then((result) => {
+            return res.status(200).json({ message: 'Form submission successful!', data: result });
         })
-})
+        .catch((error) => {
+            console.error('Error submitting form:', error);
+            if (error.status === 401) {
+                return res.status(401).json({ error: 'Unauthorized' }); t
+            } else if (error.code === 'ER_DUP_ENTRY') {
+                return res.status(409).json({ error: 'Duplicate entry in the database' });
+            } else {
+                // For other unhandled errors, send a generic error message
+                return res.status(500).json({ error: 'Internal server error' });
+            }
+        });
+});
+
 /**
  * Error handling
  */
@@ -2208,7 +2350,6 @@ app.use((error, req, res, next) => {
         } else {
             return res.redirect(`/error?code=${error.status || 500}`)
         }
-
     }
 });
 

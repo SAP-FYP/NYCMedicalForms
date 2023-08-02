@@ -2,9 +2,11 @@ const conn = require("../database");
 const { query } = conn;
 
 module.exports.retrieveAllSubmissions = function retrieveAllSubmissions() {
-    const sql = `SELECT F.formId, S.studentId, S.studentNRIC, S.nameOfStudent, S.class, S.school, F.eligibility, F.courseDate, F.formStatus
+    const sql = `SELECT F.formId, S.studentId, S.studentNRIC, S.nameOfStudent, S.class, S.school, F.eligibility, F.courseDate, F.formStatus, F.comments, F.review
     FROM form F
-    LEFT JOIN student S ON F.studentId = S.studentId
+    INNER JOIN student S ON F.studentId = S.studentId
+    INNER JOIN doctor D ON F.doctorMCR = D.doctorMCR
+    ORDER BY F.formId;
                     ;`;
   return query(sql)
     .then((result) => {
@@ -13,7 +15,7 @@ module.exports.retrieveAllSubmissions = function retrieveAllSubmissions() {
       }
       return result;
     })
-    .catch((error) => {
+    .catch((error) => { 
       throw new Error(error);
     });
 };
@@ -22,8 +24,8 @@ module.exports.retrieveSubmission = function retrieveSubmission(studentId) {
      const sql = `SELECT *
                   FROM form F
                   LEFT JOIN parentAcknowledgement PA ON F.studentId = PA.studentId
-                  LEFT JOIN student S ON F.studentId = S.studentId
-                  RIGHT JOIN doctor D ON F.doctorMCR = D.doctorMCR
+                  INNER JOIN student S ON F.studentId = S.studentId
+                  INNER JOIN doctor D ON F.doctorMCR = D.doctorMCR
                   WHERE S.studentId= ?;`;
         return query(sql, [studentId])
             .then((result) => {
@@ -39,11 +41,10 @@ module.exports.retrieveSubmission = function retrieveSubmission(studentId) {
 };
 
 module.exports.retrieveSubmissionBySearch = function retrieveSubmissionBySearch(searchInput) {
-  const sql = `SELECT *
-    FROM form F
-    LEFT JOIN student S ON F.studentId = S.studentId
-    LEFT JOIN parentAcknowledgement PA ON F.studentId = PA.studentId
-    RIGHT JOIN doctor D ON F.doctorMCR = D.doctorMCR
+  const sql = `SELECT F.formId, S.studentId, S.studentNRIC, S.nameOfStudent, S.class, S.school, F.eligibility, F.courseDate, F.formStatus, F.comments, F.review
+  FROM form F
+  INNER JOIN student S ON F.studentId = S.studentId
+  INNER JOIN doctor D ON F.doctorMCR = D.doctorMCR
     WHERE S.nameOfStudent LIKE ?`;
   return query(sql, `%${searchInput}%`)
     .then((result) => {
@@ -65,6 +66,21 @@ module.exports.updateSubmissionStatus = function updateSubmissionStatus(
                  SET formStatus = ?
                  WHERE studentId = ?;`;
   return query(sql, [formStatus, studentId])
+    .then((result) => {
+      return result;
+    })
+    .catch((error) => {
+      throw new Error(error);
+    });
+};
+
+module.exports.getSubmissionByStatus = function getSubmissionByStatus(formStatus) {
+  const sql = `SELECT F.formId, S.studentId, S.studentNRIC, S.nameOfStudent, S.class, S.school, F.eligibility, F.courseDate, F.formStatus, F.comments, F.review
+  FROM form F
+  INNER JOIN student S ON F.studentId = S.studentId
+  INNER JOIN doctor D ON F.doctorMCR = D.doctorMCR
+  WHERE F.formStatus = ?`;
+  return query(sql, [formStatus])
     .then((result) => {
       return result;
     })

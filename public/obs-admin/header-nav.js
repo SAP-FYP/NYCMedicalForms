@@ -12,7 +12,6 @@ window.addEventListener('DOMContentLoaded', () => {
     const headerName = document.getElementById('profile-user-name');
     const headerImg = document.getElementById('profile-user-image');
 
-
     // === FETCHES ===
 
     // GET USER DATA - AUTHORIZATION
@@ -34,6 +33,32 @@ window.addEventListener('DOMContentLoaded', () => {
             // SET HEADER DATA
             headerName.textContent = jsonData.user.name;
             headerImg.src = jsonData.user.picUrl || '../../../assets/images/default-user-icon.png';
+
+            document.querySelectorAll('#permission-li, #user-li, #form-li, #help-li')
+                .forEach(li => {
+                    li.addEventListener('mouseenter', () => {
+                        if (jsonData.user.role === 1) {
+                            if (li.id === 'permission-li' || li.id === 'user-li') {
+                                navToggle ? li.style.padding = '0px 0px 0px 10px' : null;
+                                li.classList.add('hovered');
+                            }
+                        } else {
+                            if (li.id === 'form-li') {
+                                navToggle ? li.style.padding = '0px 0px 0px 10px' : null;
+                                li.classList.add('hovered');
+                            }
+                            if (li.id === 'help-li') {
+                                navToggle ? li.style.padding = '0px 0px 0px 10px' : null;
+                                li.classList.add('hovered');
+                            }
+                        }
+                    });
+
+                    li.addEventListener('mouseleave', () => {
+                        li.classList.remove('hovered');
+                        li.style.padding = '0px';
+                    });
+                });
 
         })
         .catch((error) => {
@@ -89,4 +114,5 @@ window.addEventListener('DOMContentLoaded', () => {
     profileContainer.onclick = () => {
         window.location.href = '/obs-admin/profile'
     }
+
 })

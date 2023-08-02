@@ -86,10 +86,120 @@ const CREATE_TABLE_SQL = `
     comments VARCHAR(255) NOT NULL,
     formStatus VARCHAR(50) NOT NULL DEFAULT 'Pending',
     examinationDate DATE NOT NULL,
-    email VARCHAR(255) NOT NULL,
     review VARCHAR(255) NOT NULL,
     PRIMARY KEY (formId)
     );
+
+    CREATE TABLE IF NOT EXISTS registrationForm (
+    regFormId INT NOT NULL AUTO_INCREMENT,
+    raceId INT NOT NULL,
+    parentName VARCHAR(100) NOT NULL,
+    parentEmail VARCHAR(100) NOT NULL,
+    parentNo INT NOT NULL,
+    altParentNo INT NOT NULL,
+    relationToApplicant VARCHAR(100) NOT NULL,
+    isYouEmergencyContact VARCHAR(3) NOT NULL,
+    emergencyContactName VARCHAR(100) NULL,
+    emergencyContactNo INT NULL,
+    relationToEmergencyContact VARCHAR(100) NULL,
+    altEmergencyContactNo INT NULL,
+    applicantNRIC VARCHAR(9) NOT NULL,
+    applicantName VARCHAR(100) NOT NULL,
+    aplicantSchool VARCHAR(100) NOT NULL,
+    applicantClass VARCHAR(100) NOT NULL,
+    applicantResidentialStatus VARCHAR(100) NOT NULL,
+    applicantDOB DATE NOT NULL,
+    applicantGender VARCHAR(100) NOT NULL,
+    applicantEmail VARCHAR(100) NOT NULL,
+    applicantAddr VARCHAR(100) NOT NULL,
+    applicantDietary VARCHAR(100) NULL,
+    isApplicantVaccinationValid VARCHAR(3) NOT NULL,
+    applicantVaccinationDate DATE NULL,
+    applicantHeight INT NOT NULL,
+    applicantWeight INT NOT NULL,
+    applicantBMI INT NOT NULL,
+    isBreathingCondition VARCHAR(3) NOT NULL,
+    diagnosisBreathing VARCHAR(255) NULL,
+    lastDateBreathing DATE NULL,
+    isOnBreathingMeds VARCHAR(3) NULL,
+    stateBreathingMeds VARCHAR(255) NULL,
+    isBreathingSpecialist VARCHAR(3) NULL,
+    isBreathingExercise VARCHAR(3) NULL,
+    isHeartCondition VARCHAR(3) NOT NULL,
+    stateHeartCondition VARCHAR(100) NULL,
+    isHeartSpecialist VARCHAR(3) NULL,
+    isBloodCondition VARCHAR(3) NOT NULL,
+    diagnosisBlood VARCHAR(255) NULL,
+    isBloodSpecialist VARCHAR(3) NULL,
+    isEpilepsyCondition VARCHAR(3) NOT NULL,
+    isEpliepsyEpisode VARCHAR(3) NULL,
+    isOnEpliepsyMeds VARCHAR(3) NULL,
+    isEpliepsySpecialist VARCHAR(3) NULL,  
+    isBoneCondition VARCHAR(3) NOT NULL,
+    stateBoneCondition VARCHAR(255) NULL,
+    dateOfBoneCondition DATE NULL,
+    isBoneSpecialist VARCHAR(3) NULL,
+    isBoneFullyRecovered VARCHAR(3) NULL,
+    furtherInfoOnBone VARCHAR(255) NULL,
+    isBehaviouralCondition VARCHAR(3) NOT NULL,
+    stateBehaviouralCondition VARCHAR(255) NULL,
+    isBehaviouralSpecialist VARCHAR(3) NULL,
+    progressOfTreatingBehavioural VARCHAR(255) NULL,
+    stateBehaviouralAtHome VARCHAR(255) NULL, 
+    stateBehaviouralHelpTips VARCHAR(255) NULL, 
+    isAcceptSafetyRisks VARCHAR(3) NOT NULL,
+    isAcceptParticipation VARCHAR(3) NOT NULL,
+    isOnLongTermMeds VARCHAR(3) NOT NULL,
+    stateLongTermMeds VARCHAR(255) NULL,
+    isInfectiousCondition VARCHAR(3) NOT NULL,
+    stateInfectiousCondition VARCHAR(255) NULL,
+    isSleepWalking VARCHAR(3) NOT NULL,
+    lastDateSleepWalking DATE NULL,
+    isAllergicToMeds VARCHAR(3) NOT NULL,
+    stateAllergicToMeds VARCHAR(255) NULL,
+    isAllergicToEnvironment VARCHAR(3) NOT NULL,
+    stateAllergicToEnvironment VARCHAR(255) NULL,
+    stateDetailsEnvironmentTriggers VARCHAR(255) NULL,
+    isMedsStopAllergic VARCHAR(3) NULL,
+    stateMedsStopAllergic VARCHAR(255) NULL,
+    isAllergicToFood VARCHAR(3) NOT NULL,
+    stateAllergicToFood VARCHAR(255) NULL,
+    stateDetailsFoodTriggers VARCHAR(255) NULL,
+    isAbleToTakeTraces VARCHAR(3) NULL,
+    isMedsStopTracers VARCHAR(3) NULL,
+    stateMedsStopTracers VARCHAR(255) NULL,
+    isAcceptAllergyRisks VARCHAR(3) NOT NULL,
+    isOtherCondition VARCHAR(3) NOT NULL,
+    stateOtherCondition VARCHAR(255) NULL,
+    dateOfOtherCondition DATE NULL,
+    stateOtherConditionAffectsPhysical VARCHAR(255) NULL,
+    stateTriggerOtherCondition VARCHAR(255) NULL,
+    statePrecautionOtherCondition VARCHAR(255) NULL,
+    stateMedsOtherCondition VARCHAR(255) NULL,
+    isOtherConditionSpecialist VARCHAR(3) NULL,
+    isOtherConditionAffectFocus VARCHAR(3) NULL,
+    isOtherConditionAffectUnderstanding VARCHAR(3) NULL,
+    stateDetailsOtherConditionAffect VARCHAR(255) NULL,
+    isAcceptDeclartion VARCHAR(3) NOT NULL,
+    isAcceptMedicalDeclaration VARCHAR(3) NOT NULL,
+    isAcceptAllRisk VARCHAR(3) NOT NULL,
+    isAcceptPersonalData VARCHAR(3) NOT NULL,
+    isDeclineUseOfContactInfo VARCHAR(3) NULL,
+    isDeclineUseOfPhoto VARCHAR(3) NULL,
+    PRIMARY KEY (regFormId)
+    )
+
+    CREATE TABLE IF NOT EXISTS race (
+    raceId INT NOT NULL AUTO_INCREMENT,
+    raceName VARCHAR(255) NOT NULL,
+    PRIMARY KEY (raceId)
+    )
+    
+    CREATE TABLE IF NOT EXISTS school (
+    schoolId INT NOT NULL AUTO_INCREMENT,
+    schoolName VARCHAR(255) NOT NULL,
+    PRIMARY KEY (schoolId)
+    )
 
 `;
 
@@ -100,7 +210,6 @@ const CREATE_TABLE_SQL = `
     .catch(function (error) {
         if (error.code === 'ER_TABLE_EXISTS_ERROR') {
             throw new Error('Table already exists');
-        }
-        
+        }    
         throw error;
     });

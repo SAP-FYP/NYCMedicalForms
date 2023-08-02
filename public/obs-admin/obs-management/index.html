@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="../header-nav.css" rel="stylesheet">
     <link rel="stylesheet" href="./index.css">
-
+    <link rel="icon" href="../../assets/images/obs-logo-icon.png">
     <link href="https://fonts.cdnfonts.com/css/myriad-pro" rel="stylesheet">
     <!-- Font Awsome CDN -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
@@ -45,7 +45,7 @@
                         An example alert with an icon
                     </div>
                 </div>
-                
+
                 <!-- NAV BAR -->
                 <div id="nav-bar">
                     <ul class="navbar-nav">
@@ -55,12 +55,14 @@
                         </li>
                         <li id="permission-li"><img id="navbar-icons-permission"
                                 src="../../assets/images/permission-disabled-icon.png"><a
-                                class="navbar-label">Permissions</a></li>
+                                class="navbar-label navbar-label-perms">Permissions</a></li>
                         <li id="user-li"><img id="navbar-icons-profile"
-                                src="../../assets/images/profile-disabled-icon.png"><a class="navbar-label">Users</a>
+                                src="../../assets/images/profile-disabled-icon.png"><a class="navbar-label navbar-label-users">Users</a>
                         </li>
                         <li id="form-li"><img id="navbar-icons-form" src="../../assets/images/form-enabled-icon.png"><a
-                                class="navbar-label">Forms</a></li>
+                                class="navbar-label navbar-label-forms">Forms</a></li>
+                        <li id="help-li"><img id="navbar-icons-help" src="../../assets/images/help-enable-icon.png"><a
+                                class="navbar-label">Tips</a></li>
                         <li id="logout-li"><img id="navbar-icons-logout" src="../../assets/images/logout-icon.png"><a
                                 class="navbar-label">Logout</a></li>
                     </ul>
@@ -77,19 +79,23 @@
                         </div>
                         <!-- Profile -->
                         <div class="d-flex align-items-center" id="profile-container">
-                            <a id="profile-user-name" class="profileText d-flex align-items-center"></a>
-                            <img class="ms-3 h-auto" id="profile-user-image"
-                                src="../../assets/images/default-user-icon.png">
+                            <div id="text-container">
+                                <a id="profile-user-name" class="profileText d-flex align-items-center"></a>
+                                <div class="break"></div>
+                                <a id="view-profile">View profile</a>
+                            </div>
+                            <img class="ms-3 h-auto" id="profile-user-image" src="../../assets/images/default-user-icon.png">
                         </div>
+                       
 
                     </div>
                     <!-- Title of page -->
-                    <h2 class="overviewText">Overview</h2>
+                    <h2 class="overviewText">Form Management</h2>
                     <div class="d-flex flex-wrap justify-content-center statusContainer">
                         <!-- Template for status -->
 
                         <!-- Status -->
-                        <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePending">
+                        <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePendingParent" data-bs-toggle="tooltip-click-tips" data-bs-placement="top" data-bs-title="Clickable Status Widgets">
                             <div>
                                 <h2 class="text-center m-auto p-0">Pending Parent</h2>
                                 <h1 class="text-center m-auto p-0 pendingParentAmt"><span
@@ -98,21 +104,21 @@
                                 </h1>
                             </div>
                         </div>
-                        <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePending">
+                        <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePending" data-bs-toggle="tooltip-click-tips" data-bs-placement="top" data-bs-title="Clickable Status Widgets">
                             <div>
                                 <h2 class="text-center m-auto p-0">Pending</h2>
                                 <h1 class="text-center m-auto p-0 pendingAmt"><span
                                         class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></h1>
                             </div>
                         </div>
-                        <div class="d-flex flex-wrap align-items-center justify-content-center rectangleApproved">
+                        <div class="d-flex flex-wrap align-items-center justify-content-center rectangleApproved" data-bs-toggle="tooltip-click-tips" data-bs-placement="top" data-bs-title="Clickable Status Widgets">
                             <div>
                                 <h2 class="text-center m-auto p-0">Approved</h2>
                                 <h1 class="text-center m-auto p-0 apprAmt"><span
                                         class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></h1>
                             </div>
                         </div>
-                        <div class="d-flex flex-wrap align-items-center justify-content-center rectangleRejected">
+                        <div class="d-flex flex-wrap align-items-center justify-content-center rectangleRejected" data-bs-toggle="tooltip-click-tips" data-bs-placement="top" data-bs-title="Clickable Status Widgets">
                             <div>
                                 <h2 class="text-center m-auto p-0">Rejected</h2>
                                 <h1 class="text-center m-auto p-0 rejAmt"><span class="spinner-border spinner-border-lg"
@@ -141,7 +147,7 @@
                         <div class="d-flex">
                             <div>
 
-                                <button id="filter-icon-container">
+                                <button id="filter-icon-container" data-bs-toggle="tooltip-hover" data-bs-placement="top" data-bs-title="Filter Button">
                                     <img src="../../assets/images/filter-icon.png" id="filter-icon" alt="filter-icon">
                                 </button>
 
@@ -153,7 +159,7 @@
                                         <div class="custom-column dropdown-toggle" id="schoolMenuButton"
                                             data-bs-toggle="dropdown" aria-expanded="false">
                                             School
-                                        </div> 
+                                        </div>
                                         <div class="dropdown-menu custom-menu dropdown-menu-stay"
                                             id="schoolDropDownMenu">
                                             <div class="searchBarDiv">
@@ -220,7 +226,7 @@
 
                                         <div class="dropdown-menu custom-menu dropdown-menu-stay"
                                             id="eligibilityDropDownMenu">
-                                          
+
 
                                             <div class="listContainer" id="eligibilityDiv" style="margin:10px">
                                                 <div class="loadingMsg m-3">
@@ -243,36 +249,40 @@
                             <a id="export-btn-all">
 
                             </a>
+                            <a id="export-btn-status">
+                                
+                            </a>
                             <a id="export-btn-search">
 
                             </a>
                             <a id="export-btn-filter">
-                                
-                            </a>
-                            <a id="export-btn-filter-school">
 
                             </a>
-                            <a id="export-btn-filter-course-date">
-
-                            </a>
-                            <a id="export-btn-filter-eligibility">
-
-                            </a>
+                           
                         </div>
                     </div>
                 </div>
                 <div class="bg-white rounded overflow-auto tableContainer">
-                    <table>
+                    <table id="dashboard-table">
                         <thead>
                             <th>
-                                <input type="checkbox" id="checkBoxTop">
+                                <div class="header-container">
+                                    <input type="checkbox" id="checkBoxTop">
+                                    <i class="material-icons arrow-icon d-none">arrow_drop_down</i>
+                                  </div>
                             </th>
-                            <th>NRIC</th>
-                            <th>FULL NAME</th>
-                            <th>CLASS</th>
-                            <th>SCHOOL</th>
-                            <th>ELIGIBILITY</th>
-                            <th>COURSE DATE</th>
+                            <th id="nricColumn">NRIC</th>
+                            <th id="fullNameColumn">
+                                <div class="header-container" >
+                                FULL NAME<i class="material-icons arrow-icon-name d-none" data-bs-toggle="tooltip-click-tips" data-bs-placement="top" data-bs-title="Sort Alphabetically">arrow_drop_down</i>
+                                </div>
+                            </th>
+                            <th id="classColumn">CLASS</th>
+                            <th id="schColumn"><div class="header-container">
+                                SCHOOL<i class="material-icons arrow-icon-school d-none" data-bs-toggle="tooltip-click-tips" data-bs-placement="right" data-bs-title="Sort Alphabetically">arrow_drop_down</i>
+                                </div</th>
+                            <th id="eligibilityColumn">ELIGIBILITY</th>
+                            <th id="courseDateColumn">COURSE DATE</th>
                             <th>STATUS</th>
                         </thead>
                         <tbody id="getAllForms">
@@ -536,10 +546,15 @@
                                             <div class="form-group" id="apprRejContainer">
 
                                             </div>
+                                            <div class="col-12 mb-3">
+                                                <div class="form-group text-center mb-3 d-flex justify-content-center align-items-center" id="undoStatusContainer">
+                                                    
+                                                </div>
+                                            </div>
                                             <div class="col-12 mb-3 text-end">
                                                 <a>
                                                     <button
-                                                        class="btn btn-primary btn-lg exportBtn d-none">Export</button>
+                                                        class="btn btn-primary btn-lg exportBtn d-none"><img src="../../assets/images/export-btn-form.png" id="export-btn-img"></button>
                                                 </a>
                                             </div>
                                         </div>
@@ -567,6 +582,7 @@
                                                         Review</div>
                                                 </div>
                                             </div>
+                                           
                                         </form>
                                     </div>
                                 </div>
@@ -660,7 +676,7 @@
     <template class="status-template">
         <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePending">
             <div>
-                <h2 class="text-center m-auto p-0">Pending Parent</h2>
+                <h2 class="text-center m-auto p-0 ">Pending Parent</h2>
                 <h1 class="text-center m-auto p-0 pendingParentAmt">2</h1>
             </div>
         </div>

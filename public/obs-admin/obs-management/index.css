@@ -6,6 +6,7 @@
     font-style: normal;
 
 }
+
 body {
     font-family: 'myriad_proregular', sans-serif !important;
     font-weight: normal !important;
@@ -73,19 +74,35 @@ body {
     margin-left: 15px;
 }
 
-#navbar-icons-form {
+#navbar-icons-form,
+#navbar-icons-help {
     height: 40px;
     width: 40px;
     min-width: 40px;
     padding: 6px 8px;
+    cursor: pointer !important;
 }
 
-.navbar-label {
-        visibility: visible;
+#navbar-icons-permission,
+#navbar-icons-profile {
+    cursor: not-allowed;
 }
 
+a.navbar-label:hover {
+ color: #f2f2f2 !important;
+}
 
+a.navbar-label-users,
+a.navbar-label-perms {
+    cursor: not-allowed;
 
+        opacity: 0.5 !important;
+}
+
+/*Tooltip*/
+.tooltip.show {
+    opacity: 1 !important;
+}
 
 /*Overview*/
 .overviewContainer{
@@ -132,13 +149,14 @@ body {
 }
 
 /*Status*/
-  .rectanglePending, .rectangleApproved, .rectangleRejected {
+  .rectanglePending, .rectangleApproved, .rectangleRejected, .rectanglePendingParent {
     margin: 10px;
     width: 280px;
     height: 170px;
     background-color: #f2c153;
     border:1px solid #485eab;  
     border-radius: 10px;   
+    cursor: pointer;
   }
 
   .rectangleApproved {
@@ -209,9 +227,6 @@ body {
 
 
 /*Filter*/
-a {
-    cursor: pointer;
-}
 
 #filter-icon-container {
     padding: 8px 9px;
@@ -320,7 +335,10 @@ th {
     top: 0 !important; 
     z-index: 1 !important; 
 }
-tr {
+#nricColumn, #fullNameColumn, #classColumn, #schColumn, #eligibilityColumn, #courseDateColumn {
+    cursor: pointer;
+}
+tbody {
     cursor: pointer !important;
 }
 
@@ -398,19 +416,37 @@ td:first-child {
   } */
   
 /*ICONS*/
+.header-container {
+  display: flex;
+ 
+}
 
+.arrow-icon {
+  margin-left: 2px; /* Adjust margin as needed */
+  transform: translateY(-2px);
+}
+.arrow-icon-name,
+.arrow-icon-class,
+.arrow-icon-school,
+.arrow-icon-eligibility,
+.arrow-icon-coursedate {
+    margin-left: 2px; /* Adjust margin as needed */
+    transform: translateY(-2px);
+}
 
 #checkBoxTop {
-    transform: translateY(4px);
+    transform: translateY(1px);
     margin-left: 17px;
     width: 20px;
     height: 20px;
+    cursor: pointer;
 }
 #checkBox {
     transform: translateY(4px);
     margin-left: 12px;
     width: 20px;
     height: 20px;
+    cursor: pointer !important;
 }
 
 /*MODALS*/
@@ -476,11 +512,14 @@ fill: #485eab;
     color: #485eab !important;
 }
 .exportBtn,
-.submitReviewBtn{
+.submitReviewBtn,
+.undoStatusBtn{
     background-color: #f2f2f2 !important;
     border: 2px solid #485eab !important;
     color: #485eab !important;
 }
+
+
 
 
 /*FORM*/
@@ -503,3 +542,4 @@ form {
 ::-webkit-scrollbar-thumb {
     -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
+

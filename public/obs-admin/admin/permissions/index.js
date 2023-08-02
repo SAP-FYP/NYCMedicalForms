@@ -565,6 +565,13 @@ window.addEventListener('DOMContentLoaded', () => {
     // LAZY LOADING
     container.addEventListener('scroll', defaultScroll)
 
+
+    // INITIALIZE BOOTSTRAP TOOLTIP
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl, { trigger: 'hover' });
+    });
+
     getPermGroups();
     getPerms();
 })
