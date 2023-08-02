@@ -11,6 +11,47 @@ window.addEventListener("DOMContentLoaded", function () {
     errMsgContainer.style.visibility = toggle;
   }
 
+  // Axios post request to /parent/login
+  let login = (password) => axios
+  .post("/parent/login", {
+    encrypted: encrypted,
+    password: password,
+  })
+  // If successful, redirect to acknowledgement page
+  .then((response) => {
+    const configURL = baseURL + response.config.url;
+    const requestURL = response.request.responseURL;
+    if (configURL !== requestURL) {
+      window.location.href = requestURL;
+      throw new Error("redirected");
+    }
+    window.location.href = "/acknowledgement/form?encrypted=" + encrypted;
+  })
+  .catch((error) => {
+    const status = error.response.request.status;
+    if (status === 400 || status === 401 || status === 404) {
+      setErrMsg('The password you entered is incorrect.', 'visible');
+      return;
+    }
+
+    if (status === 403) {
+      setErrMsg('Account is disabled. Please contact admin for more information.', 'visible');
+      return;
+    }
+
+    if (status === 500) {
+      setErrMsg('An error occured logging in.', 'visible');
+      return;
+    }
+  })
+  .finally(() => {
+    document.querySelectorAll('.spinner-item').forEach(i => {
+      i.style.display = 'none';
+    });
+    document.getElementById('login-text').style.display = 'none';
+    document.getElementById('login-button').style.backgroundColor = '#4d4d4d';
+  });
+  
   // Validation for URL
   axios.post('/parent/login-verify', {
     encrypted: encrypted
@@ -28,11 +69,11 @@ window.addEventListener("DOMContentLoaded", function () {
   });
 
 
-  const password = document.getElementById("login-password");
   const loginBtn = document.getElementById("login-button");
 
   // Add event listener to login button
   loginBtn.addEventListener("click", function (e) {
+    const password = document.getElementById("login-password").value;
     // Prevent default form submission
     e.preventDefault();
 
@@ -42,30 +83,11 @@ window.addEventListener("DOMContentLoaded", function () {
     }
 
     // Check if password is empty
-    if (!password.value) {
+    if (!password) {
       setErrMsg('Please fill in all fields.', 'visible');
       return;
     }
-
-
-    // Axios post request to /parent/login
-    axios
-      .post("/parent/login", {
-        encrypted: encrypted,
-        password: password.value,
-      })
-      // If successful, redirect to acknowledgement page
-      .then((response) => {
-        const configURL = baseURL + response.config.url;
-        const requestURL = response.request.responseURL;
-        if (configURL !== requestURL) {
-          window.location.href = requestURL;
-          throw new Error("redirected");
-        }
-        window.location.href = "/acknowledgement/form?encrypted=" + encrypted;
-      })
-      .catch((error) => {
-          setErrMsg('The password you entered is incorrect.', 'visible');
-      });
+    
+    login(password);
   });
 });

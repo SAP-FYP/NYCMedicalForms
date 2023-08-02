@@ -682,9 +682,10 @@ app.get('/form/:encrypted', parentAuthHelper.verifyToken, parentAuthHelper.valid
 
 app.post('/parent-sign-upload', parentAuthHelper.verifyToken, (req, res) => {
     const file = req.body.parentSignature;
-    cloudinaryModel.uploadSignature(file)
+    return cloudinaryModel.uploadSignature(file)
         .then((result) => {
-            return res.status(200).send({ 'message': 'Signature uploaded successfully', 'url': result });
+            const signature = result;
+            return res.status(200).json({ signature: signature });
         }
         )
         .catch((error) => {
@@ -832,7 +833,6 @@ app.post('/parent/login/', (req, res, next) => {
         .then((result) => {
             // Convert dateofbirth to DD/MM/YYYY (Singapore format)
             result.dateOfBirth = new Date(result.dateOfBirth).toLocaleDateString('en-SG').replace(/\//g, '');
-            // Check if password entered is == to DOB + NRIC (password) in database
             if (password != (result.dateOfBirth + result.studentNRIC).toUpperCase()) {
                 const error = new Error("Invalid URL or password");
                 error.status = 401;
@@ -862,6 +862,7 @@ app.post('/parent/login/', (req, res, next) => {
 
         })
         .catch((error) => {
+            console.log(error);
             return res.status(error.status || 500).json({ error: error.message });
         }
         );
@@ -1792,6 +1793,7 @@ app.post('/obs-admin/pmt/filter/', authHelper.verifyToken, authHelper.checkIat, 
     let stuClass = req.body.class
     let eligibility = req.body.eligibility
     let courseDate = req.body.courseDate
+    let formStatus = req.body.formStatus
 
     // For each of courseDate, convert to Singapore Time
     if (courseDate) {
@@ -1804,7 +1806,8 @@ app.post('/obs-admin/pmt/filter/', authHelper.verifyToken, authHelper.checkIat, 
         school: school,
         class: stuClass,
         eligibility: eligibility,
-        courseDate: courseDate
+        courseDate: courseDate,
+        formStatus: formStatus
     }
 
     // AUTHORIZATION CHECK - PMT, MST
