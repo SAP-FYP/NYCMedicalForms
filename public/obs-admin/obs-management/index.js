@@ -1100,7 +1100,7 @@ function changeBackSortIcon() {
   sortIconSchool.textContent = 'arrow_drop_down';
 }
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function (event) {
   //Event listner for sorting by fullname, alphabetically, ascending and descending
 
 fullNameColumn.addEventListener('click', () => {
