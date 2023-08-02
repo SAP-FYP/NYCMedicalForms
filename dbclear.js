@@ -11,6 +11,9 @@ DROP TABLE IF EXISTS doctor;
 DROP TABLE IF EXISTS student;
 DROP TABLE IF EXISTS parentAcknowledgement;
 DROP TABLE IF EXISTS form;
+DROP TABLE IF EXISTS registrationForm;
+DROP TABLE IF EXISTS race;
+DROP TABLE IF EXISTS school;
 `;
 
 

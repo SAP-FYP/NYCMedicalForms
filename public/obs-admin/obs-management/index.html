@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="../header-nav.css" rel="stylesheet">
     <link rel="stylesheet" href="./index.css">
-
+    <link rel="icon" href="../../assets/images/obs-logo-icon.png">
     <link href="https://fonts.cdnfonts.com/css/myriad-pro" rel="stylesheet">
     <!-- Font Awsome CDN -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
@@ -62,6 +62,8 @@
                         </li>
                         <li id="form-li"><img id="navbar-icons-form" src="../../assets/images/form-enabled-icon.png"><a
                                 class="navbar-label navbar-label-forms">Forms</a></li>
+                        <li id="help-li"><img id="navbar-icons-help" src="../../assets/images/help-enable-icon.png"><a
+                                class="navbar-label">Tips</a></li>
                         <li id="logout-li"><img id="navbar-icons-logout" src="../../assets/images/logout-icon.png"><a
                                 class="navbar-label">Logout</a></li>
                     </ul>
@@ -78,20 +80,24 @@
                         </div>
                         <!-- Profile -->
                         <div class="d-flex align-items-center" id="profile-container">
-                            <a id="profile-user-name" class="profileText d-flex align-items-center"></a>
-                            <img class="ms-3 h-auto" id="profile-user-image"
-                                src="../../assets/images/default-user-icon.png">
+                            <div id="text-container">
+                                <a id="profile-user-name" class="profileText d-flex align-items-center"></a>
+                                <div class="break"></div>
+                                <a id="view-profile">View profile</a>
+                            </div>
+                            <img class="ms-3 h-auto" id="profile-user-image" src="../../assets/images/default-user-icon.png">
                         </div>
+                       
 
                     </div>
                     <!-- Title of page -->
-                    <h2 class="overviewText">Overview</h2>
+                    <h2 class="overviewText">Form Management</h2>
                     <div class="d-flex flex-wrap justify-content-center statusContainer">
                         <!-- Template for status -->
 
                         <!-- Status -->
                         <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePendingParent"
-                            data-status="Pending Parent">
+                            data-status="Pending Parent" data-bs-toggle="tooltip-click-tips" data-bs-placement="top" data-bs-title="Clickable Status Widgets">
                             <div>
                                 <h2 class="text-center m-auto p-0">Pending Parent</h2>
                                 <h1 class="text-center m-auto p-0 pendingParentAmt"><span
@@ -101,7 +107,7 @@
                             </div>
                         </div>
                         <div class="d-flex flex-wrap align-items-center justify-content-center rectanglePending"
-                            data-status="Pending">
+                            data-status="Pending" data-bs-toggle="tooltip-click-tips" data-bs-placement="top" data-bs-title="Clickable Status Widgets">
                             <div>
                                 <h2 class="text-center m-auto p-0">Pending</h2>
                                 <h1 class="text-center m-auto p-0 pendingAmt"><span
@@ -109,7 +115,7 @@
                             </div>
                         </div>
                         <div class="d-flex flex-wrap align-items-center justify-content-center rectangleApproved"
-                            data-status="Approved">
+                            data-status="Approved" data-bs-toggle="tooltip-click-tips" data-bs-placement="top" data-bs-title="Clickable Status Widgets">
                             <div>
                                 <h2 class="text-center m-auto p-0">Approved</h2>
                                 <h1 class="text-center m-auto p-0 apprAmt"><span
@@ -117,7 +123,7 @@
                             </div>
                         </div>
                         <div class="d-flex flex-wrap align-items-center justify-content-center rectangleRejected"
-                            data-status="Rejected">
+                            data-status="Rejected" data-bs-toggle="tooltip-click-tips" data-bs-placement="top" data-bs-title="Clickable Status Widgets">
                             <div>
                                 <h2 class="text-center m-auto p-0">Rejected</h2>
                                 <h1 class="text-center m-auto p-0 rejAmt"><span class="spinner-border spinner-border-lg"
@@ -146,7 +152,7 @@
                         <div class="d-flex">
                             <div>
 
-                                <button id="filter-icon-container">
+                                <button id="filter-icon-container" data-bs-toggle="tooltip-hover" data-bs-placement="top" data-bs-title="Filter Button">
                                     <img src="../../assets/images/filter-icon.png" id="filter-icon" alt="filter-icon">
                                 </button>
 
@@ -267,7 +273,7 @@
                     </div>
                 </div>
                 <div class="bg-white rounded overflow-auto tableContainer">
-                    <table>
+                    <table id="dashboard-table">
                         <thead>
                             <th>
                                 <div class="header-container">
@@ -276,9 +282,15 @@
                                 </div>
                             </th>
                             <th id="nricColumn">NRIC</th>
-                            <th id="fullNameColumn">FULL NAME</th>
+                            <th id="fullNameColumn">
+                                <div class="header-container" >
+                                FULL NAME<i class="material-icons arrow-icon-name d-none" data-bs-toggle="tooltip-click-tips" data-bs-placement="top" data-bs-title="Sort Alphabetically">arrow_drop_down</i>
+                                </div>
+                            </th>
                             <th id="classColumn">CLASS</th>
-                            <th id="schColumn">SCHOOL</th>
+                            <th id="schColumn"><div class="header-container">
+                                SCHOOL<i class="material-icons arrow-icon-school d-none" data-bs-toggle="tooltip-click-tips" data-bs-placement="right" data-bs-title="Sort Alphabetically">arrow_drop_down</i>
+                                </div</th>
                             <th id="eligibilityColumn">ELIGIBILITY</th>
                             <th id="courseDateColumn">COURSE DATE</th>
                             <th>STATUS</th>

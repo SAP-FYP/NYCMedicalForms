@@ -23,6 +23,7 @@ const formModel = require('./model/form');
 const adminModel = require('./model/admin');
 const pmtModel = require('./model/pmt');
 const mstModel = require('./model/mst');
+const regFormModel = require('./model/regForm');
 const cloudinaryModel = require('./model/cloudinary');
 const passwordGenerator = require('./helper/passwordGenerator');
 const momentHelper = require('./helper/epochConverter');
@@ -2259,6 +2260,29 @@ app.delete('/deleteStudentForm', authHelper.verifyToken, authHelper.checkIat, (r
         })
         .catch((error) => {
             return res.status(error.status || 500).json({ error: error.message });
+        });
+});
+/**
+ * Registration Form
+ */
+//Submit Registration Form
+app.post('/obs-reg-form/submit', (req, res, next) => {
+    const formData = req.body;
+    return regFormModel
+        .submitRegForm(formData) // Assuming the function in regFormModel is named submitRegForm
+        .then((result) => {
+            return res.status(200).json({ message: 'Form submission successful!', data: result });
+        })
+        .catch((error) => {
+            console.error('Error submitting form:', error);
+            if (error.status === 401) {
+                return res.status(401).json({ error: 'Unauthorized' });
+            } else if (error.code === 'ER_DUP_ENTRY') {
+                return res.status(409).json({ error: 'Duplicate entry in the database' });
+            } else {
+                // For other unhandled errors, send a generic error message
+                return res.status(500).json({ error: 'Internal server error' });
+            }
         });
 });
 

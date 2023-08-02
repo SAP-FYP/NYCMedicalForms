@@ -6,6 +6,7 @@
     font-style: normal;
 
 }
+
 body {
     font-family: 'myriad_proregular', sans-serif !important;
     font-weight: normal !important;
@@ -73,12 +74,15 @@ body {
     margin-left: 15px;
 }
 
-#navbar-icons-form {
+#navbar-icons-form,
+#navbar-icons-help {
     height: 40px;
     width: 40px;
     min-width: 40px;
     padding: 6px 8px;
+    cursor: pointer !important;
 }
+
 #navbar-icons-permission,
 #navbar-icons-profile {
     cursor: not-allowed;
@@ -95,8 +99,10 @@ a.navbar-label-perms {
         opacity: 0.5 !important;
 }
 
-
-
+/*Tooltip*/
+.tooltip.show {
+    opacity: 1 !important;
+}
 
 /*Overview*/
 .overviewContainer{
@@ -431,6 +437,14 @@ td:first-child {
   margin-left: 2px; /* Adjust margin as needed */
   transform: translateY(-2px);
 }
+.arrow-icon-name,
+.arrow-icon-class,
+.arrow-icon-school,
+.arrow-icon-eligibility,
+.arrow-icon-coursedate {
+    margin-left: 2px; /* Adjust margin as needed */
+    transform: translateY(-2px);
+}
 
 #checkBoxTop {
     transform: translateY(1px);
@@ -540,3 +554,4 @@ form {
 ::-webkit-scrollbar-thumb {
     -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
+
