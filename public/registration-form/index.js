@@ -5,7 +5,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // === FETCHES ===
 
-    const fetchSchools = fetch('/getSchools')
+    fetch('/getSchools')
         .then((response) => {
             if (!response) {
                 const error = new Error("Failed to load schools. Please try again later.");
@@ -22,7 +22,7 @@ window.addEventListener('DOMContentLoaded', () => {
             alert(error)
         })
 
-    const fetchRaces = fetch('/getRaces')
+    fetch('/getRaces')
         .then((response) => {
             if (!response) {
                 const error = new Error("Failed to load races. Please try again later.");
