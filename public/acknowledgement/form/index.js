@@ -147,7 +147,7 @@ window.addEventListener("DOMContentLoaded", function () {
 
 
 
-  const requireAcknowledgement = function () {
+  const requireAcknowledgement = () => {
 
     const validities = {
       isParentNameValid: false,
@@ -161,6 +161,16 @@ window.addEventListener("DOMContentLoaded", function () {
     // Signature Pad
     const canvas = document.getElementById("parent-signature-canvas");
     const signaturePad = new SignaturePad(canvas);
+    function resizeCanvas() {
+      var ratio = Math.max(1, 1);
+
+      canvas.width = canvas.offsetWidth * ratio;
+      canvas.height = canvas.offsetHeight * ratio;
+      canvas.getContext("2d").scale(ratio, ratio);
+    }
+
+    window.onresize = resizeCanvas;
+    resizeCanvas();
 
     // Signature Pad clear button
     const clearBtn = document.getElementById("clear-parent-signature");
@@ -190,7 +200,7 @@ window.addEventListener("DOMContentLoaded", function () {
       e.preventDefault();
 
       // NRIC VALIDATION
-  
+
       // Check if the NRIC/FIN length is valid
       if (parentNRIC.value.length !== 9) {
         parentNRIC.classList.add("is-invalid");
@@ -312,7 +322,7 @@ window.addEventListener("DOMContentLoaded", function () {
             throw new Error("redirected");
           }
 
-          parentSignature = `${response.data.url}`;
+          parentSignature = `${response.data.signature}`;
 
           const updateParentAcknowledgement = axios.put("/parent/acknowledge", {
             encrypted: encrypted,

@@ -280,12 +280,24 @@ margin-top: 1px;
     background-color: #C7D3EF;
     box-shadow: 7px 7px 7px 0px rgba(0, 0, 0, 0.2);
 }
-
-.custom-row {
-    max-width: 800px;
+#filter-clear {
+    margin-left: 10px;
+    margin-top: 1px;
+    padding: 9px 20px;
+    border-radius: 17px;
+    height: 47px;
+    text-align: center;
+    border: 2px solid #485EAB;
+    background-color: #C7D3EF;
+    box-shadow: 7px 7px 7px 0px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    color: #485EAB;
+    font-weight: bold;
 }
 
-
+#filter-icon {
+    margin-left:5px;
+}
 .custom-menu {
     min-width: 200px;
     background-color: #C7D3EF !important;

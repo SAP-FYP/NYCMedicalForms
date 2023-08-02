@@ -50,8 +50,3 @@ module.exports.validateUser = function validateUser(req, res, next) {
     }
     next();
 }
-
-module.exports.validateIfAcknowledged = function validateIfAcknowledged(req, res, next) {
-
-
-}
