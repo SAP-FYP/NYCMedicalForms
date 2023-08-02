@@ -929,7 +929,7 @@ window.addEventListener('DOMContentLoaded', () => {
         })
     });
 
-    handleParallax = () => {
+    const handleParallax = () => {
         const titleRow = document.querySelector(".title-row");
         const scrollValue = window.scrollY;
 
