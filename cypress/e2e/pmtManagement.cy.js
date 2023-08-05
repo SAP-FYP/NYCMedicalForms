@@ -41,8 +41,9 @@ describe('Approving and rejecting of forms', () => {
     it('should approve the selected form', () => {
         cy.wait(2000);
         cy.get('td[id=modalBtn-studentId-1]').eq(0).click(); 
-        cy.get('#approveBtn-studentid-1').eq(0).contains('Approve').click()
+        cy.get('#approveBtn-studentid-1').eq(0).contains('Approve').click({force: true})
         cy.get('.alert-success').should('be.visible');
+        cy.wait(500);
         cy.get('td[id=modalBtn-studentId-1]').eq(0).click();
         cy.wait(500);
         cy.get('.alert-success').should('be.visible');
@@ -52,7 +53,6 @@ describe('Approving and rejecting of forms', () => {
         cy.get('td[id=modalBtn-studentId-1]').eq(0).click({force: true}); 
         cy.get('.alert-success').should('be.visible').contains('Form already approved!');
         cy.wait(1000);
-        cy.scrollTo('bottom'); 
         cy.get('div[id=undoStatusBtn-studentid-1]').eq(0).contains('Undo Back To Pending').click({force: true})
         cy.get('td[id=modalBtn-studentId-1]').eq(0).click();
         cy.wait(500);
@@ -61,7 +61,9 @@ describe('Approving and rejecting of forms', () => {
     it('should reject the selected form', () => {
         cy.wait(500);
         cy.get('td[id=modalBtn-studentId-2]').eq(0).click();
-        cy.get('#rejectBtn-studentid-2').eq(0).contains('Reject').click()
+        cy.get('#rejectBtn-studentid-2').eq(0).contains('Reject').click({force: true})
+        cy.get('.alert-success').should('be.visible');
+        cy.wait(500);
         cy.get('td[id=modalBtn-studentId-2]').eq(0).click();
         cy.wait(500);
         cy.get('.alert-success').should('be.visible');
@@ -70,7 +72,6 @@ describe('Approving and rejecting of forms', () => {
         cy.get('td[id=modalBtn-studentId-2]').eq(0).click({force: true}); 
         cy.get('.alert-success').should('be.visible').contains('Form already rejected!');
         cy.wait(1000);
-        cy.scrollTo('bottom'); 
         cy.get('div[id=undoStatusBtn-studentid-2]').eq(0).contains('Undo Back To Pending').click({force: true})
         cy.get('td[id=modalBtn-studentId-2]').eq(0).click();
         cy.wait(500);
