@@ -30,6 +30,8 @@ const momentHelper = require('./helper/epochConverter');
 const cronJob = require('./helper/cron');
 
 const app = express();
+app.disable('x-powered-by');
+
 const JWT_SECRET = process.env.SECRETKEY;
 
 const twilioClient = require('twilio')(process.env.twilioSID, process.env.twilioToken);
@@ -1954,7 +1956,7 @@ app.post('/export-bulk', authHelper.verifyToken, authHelper.checkIat, (req, res)
     const data = req.body.data;
     const dataArray = JSON.parse(data);
     try {
-        console.log('Data successfully exported to Excel:',dataArray)
+        console.log('Data successfully exported to Excel:', dataArray)
         console.log('Total rows in dataArray:', dataArray.length);
         if (dataArray.length === 0) {
             const error = new Error('Invalid or empty data array');
@@ -2362,7 +2364,7 @@ app.post('/obs-reg-form/submit', (req, res, next) => {
         .catch((error) => {
             console.error('Error submitting form:', error);
             if (error.status === 401) {
-                return res.status(401).json({ error: 'Unauthorized' }); 
+                return res.status(401).json({ error: 'Unauthorized' });
             } else if (error.code === 'ER_DUP_ENTRY') {
                 return res.status(409).json({ error: 'Duplicate entry in the database' });
             } else {

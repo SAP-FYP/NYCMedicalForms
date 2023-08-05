@@ -39,16 +39,16 @@ window.addEventListener('DOMContentLoaded', () => {
                     li.addEventListener('mouseenter', () => {
                         if (jsonData.user.role === 1) {
                             if (li.id === 'permission-li' || li.id === 'user-li') {
-                                navToggle ? li.style.padding = '0px 0px 0px 10px' : null;
+                                li.style.padding = navToggle ? '0px 0px 0px 10px' : '';
                                 li.classList.add('hovered');
                             }
                         } else {
                             if (li.id === 'form-li') {
-                                navToggle ? li.style.padding = '0px 0px 0px 10px' : null;
+                                li.style.padding = navToggle ? '0px 0px 0px 10px' : '';
                                 li.classList.add('hovered');
                             }
                             if (li.id === 'help-li') {
-                                navToggle ? li.style.padding = '0px 0px 0px 10px' : null;
+                                li.style.padding = navToggle ? '0px 0px 0px 10px' : '';
                                 li.classList.add('hovered');
                             }
                         }
