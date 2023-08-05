@@ -193,7 +193,7 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
           tooltipInstance.dispose();
         }
         checkBoxTop.setAttribute('data-bs-title', `Click To Select All (${targetDataArray.length} Selected)`);
-        new bootstrap.Tooltip(checkBoxTop, { trigger: 'hover' });
+        const hover = new bootstrap.Tooltip(checkBoxTop, { trigger: 'hover' });
         appendExportIcon();
       } else {
         const index = targetDataArray.findIndex((item) => item["Name of Applicant"] === applicantName);
@@ -208,7 +208,7 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
           tooltipInstance.dispose();
         }
         checkBoxTop.setAttribute('data-bs-title', `Click To Select All (${targetDataArray.length} Selected)`);
-        new bootstrap.Tooltip(checkBoxTop, { trigger: 'hover' });
+        const hover = new bootstrap.Tooltip(checkBoxTop, { trigger: 'hover' });
       }
     });
   });
@@ -254,7 +254,7 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
           tooltipInstance.dispose();
         }
         checkBoxTop.setAttribute('data-bs-title', `Click To Select All (${targetDataArray.length} Selected)`);
-        new bootstrap.Tooltip(checkBoxTop, { trigger: 'hover' });
+        const hover = new bootstrap.Tooltip(checkBoxTop, { trigger: 'hover' });
         appendExportIcon();
       } else {
         const index = targetDataArray.findIndex((item) => item["Name of Applicant"] === applicantName);
@@ -269,7 +269,7 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
           tooltipInstance.dispose();
         }
         checkBoxTop.setAttribute('data-bs-title', `Click To Select All (${targetDataArray.length} Selected)`);
-        new bootstrap.Tooltip(checkBoxTop, { trigger: 'hover' });
+        const hover = new bootstrap.Tooltip(checkBoxTop, { trigger: 'hover' });
       }
     });
 
