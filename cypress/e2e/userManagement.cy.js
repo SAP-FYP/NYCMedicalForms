@@ -32,6 +32,7 @@ describe('User Creation', () => {
         cy.get('input[id=number-input]').type(number);
 
         cy.get('input[id=confirm-user-icon]').click();
+        cy.wait(1000);
         cy.get('.alert-success').should('be.visible');
     })
 
