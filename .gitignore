@@ -27,6 +27,3 @@ cypress/Screenshots
 
 # Downloads
 cypress/downloads
-
-# Cypress files
-cypress/e2e/parentManual.cy.js

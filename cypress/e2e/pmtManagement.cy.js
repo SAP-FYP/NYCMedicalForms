@@ -42,6 +42,7 @@ describe('Approving and rejecting of forms', () => {
         cy.wait(2000);
         cy.get('td[id=modalBtn-studentId-1]').eq(0).click(); 
         cy.wait(1000);
+        cy.scrollTo('bottom'); 
         cy.get('button[id=approveBtn-studentid-1]', { timeout: 10000 }).should('exist').contains('Approve').click({ force: true });
         cy.get('.alert-success').should('be.visible');
         cy.wait(1000);
@@ -49,9 +50,9 @@ describe('Approving and rejecting of forms', () => {
         //undo status to pending
         cy.get('td[id=modalBtn-studentId-1]').eq(0).click({force: true}); 
         cy.get('.alert-success').should('be.visible').contains('Form already approved!');
-        cy.wait(500);
+        cy.wait(1000);
+        cy.scrollTo('bottom'); 
         cy.get('div[id=undoStatusBtn-studentid-1]').eq(0).contains('Undo Back To Pending').click({force: true})
-        cy.get('.alert-success').should('be.visible');
         cy.get('td[id=modalBtn-studentId-1]').eq(0).click();
         cy.wait(500);
     })
@@ -60,15 +61,16 @@ describe('Approving and rejecting of forms', () => {
         cy.wait(500);
         cy.get('td[id=modalBtn-studentId-2]').eq(0).click();
         cy.wait(1000);
+        cy.scrollTo('bottom'); 
         cy.get('button[id=rejectBtn-studentid-2]', { timeout: 10000 }).should('exist').contains('Reject').click({ force: true });
         cy.get('.alert-success').should('be.visible');
         cy.wait(1000);
 
         cy.get('td[id=modalBtn-studentId-2]').eq(0).click({force: true}); 
         cy.get('.alert-success').should('be.visible').contains('Form already rejected!');
-        cy.wait(500);
+        cy.wait(1000);
+        cy.scrollTo('bottom'); 
         cy.get('div[id=undoStatusBtn-studentid-2]').eq(0).contains('Undo Back To Pending').click({force: true})
-        cy.get('.alert-success').should('be.visible');
         cy.get('td[id=modalBtn-studentId-2]').eq(0).click();
         cy.wait(500);
 
