@@ -125,7 +125,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
                 if (user.picUrl) {
                     profileImg.src = user.picUrl
-                    picUrl = user.picUrl
                 }
 
                 if (user.role == 1) {

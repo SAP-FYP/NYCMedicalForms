@@ -6,8 +6,7 @@ module.exports.retrieveAllSubmissions = function retrieveAllSubmissions() {
     FROM form F
     INNER JOIN student S ON F.studentId = S.studentId
     INNER JOIN doctor D ON F.doctorMCR = D.doctorMCR
-    ORDER BY F.formId;
-                    ;`;
+    ORDER BY F.formId;`;
   return query(sql)
     .then((result) => {
       if (result.length === 0) {
@@ -190,7 +189,7 @@ module.exports.retrieveSubmissionByFilter = function retrieveSubmissionByFilter(
     conditions += ")";
   }
 
-  const sql = `SELECT F.formId, S.studentId, S.studentNRIC, S.nameOfStudent, S.class, S.school, F.courseDate, F.eligibility, F.formStatus
+  const sql = `SELECT F.formId, S.studentId, S.studentNRIC, S.nameOfStudent, S.class, S.school, F.eligibility, F.courseDate, F.formStatus, F.comments, F.review
                     FROM form F
                     INNER JOIN student S ON F.studentId = S.studentId
                     INNER JOIN doctor D ON F.doctorMCR = D.doctorMCR

@@ -6,19 +6,6 @@ on:
       - main
 
 jobs:
-  SonarCloud:
-      name: SonarCloud Gated Check
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v3
-          with:
-            fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-        - name: SonarCloud Scan
-          uses: SonarSource/sonarcloud-github-action@master
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
   Cypress-Test:
     name: Cypress E2E Testing
     runs-on: ubuntu-latest
@@ -80,6 +67,19 @@ jobs:
           path: cypress/videos
           retention-days: 5
           if-no-files-found: ignore
+
+  SonarCloud:
+      name: SonarCloud Gated Check
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+          with:
+            fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+        - name: SonarCloud Scan
+          uses: SonarSource/sonarcloud-github-action@master
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   deploy:
     name: Deploy
