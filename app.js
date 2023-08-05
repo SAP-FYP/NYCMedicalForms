@@ -2348,7 +2348,7 @@ app.delete('/deleteStudentForm', authHelper.verifyToken, authHelper.checkIat, (r
 //Submit Registration Form
 app.post('/obs-reg-form/submit', (req, res, next) => {
     const formData = req.body;
-    // console.log(formData.raceId)
+    console.log(formData);
     return regFormModel
         .submitRegForm(formData) // Assuming the function in regFormModel is named submitRegForm
         .then((result) => {
