@@ -1954,7 +1954,7 @@ app.post('/export-bulk', authHelper.verifyToken, authHelper.checkIat, (req, res)
     const data = req.body.data;
     const dataArray = JSON.parse(data);
     try {
-        console.log('Data successfully exported to Excel:',dataArray)
+        // console.log('Data successfully exported to Excel:',dataArray)
         console.log('Total rows in dataArray:', dataArray.length);
         if (dataArray.length === 0) {
             const error = new Error('Invalid or empty data array');
