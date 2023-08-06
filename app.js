@@ -1954,14 +1954,19 @@ app.post('/export-bulk', authHelper.verifyToken, authHelper.checkIat, (req, res)
     const data = req.body.data;
     const dataArray = JSON.parse(data);
     try {
-        console.log('Data successfully exported to Excel:',dataArray)
+        // console.log('Data successfully exported to Excel:',dataArray)
         console.log('Total rows in dataArray:', dataArray.length);
         if (dataArray.length === 0) {
-            throw new Error('Invalid or empty data array');
+            const error = new Error('Invalid or empty data array');
+            error.status = 400;
+            throw error
         }
     } catch (error) {
         console.log('Data parsing error:', error);
-        return res.status(400).json({ error: 'Invalid data format' });
+        if (error.status === 400) {
+            return res.status(400).json({ error: error.message });
+        }
+        return res.status(500).json({ error: 'Invalid data format' });
     }
 
     // Create a new worksheet with the formatted data
@@ -2357,7 +2362,7 @@ app.post('/obs-reg-form/submit', (req, res, next) => {
         .catch((error) => {
             console.error('Error submitting form:', error);
             if (error.status === 401) {
-                return res.status(401).json({ error: 'Unauthorized' }); t
+                return res.status(401).json({ error: 'Unauthorized' }); 
             } else if (error.code === 'ER_DUP_ENTRY') {
                 return res.status(409).json({ error: 'Duplicate entry in the database' });
             } else {

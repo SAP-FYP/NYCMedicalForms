@@ -11,6 +11,7 @@ window.addEventListener('DOMContentLoaded', () => {
     let purpose; // The purpose of your data retrieval
     let state = Math.floor(Math.random() * 100000); // Identifier that represents the user's session with the client (for testing - andomly generated state)
     let attributes; // the attributes you are retrieving for your application to fill the form
+    let environment;
     let securityEnable; // the auth level, determines the flow
     // ---END---SETUP VARIABLES---
 
