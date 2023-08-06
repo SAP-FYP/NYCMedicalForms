@@ -30,6 +30,8 @@ const momentHelper = require('./helper/epochConverter');
 const cronJob = require('./helper/cron');
 
 const app = express();
+app.disable('x-powered-by');
+
 const JWT_SECRET = process.env.SECRETKEY;
 
 const twilioClient = require('twilio')(process.env.twilioSID, process.env.twilioToken);
@@ -2467,15 +2469,15 @@ app.post('/obs-reg-form/submit', (req, res, next) => {
             }
         }
     }
-    
+
     // Heart
-    
+
     if (formData.healthData.heartStatus) {
         if (!formData.healthData.heartCondition || !formData.healthData.heartFollowup) {
             return res.status(400).json({ error: 'Missing required fields in health section' });
         }
     }
-    
+
     // Blood
 
     if (formData.healthData.bloodStatus) {
@@ -2489,7 +2491,7 @@ app.post('/obs-reg-form/submit', (req, res, next) => {
         }
     }
 
-    
+
     // Epilepsy
 
     if (formData.healthData.epilepsyStatus) {
@@ -2518,7 +2520,7 @@ app.post('/obs-reg-form/submit', (req, res, next) => {
     }
 
 
-   // Behavioural 
+    // Behavioural 
 
     if (formData.healthData.behaviourStatus) {
         if (!formData.healthData.behaviourCondition || !formData.healthData.behaviourFollowup || !formData.healthData.riskAcknowledgement || !formData.healthData.participantAcknowledgement) {
@@ -2563,7 +2565,7 @@ app.post('/obs-reg-form/submit', (req, res, next) => {
     if (!formData.healthData.allergyRiskAcknowledgement) {
         return res.status(400).json({ error: 'Missing required fields in health section' });
     }
-    
+
     // Medication allergies
 
     if (formData.healthData.medicationAllergyStatus) {
@@ -2571,9 +2573,9 @@ app.post('/obs-reg-form/submit', (req, res, next) => {
             return res.status(400).json({ error: 'Missing required fields in health section' });
         }
     }
-    
+
     // Environment allergies
-    
+
     if (formData.healthData.environmentAllergyStatus) {
         if (!formData.healthData.environmentCondition || !formData.healthData.environmentOther || !formData.healthData.environmentDetails || !formData.healthData.environmentMedicationStatus) {
             return res.status(400).json({ error: 'Missing required fields in health section' });
@@ -2610,9 +2612,9 @@ app.post('/obs-reg-form/submit', (req, res, next) => {
             }
         }
     }
-    
+
     // Declaration Validation
-    
+
     if (!formData.declarationData.informationDeclaration || !formData.declarationSectionInputs.medicalDeclaration || !formData.declarationSectionInputs.allRiskAcknowledgement || !formData.declarationSectionInputs.contentDisclosure || !formData.declarationSectionInputs.disagreeEvents || !formData.declarationSectionInputs.disagreeMedia) {
         return res.status(400).json({ error: 'Missing required fields in declaration section' });
     }
@@ -2626,7 +2628,7 @@ app.post('/obs-reg-form/submit', (req, res, next) => {
         .catch((error) => {
             console.error('Error submitting form:', error);
             if (error.status === 401) {
-                return res.status(401).json({ error: 'Unauthorized' }); 
+                return res.status(401).json({ error: 'Unauthorized' });
             } else if (error.code === 'ER_DUP_ENTRY') {
                 return res.status(409).json({ error: 'Duplicate entry in the database' });
             } else {

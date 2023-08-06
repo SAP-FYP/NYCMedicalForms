@@ -162,7 +162,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // GET ALL USERS
     const getUsers = (filter) => {
-        !filter ? filter = -1 : filter;
+        filter = filter || -1;
 
         fetch(`/obs-admin/users/${filter}/16/${offset}/${order}`)
             .then(handleResponse)
@@ -241,7 +241,7 @@ window.addEventListener('DOMContentLoaded', () => {
             }
 
             content.querySelector(".dropdown-disable").addEventListener('click', (e) => {
-                e.preventDefault;
+                e.preventDefault();
                 let user = {
                     email: i.email
                 }
@@ -254,7 +254,7 @@ window.addEventListener('DOMContentLoaded', () => {
             })
 
             content.querySelector(".dropdown-delete").addEventListener('click', (e) => {
-                e.preventDefault;
+                e.preventDefault();
                 let user = {
                     email: i.email
                 }
@@ -262,7 +262,7 @@ window.addEventListener('DOMContentLoaded', () => {
             })
 
             content.querySelector(".dropdown-edit").addEventListener('click', (e) => {
-                e.preventDefault;
+                e.preventDefault();
                 let user = {
                     email: i.email,
                     name: i.nameOfUser,
@@ -408,7 +408,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     document.getElementById(`item-${user.email}`).getElementsByClassName('dropdown-disable')[0].textContent = 'Enable'
                     document.getElementById(`item-${user.email}`).getElementsByClassName('dropdown-disable')[0].setAttribute('data-bs-target', '#confirmationEnableModal');
                     document.getElementById(`item-${user.email}`).getElementsByClassName('dropdown-disable')[0].addEventListener('click', (e) => {
-                        e.preventDefault;
+                        e.preventDefault();
                         enableButtonHandler(user, 0);
                     });
                     updateCheckedCount();
@@ -446,7 +446,7 @@ window.addEventListener('DOMContentLoaded', () => {
                         document.getElementById(`item-${user}`).getElementsByClassName('dropdown-disable')[0].textContent = 'Enable'
                         document.getElementById(`item-${user}`).getElementsByClassName('dropdown-disable')[0].setAttribute('data-bs-target', '#confirmationEnableModal');
                         document.getElementById(`item-${user}`).getElementsByClassName('dropdown-disable')[0].addEventListener('click', (e) => {
-                            e.preventDefault;
+                            e.preventDefault();
                             enableButtonHandler({ email: user }, 0);
 
                         });
@@ -475,7 +475,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     document.getElementById(`item-${user.email}`).getElementsByClassName('dropdown-disable')[0].textContent = 'Disable'
                     document.getElementById(`item-${user.email}`).getElementsByClassName('dropdown-disable')[0].setAttribute('data-bs-target', '#confirmationDisableModal');
                     document.getElementById(`item-${user.email}`).getElementsByClassName('dropdown-disable')[0].addEventListener('click', (e) => {
-                        e.preventDefault;
+                        e.preventDefault();
                         disableButtonHandler(user, 1);
                     });
                     updateCheckedCount();
@@ -547,7 +547,7 @@ window.addEventListener('DOMContentLoaded', () => {
         removeUsers();
         searchInput.value = "";
         order = e.target.value
-        getUsers(null, order)
+        getUsers()
     }
 
     const validateInput = (inputElement, validationFn) => {
