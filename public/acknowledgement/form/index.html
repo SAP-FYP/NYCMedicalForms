@@ -14,187 +14,206 @@
 </head>
 
 <body>
-    
+
     <div id="container" class="container-fluid bg-black">
 
         <!-- ALERT BOX -->
-    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
-        <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
-            <path
-                d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
-        </symbol>
-        <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
-            <path
-                d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
-        </symbol>
-        <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
-            <path
-                d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
-        </symbol>
-    </svg>
-
-    <div class="alert d-flex align-items-center alert-hidden" role="alert" id="alertbox">
-        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:">
-            <use id="alert-icon" xlink:href="#exclamation-triangle-fill" />
+        <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+            <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+                <path
+                    d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+            </symbol>
+            <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
+                <path
+                    d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+            </symbol>
+            <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+                <path
+                    d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+            </symbol>
         </svg>
-        <div id="alert-message">
-            An example alert with an icon
-        </div>
-    </div>
 
-  
+        <div class="alert d-flex align-items-center alert-hidden" role="alert" id="alertbox">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:">
+                <use id="alert-icon" xlink:href="#exclamation-triangle-fill" />
+            </svg>
+            <div id="alert-message">
+                An example alert with an icon
+            </div>
+        </div>
+
+
         <div class="row justify-content-center">
             <!-- form div -->
-            <form class="col-xl-6 col-md-8 col-12 col-sm-12 mt-xl-5 mt-md-5 mb-xl-5 mb-md-5 me-xl-5 rounded-4 pt-3 p-xl-5 p-3"
+            <form
+                class="col-xl-6 col-md-8 col-12 col-sm-12 mt-xl-5 mt-md-5 mb-xl-5 mb-md-5 me-xl-5 rounded-4 pt-3 p-xl-5 p-3"
                 id="doctor-form">
-                <h5>Form Details</h5>
                 <div class="row">
-                    <!-- Student -->
-                    <div class="col-12 mb-3">
-                        <h4>Student Section</h4>
+                    <div class="col-12 text-center d-flex align-items-center mb-3">
+                        <a id="logout-button" class="btn btn-outline-dark">
+                            <span class="material-symbols-outlined">
+                                Logout
+                            </span>
+                        </a>
+                        <h5 class="ms-3 mb-0">Form Details</h5>
                     </div>
-                    <div class="col-xl-6 col-12">
-                        <div class="mb-3">
-                            <label for="student-name" class="form-label">Name of Applicant:</label>
-                            <input type="text" class="form-control" id="student-name" disabled>
+                    <div class="row">
+                        <!-- Student -->
+                        <div class="col-12 mb-3">
+                            <h4>Student Section</h4>
                         </div>
-                        <div class="mb-3">
-                            <label for="student-dob" class="form-label">Date of Birth:</label>
-                            <input type="text" class="form-control" id="student-dob" disabled>
+                        <div class="col-xl-6 col-12">
+                            <div class="mb-3">
+                                <label for="student-name" class="form-label">Name of Applicant:</label>
+                                <input type="text" class="form-control" id="student-name" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label for="student-dob" class="form-label">Date of Birth:</label>
+                                <input type="text" class="form-control" id="student-dob" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label for="course-date" class="form-label">Course Date:</label>
+                                <input type="text" class="form-control" id="course-date" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label for="date-of-vaccine" class="form-label">Period of Tetanus
+                                    Vaccination:</label>
+                                <input type="text" class="form-control" id="date-of-vaccine" disabled>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="course-date" class="form-label">Course Date:</label>
-                            <input type="text" class="form-control" id="course-date" disabled>
+                        <div class="col-xl-6 col-12">
+                            <div class="mb-3">
+                                <label for="student-nric" class="form-label">Identification No:</label>
+                                <input type="text" class="form-control" id="student-nric" maxlength="9" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label for="student-class" class="form-label">Designation/Class:</label>
+                                <input type="text" class="form-control" id="student-class" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label for="school-name" class="form-label">Organization/School:</label>
+                                <input type="text" class="form-control" id="school-name" disabled>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="date-of-vaccine" class="form-label">Period of Tetanus Vaccination:</label>
-                            <input type="text" class="form-control" id="date-of-vaccine" disabled>
+                        <!-- Physician -->
+                        <div class="col-12 mb-3 mt-3">
+                            <h4>Physician Section:</h4>
                         </div>
-                    </div>
-                    <div class="col-xl-6 col-12">
-                        <div class="mb-3">
-                            <label for="student-nric" class="form-label">Identification No:</label>
-                            <input type="text" class="form-control" id="student-nric" maxlength="9" disabled>
-                        </div>
-                        <div class="mb-3">
-                            <label for="student-class" class="form-label">Designation/Class:</label>
-                            <input type="text" class="form-control" id="student-class" disabled>
-                        </div>
-                        <div class="mb-3">
-                            <label for="school-name" class="form-label">Organization/School:</label>
-                            <input type="text" class="form-control" id="school-name" disabled>
-                        </div>
-                    </div>
-                    <!-- Physician -->
-                    <div class="col-12 mb-3 mt-3">
-                        <h4>Physician Section:</h4>
-                    </div>
 
-                    <div class="col-12 text-center mb-4">
-                        <label for="check-container">I, the undersigned, have assessed the Applicant's Registration
-                            Form,<br>examined the Applicant & recommend him/her to be (please tick):</label>
-                    </div>
-                    <div class="col-12 text-center mb-4">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input student-eligibility" type="radio" name="eligibility" id="Fit with condition"
-                                value="Fit With Condition" disabled>
-                            <label class="form-check-label" for="fit-with-condition">Fit with condition</label>
+                        <div class="col-12 text-center mb-4">
+                            <label for="check-container">I, the undersigned, have assessed the Applicant's
+                                Registration
+                                Form,<br>examined the Applicant & recommend him/her to be (please tick):</label>
                         </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input student-eligibility" type="radio" name="eligibility" id="fit" value="Fit"
-                                disabled>
-                            <label class="form-check-label" for="fit">Fit</label>
+                        <div class="col-12 text-center mb-4">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input student-eligibility" type="radio" name="eligibility"
+                                    id="Fit with condition" value="Fit With Condition" disabled>
+                                <label class="form-check-label" for="fit-with-condition">Fit with condition</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input student-eligibility" type="radio" name="eligibility"
+                                    id="fit" value="Fit" disabled>
+                                <label class="form-check-label" for="fit">Fit</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input student-eligibility" type="radio" name="eligibility"
+                                    id="unfit" value="Unfit" disabled>
+                                <label class="form-check-label" for="unfit">Unfit</label>
+                            </div>
                         </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input student-eligibility" type="radio" name="eligibility" id="unfit" value="Unfit"
-                                disabled>
-                            <label class="form-check-label" for="unfit">Unfit</label>
+                        <div class="col-12">
+                            <div class="col-12 text-center mb-3">
+                                <label for="comment">Subject to additional information provided on the
+                                    following:<br>condition(s)(any): </label>
+                            </div>
+                            <textarea disabled class="form-control mb-5" id="medical-comment" name="comment"
+                                rows="10"></textarea>
                         </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="col-12 text-center mb-3">
-                            <label for="comment">Subject to additional information provided on the
-                                following:<br>condition(s)(any): </label>
+                        <div class="mb-3 col-12">
+                            <label for="physician-name" class="form-label">Name of Physician:</label>
+                            <input type="text" class="form-control" id="physician-name" disabled>
                         </div>
-                        <textarea disabled class="form-control mb-5" id="medical-comment" name="comment"
-                            rows="10"></textarea>
-                    </div>
-                    <div class="mb-3 col-12">
-                        <label for="physician-name" class="form-label">Name of Physician:</label>
-                        <input type="text" class="form-control" id="physician-name" disabled>
-                    </div>
-                    <div class="col-xl-6 col-12">
-                        <div class="mb-3">
-                            <label for="doctor-mcr" class="form-label">Physician MCR No:</label>
-                            <input type="text" class="form-control" id="doctor-mcr" disabled>
+                        <div class="col-xl-6 col-12">
+                            <div class="mb-3">
+                                <label for="doctor-mcr" class="form-label">Physician MCR No:</label>
+                                <input type="text" class="form-control" id="doctor-mcr" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label for="clinic-name" class="form-label">Name Of Clinic:</label>
+                                <input type="text" class="form-control" id="clinic-name" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label for="clinic-address" class="form-label">Address Of Clinic:</label>
+                                <input type="text" class="form-control" id="clinic-address" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label for="doctor-contact-number" class="form-label">Contact No:</label>
+                                <input type="text" class="form-control" id="doctor-contact" disabled>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="clinic-name" class="form-label">Name Of Clinic:</label>
-                            <input type="text" class="form-control" id="clinic-name" disabled>
+                        <div class="col-xl-6 col-12 mb-3">
+                            <div class="mb-3">
+                                <label for="signature" class="form-label">Signature:</label>
+                                <img height=210 id="doctor-signature-image" alt="Doctor Signature"></img>
+                            </div>
+                            <div class="mb-3">
+                                <label for="date-of-examination" class="form-label">Date:</label>
+                                <input type="text" class="form-control" id="date-of-examination" disabled>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="clinic-address" class="form-label">Address Of Clinic:</label>
-                            <input type="text" class="form-control" id="clinic-address" disabled>
+                        <!-- Parent -->
+                        <div class="col-12 mb-3">
+                            <h4>Parent Section:</h4>
                         </div>
-                        <div class="mb-3">
-                            <label for="doctor-contact-number" class="form-label">Contact No:</label>
-                            <input type="text" class="form-control" id="doctor-contact" disabled>
+                        <div class="col-12 text-center mb-4">
+                            <h6 class="p-3">Acknowledgement of New Medical Condition Information by the Applicant or
+                                Parent/Guardian</h6>
+                            <label class="mb-2" for="parents-container"> (to sign below only if there is new/updated
+                                medical
+                                information that is different from the e-Registration form, including
+                                tetanus)</label>
+                            <label class="p-3" for="parents-container">I, the undersigned, agree with the medical
+                                assessment
+                                of the Physician, and consent the Applicant's participation in the OBS
+                                course.</label>
                         </div>
-                    </div>
-                    <div class="col-xl-6 col-12 mb-3">
-                        <div class="mb-3">
-                            <label for="signature" class="form-label">Signature:</label>
-                            <img height=210 id="doctor-signature-image"></img>
-                        </div>
-                        <div class="mb-3">
-                            <label for="date-of-examination" class="form-label">Date:</label>
-                            <input type="text" class="form-control" id="date-of-examination" disabled>
-                        </div>
-                    </div>
-                    <!-- Parent -->
-                    <div class="col-12 mb-3">
-                        <h4>Parent Section:</h4>
-                    </div>
-                    <div class="col-12 text-center mb-4">
-                        <h6 class="p-3">Acknowledgement of New Medical Condition Information by the Applicant or
-                            Parent/Guardian</h6>
-                        <label class="mb-2" for="parents-container"> (to sign below only if there is new/updated medical
-                            information that is different from the e-Registration form, including tetanus)</label>
-                        <label class="p-3" for="parents-container">I, the undersigned, agree with the medical assessment
-                            of the Physician, and consent the Applicant's participation in the OBS course.</label>
-                    </div>
 
-                    <div class="mb-3 col-12">
-                        <label for="parent-name" class="form-label">Name of Parent/Guardian:</label>
-                        <input type="text" class="form-control" id="parent-name" required>
-                        <div id="parent-name-feedback" class="invalid-tooltip">Please enter your name</div>
-                    </div>
-                    <div class="col-xl-6 col-12">
-                        <div class="mb-3">
-                            <label for="parent-nric" class="form-label">NRIC/FIN No:</label>
-                            <input type="text" class="form-control" id="parent-nric" required>
-                            <div id="parent-nric-feedback" class="invalid-tooltip">Please enter your NRIC</div>
+                        <div class="mb-3 col-12">
+                            <label for="parent-name" class="form-label">Name of Parent/Guardian:</label>
+                            <input type="text" class="form-control" id="parent-name" required>
+                            <div id="parent-name-feedback" class="invalid-tooltip">Please enter your name</div>
                         </div>
-                        <div class="mb-3">
-                            <label for="parent-contact" class="form-label">Email Address:</label>
-                            <input type="text" class="form-control" id="parent-email" disabled >
+                        <div class="col-xl-6 col-12">
+                            <div class="mb-3">
+                                <label for="parent-nric" class="form-label">NRIC/FIN No:</label>
+                                <input type="text" class="form-control" id="parent-nric" required>
+                                <div id="parent-nric-feedback" class="invalid-tooltip">Please enter your NRIC</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="parent-contact" class="form-label">Email Address:</label>
+                                <input type="text" class="form-control" id="parent-email" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label for="parents-contact" class="form-label">Contact No:</label>
+                                <input type="text" class="form-control" id="parent-contact" disabled>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="parents-contact" class="form-label">Contact No:</label>
-                            <input type="text" class="form-control" id="parent-contact" disabled>
+                        <div class="col-xl-6 col-12 mb-3">
+                            <div class="mb-3">
+                                <label for="parent-signature-canvas" class="form-label">Signature:</label>
+                                <button id="clear-parent-signature"
+                                    class="btn btn-secondary btn-sm float-end mb-2">Clear</button>
+                                <canvas height="200" id="parent-signature-canvas"></canvas>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-xl-6 col-12 mb-3">
-                        <div class="mb-3">
-                            <label for="parent-signature-canvas" class="form-label">Signature:</label>
-                            <button id="clear-parent-signature" class="btn btn-secondary btn-sm float-end mb-2">Clear</button>
-                            <canvas height="200" id="parent-signature-canvas"></canvas>
+                        <div class="col-12 text-center mb-3 d-flex justify-content-center align-items-center mt-3">
+                            <button id="acknowledge-button" class="btn btn-secondary decision-btn btn-md"
+                                type="submit">Acknowledge Form</button>
+                            <div class="verticalLine mx-3"></div>
+                            <button id="flag-button" class="btn btn-secondary decision-btn btn-md">Flag
+                                Discrepancies</button>
                         </div>
-                    </div>
-                    <div id="acknowledgement" class="col-12 text-center mb-3">
-                        <button id="acknowledge-button" class="btn btn-danger btn-lg" type="submit">Acknowledge Form</button>
-                    </div>
-                    
             </form>
         </div>
 </body>

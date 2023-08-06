@@ -29,6 +29,24 @@
     width: 100%;
 }
 
+.decision-btn {
+    background-color: #f2f2f2!important;
+    border: 2px solid #485eab !important;
+    color: #485eab !important;
+}
+
+.verticalLine {
+    width: 1px;
+    height: 30px;
+    background-color: #485eab;
+  }
+
+#logout-btn {
+   /* btn line height 1 */
+    line-height: 1!important;
+
+}
+
 .alert {
     position: fixed !important;
     z-index: 999;
