@@ -518,17 +518,18 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
     const validateValidities = (validities) => {
+        
         let foundFalse = false;
+        if (isAvailabilityBtn === false) {
+            availabilityBtn.classList.add('is-invalid');
+            foundFalse = false
+        }
         for (const key in validities) {
             const value = validities[key];
             if (!value) {
                 foundFalse = true;
                 break;
             }
-        }
-        if (isAvailabilityBtn === false) {
-            availabilityBtn.classList.add('is-invalid');
-            foundFalse = false
         }
         // if (isRetreiveBtnClicked === false) {
         //     retreiveStudentBtn.classList.add('is-invalid');
