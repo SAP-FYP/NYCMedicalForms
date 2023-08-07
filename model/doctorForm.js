@@ -19,11 +19,25 @@ module.exports.matchDoctorInfo = function matchDoctorInfo(doctorMCR) {
       }
       return rows;
     })
+    .then(result => {
+      const rows = result[0];
+      console.log(rows);
+      if (rows.length === 0) {
+        throw new UserNotFoundError('No doctor found with the provided MCR');
+      }
+      return rows;
+    })
 };
 
 module.exports.postDoctorInfo = function postDoctorInfo(doctorMCR, physicianName, encryptedsignatureInfo, clinicName, clinicAddress, doctorContact) {
   const sql = `INSERT INTO doctor (doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo) VALUES (?,?,?,?,?,?)`;
   return query(sql, [doctorMCR, physicianName, encryptedsignatureInfo, clinicName, clinicAddress, doctorContact])
+    .then(result => {
+      const affectedRows = result[0].affectedRows;
+      if (affectedRows === 0) {
+        throw new Error("No rows inserted");
+      }
+      return result;
     .then(result => {
       const affectedRows = result[0].affectedRows;
       if (affectedRows === 0) {
@@ -38,8 +52,11 @@ module.exports.postDoctorInfo = function postDoctorInfo(doctorMCR, physicianName
         throw new DUPLICATE_ENTRY_ERROR('Doctor Duplicate entry');
       }
       else if (error.code === 'ER_TRUNCATED_WRONG_VALUE_FOR_FIELD') {
+      }
+      else if (error.code === 'ER_TRUNCATED_WRONG_VALUE_FOR_FIELD') {
         throw new WRONG_VALUE_FOR_FIELD('Wrong value type for field');
       }
+      else if (error.message === 'No rows inserted') {
       else if (error.message === 'No rows inserted') {
         throw new Error('No rows inserted');
       }
@@ -51,11 +68,14 @@ module.exports.postStudentInfo = function postStudentInfo(studentNRIC, studentNa
   const sql = `INSERT INTO student (studentNRIC,nameOfStudent,dateOfBirth,class,school,dateOfVaccination) VALUES (?,?,?,?,?,?)`;
   return query(sql, [studentNRIC, studentName, dateOfBirth, studentClass, schoolName, dateOfVaccine])
     .then(result => {
+    .then(result => {
       const affectedRows = result[0].affectedRows;
       if (affectedRows === 0) {
         throw new Error("No rows inserted");
       }
       return result;
+    })
+    .catch(error => {
     })
     .catch(error => {
       console.error('Error in postFormInfo:', error);
@@ -64,18 +84,23 @@ module.exports.postStudentInfo = function postStudentInfo(studentNRIC, studentNa
         throw new DUPLICATE_ENTRY_ERROR('Form Duplicate entry');
       }
       else if (error.code === 'ER_TRUNCATED_WRONG_VALUE_FOR_FIELD') {
+      }
+      else if (error.code === 'ER_TRUNCATED_WRONG_VALUE_FOR_FIELD') {
         throw new WRONG_VALUE_FOR_FIELD('Wrong value type for field');
       }
+      else if (error.message === 'No rows inserted') {
       else if (error.message === 'No rows inserted') {
         throw new Error('No rows inserted');
       }
       throw new Error('Database error');
+    });
     });
 };
 
 module.exports.postFormInfo = function postFormInfo(studentId, courseDate, doctorMCR, eligibility, comments, date) {
   const sql = `INSERT INTO form (studentId,courseDate,doctorMCR,eligibility,comments,examinationDate) VALUES (?,?,?,?,?,?)`;
   return query(sql, [studentId, courseDate, doctorMCR, eligibility, comments, date])
+    .then(result => {
     .then(result => {
       const affectedRows = result[0].affectedRows;
       if (affectedRows === 0) {
@@ -90,8 +115,11 @@ module.exports.postFormInfo = function postFormInfo(studentId, courseDate, docto
         throw new DUPLICATE_ENTRY_ERROR('Form Duplicate entry');
       }
       else if (error.code === 'ER_TRUNCATED_WRONG_VALUE_FOR_FIELD') {
+      }
+      else if (error.code === 'ER_TRUNCATED_WRONG_VALUE_FOR_FIELD') {
         throw new WRONG_VALUE_FOR_FIELD('Wrong value type for field');
       }
+      else if (error.message === 'No rows inserted') {
       else if (error.message === 'No rows inserted') {
         throw new Error('No rows inserted');
       }
@@ -103,6 +131,7 @@ module.exports.updateFormStatus = function updateFormStatus(studentId) {
   const sql = `UPDATE form SET formStatus = 'Pending Parent' WHERE studentId = ?`;
   return query(sql, [studentId])
     .then(result => {
+    .then(result => {
       const affectedRows = result[0];
       if (affectedRows === 0) {
         throw new Error("No rows updated");
@@ -113,6 +142,7 @@ module.exports.updateFormStatus = function updateFormStatus(studentId) {
         // Handle duplicate entry error
         throw new DUPLICATE_ENTRY_ERROR('Student Duplicate entry');
       }
+      else if (error.message === 'No rows updated') {
       else if (error.message === 'No rows updated') {
         throw new Error('No rows updated');
       }
@@ -156,14 +186,15 @@ module.exports.getCourseDates = function getCourseDates() {
 };
 
 module.exports.getSchools = function getSchools() {
-  const sql = `SELECT * FROM school`;
-  return query(sql).then(function (result) {
-    const rows = result;
-    if (rows.length === 0) {
-      throw new EMPTY_RESULT_ERROR('No Schools Found');
-    }
-    return rows;
-  });
+  const sql = `SELECT schoolName FROM school`;
+  return query(sql)
+    .then(result => {
+      const rows = result;
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No Schools Found');
+      }
+      return rows;
+    });
 };
 
 module.exports.getSchoolsFilter = function getSchoolsFilter(limit, offset) {
@@ -309,9 +340,6 @@ module.exports.getSchoolsByCourseDateAndClass = function getSchoolsByCourseDateA
   );
 }
 
-
-
-
 module.exports.getStudentFormStatus = function getStudentFormStatus(studentNRIC) {
   const sql = `
     SELECT s.studentId, f.formStatus
@@ -328,13 +356,22 @@ module.exports.getStudentFormStatus = function getStudentFormStatus(studentNRIC)
       }
       return rows;
     });
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No students Found');
+      }
+      return rows;
+    });
 }
 
+module.exports.deleteStudentForm = async function deleteStudentForm(studentId, formStatus) {
 module.exports.deleteStudentForm = async function deleteStudentForm(studentId, formStatus) {
   const connection = await pool.getConnection();
   try {
     await connection.beginTransaction();
 
+    if (formStatus === 'Pending Parent') {
     if (formStatus === 'Pending Parent') {
       console.log('deleting parentAcknowledgement...')
       const sql0 = `DELETE FROM parentAcknowledgement WHERE studentId = ?`;
@@ -363,6 +400,7 @@ module.exports.deleteStudentForm = async function deleteStudentForm(studentId, f
       throw new Error('Unable to delete form');
     }
 
+
     await connection.commit();
     return affectedRows2;
   }
@@ -375,3 +413,276 @@ module.exports.deleteStudentForm = async function deleteStudentForm(studentId, f
     connection.release();
   };
 };
+
+module.exports.getStudentRegistrationInfo = function getStudentRegistrationInfo(studentName, studentNRIC) {
+  const sql = `
+    SELECT regFormId,applicantDOB,applicantSchool,applicantClass, applicantHeight, applicantWeight, 
+    isApplicantVaccinationValid, applicantVaccinationDate, applicantBMI, isBreathingCondition,
+    isHeartCondition, isBloodCondition, isEpilepsyCondition, isBoneCondition, isBehaviouralCondition,
+    isOnLongTermMeds, isInfectiousCondition, isSleepWalking,isAllergicToMeds, isAllergicToEnvironment,
+    isAllergicToFood, isOtherCondition
+    FROM registrationForm
+    WHERE applicantName LIKE ? AND applicantNRIC = ?;
+  `;
+  return query(sql, [`%${studentName}%`, studentNRIC])
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new UserNotFoundError('No students Found');
+      }
+      return rows;
+    });
+}
+
+module.exports.getisBreathingConditionDetails = function getisBreathingConditionDetails(regFormId) {
+  const sql = `
+    SELECT
+    diagnosisBreathing AS 'Diagnosis of the breathing condition',
+    lastDateBreathing AS 'Date of the breathing condition last occurrence',
+    isOnBreathingMeds AS 'Applicant on medication for the breathing condition',
+    stateBreathingMeds AS 'Medication and dosage',
+    isBreathingSpecialist AS 'Applicant on follow-up with a specialist',
+    isBreathingExercise 'Breathing condition triggered by exercise'
+    FROM registrationForm
+    WHERE regFormId = ?
+  `;
+  return query(sql, [regFormId])
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No details Found');
+      }
+      return rows;
+    });
+}
+
+module.exports.getisHeartConditionDetails = function getisHeartConditionDetails(regFormId) {
+  const sql = `
+    SELECT
+    stateHeartCondition AS 'State the heart condition',
+    isHeartSpecialist AS 'Applicant on follow-up with a specialist'
+    FROM registrationForm
+    WHERE regFormId = ?
+  `;
+  return query(sql, [regFormId])
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No details Found');
+      }
+      return rows;
+    });
+}
+
+module.exports.getisBloodConditionDetails = function getisBloodConditionDetails(regFormId) {
+  const sql = `
+    SELECT
+    diagnosisBlood AS 'The diagnosed blood condition',
+    isBloodSpecialist AS 'Applicant on follow-up with a specialist'
+    FROM registrationForm
+    WHERE regFormId = ?
+  `;
+  return query(sql, [regFormId])
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No details Found');
+      }
+      return rows;
+    });
+}
+
+module.exports.getisEpilepsyConditionDetails = function getisEpilepsyConditionDetails(regFormId) {
+  const sql = `
+    SELECT
+    isEpliepsyEpisode AS 'Any episode in the last 24 months',
+    isOnEpliepsyMeds AS 'Applicant been on medication for the epilepsy, fits or seizure condition in the last 24 months',
+    isEpliepsySpecialist AS ' Applicant on follow-up with a specialist'
+    FROM registrationForm
+    WHERE regFormId = ?
+  `;
+  return query(sql, [regFormId])
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No details Found');
+      }
+      return rows;
+    });
+}
+
+module.exports.getisBoneConditionDetails = function getisBoneConditionDetails(regFormId) {
+  const sql = `
+    SELECT
+    stateBoneCondition AS 'State the bone / joint / tendon injury or condition',
+    dateOfBoneCondition AS 'State the date the bone / joint / tendon injury or condition was sustained',
+    isBoneSpecialist AS ' Applicant on follow-up with a specialist',
+    isBoneFullyRecovered AS ' Applicant fully recovered',
+    furtherInfoOnBone AS 'Further information about the condition'
+    FROM registrationForm
+    WHERE regFormId = ?
+  `;
+  return query(sql, [regFormId])
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No details Found');
+      }
+      return rows;
+    });
+}
+
+module.exports.getisBehaviouralConditionDetails = function getisBehaviouralConditionDetails(regFormId) {
+  const sql = `
+    SELECT
+    stateBehaviouralCondition AS 'State the condition',
+    isBehaviouralSpecialist AS 'Applicant on follow-up with a specialist',
+    progressOfTreatingBehavioural AS 'Progress of treatment with the specialist',
+    stateBehaviouralAtHome AS "Applicant's behaviour at home",
+    stateBehaviouralHelpTips AS 'State what can OBS do to help the Applicant'
+    FROM registrationForm
+    WHERE regFormId = ?
+  `;
+  return query(sql, [regFormId])
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No details Found');
+      }
+      return rows;
+    });
+}
+
+module.exports.getisOnLongTermMedsDetails = function getisOnLongTermMedsDetails(regFormId) {
+  const sql = `
+    SELECT
+    isOnLongTermMeds AS 'Currently on long term prescribed medication',
+    stateLongTermMeds AS 'State the medication and dosage'
+    FROM registrationForm
+    WHERE regFormId = ?
+  `;
+  return query(sql, [regFormId])
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No details Found');
+      }
+      return rows;
+    });
+}
+
+module.exports.getisInfectiousConditionDetails = function getisInfectiousConditionDetails(regFormId) {
+  const sql = `
+    SELECT
+    stateInfectiousCondition AS 'A carrier status for any infectious disease'
+    FROM registrationForm
+    WHERE regFormId = ?
+  `;
+  return query(sql, [regFormId])
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No details Found');
+      }
+      return rows;
+    });
+}
+
+module.exports.getisSleepWalkingDetails = function getisSleepWalkingDetails(regFormId) {
+  const sql = `
+    SELECT
+    lastDateSleepWalking AS 'Date of last sleep walking occurrence'
+    FROM registrationForm
+    WHERE regFormId = ?
+  `;
+  return query(sql, [regFormId])
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No details Found');
+      }
+      return rows;
+    });
+}
+
+module.exports.getisAllergicToMedsDetails = function getisAllergicToMedsDetails(regFormId) {
+  const sql = `
+    SELECT
+    stateAllergicToMeds AS 'Medication that the Applicant is allergic to'
+    FROM registrationForm
+    WHERE regFormId = ?
+  `;
+  return query(sql, [regFormId])
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No details Found');
+      }
+      return rows;
+    });
+}
+
+module.exports.getisAllergicToEnvironmentDetails = function getisAllergicToEnvironmentDetails(regFormId) {
+  const sql = `
+    SELECT
+    stateAllergicToEnvironment AS 'environmental factors that the Applicant is allergic to',
+    stateDetailsEnvironmentTriggers AS 'Details of the allergic trigger(s)',
+    isMedsStopAllergic AS 'Medication to relieve the allergic reaction',
+    stateMedsStopAllergic AS 'State medication and dosage'
+    FROM registrationForm
+    WHERE regFormId = ?
+  `;
+  return query(sql, [regFormId])
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No details Found');
+      }
+      return rows;
+    });
+}
+
+module.exports.getisAllergicToFoodDetails = function getisAllergicToFoodDetails(regFormId) {
+  const sql = `
+    SELECT
+    stateAllergicToFood AS 'food Item(s) / ingredient(s) that the Applicant is allergic to',
+    stateDetailsFoodTriggers AS 'Details of the allergic trigger(s)',
+    isMedsStopTracers AS 'Applicant have medication to relieve the allergic reaction',
+    stateMedsStopTracers AS 'State medication and dosage'
+    FROM registrationForm
+    WHERE regFormId = ?
+  `;
+  return query(sql, [regFormId])
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No details Found');
+      }
+      return rows;
+    });
+}
+
+module.exports.getisOtherConditionDetails = function getisOtherConditionDetails(regFormId) {
+  const sql = `
+    SELECT
+    stateOtherCondition AS 'State the condition',
+    dateOfOtherCondition AS 'State when the condition was diagnosed',
+    stateOtherConditionAffectsPhysical AS "State how the condition affects the Applicant's ability to engage in physical activities",
+    stateTriggerOtherCondition AS "State factors that may trigger the Applicant's condition",
+    statePrecautionOtherCondition AS 'State precautionary measures that should be taken to prevent',
+    stateMedsOtherCondition AS 'Medication / equipment to manage the condition ',
+    isOtherConditionSpecialist AS 'Applicant on follow-up with a specialist for the condition',
+    isOtherConditionAffectFocus AS "Does the condition affect the Applicant's ability to focus",
+    isOtherConditionAffectUnderstanding AS "Does the condition affect the Applicant's ability to understand"
+    FROM registrationForm
+    WHERE regFormId = ?
+  `;
+  return query(sql, [regFormId])
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No details Found');
+      }
+      return rows;
+    });
+}

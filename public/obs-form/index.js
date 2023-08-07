@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentDoctor;
     let isDoctorNew = true;
     let studentNRIC = '';
+    let regFormId;
     const validities = {
         isStudentNameValid: false,
         isStudentNRICValid: false,
@@ -34,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
         isSignatureValid: false
     }
     let isAvailabilityBtn = false;
+    let isRetreiveBtnClicked = false;
     let form = document.querySelector('form');
     let canvas = document.getElementById('signatureCanvas');
     let signaturePad = new SignaturePad(canvas);
@@ -46,6 +48,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const deleteStudentModal = new bootstrap.Modal('#deleteStudentModal', {
         keyboard: false
     });
+    const seeDetailModal = new bootstrap.Modal('#seeDetailModal', {
+        keyboard: false
+    });
+    const seeDetailModalElement = document.getElementById('seeDetailModal')
     // alertBox
     const alertContainer = document.getElementById('alertbox');
     // Section divs
@@ -65,6 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const parentEmail = document.getElementById('parentEmail');
     const parentContact = document.getElementById('parentContact');
     const parentsInfoDiv = document.getElementById('parentsInfoDiv');
+    const retreiveStudentBtn = document.getElementById('retreiveStudentBtn');
 
     // physician sector
     const acknowledgeCheckBox = document.getElementById('acknowledgeCheckBox');
@@ -349,6 +356,35 @@ document.addEventListener('DOMContentLoaded', function () {
             return response.json().then(data => ({ studentInfo: data, deleteStudent: true }));
         });
     };
+    const getStudentRegistrationInfo = (registrationEntry) => {
+        return fetch('/getStudentRegistrationInfo',{
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(registrationEntry)
+        })
+        .then(response => {
+            if (response.status === 404) {
+                // Doctor was not found
+                throw new Error('StudentNotRegistered');
+            }
+            else if (response.status === 500) {
+                throw new Error('ServerError');
+            }
+            return response.json();
+        })
+        
+    };
+    const getConditionDetails = (conditionType,regFormId) => {
+        const apiUrl = `/get${conditionType}/${regFormId}`;
+        console.log(apiUrl)
+        return fetch(apiUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Upload failed');
+            }
+            return response.json();
+        })
+    };
 
     // Validation functions
     const validatePhone = (inputElement, feedbackElement, value) => {
@@ -480,13 +516,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
         }
-
     };
     const validateValidities = (validities) => {
         let foundFalse = false;
-        if (isAvailabilityBtn === false) {
-            availabilityBtn.classList.add('is-invalid');
-        }
         for (const key in validities) {
             const value = validities[key];
             if (!value) {
@@ -494,7 +526,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 break;
             }
         }
-
+        if (isAvailabilityBtn === false) {
+            availabilityBtn.classList.add('is-invalid');
+            foundFalse = false
+        }
+        // if (isRetreiveBtnClicked === false) {
+        //     retreiveStudentBtn.classList.add('is-invalid');
+        //     foundFalse = false
+        // }
         if (foundFalse) {
             return false;
         }
@@ -604,6 +643,15 @@ document.addEventListener('DOMContentLoaded', function () {
         validities.isEligibilityValid = false;
 
         let elements = form.elements;
+        
+        document.getElementById('studentRegDiv').innerHTML = '';
+        studentNameInput.disabled = false;
+        studentNRICInput.disabled = false;
+        dateOfBirth.disabled = false;
+        schoolDropDown.disabled = false;
+        studentClassInput.disabled = false;
+        dateOfVaccineInput.disabled = false;
+
 
         for (var i = 0; i < elements.length; i++) {
             var element = elements[i];
@@ -847,6 +895,130 @@ document.addEventListener('DOMContentLoaded', function () {
         validities.isSignatureValid = true;
     };
 
+    // student retrieval
+    retreiveStudentBtn.addEventListener('click', (event) => {8
+        event.preventDefault();
+        validities.isRetreiveBtnClicked = true;
+        if(validities.isStudentNameValid && validities.isStudentNRICValid){
+            loadingModal.show();
+            const registrationEntry = {
+                studentName : studentNameInput.value,
+                studentNRIC : studentNRIC.substring(studentNRIC.length - 4)
+            };
+            getStudentRegistrationInfo(registrationEntry)
+            .then(data => {
+                loadingModal.hide();
+                alertBox('Student is registered', 'success');
+                
+                validities.isClassValid = true;
+                validities.isDateOfBirthValid = true;
+                validities.isSchoolValid = true;
+                validities.isVaccineValid = true;
+
+                studentNameInput.disabled = true;
+                studentNRICInput.disabled = true;
+                const jsonData = data[0];
+                regFormId = jsonData.regFormId;
+    
+                const studentRegTemp = document.getElementById('studentRegTemp');
+                const clone = studentRegTemp.content.cloneNode(true);
+                const parentDiv = document.getElementById('studentRegDiv');
+                parentDiv.appendChild(clone);
+    
+                for(const key in jsonData){
+                    const currentValue = jsonData[key]
+                    if(parentDiv.querySelector(`#${key}`)){
+                        parentDiv.querySelector(`#${key}`).textContent =currentValue;
+                        if(currentValue === 'Yes'){
+                            if(key != 'isApplicantVaccinationValid'){
+                                const currentBtn = document.querySelector(`#${key}Btn`);
+                                const currentTitle = document.querySelector(`#${key}Title`).textContent;
+                                const modal = document.querySelector(`#seeDetailModal`);
+                                currentBtn.style.display = 'block';
+    
+                                document.querySelector(`#${key}Btn`).addEventListener('click', (event) => {
+                                    event.preventDefault();
+                                    seeDetailModal.show();
+                                    const modalTitle =  modal.querySelector('#conditionName');
+                                    const modalBody = modal.querySelector('.modal-body');
+                                    modalTitle.textContent = currentTitle;
+    
+                                    const apiUrl = key + 'Details'
+                                    getConditionDetails(apiUrl,regFormId)
+                                    .then(data => {
+                                        console.log(data);
+                                        modalBody.innerHTML = '';
+    
+                                        for(const key in data){
+                                            const modalConditionBodyRow = document.createElement('div');
+                                            modalConditionBodyRow.className = 'row mb-3';
+    
+                                            const title = document.createElement('div');
+                                            title.className = 'col-8';
+                                            title.textContent = key;
+                                            title.style.overflowX = 'auto'
+    
+                                            const details = document.createElement('div');
+                                            details.className = 'col-4';
+                                            details.textContent = data[key];
+                                            details.style.overflowX = 'auto'
+    
+                                            modalConditionBodyRow.appendChild(title);
+                                            modalConditionBodyRow.appendChild(details);
+    
+                                            modalBody.appendChild(modalConditionBodyRow);
+                                        }
+                                        
+                                    })
+                                    .catch(error => {
+                                        console.log(error);
+                                    })
+                                });
+                                
+                            }
+                        }
+                    }
+                    else{
+                        if(key === 'applicantDOB'){
+                            const applicantDOB = currentValue.substring(0, 10);
+                            dateOfBirth.value = applicantDOB;
+                            dateOfBirth.disabled=  true;
+                        }
+                        else if( key === 'applicantSchool'){
+                            currentSchool = currentValue;
+                            schoolName.disabled = true;
+                            schoolName.textContent = currentValue;
+                        }
+                        else if(key === 'applicantClass'){
+                            studentClassInput.value = currentValue;
+                            studentClassInput.disabled = true;
+                        }
+                        else if(key === 'applicantVaccinationDate'){
+                            const applicantVaccinationDate = currentValue.substring(0, 10);
+                            dateOfVaccineInput.value = applicantVaccinationDate;
+                            dateOfVaccineInput.disabled=  true;
+                        }
+                    }
+                }
+    
+    
+            })
+            .catch( error => {
+                if (error.message == 'StudentNotRegistered') {
+                    loadingModal.hide();
+                    alertBox('Student is not registered', 'danger');
+                    // if doctor is new and available
+                    studentNameInput.disabled = true;
+                    studentNRICInput.disabled = true;
+                    retreiveStudentBtn.className = 'btn btn-secondary'
+                    isAvailabilityBtn = true;
+                }
+                else {
+                    relocateToErrorPage(500);
+                }
+            })
+        }
+    });
     // clear signature
     clearSignatureBtn.addEventListener('click', (event) => {
         event.preventDefault();
@@ -965,6 +1137,13 @@ document.addEventListener('DOMContentLoaded', function () {
             schoolName.classList.add('is-invalid');
         }
     });
+    seeDetailModalElement.addEventListener('hidden.bs.modal', (event) => {
+        seeDetailModalElement.querySelector('.modal-body').innerHTML = '';
+        const loadingTemp = document.getElementById('loadingTemplate');
+        const loadingTempClone = loadingTemp.content.cloneNode(true);
+        loadingTempClone.querySelector('div').className = 'loadingMsg m-3';
+        seeDetailModalElement.querySelector('.modal-body').appendChild(loadingTempClone);
+    })
 
     // handle form submission
     form.addEventListener('submit', function (event) {
@@ -1000,7 +1179,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const allEntry = { ...studentEntry, ...formEntry, ...doctorEntry };
         const isChecked = isCheckBoxClicked();
         validateEmptyValue(allEntry);
-
         // Proceed submission
         if (validateValidities(validities)) {
             // check student duplication

@@ -2292,7 +2292,7 @@ app.get('/getSchools', (req, res, next) => {
         })
         .catch(err => {
             if (err instanceof EMPTY_RESULT_ERROR) {
-                res.status(404).json({ message: error.message });
+                res.status(404).json({ message: err.message });
             } else {
                 res.status(500).json({ message: 'Internal server error' });
             }
@@ -2638,6 +2638,271 @@ app.post('/obs-reg-form/submit', (req, res, next) => {
         });
 });
 
+// GET REGISTRATION INFORMATION
+app.post('/getStudentRegistrationInfo', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
+    if (req.decodedToken.role != 4) {
+        return res.redirect('/error?code=403');
+    }
+    const { studentName } = req.body;
+    const { studentNRIC } = req.body;
+    console.log(studentName+studentNRIC)
+    return doctorFormModel
+        .getStudentRegistrationInfo(studentName, studentNRIC)
+        .then((result) => {
+            console.log(result)
+            if (!result) {
+                const error = new Error("Unable to delete students and forms")
+                error.status = 500;
+                throw error;
+            }
+            return res.json(result);
+        })
+        .catch((error) => {
+            if (error instanceof UserNotFoundError) {
+                // user is not found
+                res.status(404).json({ message: 'StudentNotRegistered' });
+            } else {
+                // unknown internal error(system failure)
+                res.status(500).json({ message: 'Unknown error occurred.' });
+            }
+        });
+});
+
+// Retreiving condition details
+app.get('/getisBreathingConditionDetails/:regformid', (req, res, next) => {
+    const regFormId = req.params.regformid;
+    console.log(regFormId)
+    return doctorFormModel
+        .getisBreathingConditionDetails(regFormId)
+        .then(data => {
+            console.log(data);
+            const conditionDetailsJson = data[0];
+            res.json(conditionDetailsJson);
+        })
+        .catch(err => {
+            if (err instanceof EMPTY_RESULT_ERROR) {
+                res.status(404).json({ message: err.message });
+            } else {
+                res.status(500).json({ message: 'Internal server error' });
+            }
+        });
+});
+app.get('/getisHeartConditionDetails/:regformid', (req, res, next) => {
+    const regFormId = req.params.regformid;
+    console.log(regFormId)
+    return doctorFormModel
+        .getisHeartConditionDetails(regFormId)
+        .then(data => {
+            console.log(data);
+            const conditionDetailsJson = data[0];
+            res.json(conditionDetailsJson);
+        })
+        .catch(err => {
+            if (err instanceof EMPTY_RESULT_ERROR) {
+                res.status(404).json({ message: err.message });
+            } else {
+                res.status(500).json({ message: 'Internal server error' });
+            }
+        });
+});
+app.get('/getisBloodConditionDetails/:regformid', (req, res, next) => {
+    const regFormId = req.params.regformid;
+    console.log(regFormId)
+    return doctorFormModel
+        .getisBloodConditionDetails(regFormId)
+        .then(data => {
+            console.log(data);
+            const conditionDetailsJson = data[0];
+            res.json(conditionDetailsJson);
+        })
+        .catch(err => {
+            if (err instanceof EMPTY_RESULT_ERROR) {
+                res.status(404).json({ message: err.message });
+            } else {
+                res.status(500).json({ message: 'Internal server error' });
+            }
+        });
+});
+app.get('/getisEpilepsyConditionDetails/:regformid', (req, res, next) => {
+    const regFormId = req.params.regformid;
+    console.log(regFormId)
+    return doctorFormModel
+        .getisEpilepsyConditionDetails(regFormId)
+        .then(data => {
+            console.log(data);
+            const conditionDetailsJson = data[0];
+            res.json(conditionDetailsJson);
+        })
+        .catch(err => {
+            if (err instanceof EMPTY_RESULT_ERROR) {
+                res.status(404).json({ message: err.message });
+            } else {
+                res.status(500).json({ message: 'Internal server error' });
+            }
+        });
+});
+app.get('/getisBoneConditionDetails/:regformid', (req, res, next) => {
+    const regFormId = req.params.regformid;
+    console.log(regFormId)
+    return doctorFormModel
+        .getisBoneConditionDetails(regFormId)
+        .then(data => {
+            console.log(data);
+            const conditionDetailsJson = data[0];
+            res.json(conditionDetailsJson);
+        })
+        .catch(err => {
+            if (err instanceof EMPTY_RESULT_ERROR) {
+                res.status(404).json({ message: err.message });
+            } else {
+                res.status(500).json({ message: 'Internal server error' });
+            }
+        });
+});
+app.get('/getisBehaviouralConditionDetails/:regformid', (req, res, next) => {
+    const regFormId = req.params.regformid;
+    console.log(regFormId)
+    return doctorFormModel
+        .getisBehaviouralConditionDetails(regFormId)
+        .then(data => {
+            console.log(data);
+            const conditionDetailsJson = data[0];
+            res.json(conditionDetailsJson);
+        })
+        .catch(err => {
+            if (err instanceof EMPTY_RESULT_ERROR) {
+                res.status(404).json({ message: err.message });
+            } else {
+                res.status(500).json({ message: 'Internal server error' });
+            }
+        });
+});
+app.get('/getisOnLongTermMedsDetails/:regformid', (req, res, next) => {
+    const regFormId = req.params.regformid;
+    console.log(regFormId)
+    return doctorFormModel
+        .getisOnLongTermMedsDetails(regFormId)
+        .then(data => {
+            console.log(data);
+            const conditionDetailsJson = data[0];
+            res.json(conditionDetailsJson);
+        })
+        .catch(err => {
+            if (err instanceof EMPTY_RESULT_ERROR) {
+                res.status(404).json({ message: err.message });
+            } else {
+                res.status(500).json({ message: 'Internal server error' });
+            }
+        });
+});
+app.get('/getisInfectiousConditionDetails/:regformid', (req, res, next) => {
+    const regFormId = req.params.regformid;
+    console.log(regFormId)
+    return doctorFormModel
+        .getisInfectiousConditionDetails(regFormId)
+        .then(data => {
+            console.log(data);
+            const conditionDetailsJson = data[0];
+            res.json(conditionDetailsJson);
+        })
+        .catch(err => {
+            if (err instanceof EMPTY_RESULT_ERROR) {
+                res.status(404).json({ message: err.message });
+            } else {
+                res.status(500).json({ message: 'Internal server error' });
+            }
+        });
+});
+app.get('/getisSleepWalkingDetails/:regformid', (req, res, next) => {
+    const regFormId = req.params.regformid;
+    console.log(regFormId)
+    return doctorFormModel
+        .getisSleepWalkingDetails(regFormId)
+        .then(data => {
+            console.log(data);
+            const conditionDetailsJson = data[0];
+            res.json(conditionDetailsJson);
+        })
+        .catch(err => {
+            if (err instanceof EMPTY_RESULT_ERROR) {
+                res.status(404).json({ message: err.message });
+            } else {
+                res.status(500).json({ message: 'Internal server error' });
+            }
+        });
+});
+app.get('/getisAllergicToMedsDetails/:regformid', (req, res, next) => {
+    const regFormId = req.params.regformid;
+    console.log(regFormId)
+    return doctorFormModel
+        .getisAllergicToMedsDetails(regFormId)
+        .then(data => {
+            console.log(data);
+            const conditionDetailsJson = data[0];
+            res.json(conditionDetailsJson);
+        })
+        .catch(err => {
+            if (err instanceof EMPTY_RESULT_ERROR) {
+                res.status(404).json({ message: err.message });
+            } else {
+                res.status(500).json({ message: 'Internal server error' });
+            }
+        });
+});
+app.get('/getisAllergicToEnvironmentDetails/:regformid', (req, res, next) => {
+    const regFormId = req.params.regformid;
+    console.log(regFormId)
+    return doctorFormModel
+        .getisAllergicToEnvironmentDetails(regFormId)
+        .then(data => {
+            console.log(data);
+            const conditionDetailsJson = data[0];
+            res.json(conditionDetailsJson);
+        })
+        .catch(err => {
+            if (err instanceof EMPTY_RESULT_ERROR) {
+                res.status(404).json({ message: err.message });
+            } else {
+                res.status(500).json({ message: 'Internal server error' });
+            }
+        });
+});
+app.get('/getisAllergicToFoodDetails/:regformid', (req, res, next) => {
+    const regFormId = req.params.regformid;
+    console.log(regFormId)
+    return doctorFormModel
+        .getisAllergicToFoodDetails(regFormId)
+        .then(data => {
+            console.log(data);
+            const conditionDetailsJson = data[0];
+            res.json(conditionDetailsJson);
+        })
+        .catch(err => {
+            if (err instanceof EMPTY_RESULT_ERROR) {
+                res.status(404).json({ message: err.message });
+            } else {
+                res.status(500).json({ message: 'Internal server error' });
+            }
+        });
+});
+app.get('/getisOtherConditionDetails/:regformid', (req, res, next) => {
+    const regFormId = req.params.regformid;
+    console.log(regFormId)
+    return doctorFormModel
+        .getisOtherConditionDetails(regFormId)
+        .then(data => {
+            console.log(data);
+            const conditionDetailsJson = data[0];
+            res.json(conditionDetailsJson);
+        })
+        .catch(err => {
+            if (err instanceof EMPTY_RESULT_ERROR) {
+                res.status(404).json({ message: err.message });
+            } else {
+                res.status(500).json({ message: 'Internal server error' });
+            }
+        });
+});
 /**
  * Error handling
  */
