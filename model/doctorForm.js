@@ -156,14 +156,15 @@ module.exports.getCourseDates = function getCourseDates() {
 };
 
 module.exports.getSchools = function getSchools() {
-  const sql = `SELECT * FROM school`;
-  return query(sql).then(function (result) {
-    const rows = result;
-    if (rows.length === 0) {
-      throw new EMPTY_RESULT_ERROR('No Schools Found');
-    }
-    return rows;
-  });
+  const sql = `SELECT schoolName FROM school`;
+  return query(sql)
+    .then(result => {
+      const rows = result;
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No Schools Found');
+      }
+      return rows;
+    });
 };
 
 module.exports.getSchoolsFilter = function getSchoolsFilter(limit, offset) {
@@ -309,9 +310,6 @@ module.exports.getSchoolsByCourseDateAndClass = function getSchoolsByCourseDateA
   );
 }
 
-
-
-
 module.exports.getStudentFormStatus = function getStudentFormStatus(studentNRIC) {
   const sql = `
     SELECT s.studentId, f.formStatus
@@ -375,3 +373,276 @@ module.exports.deleteStudentForm = async function deleteStudentForm(studentId, f
     connection.release();
   };
 };
+
+module.exports.getStudentRegistrationInfo = function getStudentRegistrationInfo(studentName, studentNRIC) {
+  const sql = `
+    SELECT regFormId,applicantDOB,applicantSchool,applicantClass, applicantHeight, applicantWeight, 
+    isApplicantVaccinationValid, applicantVaccinationDate, applicantBMI, isBreathingCondition,
+    isHeartCondition, isBloodCondition, isEpilepsyCondition, isBoneCondition, isBehaviouralCondition,
+    isOnLongTermMeds, isInfectiousCondition, isSleepWalking,isAllergicToMeds, isAllergicToEnvironment,
+    isAllergicToFood, isOtherCondition
+    FROM registrationForm
+    WHERE applicantName LIKE ? AND applicantNRIC = ?;
+  `;
+  return query(sql, [`%${studentName}%`, studentNRIC])
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new UserNotFoundError('No students Found');
+      }
+      return rows;
+    });
+}
+
+module.exports.getisBreathingConditionDetails = function getisBreathingConditionDetails(regFormId) {
+  const sql = `
+    SELECT
+    diagnosisBreathing AS 'Diagnosis of the breathing condition',
+    lastDateBreathing AS 'Date of the breathing condition last occurrence',
+    isOnBreathingMeds AS 'Applicant on medication for the breathing condition',
+    stateBreathingMeds AS 'Medication and dosage',
+    isBreathingSpecialist AS 'Applicant on follow-up with a specialist',
+    isBreathingExercise 'Breathing condition triggered by exercise'
+    FROM registrationForm
+    WHERE regFormId = ?
+  `;
+  return query(sql, [regFormId])
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No details Found');
+      }
+      return rows;
+    });
+}
+
+module.exports.getisHeartConditionDetails = function getisHeartConditionDetails(regFormId) {
+  const sql = `
+    SELECT
+    stateHeartCondition AS 'State the heart condition',
+    isHeartSpecialist AS 'Applicant on follow-up with a specialist'
+    FROM registrationForm
+    WHERE regFormId = ?
+  `;
+  return query(sql, [regFormId])
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No details Found');
+      }
+      return rows;
+    });
+}
+
+module.exports.getisBloodConditionDetails = function getisBloodConditionDetails(regFormId) {
+  const sql = `
+    SELECT
+    diagnosisBlood AS 'The diagnosed blood condition',
+    isBloodSpecialist AS 'Applicant on follow-up with a specialist'
+    FROM registrationForm
+    WHERE regFormId = ?
+  `;
+  return query(sql, [regFormId])
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No details Found');
+      }
+      return rows;
+    });
+}
+
+module.exports.getisEpilepsyConditionDetails = function getisEpilepsyConditionDetails(regFormId) {
+  const sql = `
+    SELECT
+    isEpliepsyEpisode AS 'Any episode in the last 24 months',
+    isOnEpliepsyMeds AS 'Applicant been on medication for the epilepsy, fits or seizure condition in the last 24 months',
+    isEpliepsySpecialist AS ' Applicant on follow-up with a specialist'
+    FROM registrationForm
+    WHERE regFormId = ?
+  `;
+  return query(sql, [regFormId])
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No details Found');
+      }
+      return rows;
+    });
+}
+
+module.exports.getisBoneConditionDetails = function getisBoneConditionDetails(regFormId) {
+  const sql = `
+    SELECT
+    stateBoneCondition AS 'State the bone / joint / tendon injury or condition',
+    dateOfBoneCondition AS 'State the date the bone / joint / tendon injury or condition was sustained',
+    isBoneSpecialist AS ' Applicant on follow-up with a specialist',
+    isBoneFullyRecovered AS ' Applicant fully recovered',
+    furtherInfoOnBone AS 'Further information about the condition'
+    FROM registrationForm
+    WHERE regFormId = ?
+  `;
+  return query(sql, [regFormId])
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No details Found');
+      }
+      return rows;
+    });
+}
+
+module.exports.getisBehaviouralConditionDetails = function getisBehaviouralConditionDetails(regFormId) {
+  const sql = `
+    SELECT
+    stateBehaviouralCondition AS 'State the condition',
+    isBehaviouralSpecialist AS 'Applicant on follow-up with a specialist',
+    progressOfTreatingBehavioural AS 'Progress of treatment with the specialist',
+    stateBehaviouralAtHome AS "Applicant's behaviour at home",
+    stateBehaviouralHelpTips AS 'State what can OBS do to help the Applicant'
+    FROM registrationForm
+    WHERE regFormId = ?
+  `;
+  return query(sql, [regFormId])
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No details Found');
+      }
+      return rows;
+    });
+}
+
+module.exports.getisOnLongTermMedsDetails = function getisOnLongTermMedsDetails(regFormId) {
+  const sql = `
+    SELECT
+    isOnLongTermMeds AS 'Currently on long term prescribed medication',
+    stateLongTermMeds AS 'State the medication and dosage'
+    FROM registrationForm
+    WHERE regFormId = ?
+  `;
+  return query(sql, [regFormId])
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No details Found');
+      }
+      return rows;
+    });
+}
+
+module.exports.getisInfectiousConditionDetails = function getisInfectiousConditionDetails(regFormId) {
+  const sql = `
+    SELECT
+    stateInfectiousCondition AS 'A carrier status for any infectious disease'
+    FROM registrationForm
+    WHERE regFormId = ?
+  `;
+  return query(sql, [regFormId])
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No details Found');
+      }
+      return rows;
+    });
+}
+
+module.exports.getisSleepWalkingDetails = function getisSleepWalkingDetails(regFormId) {
+  const sql = `
+    SELECT
+    lastDateSleepWalking AS 'Date of last sleep walking occurrence'
+    FROM registrationForm
+    WHERE regFormId = ?
+  `;
+  return query(sql, [regFormId])
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No details Found');
+      }
+      return rows;
+    });
+}
+
+module.exports.getisAllergicToMedsDetails = function getisAllergicToMedsDetails(regFormId) {
+  const sql = `
+    SELECT
+    stateAllergicToMeds AS 'Medication that the Applicant is allergic to'
+    FROM registrationForm
+    WHERE regFormId = ?
+  `;
+  return query(sql, [regFormId])
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No details Found');
+      }
+      return rows;
+    });
+}
+
+module.exports.getisAllergicToEnvironmentDetails = function getisAllergicToEnvironmentDetails(regFormId) {
+  const sql = `
+    SELECT
+    stateAllergicToEnvironment AS 'environmental factors that the Applicant is allergic to',
+    stateDetailsEnvironmentTriggers AS 'Details of the allergic trigger(s)',
+    isMedsStopAllergic AS 'Medication to relieve the allergic reaction',
+    stateMedsStopAllergic AS 'State medication and dosage'
+    FROM registrationForm
+    WHERE regFormId = ?
+  `;
+  return query(sql, [regFormId])
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No details Found');
+      }
+      return rows;
+    });
+}
+
+module.exports.getisAllergicToFoodDetails = function getisAllergicToFoodDetails(regFormId) {
+  const sql = `
+    SELECT
+    stateAllergicToFood AS 'food Item(s) / ingredient(s) that the Applicant is allergic to',
+    stateDetailsFoodTriggers AS 'Details of the allergic trigger(s)',
+    isMedsStopTracers AS 'Applicant have medication to relieve the allergic reaction',
+    stateMedsStopTracers AS 'State medication and dosage'
+    FROM registrationForm
+    WHERE regFormId = ?
+  `;
+  return query(sql, [regFormId])
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No details Found');
+      }
+      return rows;
+    });
+}
+
+module.exports.getisOtherConditionDetails = function getisOtherConditionDetails(regFormId) {
+  const sql = `
+    SELECT
+    stateOtherCondition AS 'State the condition',
+    dateOfOtherCondition AS 'State when the condition was diagnosed',
+    stateOtherConditionAffectsPhysical AS "State how the condition affects the Applicant's ability to engage in physical activities",
+    stateTriggerOtherCondition AS "State factors that may trigger the Applicant's condition",
+    statePrecautionOtherCondition AS 'State precautionary measures that should be taken to prevent',
+    stateMedsOtherCondition AS 'Medication / equipment to manage the condition ',
+    isOtherConditionSpecialist AS 'Applicant on follow-up with a specialist for the condition',
+    isOtherConditionAffectFocus AS "Does the condition affect the Applicant's ability to focus",
+    isOtherConditionAffectUnderstanding AS "Does the condition affect the Applicant's ability to understand"
+    FROM registrationForm
+    WHERE regFormId = ?
+  `;
+  return query(sql, [regFormId])
+    .then(result => {
+      const rows = result[0];
+      if (rows.length === 0) {
+        throw new EMPTY_RESULT_ERROR('No details Found');
+      }
+      return rows;
+    });
+}

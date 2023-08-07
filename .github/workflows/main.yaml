@@ -1,4 +1,4 @@
-name: Cypress Tests
+name: CI Pipeline
 
 on:
   push:
@@ -68,14 +68,14 @@ jobs:
           retention-days: 5
           if-no-files-found: ignore
 
-  SonarCloud:
-      name: SonarCloud Gated Check
+  SonarCloud-Analyzer:
+      name: SonarCloud SAST
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v3
           with:
             fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-        - name: SonarCloud Scan
+        - name: SonarCloud Gated Check
           uses: SonarSource/sonarcloud-github-action@master
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
@@ -83,7 +83,7 @@ jobs:
 
   deploy:
     name: Deploy
-    needs: [Cypress-Test]
+    needs: [Cypress-Test, SonarCloud-Analyzer]
     runs-on: ubuntu-latest
     
     steps:
