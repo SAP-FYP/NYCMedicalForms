@@ -76,19 +76,33 @@
             <div class="col-xl-6 col-md-8 col-12 col-sm-12" id="formDiv" >
                 <form class="mt-xl-5 mt-md-5 mb-5 rounded-4 pt-3 p-xl-5 p-3" id="doctorForm" novalidate>
                     <div class="row">
+
                         <div class="col-12 mb-3">
                             <h4>Student Section</h3>
                         </div>
-                        <div class="col-xl-6 col-12">
-                            <div class="mb-3 position-relative">
-                                <label for="studentName" class="form-label">Name of Applicant</label>
-                                <input type="text" class="form-control" id="studentName">
-                                <div id="studentNameFeedback" class="invalid-tooltip">Please enter value</div>
+                        <div class="col-12">
+                            <div class="row g-0 mb-3">
+                                <label class="form-label">Student Name and NRIC</label>
+                                <div class="col-5 position-relative">
+                                    <input type="text" class="form-control" id="studentName" style="border-radius: 10px 0 0 10px;" placeholder="Student Name">
+                                    <div id="studentNameFeedback" class="invalid-tooltip"><small>Please enter value</small></div>
+                                </div>
+                                <div class="col-5 position-relative">
+                                    <input type="text" class="form-control" id="studentNRIC" maxlength="9" required style="border-radius: 0;" placeholder="Student NRIC">
+                                    <div id="studentNRICFeedback" class="invalid-tooltip"><small>Please enter value</small></div>
+                                </div> 
+                                <div class="col-2 position-relative">
+                                    <button id="retreiveStudentBtn" class="btn btn-primary" style="border-radius: 0 10px 10px 0;">Retreive</button>
+                                    <div id="retreiveStudentBtnFeedback" class="invalid-tooltip" style="min-width: 130px !important;"><small>Click before submit</small></div>
+                                </div>
                             </div>
+                        </div>
+
+                        <div class="col-xl-6 col-12">
                             <div class="mb-3 position-relative">
                                 <label for="studentName" class="form-label">Date of Birth of Applicant</label>
                                 <input type="date" class="form-control" id="dateOfBirth" required>
-                                <div id="dateOfBirthFeedback" class="invalid-tooltip">Please enter value</div>
+                                <div id="dateOfBirthFeedback" class="invalid-tooltip"><small>Please enter value</small></div>
                             </div>
                             <div class="mb-3 position-relative">
                                 <label for="schoolDropDown" class="form-label">Organization/School</label>
@@ -102,38 +116,33 @@
                                             Loading...
                                         </div>
                                     </ul>
-                                    <div id="schoolDropDownFeedback" class="invalid-tooltip">Please select value</div>
+                                    <div id="schoolDropDownFeedback" class="invalid-tooltip"><small>Please select value</small></div>
                                 </div>
-                                
                             </div>
                         </div>
                         <div class="col-xl-6 col-12">
                             <div class="mb-3 position-relative">
-                                <label for="studentNRIC" class="form-label">Student NRIC</label>
-                                <input type="text" class="form-control" id="studentNRIC" maxlength="9" required>
-                                <div id="studentNRICFeedback" class="invalid-tooltip">Please enter value</div>
-                            </div> 
-                            <div class="mb-3 position-relative">
                                 <label for="studentClass" class="form-label">Designation/class</label>
                                 <input type="text" class="form-control" id="studentClass" required>
-                                <div id="studentClassFeedback" class="invalid-tooltip">Please enter value</div>
+                                <div id="studentClassFeedback" class="invalid-tooltip"><small>Please enter value</small></div>
                             </div>
                             <div class="mb-3 position-relative">
                                 <label for="courseDate" class="form-label">Course Date</label>
                                 <input type="date" class="form-control" id="courseDate" required>
-                                <div id="courseDateFeedback" class="invalid-tooltip">Please enter value</div>
+                                <div id="courseDateFeedback" class="invalid-tooltip"><small>Please enter value</small></div>
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="row mb-3">
                                 <div class="col-xl-6 col-12 position-relative">
-                                    <label for="dateOfVaccine" class="form-label">Period of Tetanus Vaccination</label>
+                                    <label for="dateOfVaccine" class="form-label">Tetanus Vaccination Date</label>
                                     <input type="date" class="form-control" id="dateOfVaccine" required>
-                                    <div id="dateOfVaccineFeedback" class="invalid-tooltip">Please enter value</div>
+                                    <div id="dateOfVaccineFeedback" class="invalid-tooltip"><small>Please enter value</small></div>
                                 </div>
-
                             </div>
                         </div>
+
+                        <div id="studentRegDiv"></div>
                         
                         <div class="col-12 mt-4 mb-3">
                             <h4>Physician Section</h4>
@@ -161,10 +170,8 @@
                                     <input class="form-check-input" type="radio" name="eligibility" id="unfit" value="Unfit" required>
                                     <label class="form-check-label" for="unfit">Unfit</label>
                                 </div>
-                                <div class="invalid-feedback">please select before submit</div>
-                                
+                                <div class="invalid-feedback">Please select before submit</div>
                             </div>
-
                         </div>
                         <div class="col-12">
                             <div class="form-group">
@@ -190,12 +197,12 @@
                                 <div class="col-xl-6 col-12 position-relative">
                                     <label for="parentEmail" class="form-label">Parent's Email</label>
                                     <input type="text" class="form-control" id="parentEmail"  required>
-                                    <div id="parentEmailFeedback" class="invalid-tooltip">Please enter value</div>
+                                    <div id="parentEmailFeedback" class="invalid-tooltip"><small>Please enter value</small></div>
                                 </div>
                                 <div class="col-xl-6 col-12 position-relative">
                                     <label for="parentContact" class="form-label">Parent's Contact Number</label>
                                     <input type="text" class="form-control" id="parentContact" maxlength="8" required>
-                                    <div id="parentContactFeedback" class="invalid-tooltip">Please enter value</div>
+                                    <div id="parentContactFeedback" class="invalid-tooltip"><small>Please enter value</small></div>
                                 </div>
                             </div>
                         </div>
@@ -204,11 +211,11 @@
                             <div class="row">
                                 <div class="mb-3 col-8 position-relative">
                                     <input type="text" class="form-control" id="doctorMCR" required>
-                                    <div id="doctorMCRFeedback" class="invalid-tooltip">Please enter value</div>
+                                    <div id="doctorMCRFeedback" class="invalid-tooltip"><small>Please enter value</small></div>
                                 </div>
                                 <div class="mb-3 col-4 position-relative">
                                     <button id="availabilityBtn" class="btn btn-secondary form-control" style="min-width: 120px;">Check MCR</button>
-                                    <div id="availabilityBtnFeedback" class="invalid-tooltip">Please click before submit</div>
+                                    <div id="availabilityBtnFeedback" class="invalid-tooltip"><small>Please select before submit</small></div>
                                 </div>
                             </div>
                         </div>
@@ -216,29 +223,29 @@
                             <div class="mb-3 position-relative">
                                     <label for="physicianName" class="form-label">Name of Physician</label>
                                     <input type="text" class="form-control" id="physicianName" required>
-                                    <div id="physicianNameFeedback" class="invalid-tooltip">Please enter value</div>
+                                    <div id="physicianNameFeedback" class="invalid-tooltip"><small>Please enter value</small></div>
                                 </div>
                             <div class="mb-3 position-relative">
                                 <label for="clinicName" class="form-label">Name Of Clinic</label>
                                 <input type="text" class="form-control" id="clinicName" required>
-                                <div id="clinicNameFeedback" class="invalid-tooltip">Please enter value</div>
+                                <div id="clinicNameFeedback" class="invalid-tooltip"><small>Please enter value</small></div>
                             </div>
                             <div class="mb-3 position-relative">
                                 <label for="date" class="form-label">Date</label>
                                 <input type="date" class="form-control" id="date" required>
-                                <div id="dateFeedback" class="invalid-tooltip">Please enter value</div>
+                                <div id="dateFeedback" class="invalid-tooltip"><small>Please enter value</small></div>
                             </div>
                         </div>
                         <div class="col-xl-6 col-12 mb-3">
                             <div class="mb-3 position-relative">
                                 <label for="doctorContact" class="form-label">Contact No</label>
                                 <input type="text" class="form-control" id="doctorContact" maxlength="8" required>
-                                <div id="doctorContactFeedback" class="invalid-tooltip">Please enter value</div>
+                                <div id="doctorContactFeedback" class="invalid-tooltip"><small>Please enter value</small></div>
                             </div>
                             <div class="mb-3 position-relative">
                                 <label for="clinicAddress" class="form-label">Address Of Clinic</label>
                                 <input type="text" class="form-control" id="clinicAddress" required>
-                                <div id="clinicAddressFeedback" class="invalid-tooltip">Please enter value</div>
+                                <div id="clinicAddressFeedback" class="invalid-tooltip"><small>Please enter value</small></div>
                             </div>
                         </div>
                         <div class="col-12 text-center mb-3">
@@ -258,6 +265,196 @@
                 </form>
             </div>
         </div>
+        <!-- Student registration template -->
+        <template id="studentRegTemp">
+            <div class="col-12 mt-4 mb-3">
+                <h4>Student Registration Form</h4>
+            </div>
+
+            <div class="col-12">
+                <div class="row mb-2">
+                    <div class="col-8 pt-1">
+                        <p>Height </p>
+                    </div>
+                    <div class="col-4 pt-1">
+                        <p id="applicantHeight"></p>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-8 pt-1">
+                        <p>Weight </p>
+                    </div>
+                    <div class="col-4 pt-1">
+                        <p id="applicantWeight"></p>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-8 pt-1">
+                        <p>BMI </p>
+                    </div>
+                    <div class="col-4 pt-1">
+                        <p id="applicantBMI"></p>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-8 pt-1">
+                        <p>Does the Applicant have valid Tetanus Vaccination?</p>
+                    </div>
+                    <div class="col-4 pt-1">
+                        <p id="isApplicantVaccinationValid"></p>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-8 pt-1">
+                        <p id="isBreathingConditionTitle">Breathing condition</p>
+                    </div>
+                    <div class="col-1 pt-1">
+                        <p id="isBreathingCondition"></p>
+                    </div>
+                    <div class="col-3">
+                        <button class="btn btn-primary btn-sm align-top" id="isBreathingConditionBtn" style="display:none;"><small>See Details</small></button>
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-8 pt-1">
+                        <p id="isHeartConditionTitle">Heart condition</p>
+                    </div>
+                    <div class="col-1 pt-1">
+                        <p id="isHeartCondition"></p>
+                    </div>
+                    <div class="col-3">
+                        <button class="btn btn-primary btn-sm align-top" id="isHeartConditionBtn" style="display:none;"><small>See Details</small></button>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-8 pt-1">
+                        <p id="isBloodConditionTitle">Blood condition</p>
+                    </div>
+                    <div class="col-1 pt-1">
+                        <p id="isBloodCondition"></p>
+                    </div>
+                    <div class="col-3">
+                        <button class="btn btn-primary btn-sm align-top" id="isBloodConditionBtn" style="display:none;"><small>See Details</small></button>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-8 pt-1">
+                        <p id="isEpilepsyConditionTitle">Epilepsy, fits or seizure condition</p>
+                    </div>
+                    <div class="col-1 pt-1">
+                        <p id="isEpilepsyCondition"></p>
+                    </div>
+                    <div class="col-3">
+                        <button class="btn btn-primary btn-sm align-top" id="isEpilepsyConditionBtn" style="display:none;"><small>See Details</small></button>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-8 pt-1">
+                        <p id="isBoneConditionTitle">Bone / joint / tendon injury or condition</p>
+                    </div>
+                    <div class="col-1 pt-1">
+                        <p id="isBoneCondition"></p>
+                    </div>
+                    <div class="col-3">
+                        <button class="btn btn-primary btn-sm align-top" id="isBoneConditionBtn" style="display:none;"><small>See Details</small></button>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-8 pt-1">
+                        <p id="isBehaviouralConditionTitle">Behavioural or psychological condition</p>
+                    </div>
+                    <div class="col-1 pt-1">
+                        <p id="isBehaviouralCondition"></p>
+                    </div>
+                    <div class="col-3">
+                        <button class="btn btn-primary btn-sm align-top" id="isBehaviouralConditionBtn" style="display:none;"><small>See Details</small></button>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-8 pt-1">
+                        <p id="isOnLongTermMedsTitle">Currently on long term prescribed medication</p>
+                    </div>
+                    <div class="col-1 pt-1">
+                        <p id="isOnLongTermMeds"></p>
+                    </div>
+                    <div class="col-3">
+                        <button class="btn btn-primary btn-sm align-top" id="isOnLongTermMedsBtn" style="display:none;"><small>See Details</small></button>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-8 pt-1">
+                        <p id="isInfectiousConditionTitle">A carrier status for any infectious disease </p>
+                    </div>
+                    <div class="col-1 pt-1">
+                        <p id="isInfectiousCondition"></p>
+                    </div>
+                    <div class="col-3">
+                        <button class="btn btn-primary btn-sm align-top" id="isInfectiousConditionBtn" style="display:none;"><small>See Details</small></button>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-8 pt-1">
+                        <p id="isSleepWalkingTitle">Sleep walking </p>
+                    </div>
+                    <div class="col-1 pt-1">
+                        <p id="isSleepWalking"></p>
+                    </div>
+                    <div class="col-3">
+                        <button class="btn btn-primary btn-sm align-top" id="isSleepWalkingBtn" style="display:none;"><small>See Details</small></button>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-8 pt-1">
+                        <p id="isAllergicToMedsTitle">Allergy or adverse reactions to medication(s) (including over-the-counter oral/topical medication) </p>
+                    </div>
+                    <div class="col-1 pt-1">
+                        <p id="isAllergicToMeds"></p>
+                    </div>
+                    <div class="col-3">
+                        <button class="btn btn-primary btn-sm align-top" id="isAllergicToMedsBtn" style="display:none;"><small>See Details</small></button>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-8 pt-1">
+                        <p id="isAllergicToEnvironmentTitle">Allergy to environmental factor(s)</p>
+                    </div>
+                    <div class="col-1 pt-1">
+                        <p id="isAllergicToEnvironment"></p>
+                    </div>
+                    <div class="col-3">
+                        <button class="btn btn-primary btn-sm align-top" id="isAllergicToEnvironmentBtn" style="display:none;"><small>See Details</small></button>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-8 pt-1">
+                        <p id="isAllergicToFoodTitle">Allergy to food item(s) / ingredient(s) </p>
+                    </div>
+                    <div class="col-1 pt-1">
+                        <p id="isAllergicToFood"></p>
+                    </div>
+                    <div class="col-3">
+                        <button class="btn btn-primary btn-sm align-top" id="isAllergicToFoodBtn" style="display:none;"><small>See Details</small></button>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-8 pt-1">
+                        <p id="isOtherConditionTitle">Any other kind of condition(s) or issue(s) not listed above? </p>
+                    </div>
+                    <div class="col-1 pt-1">
+                        <p id="isOtherCondition"></p>
+                    </div>
+                    <div class="col-3">
+                        <button class="btn btn-primary btn-sm align-top" id="isOtherConditionBtn" style="display:none;"><small>See Details</small></button>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <template id="modalBodyDetailsTemp">
+            <div class="col-8 mb-2"><p><small id="title"></small></p></div>
+            <div class="col-8 mb-2" id="details" style="overflow-x: scroll;"></div>
+        </template>
 
         <!-- Availability button loading button template -->
         <template id="loadingTemplate">
@@ -287,6 +484,28 @@
             </div>
         </div>
 
+        <!-- See detail modal -->
+        <div class="modal" tabindex="-1" role="dialog" id="seeDetailModal" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="conditionName"></h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body text-center">
+                    <div class="spinner-border text-primary mt-2" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="pt-2">Loading, please wait...</p>
+                    <div class="row" id="modalConditionBodyRow"></div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+        </div>
+
         <!-- Delete student Modal -->
         <div class="modal fade" id="deleteStudentModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteStudentModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -311,6 +530,6 @@
             crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.5.3/signature_pad.min.js"></script>
         <script src="index.js"></script>
-    </body>
+</body>
 
 </html>
