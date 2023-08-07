@@ -58,6 +58,7 @@ app.use(express.static("public"));
 
 // CRON Job
 cronJob.dataRetentionJob();
+cronJob.remindParentJob();
 
 app.get('/', (req, res) => {
     res.redirect(`/login`);
@@ -726,7 +727,7 @@ National Youth Council in affiliation with Outward Bound Singapore`
         })
 })
 
-// Email test
+// Email 
 app.post('/send-email', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
     const { email, studentId } = req.body;
     // Make studentId into a string
@@ -917,10 +918,6 @@ app.put('/parent/acknowledge', parentAuthHelper.verifyToken, parentAuthHelper.va
             console.log(error);
             return res.status(error.status || 500).json({ error: error.message });
         })
-
-    function newFunction() {
-        parentAuthHelper.validateIfAcknowledged(studentID);
-    }
 })
 
 app.post('/postAcknowledge', authHelper.verifyToken, authHelper.checkIat, (req, res, next) => {
