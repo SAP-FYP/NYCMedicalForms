@@ -90,19 +90,19 @@ const CREATE_TABLE_SQL = `
     PRIMARY KEY (formId)
     );
 
-    CREATE TABLE IF NOT EXISTS registrationForm (
+        CREATE TABLE IF NOT EXISTS registrationForm (
     regFormId INT NOT NULL AUTO_INCREMENT,
     raceId INT NOT NULL,
     parentName VARCHAR(100) NOT NULL,
     parentEmail VARCHAR(100) NOT NULL,
-    parentNo INT NOT NULL,
-    altParentNo INT NOT NULL,
+    parentNo VARCHAR(50) NOT NULL,
+    altParentNo VARCHAR(50) NOT NULL,
     relationToApplicant VARCHAR(100) NOT NULL,
     isYouEmergencyContact VARCHAR(3) NOT NULL,
     emergencyContactName VARCHAR(100) NULL,
-    emergencyContactNo INT NULL,
+    emergencyContactNo VARCHAR(50) NULL,
     relationToEmergencyContact VARCHAR(100) NULL,
-    altEmergencyContactNo INT NULL,
+    altEmergencyContactNo VARCHAR(50) NULL,
     applicantNRIC VARCHAR(9) NOT NULL,
     applicantName VARCHAR(100) NOT NULL,
     aplicantSchool VARCHAR(100) NOT NULL,
@@ -115,9 +115,9 @@ const CREATE_TABLE_SQL = `
     applicantDietary VARCHAR(100) NULL,
     isApplicantVaccinationValid VARCHAR(3) NOT NULL,
     applicantVaccinationDate DATE NULL,
-    applicantHeight INT NOT NULL,
-    applicantWeight INT NOT NULL,
-    applicantBMI INT NOT NULL,
+    applicantHeight VARCHAR(50) NOT NULL,
+    applicantWeight VARCHAR(50) NOT NULL,
+    applicantBMI VARCHAR(50) NOT NULL,
     isBreathingCondition VARCHAR(3) NOT NULL,
     diagnosisBreathing VARCHAR(255) NULL,
     lastDateBreathing DATE NULL,
