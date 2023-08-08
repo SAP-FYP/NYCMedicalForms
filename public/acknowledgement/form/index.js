@@ -36,24 +36,6 @@ window.addEventListener("DOMContentLoaded", function () {
   const parentEmail = document.getElementById("parent-email");
   const parentNameFeedback = document.getElementById("parent-name-feedback");
   const parentNRICFeedback = document.getElementById("parent-nric-feedback");
-  // Signature Pad
-  const canvas = document.getElementById("parent-signature-canvas");
-  const signaturePad = new SignaturePad(canvas);
-  let resizeCanvas = () => {
-    let ratio = Math.max(1, 1);
-    canvas.width = canvas.offsetWidth * ratio;
-    canvas.height = canvas.offsetHeight * ratio;
-    canvas.getContext("2d").scale(ratio, ratio);
-  }
-  window.onresize = resizeCanvas;
-  resizeCanvas();
-
-  // Signature Pad clear button
-  const clearBtn = document.getElementById("clear-parent-signature");
-  clearBtn.addEventListener("click", function (e) {
-    e.preventDefault();
-    signaturePad.clear();
-  });
 
   // Validaties (Inline)
   const validities = {
@@ -229,6 +211,25 @@ window.addEventListener("DOMContentLoaded", function () {
   // If parent has yet to acknowledge
   const requireAcknowledgement = () => {
 
+    // Signature Pad
+    const canvas = document.getElementById("parent-signature-canvas");
+    const signaturePad = new SignaturePad(canvas);
+    let resizeCanvas = () => {
+      let ratio = Math.max(1, 1);
+      canvas.width = canvas.offsetWidth * ratio;
+      canvas.height = canvas.offsetHeight * ratio;
+      canvas.getContext("2d").scale(ratio, ratio);
+    }
+    window.onresize = resizeCanvas;
+    resizeCanvas();
+
+    // Signature Pad clear button
+    const clearBtn = document.getElementById("clear-parent-signature");
+    clearBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      signaturePad.clear();
+    });
+
     // Inline validation
     parentName.addEventListener("input", function (e) {
       e.preventDefault();
@@ -352,6 +353,13 @@ window.addEventListener("DOMContentLoaded", function () {
           p.textContent = `You have acknowledged the form on ${newDate}`;
           parentAcknowledgement.appendChild(p);
 
+          // Remove flag discrepancies button and line
+          const flagBtn = document.getElementById("flag-button");
+          flagBtn.remove();
+
+          const line = document.getElementById("line");
+          line.remove();
+
           // Disable all fields
           parentName.disabled = true;
           parentNRIC.disabled = true;
@@ -368,35 +376,35 @@ window.addEventListener("DOMContentLoaded", function () {
         .catch(handleError);
     });
 
-    flagBtn.addEventListener("click", function (e) {
-      // Create a popup modal
-      e.preventDefault();
-      console.log("test")
-      const modal = document.createElement("div");
-      modal.classList.add("modal");
-      modal.setAttribute("id", "flagModal");
-      modal.setAttribute("tabindex", "-1");
-      modal.setAttribute("role", "dialog");
-      modal.setAttribute("aria-labelledby", "flagModalLabel");
-      modal.setAttribute("aria-hidden", "true");
-      modal.innerHTML = `
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-body">
-          <h5 class="modal-title" id="flagModalLabel">Flag Form</h5>
-          <p>Are you sure you want to flag this form?</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" id="cancelFlagBtn" data-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-danger" id="confirmFlagBtn">Flag</button>
-          </div>
-        </div>
-      </div>
-      `;
-      document.body.appendChild(modal);
-      $("#flagModal").modal("show");
+    //   flagBtn.addEventListener("click", function (e) {
+    //     // Create a popup modal
+    //     e.preventDefault();
+    //     console.log("test")
+    //     const modal = document.createElement("div");
+    //     modal.classList.add("modal");
+    //     modal.setAttribute("id", "flagModal");
+    //     modal.setAttribute("tabindex", "-1");
+    //     modal.setAttribute("role", "dialog");
+    //     modal.setAttribute("aria-labelledby", "flagModalLabel");
+    //     modal.setAttribute("aria-hidden", "true");
+    //     modal.innerHTML = `
+    //     <div class="modal-dialog modal-dialog-centered" role="document">
+    //       <div class="modal-content">
+    //         <div class="modal-body">
+    //         <h5 class="modal-title" id="flagModalLabel">Flag Form</h5>
+    //         <p>Are you sure you want to flag this form?</p>
+    //         </div>
+    //         <div class="modal-footer">
+    //           <button type="button" class="btn btn-secondary" id="cancelFlagBtn" data-dismiss="modal">Cancel</button>
+    //           <button type="button" class="btn btn-danger" id="confirmFlagBtn">Flag</button>
+    //         </div>
+    //       </div>
+    //     </div>
+    //     `;
+    //     document.body.appendChild(modal);
+    //     $("#flagModal").modal("show");
 
-    });
+    //   });
   };
 
   // If parent has already acknowledged
@@ -433,6 +441,13 @@ window.addEventListener("DOMContentLoaded", function () {
         // Remove clear button
         const clearBtn = document.getElementById("clear-parent-signature");
         clearBtn.remove();
+
+        // Remove flag discrepancies button and line
+        const flagBtn = document.getElementById("flag-button");
+        flagBtn.remove();
+
+        const line = document.getElementById("line");
+        line.remove();
 
         // Replace canvas with image
         const canvas = document.getElementById("parent-signature-canvas");
