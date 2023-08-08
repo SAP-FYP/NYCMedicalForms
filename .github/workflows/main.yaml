@@ -83,7 +83,7 @@ jobs:
 
   deploy:
     name: Deploy
-    needs: [Cypress-Test, SonarCloud-Analyzer]
+    needs: [Cypress-Test,SonarCloud-Analyzer]
     runs-on: ubuntu-latest
     
     steps:
