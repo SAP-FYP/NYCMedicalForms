@@ -746,6 +746,16 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
     if (userPermissions.includes(7)) {
       submitReview.setAttribute("data-bs-dismiss", "modal");
       editReview(formData, newReview)
+      const apprRejContainer = document.querySelector('#apprRejContainer');
+        apprRejContainer.innerHTML = ''
+        const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
+        pmtHeadingForm.innerHTML = ''
+        pillPending.classList.remove('changePill');
+
+        if (canvas.parentElement === parentContainer) {
+          parentContainer.removeChild(canvas);
+        }
+      
     } else {
       alertBox("You don't have permission to edit review!", 'danger');
     }
