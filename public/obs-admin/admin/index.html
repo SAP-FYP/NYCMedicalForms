@@ -48,19 +48,20 @@
         <div class="row">
             <div id="nav-bar">
                 <ul class="navbar-nav">
-                    <li id="collapse-li"><img id="navbar-icons-arrow"
+                    <li id="collapse-li"><img alt="" id="navbar-icons-arrow"
                             src="../../../assets/images/navbar-expand-icon.png"><a class="navbar-label">Collapse
                             menu</a>
                     </li>
-                    <li id="permission-li" onclick="window.location.href='/obs-admin/admin/permissions';"><img
+                    <li id="permission-li" onclick="window.location.href='/obs-admin/admin/permissions';"><img alt=""
                             id="navbar-icons-permission" src="../../../assets/images/permission-enabled-icon.png"><a
                             class="navbar-label">Permissions</a></li>
-                    <li id="user-li" onclick="window.location.href='/obs-admin/admin';"><img id="navbar-icons-profile"
-                            src="../../../assets/images/profile-enabled-icon.png"><a class="navbar-label">Users</a></li>
-                    <li id="form-li" style="cursor: default; opacity: 0.5;"><img id="navbar-icons-forms"
+                    <li id="user-li" onclick="window.location.href='/obs-admin/admin';"><img alt=""
+                            id="navbar-icons-profile" src="../../../assets/images/profile-enabled-icon.png"><a
+                            class="navbar-label">Users</a></li>
+                    <li id="form-li" style="cursor: default; opacity: 0.5;"><img alt="" id="navbar-icons-forms"
                             src="../../../assets/images/form-enabled-icon.png"><a class="navbar-label">Forms</a></li>
-                    <li id="logout-li"><img id="navbar-icons-logout" src="../../../assets/images/logout-icon.png"><a
-                            class="navbar-label">Logout</a></li>
+                    <li id="logout-li"><img alt="" id="navbar-icons-logout"
+                            src="../../../assets/images/logout-icon.png"><a class="navbar-label">Logout</a></li>
                 </ul>
             </div>
         </div>
@@ -70,14 +71,14 @@
 
                 <!-- HEADER -->
                 <div id="header-bar" class="col-12">
-                    <img src="../../../assets/images/obs-logo.png">
+                    <img alt="" src="../../../assets/images/obs-logo.png">
                     <div id="profile-container">
                         <div id="text-container">
                             <a id="profile-user-name"></a>
                             <div class="break"></div>
                             <a id="view-profile">View profile</a>
                         </div>
-                        <img id="profile-user-image" src="../../assets/images/default-user-icon.png">
+                        <img alt="" id="profile-user-image" src="../../assets/images/default-user-icon.png">
                     </div>
                 </div>
 
@@ -98,7 +99,8 @@
                 </div>
 
                 <div class="col-12 d-flex">
-                    <div class="col-11 d-flex justify-content-start align-items-center" id="bulk-action">
+                    <!-- BULK ACTIONS -->
+                    <div class="col-10 d-flex justify-content-start align-items-center" id="bulk-action">
                         <button class="bulk-dropdown dropdown-toggle" data-bs-toggle="dropdown">
                             Bulk Actions
                         </button>
@@ -113,13 +115,27 @@
                         <label id="bulk-delete-selected">1 User Selected</label>
                     </div>
 
-                    <div class="col-1 d-flex justify-content-end">
-                        <span data-bs-toggle="modal" data-bs-target="#createUserModal">
-                            <button style="border:none; cursor: default;" id="open-modal-button"
-                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Create new user">
-                                <img id="create-user-icon" src="../../assets/images/create-user-icon.png">
-                            </button>
-                        </span>
+                    <!-- CREATE / SORT USER BUTTON -->
+                    <div class="col-2 d-flex justify-content-end">
+                        <div id="sort-btn-container">
+                            <span>
+                                <select id="sort-select">
+                                    <option value="0" selected>Sort users</option>
+                                    <option value="1">Name</option>
+                                    <option value="2">Email</option>
+                                    <option value="3">Status</option>
+                                    <option value="4">Date Created</option>
+                                </select>
+                            </span>
+                        </div>
+                        <div id="create-btn-container">
+                            <span data-bs-toggle="modal" data-bs-target="#createUserModal">
+                                <button style="border:none; cursor: default;" id="open-modal-button"
+                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Create new user">
+                                    <img alt="" id="create-user-icon" src="../../assets/images/create-user-icon.png">
+                                </button>
+                            </span>
+                        </div>
                     </div>
                 </div>
 
@@ -129,7 +145,7 @@
                     <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content" id="create-user-modal">
                             <div class="modal-header" id="modal-header">
-                                <img id="create-user-modal-icon" src="../../assets/images/create-modal-icon.png">
+                                <img alt="" id="create-user-modal-icon" src="../../assets/images/create-modal-icon.png">
                                 <h5 class="modal-title" id="staticBackdropLabel">Create New User</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
@@ -201,7 +217,7 @@
                                     style="background-color: white; display: inline;">
 
                                 <input id="edit-user-icon" type="image"
-                                    src="../../assets/images/confirm-edit-user-icon.png"
+                                    src="../../assets/images/confirm-edit-user-icon.png" alt=""
                                     style="background-color: white; display: none;">
                             </div>
                         </div>
@@ -221,7 +237,7 @@
                                     <div class="row d-flex justify-content-center">
                                         <label class="form-label col-12">Are you sure you want to delete this
                                             user? You can't undo this action.</label>
-                                        <img id="alert-icon" src="../../../assets/images/alert-icon.png">
+                                        <img alt="" id="alert-icon" src="../../../assets/images/alert-icon.png">
                                     </div>
                                 </div>
                             </div>
@@ -248,7 +264,7 @@
                                     <div class="row d-flex justify-content-center">
                                         <label class="form-label col-12">Are you sure you want to disable this
                                             user?</label>
-                                        <img id="alert-icon" src="../../../assets/images/alert-icon.png">
+                                        <img alt="" id="alert-icon" src="../../../assets/images/alert-icon.png">
                                     </div>
                                 </div>
                             </div>
@@ -275,7 +291,7 @@
                                     <div class="row d-flex justify-content-center">
                                         <label class="form-label col-12">Are you sure you want to enable this
                                             user?</label>
-                                        <img id="alert-icon" src="../../../assets/images/alert-icon.png">
+                                        <img alt="" id="alert-icon" src="../../../assets/images/alert-icon.png">
                                     </div>
                                 </div>
                             </div>
@@ -307,7 +323,7 @@
             <div class="item-border">
                 <div class="user-header">
                     <input class="select-item-chkbox" type="checkbox" value="">
-                    <img id="user-image" src="">
+                    <img alt="" id="user-image" src="">
                     <button class="more-button" data-bs-toggle="dropdown" value="">
                         <i class="material-icons more-button-icon" style="font-size:28px;color:#485EAB;">more_horiz</i>
                     </button>

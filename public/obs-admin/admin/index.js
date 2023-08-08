@@ -28,7 +28,7 @@ window.addEventListener('DOMContentLoaded', () => {
     let eof = false;
     let offset = 0;
     let searchFilter;
-
+    let order = 0;
     // === ALERT BOX ===
 
     const alertBox = (message, type) => {
@@ -145,7 +145,6 @@ window.addEventListener('DOMContentLoaded', () => {
             .then(handleResponse)
             .then((jsonData) => {
                 const permGroups = jsonData.result;
-
                 if (!permGroups) {
                     alertBox('No permission groups found.', 'warn');
                 } else {
@@ -163,9 +162,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // GET ALL USERS
     const getUsers = (filter) => {
-        !filter ? filter = -1 : filter;
+        filter = filter || -1;
 
-        fetch(`/obs-admin/users/${filter}/16/${offset}`)
+        fetch(`/obs-admin/users/${filter}/16/${offset}/${order}`)
             .then(handleResponse)
             .then((jsonData) => {
                 const users = jsonData.result;
@@ -242,7 +241,7 @@ window.addEventListener('DOMContentLoaded', () => {
             }
 
             content.querySelector(".dropdown-disable").addEventListener('click', (e) => {
-                e.preventDefault;
+                e.preventDefault();
                 let user = {
                     email: i.email
                 }
@@ -255,7 +254,7 @@ window.addEventListener('DOMContentLoaded', () => {
             })
 
             content.querySelector(".dropdown-delete").addEventListener('click', (e) => {
-                e.preventDefault;
+                e.preventDefault();
                 let user = {
                     email: i.email
                 }
@@ -263,7 +262,7 @@ window.addEventListener('DOMContentLoaded', () => {
             })
 
             content.querySelector(".dropdown-edit").addEventListener('click', (e) => {
-                e.preventDefault;
+                e.preventDefault();
                 let user = {
                     email: i.email,
                     name: i.nameOfUser,
@@ -409,7 +408,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     document.getElementById(`item-${user.email}`).getElementsByClassName('dropdown-disable')[0].textContent = 'Enable'
                     document.getElementById(`item-${user.email}`).getElementsByClassName('dropdown-disable')[0].setAttribute('data-bs-target', '#confirmationEnableModal');
                     document.getElementById(`item-${user.email}`).getElementsByClassName('dropdown-disable')[0].addEventListener('click', (e) => {
-                        e.preventDefault;
+                        e.preventDefault();
                         enableButtonHandler(user, 0);
                     });
                     updateCheckedCount();
@@ -447,7 +446,7 @@ window.addEventListener('DOMContentLoaded', () => {
                         document.getElementById(`item-${user}`).getElementsByClassName('dropdown-disable')[0].textContent = 'Enable'
                         document.getElementById(`item-${user}`).getElementsByClassName('dropdown-disable')[0].setAttribute('data-bs-target', '#confirmationEnableModal');
                         document.getElementById(`item-${user}`).getElementsByClassName('dropdown-disable')[0].addEventListener('click', (e) => {
-                            e.preventDefault;
+                            e.preventDefault();
                             enableButtonHandler({ email: user }, 0);
 
                         });
@@ -476,7 +475,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     document.getElementById(`item-${user.email}`).getElementsByClassName('dropdown-disable')[0].textContent = 'Disable'
                     document.getElementById(`item-${user.email}`).getElementsByClassName('dropdown-disable')[0].setAttribute('data-bs-target', '#confirmationDisableModal');
                     document.getElementById(`item-${user.email}`).getElementsByClassName('dropdown-disable')[0].addEventListener('click', (e) => {
-                        e.preventDefault;
+                        e.preventDefault();
                         disableButtonHandler(user, 1);
                     });
                     updateCheckedCount();
@@ -543,6 +542,13 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     // === EVENT HANDLERS ===
+
+    document.getElementById('sort-select').onchange = (e) => {
+        removeUsers();
+        searchInput.value = "";
+        order = e.target.value
+        getUsers()
+    }
 
     const validateInput = (inputElement, validationFn) => {
         const isValid = validationFn(inputElement.value.trim());

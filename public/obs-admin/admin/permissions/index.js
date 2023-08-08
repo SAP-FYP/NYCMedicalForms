@@ -108,7 +108,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // TODO: Proper Error
     const handleError = (error) => {
-        if (error && error.message !== 'redirected') {
+        if (error && error.message !== 'redirected' && error.message !== 'Cannot read properties of undefined (reading \'findIndex\')') {
             if (error.message !== "Failed to fetch") {
                 alertBox(error.message, 'danger');
             }
@@ -119,12 +119,23 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // GET PERMISSIONS GROUPS
     const getPermGroups = (filter) => {
-        !filter ? filter = -1 : filter;
+        filter = filter || -1;
 
         fetch(`/obs-admin/permission/groups/${filter}/20/${offset}`)
             .then(handleResponse)
             .then((jsonData) => {
                 const permGroup = jsonData.result;
+
+                if (offset == 0) {
+                    permGroup.findIndex((item, i) => {
+                        if (item.groupId == 155) {
+                            permGroup.splice(i, 1);
+                            permGroup.unshift(item)
+                            return;
+                        }
+                    })
+                }
+
                 !permGroup ? eof = true : buildPermGroups(permGroup);
 
                 offset += 20;

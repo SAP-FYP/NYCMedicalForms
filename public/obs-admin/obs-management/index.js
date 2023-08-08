@@ -35,7 +35,7 @@ function alertBox(message, type) {
     alertContainer.classList.add('alert-hidden');
     alertContainer.classList.remove('alert-visible');
     alertContainer.classList.remove(alertColor);
-  }, 4000);
+  }, 3000);
 };
 function handleError(error) {
   if (error && error.message !== 'redirected') {
@@ -61,7 +61,6 @@ function updateFormCounts(formData) {
     },
     { pendingParent: 0, pending: 0, approved: 0, rejected: 0 }
   );
-   console.log(formCounts); // Log the formCounts object to the console
   const pendingParentAmtElement = document.querySelector('.pendingParentAmt');
   const pendingAmtElement = document.querySelector('.pendingAmt');
   const apprAmtElement = document.querySelector('.apprAmt');
@@ -189,6 +188,12 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
 
       if (isChecked) {
         targetDataArray.push(data);
+        const tooltipInstance = bootstrap.Tooltip.getInstance(checkBoxTop);
+        if (tooltipInstance) {
+          tooltipInstance.dispose();
+        }
+        checkBoxTop.setAttribute('data-bs-title', `Click To Select All (${targetDataArray.length} Selected)`);
+        const hover = new bootstrap.Tooltip(checkBoxTop, { trigger: 'hover' });
         appendExportIcon();
       } else {
         const index = targetDataArray.findIndex((item) => item["Name of Applicant"] === applicantName);
@@ -198,6 +203,12 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
         if (targetDataArray.length === 0) {
           removeExportIcon();
         }
+        const tooltipInstance = bootstrap.Tooltip.getInstance(checkBoxTop);
+        if (tooltipInstance) {
+          tooltipInstance.dispose();
+        }
+        checkBoxTop.setAttribute('data-bs-title', `Click To Select All (${targetDataArray.length} Selected)`);
+        const hover = new bootstrap.Tooltip(checkBoxTop, { trigger: 'hover' });
       }
     });
   });
@@ -210,6 +221,13 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
       if (checkbox.checked === isChecked) {
         return;
       }
+      //parent element
+      const parentElement = checkbox.parentElement.parentElement;
+      const isHidden = parentElement.style.display === 'none';
+      if (isHidden) {
+        return;
+      }
+    
       checkbox.checked = isChecked;
       const applicantName = nameOfStudentCell.textContent;
       const schoolOrg = schoolCell.textContent;
@@ -231,6 +249,12 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
 
       if (checkbox.checked) {
         targetDataArray.push(data);
+        const tooltipInstance = bootstrap.Tooltip.getInstance(checkBoxTop);
+        if (tooltipInstance) {
+          tooltipInstance.dispose();
+        }
+        checkBoxTop.setAttribute('data-bs-title', `Click To Select All (${targetDataArray.length} Selected)`);
+        const hover = new bootstrap.Tooltip(checkBoxTop, { trigger: 'hover' });
         appendExportIcon();
       } else {
         const index = targetDataArray.findIndex((item) => item["Name of Applicant"] === applicantName);
@@ -240,6 +264,12 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
         if (targetDataArray.length === 0) {
           removeExportIcon();
         }
+        const tooltipInstance = bootstrap.Tooltip.getInstance(checkBoxTop);
+        if (tooltipInstance) {
+          tooltipInstance.dispose();
+        }
+        checkBoxTop.setAttribute('data-bs-title', `Click To Select All (${targetDataArray.length} Selected)`);
+        const hover = new bootstrap.Tooltip(checkBoxTop, { trigger: 'hover' });
       }
     });
 
@@ -549,7 +579,7 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
     }
     //if Approved create undo button
     if (formData.formStatus === "Approved" || formData.formStatus === "Rejected") {
-      undoStatusContainer.innerHTML = `<div class="btn btn-primary btn-sm undoStatusBtn"data-bs-dismiss="modal">Undo
+      undoStatusContainer.innerHTML = `<div class="btn btn-primary btn-sm undoStatusBtn"data-bs-dismiss="modal" id="undoStatusBtn-studentid-${studentId}">Undo
      Back To Pending</div>`
     }
     //check if form is rejected
@@ -716,6 +746,16 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
     if (userPermissions.includes(7)) {
       submitReview.setAttribute("data-bs-dismiss", "modal");
       editReview(formData, newReview)
+      const apprRejContainer = document.querySelector('#apprRejContainer');
+        apprRejContainer.innerHTML = ''
+        const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
+        pmtHeadingForm.innerHTML = ''
+        pillPending.classList.remove('changePill');
+
+        if (canvas.parentElement === parentContainer) {
+          parentContainer.removeChild(canvas);
+        }
+      
     } else {
       alertBox("You don't have permission to edit review!", 'danger');
     }
@@ -911,20 +951,22 @@ function exportToExcelBulk(data) {
         URL.revokeObjectURL(url);
         link.remove();
         alertBox("You have successfully exported the data to excel!", "success")
-      } else {
+      }
+      else {
         console.error("Invalid file format received:", contentType);
         alertBox("You do not have permission to export!", "danger")
         location.reload();
       }
     })
     .catch(error => {
-      // error.response.status === 431
+      if (error.response.status === 400){
+        alertBox("You did not select any rows to export!", "danger")
+      }
       console.error("Export request failed:", error);
     });
 }
 //expportButtonHandler
 const exportButtonHandler = () => {
-  console.log(dataAll);
   exportToExcelBulk(dataAll);
   alertBox("You have successfully exported the data to excel!", "success")
 }
@@ -967,7 +1009,7 @@ const tooltipTriggerListClick = [].slice.call(document.querySelectorAll('[data-b
 const tooltipTriggerListHover = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip-hover"]'));
 // Initialize Bootstrap tooltips
 tooltipTriggerListClick.forEach(function (tooltipTrigger) {
-  return new bootstrap.Tooltip(tooltipTrigger, { trigger: 'manaul' });
+  return new bootstrap.Tooltip(tooltipTrigger, { trigger: 'manual' });
 });
 tooltipTriggerListHover.forEach(function (tooltipTrigger) {
   return new bootstrap.Tooltip(tooltipTrigger, { trigger: 'hover' });
@@ -1002,7 +1044,6 @@ function toggleTooltipVisibility() {
       }
     }
   });
-  
 }
 
 // Add click event listener to the tipButton
@@ -1017,19 +1058,119 @@ if (tipButton) {
   });
 }
 
-
 function tooltipForCheckBoxTop(checkBoxTop) {
   checkBoxTop.setAttribute('data-bs-toggle', 'tooltip-hover');
   checkBoxTop.setAttribute('data-bs-placement', 'top');
-  checkBoxTop.setAttribute('data-bs-title', 'Click To Select All');
-
+  checkBoxTop.setAttribute('data-bs-title', `Click To Select All (0 Selected)`);
   if (checkBoxTop.hasAttribute('data-bs-toggle') ) {
     new bootstrap.Tooltip(checkBoxTop, { trigger: 'hover' });
   }
   
 }
+//Function to sort table
+function sortTable(columnIndex, ascending) {
+  var table, rows, switching, i, x, y, shouldSwitch;
+  table = document.getElementById("dashboard-table");
+  switching = true;
 
-document.addEventListener("DOMContentLoaded", function () {
+  while (switching) {
+    switching = false;
+    rows = table.rows;
+
+    for (i = 1; i < (rows.length - 1); i++) {
+      shouldSwitch = false;
+      x = rows[i].getElementsByTagName("TD")[columnIndex];
+      y = rows[i + 1].getElementsByTagName("TD")[columnIndex];
+
+      // Compare the values based on the sorting order (ascending or descending)
+      if (ascending) {
+        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+          shouldSwitch = true;
+          break;
+        }
+      } else {
+        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+          shouldSwitch = true;
+          break;
+        }
+      }
+    }
+
+    if (shouldSwitch) {
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+    }
+  }
+}
+
+//Function to change sort icon back to normal when other elements are clicked
+function changeBackSortIcon() {
+  ascending = true;
+  sortIconName.textContent = 'arrow_drop_down';
+  sortIconSchool.textContent = 'arrow_drop_down';
+}
+
+document.addEventListener("DOMContentLoaded", function (event) {
+  //Event listner for sorting by fullname, alphabetically, ascending and descending
+
+fullNameColumn.addEventListener('click', () => {
+  let nameAscending = true;
+  if (fullNameColumn !== document.activeElement) {
+    nameAscending = true;
+    dataAll.sort((a, b) => {
+      const aValue = a["Name of Applicant"].toLowerCase();
+      const bValue = b["Name of Applicant"].toLowerCase();
+      return ascending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+    });
+    console.log(dataAll)
+  } else {
+    nameAscending = !nameAscending;
+    dataAll.sort((a, b) => {
+      const aValue = a["Name of Applicant"].toLowerCase();
+      const bValue = b["Name of Applicant"].toLowerCase();
+      return ascending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+    });
+    console.log(dataAll)
+  }
+  
+
+  sortIconSchool.textContent = 'arrow_drop_down';
+  sortTable(2, ascending); // The index of the FULL NAME column is 2 (0-based index)
+  ascending = !ascending; // Toggle the sorting order
+  sortIconName.textContent = ascending ? 'arrow_drop_down' : 'arrow_drop_up';
+
+  
+});
+
+//Event listner for sorting by school, alphabetically, ascending and descending
+schoolColumn.addEventListener('click', () => {
+  alertBox("Click select all, then you can sort!", "warn")
+  let schoolAscending = true;
+  if (schoolColumn !== document.activeElement) {
+    schoolAscending = true;
+    dataAll.sort((a, b) => {
+      const aValue = a["Organization/School"].toLowerCase();
+      const bValue = b["Organization/School"].toLowerCase();
+      return ascending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+    });
+    console.log(dataAll)
+  } else {
+    schoolAscending = !schoolAscending;
+    dataAll.sort((a, b) => {
+      const aValue = a["Organization/School"].toLowerCase();
+      const bValue = b["Organization/School"].toLowerCase();
+      return ascending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+    });
+    console.log(dataAll)
+  }
+  sortIconName.textContent = 'arrow_drop_down';
+  sortTable(4, ascending); // The index of the FULL NAME column is 2 (0-based index)
+  ascending = !ascending; // Toggle the sorting order
+  sortIconSchool.textContent = ascending ? 'arrow_drop_down' : 'arrow_drop_up';
+
+
+
+});
   axios.get(`${API_URL}/all`)
     .then(function (response) {
       const configURL = response.config.url;
@@ -1044,7 +1185,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
       //remove user permission from array of data
       const userPermission = response.data.pop();
-      console.log(formData)
       updateFormCounts(formData);
 
       //call function to create export button for
@@ -1112,7 +1252,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         //call function to handle checkboxes
         if (userPermission.includes(5)) { 
-      
           tooltipForCheckBoxTop(checkBoxTop)
           arrowIcon.classList.remove('d-none');
           handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
@@ -1128,7 +1267,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
         handleModalButtons(clonedRowTemplate, studentId, formData, i);
-        ;
 
 
       }
@@ -1136,9 +1274,9 @@ document.addEventListener("DOMContentLoaded", function () {
       //Export to Excel Bulk Once
       const exportBtnBulk = document.querySelector('#export-btn-all');
       exportBtnBulk.addEventListener('click', function () {
-        console.log(dataAll);
         exportToExcelBulk(dataAll);
       });
+      
 
     })
     .catch(function (error) {
@@ -1147,159 +1285,11 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       console.log(error);
     });
-});
-
-
-//Function to sort table
-function sortTable(columnIndex, ascending) {
-  var table, rows, switching, i, x, y, shouldSwitch;
-  table = document.getElementById("dashboard-table");
-  switching = true;
-
-  while (switching) {
-    switching = false;
-    rows = table.rows;
-
-    for (i = 1; i < (rows.length - 1); i++) {
-      shouldSwitch = false;
-      x = rows[i].getElementsByTagName("TD")[columnIndex];
-      y = rows[i + 1].getElementsByTagName("TD")[columnIndex];
-
-      // Compare the values based on the sorting order (ascending or descending)
-      if (ascending) {
-        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-          shouldSwitch = true;
-          break;
-        }
-      } else {
-        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-          shouldSwitch = true;
-          break;
-        }
-      }
-    }
-
-    if (shouldSwitch) {
-      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-      switching = true;
-    }
-  }
-}
-//Function to change sort icon back to normal when other elements are clicked
-function changeBackSortIcon() {
-  ascending = true;
-  sortIconName.textContent = 'arrow_drop_down';
-  sortIconSchool.textContent = 'arrow_drop_down';
-}
-
-//Event listner for sorting by fullname, alphabetically, ascending and descending
-fullNameColumn.addEventListener('click', () => {
-  let nameAscending = true;
-  if (fullNameColumn !== document.activeElement) {
-    nameAscending = true;
-  } else {
-    nameAscending = !nameAscending;
-  }
-
-  sortIconSchool.textContent = 'arrow_drop_down';
-  sortTable(2, ascending); // The index of the FULL NAME column is 2 (0-based index)
-  ascending = !ascending; // Toggle the sorting order
-  sortIconName.textContent = ascending ? 'arrow_drop_down' : 'arrow_drop_up';
-});
-
-schoolColumn.addEventListener('click', () => {
-  let schoolAscending = true;
-  if (schoolColumn !== document.activeElement) {
-    schoolAscending = true;
-  } else {
-    schoolAscending = !schoolAscending;
-  }
-  sortIconName.textContent = 'arrow_drop_down';
-  sortTable(4, ascending); // The index of the FULL NAME column is 2 (0-based index)
-  ascending = !ascending; // Toggle the sorting order
-  sortIconSchool.textContent = ascending ? 'arrow_drop_down' : 'arrow_drop_up';
-});
-
-//Function to search for forms
-
-////////////////////////////
-//SHOW FILTERS ON CLICK
-////////////////////////////
-const filterIcons = document.querySelector('#filter-icon');
-const filterDropDowns = document.querySelector('.displayFilters');
-filterIcons.addEventListener('click', () => {
-  if (filterDropDowns.classList.contains('d-none')) {
-    filterDropDowns.classList.remove('d-none');
-  } else {
-    filterDropDowns.classList.add('d-none');
-  }
-});
-
-////////////////////////////
-//Navbar Error Handling
-////////////////////////////
-const navBarPerms = document.querySelector('#permission-li')
-const navBarUsers = document.querySelector('#user-li')
-const navBarForms = document.querySelector('#form-li')
-navBarPerms.addEventListener('click', function () {
-  alertBox('You do not have permission to access this page!', 'danger');
-});
-navBarUsers.addEventListener('click', function () {
-  alertBox('You do not have permission to access this page!', 'danger');
-});
-navBarForms.addEventListener('click', function () {
-  alertBox('You are already on this page', 'warn');
-});
-
-////////////////////////////
-// SEARCH Forms
-////////////////////////////
-
-const searchFormByName = document.querySelector('#searchInput');
-
-searchClearBtn.addEventListener('click', function () {
-  searchFormByName.value = "";
-  const AllForm = document.querySelectorAll('#getAllForms tr');
-  AllForm.forEach(form => {
-    form.style.display = "";
-  })
-});
-
-searchBtn.addEventListener('click', function () {
-  changeBackSortIcon()
-  const searchValue = searchFormByName.value.toUpperCase();
-  const AllForm = document.querySelectorAll('#getAllForms tr');
-  AllForm.forEach(form => {
-    const textValue = form.textContent || form.innerText;
-    if (textValue.toUpperCase().indexOf(searchValue) > -1) {
-      form.style.display = "";
-    } else {
-      form.style.display = "none";
-    }
-  })
-})
-
-
-searchFormByName.addEventListener('keyup', function () {
-  changeBackSortIcon()
-  const searchValue = searchFormByName.value.toUpperCase();
-  const AllForm = document.querySelectorAll('#getAllForms tr');
-  AllForm.forEach(form => {
-    const textValue = form.textContent || form.innerText;
-    if (textValue.toUpperCase().indexOf(searchValue) > -1) {
-      form.style.display = "";
-    } else {
-      form.style.display = "none";
-    }
-  })
-})
-
-
 
 ////////////////////////////
 //Filters
 ////////////////////////////
-document.addEventListener('DOMContentLoaded', (event) => {
+
   var dropdownMenuStayOpen = document.querySelectorAll('.dropdown-menu-stay');
   const schoolMenuBtn = document.querySelector('#schoolMenuButton');
   const classMenuBtn = document.querySelector('#classMenuButton');
@@ -1365,12 +1355,12 @@ document.addEventListener('DOMContentLoaded', (event) => {
     courseDateCount = 0;
     eligibilityCount = 0;
     unhideClearFilterBtn();
-    pullDataWithFilter();
+    pullDataWithFilter(exportButtonHandler);
   });
 
 
 
-  function pullDataWithFilter() {
+  function pullDataWithFilter(exportButtonHandler) {
     changeBackSortIcon()
     // Pull data to display in table
     axios.post(`/obs-admin/pmt/filter`, {
@@ -1442,7 +1432,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
           // Get references to the status container and template
           const getAllForms = document.querySelector('#getAllForms');
           const rowTemplate = document.querySelector('.row-table-template');
-
+          //checkbox
+     
+  
           //clear html content in getAllForms once since using template
           if (i === 0) {
             dataAll = [];
@@ -1451,49 +1443,49 @@ document.addEventListener('DOMContentLoaded', (event) => {
           // Clone the template and append it to the status container
           const templateContent = rowTemplate.content;
           const clonedRowTemplate = document.importNode(templateContent, true);
-
-      // Populate the cloned template function
-      const {
-        studentNRICCell,
-        nameOfStudentCell,
-        classCell,
-        schoolCell,
-        eligibilityCell,
-        formattedDateCell,
-        formStatusValue,
-        studentId,
-        mstReviewCell,
-        docReviewCell
-      } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
-      //call function to handle checkboxes
-      if (userPermission.includes(5)) {
-        const checkBoxTop = document.querySelector('#checkBoxTop');
-        tooltipForCheckBoxTop(checkBoxTop);
-        arrowIcon.classList.remove('d-none');
-        handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
-      } else {
-        const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
-        const checkBoxTop = document.querySelector('#checkBoxTop');
-        checkBoxes.forEach(function (checkBox) {
-          checkBox.classList.add('d-none');
-        });
-        checkBoxTop.classList.add('d-none');
-      }
-
-
+  
+          // Populate the cloned template function
+          const {
+            studentNRICCell,
+            nameOfStudentCell,
+            classCell,
+            schoolCell,
+            eligibilityCell,
+            formattedDateCell,
+            formStatusValue,
+            studentId,
+            mstReviewCell,
+            docReviewCell
+          } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
+          displayArrowIcons()
+  
+  
+          //call function to handle checkboxes
+          if (userPermission.includes(5)) { 
+        
+            tooltipForCheckBoxTop(checkBoxTop)
+            arrowIcon.classList.remove('d-none');
+            handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
+          } else {
+            const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
+            const checkBoxTop = document.querySelector('#checkBoxTop');
+            checkBoxes.forEach(function (checkBox) {
+              checkBox.classList.add('d-none');
+            });
+            checkBoxTop.classList.add('d-none');
+          }
+  
+  
           //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
           handleModalButtons(clonedRowTemplate, studentId, formData, i);
-          ;
-
-
+  
+  
         }
+       
         //Outside of for loop 
         //Export to Excel Bulk Once
-        const exportBtnBulk = document.querySelector('#export-btn-all');
-    exportBtnBulk.addEventListener('click', function () {
-      console.log(dataAll);
-      exportToExcelBulk(dataAll);
-    });
+        exportBtnBulkContainer.removeEventListener('click', exportButtonHandler);
+        exportBtnBulkContainer.addEventListener('click', exportButtonHandler);
 
   })
       .catch(function (error) {
@@ -1742,7 +1734,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             formStatusArray.push(rectangleButton.getAttribute('data-status'));
           }
           unhideClearFilterBtn();
-          pullDataWithFilter();
+          pullDataWithFilter(exportButtonHandler);
         })
       })
       allCheckBoxes.forEach(checkbox => {
@@ -1835,7 +1827,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             }
           }
           unhideClearFilterBtn();
-          pullDataWithFilter();
+          pullDataWithFilter(exportButtonHandler);
         })
       })
     })
@@ -1845,7 +1837,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
       }
     });
 
-
+const exportButtonHandler = () => {
+    exportToExcelBulk(dataAll);
+    alertBox("You have successfully exported the data to excel!", "success")
+  }
 
 
   // Search bar to search for filters in the respective .filter-div
@@ -1866,3 +1861,79 @@ document.addEventListener('DOMContentLoaded', (event) => {
     })
   })
 })
+
+////////////////////////////
+//SHOW FILTERS ON CLICK
+////////////////////////////
+const filterIcons = document.querySelector('#filter-icon');
+const filterDropDowns = document.querySelector('.displayFilters');
+filterIcons.addEventListener('click', () => {
+  if (filterDropDowns.classList.contains('d-none')) {
+    filterDropDowns.classList.remove('d-none');
+  } else {
+    filterDropDowns.classList.add('d-none');
+  }
+});
+
+////////////////////////////
+//Navbar Error Handling
+////////////////////////////
+const navBarPerms = document.querySelector('#permission-li')
+const navBarUsers = document.querySelector('#user-li')
+const navBarForms = document.querySelector('#form-li')
+navBarPerms.addEventListener('click', function () {
+  alertBox('You do not have permission to access this page!', 'danger');
+});
+navBarUsers.addEventListener('click', function () {
+  alertBox('You do not have permission to access this page!', 'danger');
+});
+navBarForms.addEventListener('click', function () {
+  alertBox('You are already on this page', 'warn');
+});
+
+////////////////////////////
+// SEARCH Forms
+////////////////////////////
+
+const searchFormByName = document.querySelector('#searchInput');
+
+searchClearBtn.addEventListener('click', function () {
+  changeBackSortIcon()
+  searchFormByName.value = "";
+  const AllForm = document.querySelectorAll('#getAllForms tr');
+  AllForm.forEach(form => {
+    form.style.display = "";
+  })
+});
+
+searchBtn.addEventListener('click', function () {
+  changeBackSortIcon()
+  const searchValue = searchFormByName.value.toUpperCase();
+  const AllForm = document.querySelectorAll('#getAllForms tr');
+  AllForm.forEach(form => {
+    const textValue = form.textContent || form.innerText;
+    if (textValue.toUpperCase().indexOf(searchValue) > -1) {
+      form.style.display = "";
+    } else {
+      form.style.display = "none";
+    }
+  })
+})
+
+
+searchFormByName.addEventListener('keyup', function () {
+  changeBackSortIcon()
+  const searchValue = searchFormByName.value.toUpperCase();
+  const AllForm = document.querySelectorAll('#getAllForms tr');
+  AllForm.forEach(form => {
+    const textValue = form.textContent || form.innerText;
+    if (textValue.toUpperCase().indexOf(searchValue) > -1) {
+      form.style.display = "";
+    } else {
+      form.style.display = "none";
+    }
+  })
+})
+const exportBtnBulk = document.querySelector('#export-btn-search');
+  exportBtnBulk.removeEventListener('click', exportButtonHandler);
+  exportBtnBulk.addEventListener('click', exportButtonHandler);

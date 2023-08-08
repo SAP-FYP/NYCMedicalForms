@@ -34,23 +34,11 @@ window.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    if (status === 403) {
-      setErrMsg('Account is disabled. Please contact admin for more information.', 'visible');
-      return;
-    }
-
     if (status === 500) {
       setErrMsg('An error occured logging in.', 'visible');
       return;
     }
   })
-  .finally(() => {
-    document.querySelectorAll('.spinner-item').forEach(i => {
-      i.style.display = 'none';
-    });
-    document.getElementById('login-text').style.display = 'none';
-    document.getElementById('login-button').style.backgroundColor = '#4d4d4d';
-  });
   
   // Validation for URL
   axios.post('/parent/login-verify', {

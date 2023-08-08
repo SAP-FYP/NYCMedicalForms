@@ -4,6 +4,9 @@ window.addEventListener("DOMContentLoaded", function () {
   const encrypted = urlParams.get("encrypted");
   const baseURL = window.location.origin;
 
+  // Logout button
+  const logoutBtn = document.getElementById("logout-button");
+
   // Student
   const studentName = document.getElementById("student-name");
   const studentNRIC = document.getElementById("student-nric");
@@ -31,9 +34,19 @@ window.addEventListener("DOMContentLoaded", function () {
   const parentNRIC = document.getElementById("parent-nric");
   const parentContactNo = document.getElementById("parent-contact");
   const parentEmail = document.getElementById("parent-email");
+  const parentNameFeedback = document.getElementById("parent-name-feedback");
+  const parentNRICFeedback = document.getElementById("parent-nric-feedback");
 
-  // Acknowledge Button
+  // Validaties (Inline)
+  const validities = {
+    isParentNameValid: false,
+    isParentNRICValid: false,
+  }
+
+  // Acknowledge & Flag Button
   const acknowledgeBtn = document.getElementById("acknowledge-button");
+  const flagBtn = document.getElementById("flag-button");
+
 
   const alertContainer = document.getElementById('alertbox');
   function alertBox(message, type) {
@@ -72,7 +85,7 @@ window.addEventListener("DOMContentLoaded", function () {
   };
 
   // Retrieving of form details
-  let retrieveForm = axios
+  let retrieveForm = () => axios
     .get("/form/" + encrypted)
     .then((response) => {
       const configURL = baseURL + response.config.url;
@@ -128,7 +141,7 @@ window.addEventListener("DOMContentLoaded", function () {
       alertBox('You have an invalid URL.', 'danger');
     });
 
-  let verifyIfAcknowledged = axios.post('/parent/login-verify', {
+  let verifyIfAcknowledged = () => axios.post('/parent/login-verify', {
     encrypted: encrypted
   }).then((response) => {
     const acknowledged = response.data.statusOfAcknowledgement;
@@ -145,78 +158,17 @@ window.addEventListener("DOMContentLoaded", function () {
     window.location.href = '/acknowledgement/';
   });
 
-
-
-  const requireAcknowledgement = () => {
-
-    const validities = {
-      isParentNameValid: false,
-      isParentNRICValid: false,
-    }
-
-    const parentNameFeedback = document.getElementById("parent-name-feedback");
-    const parentNRICFeedback = document.getElementById("parent-nric-feedback");
-
-
-    // Signature Pad
-    const canvas = document.getElementById("parent-signature-canvas");
-    const signaturePad = new SignaturePad(canvas);
-    function resizeCanvas() {
-      var ratio = Math.max(1, 1);
-
-      canvas.width = canvas.offsetWidth * ratio;
-      canvas.height = canvas.offsetHeight * ratio;
-      canvas.getContext("2d").scale(ratio, ratio);
-    }
-
-    window.onresize = resizeCanvas;
-    resizeCanvas();
-
-    // Signature Pad clear button
-    const clearBtn = document.getElementById("clear-parent-signature");
-    clearBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-      signaturePad.clear();
-    });
-
-    //   Change to UTC
-    const date = new Date().toISOString().split("T")[0];
-
-    // Inline validation
-    parentName.addEventListener("input", function (e) {
-      e.preventDefault();
-      if (parentName.value.length < 1) {
-        parentName.classList.add("is-invalid");
-        validities.isParentNameValid = false;
-        parentNameFeedback.textContent = "Please enter a valid name";
-      } else {
-        parentName.classList.remove("is-invalid");
-        validities.isParentNameValid = true;
-        parentNameFeedback.textContent = "";
-      }
-    });
-
-    parentNRIC.addEventListener("input", function (e) {
-      e.preventDefault();
-
-      // NRIC VALIDATION
-
-      // Check if the NRIC/FIN length is valid
-      if (parentNRIC.value.length !== 9) {
-        parentNRIC.classList.add("is-invalid");
-        validities.isParentNRICValid = false;
-        parentNRICFeedback.textContent = "Please enter a valid NRIC/FIN";
-      } else {
-        parentNRIC.classList.remove("is-invalid");
-        validities.isParentNRICValid = true;
-        parentNRICFeedback.textContent = "";
-      }
-
+  // NRIC Validator
+  const validateNRIC = (NRIC) => {
+    // Check if the NRIC/FIN length is valid
+    if (NRIC.length !== 9) {
+      return false;
+    } else {
       // Weights for NRIC/FIN
       const weights = [2, 7, 6, 5, 4, 3, 2];
 
       // Extract the first character and determine the offset value
-      const firstChar = parentNRIC.value.charAt(0).toUpperCase();
+      const firstChar = NRIC.charAt(0).toUpperCase();
       let offset = 0;
       if (firstChar === 'G' || firstChar === 'T') {
         offset = 4;
@@ -227,19 +179,15 @@ window.addEventListener("DOMContentLoaded", function () {
       } else if (firstChar === 'M') {
         offset = 3;
       } else {
-        parentNRIC.classList.add("is-invalid");
-        validities.isParentNRICValid = false;
-        parentNRICFeedback.textContent = "Please enter a valid NRIC/FIN";
+        return false;
       }
 
       // Multiply each digit by its weight and sum the products
       let sum = offset;
-      for (let i = 1; i < parentNRIC.value.length - 1; i++) {
-        const digit = parseInt(parentNRIC.value.charAt(i));
+      for (let i = 1; i < NRIC.length - 1; i++) {
+        const digit = parseInt(NRIC.charAt(i));
         if (isNaN(digit)) {
-          parentNRIC.classList.add("is-invalid");
-          validities.isParentNRICValid = false;
-          parentNRICFeedback.textContent = "Please enter a valid NRIC/FIN";
+          return false;
         }
         sum += digit * weights[i - 1];
       }
@@ -251,28 +199,91 @@ window.addEventListener("DOMContentLoaded", function () {
       const checkDigit = 11 - remainder - 1;
 
       // Check the check digit against the table to obtain the last letter
-      const lastLetter = parentNRIC.value.charAt(parentNRIC.value.length - 1).toUpperCase();
+      const lastLetter = NRIC.charAt(NRIC.length - 1).toUpperCase();
       const checkTable = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'Z', 'J'];
       if (lastLetter !== checkTable[checkDigit]) {
-        parentNRIC.classList.add("is-invalid");
-        validities.isParentNRICValid = false;
-        parentNRICFeedback.textContent = "Please enter a valid NRIC/FIN";
+        return false;
+      }
+    }
+    return true;
+  }
+
+  // If parent has yet to acknowledge
+  const requireAcknowledgement = () => {
+
+    // Signature Pad
+    const canvas = document.getElementById("parent-signature-canvas");
+    const signaturePad = new SignaturePad(canvas);
+    let resizeCanvas = () => {
+      let ratio = Math.max(1, 1);
+      canvas.width = canvas.offsetWidth * ratio;
+      canvas.height = canvas.offsetHeight * ratio;
+      canvas.getContext("2d").scale(ratio, ratio);
+    }
+    window.onresize = resizeCanvas;
+    resizeCanvas();
+
+    // Signature Pad clear button
+    const clearBtn = document.getElementById("clear-parent-signature");
+    clearBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      signaturePad.clear();
+    });
+
+    // Inline validation
+    parentName.addEventListener("input", function (e) {
+      e.preventDefault();
+      // Parent Name Validation
+      if (parentName.value === "") {
+        parentName.classList.add("is-invalid");
+        parentName.classList.remove("is-valid");
+        parentNameFeedback.textContent = "Please enter your name.";
+      }
+      else {
+        parentName.classList.remove("is-invalid");
+        parentName.classList.add("is-valid");
+        parentNameFeedback.textContent = "";
+        validities.isParentNameValid = true;
       }
     });
 
+    parentNRIC.addEventListener("input", function (e) {
+      e.preventDefault();
+      // Parent NRIC Validation
+      if (validateNRIC(parentNRIC.value) === false) {
+        parentNRIC.classList.add("is-invalid");
+        parentNRIC.classList.remove("is-valid");
+        validities.isParentNRICValid = false;
+        parentNRICFeedback.textContent = "Please enter a valid NRIC/FIN";
+      } else {
+        parentNRIC.classList.remove("is-invalid");
+        parentNRIC.classList.add("is-valid");
+        validities.isParentNRICValid = true;
+        parentNRICFeedback.textContent = "";
+      }
+    });
 
-
+    //   Change to UTC to be stored in database
+    const date = new Date().toISOString().split("T")[0];
 
     // When acknowledgement form is submitted
     acknowledgeBtn.addEventListener("click", function (e) {
       e.preventDefault();
+
+      if (validities.isParentNameValid === false && validities.isParentNRICValid === false) {
+        parentName.classList.add("is-invalid");
+        parentNameFeedback.textContent = "Please enter a valid name";
+        parentNRIC.classList.add("is-invalid");
+        parentNRICFeedback.textContent = "Please enter a valid NRIC/FIN";
+        return;
+      }
+
       // Check if fields are filled in
       if (validities.isParentNameValid === false) {
         parentName.classList.add("is-invalid");
         parentNameFeedback.textContent = "Please enter a valid name";
         return;
       }
-
       if (validities.isParentNRICValid === false) {
         parentNRIC.classList.add("is-invalid");
         parentNRICFeedback.textContent = "Please enter a valid NRIC/FIN";
@@ -281,13 +292,7 @@ window.addEventListener("DOMContentLoaded", function () {
 
       // Check if signature is empty
       if (signaturePad.isEmpty()) {
-        alertBox("Please sign the form", "danger");
-        return;
-      }
-
-      // Verification if signature is empty
-      if (signaturePad.isEmpty()) {
-        alertBox("Please sign the form before submitting.", "danger");
+        alertBox("Please sign the form.", "danger");
         return;
       }
 
@@ -348,6 +353,13 @@ window.addEventListener("DOMContentLoaded", function () {
           p.textContent = `You have acknowledged the form on ${newDate}`;
           parentAcknowledgement.appendChild(p);
 
+          // Remove flag discrepancies button and line
+          const flagBtn = document.getElementById("flag-button");
+          flagBtn.remove();
+
+          const line = document.getElementById("line");
+          line.remove();
+
           // Disable all fields
           parentName.disabled = true;
           parentNRIC.disabled = true;
@@ -363,8 +375,39 @@ window.addEventListener("DOMContentLoaded", function () {
         })
         .catch(handleError);
     });
+
+    //   flagBtn.addEventListener("click", function (e) {
+    //     // Create a popup modal
+    //     e.preventDefault();
+    //     console.log("test")
+    //     const modal = document.createElement("div");
+    //     modal.classList.add("modal");
+    //     modal.setAttribute("id", "flagModal");
+    //     modal.setAttribute("tabindex", "-1");
+    //     modal.setAttribute("role", "dialog");
+    //     modal.setAttribute("aria-labelledby", "flagModalLabel");
+    //     modal.setAttribute("aria-hidden", "true");
+    //     modal.innerHTML = `
+    //     <div class="modal-dialog modal-dialog-centered" role="document">
+    //       <div class="modal-content">
+    //         <div class="modal-body">
+    //         <h5 class="modal-title" id="flagModalLabel">Flag Form</h5>
+    //         <p>Are you sure you want to flag this form?</p>
+    //         </div>
+    //         <div class="modal-footer">
+    //           <button type="button" class="btn btn-secondary" id="cancelFlagBtn" data-dismiss="modal">Cancel</button>
+    //           <button type="button" class="btn btn-danger" id="confirmFlagBtn">Flag</button>
+    //         </div>
+    //       </div>
+    //     </div>
+    //     `;
+    //     document.body.appendChild(modal);
+    //     $("#flagModal").modal("show");
+
+    //   });
   };
 
+  // If parent has already acknowledged
   const alreadyAcknowledged = function () {
     axios.post("/parent/acknowledged", {
       encrypted: encrypted,
@@ -399,6 +442,13 @@ window.addEventListener("DOMContentLoaded", function () {
         const clearBtn = document.getElementById("clear-parent-signature");
         clearBtn.remove();
 
+        // Remove flag discrepancies button and line
+        const flagBtn = document.getElementById("flag-button");
+        flagBtn.remove();
+
+        const line = document.getElementById("line");
+        line.remove();
+
         // Replace canvas with image
         const canvas = document.getElementById("parent-signature-canvas");
         const img = document.createElement("img");
@@ -417,7 +467,17 @@ window.addEventListener("DOMContentLoaded", function () {
       });
   };
 
-  Promise.all([retrieveForm, verifyIfAcknowledged])
+  Promise.all([retrieveForm(), verifyIfAcknowledged()])
+    .then(() => {
+      logoutBtn.addEventListener("click", function (e) {
+        axios.get("/parent/logout")
+          .then((response) => {
+            if (response.status === 200) {
+              window.location.href = "/acknowledgement?encrypted=" + encrypted;
+            }
+          })
+      })
+    })
     .catch((error) => {
       console.log(error);
     });

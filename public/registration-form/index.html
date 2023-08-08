@@ -1,0 +1,2286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="index.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <link rel="icon" href="../assets/images/obs-logo-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700;800&family=Open+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="preconnect" href="https://rsms.me/">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <title>OBS | Registration Form</title>
+
+</head>
+
+<body>
+
+    <div class="container-fluid m-0">
+
+        <!-- ALERT BOX -->
+        <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+            <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+                <path
+                    d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+            </symbol>
+            <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
+                <path
+                    d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+            </symbol>
+            <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+                <path
+                    d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+            </symbol>
+        </svg>
+
+        <div class="alert d-flex align-items-center alert-hidden" role="alert" id="alertbox">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:">
+                <use id="alert-icon" xlink:href="#exclamation-triangle-fill" />
+            </svg>
+            <div id="alert-message">
+                An example alert with an icon
+            </div>
+        </div>
+
+        <div class="row header-row">
+            <div class="col-12 header-container">
+                <img alt="" src="../assets/images/obs-logo.png">
+            </div>
+        </div>
+
+        <div class="row title-row">
+            <div class="col-12 title-container containers">
+                <text id="form-title">2023 5D4N MOE-OBS Challenge Programme</text>
+                <div id="subtitle-container"><text id="form-subtitle">Course Registration Form</text></div>
+            </div>
+        </div>
+
+        <div class="row form-row">
+
+            <!-- INSTRUCTIONS -->
+            <div class="col-12 form-container containers">
+                <h2>Instructions</h2>
+                <div class="spacer"></div>
+                <div class="instruction-container section-container">
+                    <ol>
+                        <li>Only a Parent/Legal Guardian of the Applicant may complete this Registration Form on behalf
+                            of the Applicant if the Applicant is below 18 years old.</li>
+                        <li>The submission of a completed Registration Form by the Parent/Legal Guardian of the
+                            Applicant indicates your interest to enrol the Applicant into the MOE-OBS Challenge
+                            Programme (the “Course”). </li>
+                        <li>The information you have provided is taken as true and accurate to the best of your
+                            knowledge, and you are taken to have read the "Important Note" provided at
+                            <a href="https://file.go.gov.sg/moeobs-importantnotes5d4n.pdf"
+                                target="_blank">https://file.go.gov.sg/moeobs-importantnotes5d4n.pdf</a>
+                            and to have understood the Course
+                            participation requirements, including permission to administer over-the-counter medication
+                            to Applicant if necessary.
+                        </li>
+                        <li>Applicant's Tetanus Vaccination date is required and can be checked at
+                            <a href="https://www.nir.hpb.gov.sg" target="_blank">https://www.nir.hpb.gov.sg</a> or via
+                            the HealthHub
+                            App.
+                        </li>
+                        <li>The Applicant has to be certified fit by a physician and/or specialist for the Course.
+                        </li>
+                        <li>If the Applicant contracts any illness or sustains any injury between submission of the
+                            Registration Form and the start of the Course, the Applicant must update the teacher
+                            coordinator and if necessary, consults a physician for re-assessment.
+                        </li>
+                        <li>If the Applicant contracts any illness or sustains any injury between submission of the
+                            Registration Form and the start of the Course, the Applicant must update the teacher
+                            coordinator and if necessary, consults a physician for re-assessment.
+                        </li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- PARENTS/GUARIDAN NOTE -->
+            <div class="col-12 form-container containers">
+                <h2>Note for Parent/Legal Guardian</h2>
+                <div class="spacer"></div>
+                <div class="note-container section-container">
+                    <div class="text-container">
+                        <p>Thank you for taking the time to register your child for the MOE-OBS Challenge Programme.
+                            Please
+                            provide us with some information that will help us plan a safe learning experience for your
+                            child.</p>
+                        <p>The submission of a completed Registration Form by the Parent/Legal Guardian of the Applicant
+                            indicates your interest to enrol the Applicant into the MOE-OBS Challenge Programme (the
+                            “Course”).
+
+                        <p>Only a Parent/Legal Guardian of the Applicant may complete this Registration Form.</p>
+                    </div>
+
+                    <!-- PARENT NAME -->
+                    <div class="mb-3">
+                        <label for="form-input-name" class="form-label"><span class="label-indexes">1.
+                            </span>Name</label>
+                        <input type="text" class="form-control required-field" id="form-input-name">
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- PARENT EMAIL -->
+                    <div class="mb-3">
+                        <label for="form-input-email" class="form-label help-text-parent"><span class="label-indexes">2.
+                            </span>Email of the Parent/Legal Guardian</label>
+                        <div class="form-text help-text">An acknowledgement comprising full
+                            details of the
+                            declaration will be sent to the email address provided. Please ensure that the email
+                            address provided below is accurate.
+                        </div>
+                        <input type="text" class="form-control required-field" id="form-input-email">
+                        <div class="invalid-feedback">Please enter a valid email</div>
+                    </div>
+
+                    <!-- PARENT CONTACT NUMBER -->
+                    <div class="mb-3">
+                        <label for="form-input-contact" class="form-label"><span class="label-indexes">3.
+                            </span>Mobile number</label>
+                        <input type="text" class="form-control required-field" id="form-input-contact"
+                            placeholder="(SG) 8123 4567" min="0">
+                        <div class="invalid-feedback">Please enter a valid mobile number</div>
+                    </div>
+
+                    <!-- ALT CONTACT NUMBER -->
+                    <div class="mb-3">
+                        <label for="form-input-alt-contact" class="form-label"><span class="label-indexes">4.
+                            </span>Alternate Contact Number</label><span
+                            style="font-size: 14px; color: #636467; margin-left: 10px;">(optional)
+                        </span>
+                        <input type="text" class="form-control" id="form-input-alt-contact" min="0">
+                    </div>
+
+                    <!-- REALATION TO APPLICANT -->
+                    <div class="mb-3">
+                        <label for="form-input-relation" class="form-label"><span class="label-indexes">5.
+                            </span>Relation to Applicant</label>
+                        <select class="form-select form-control required-field" id="form-input-relation">
+                            <option value="" selected>Select an option</option>
+                            <option value="1">Parent</option>
+                            <option value="2">Grandparent</option>
+                            <option value="3">Other Family Member</option>
+                            <option value="4">Other Non-Family Member</option>
+                            <option value="5">Siblings</option>
+                            <option value="6">Guardian</option>
+                        </select>
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- PARENT IS EMERGENCY CONTACT? -->
+                    <div class="mb-3">
+                        <label for="form-input-isEmergencyContact" class="form-label help-text-parent"><span
+                                class="label-indexes">6.
+                            </span>Are you also the Applicant's emergency contact during the Course?</label>
+                        <div class="form-text help-text">Ensure the contact person can be reached for the full
+                            duration of the course</div>
+
+                        <div class="btn-group required-field" id="form-input-isEmergencyContact"
+                            style=" border: 0px !important;" role="group">
+
+                            <input type="radio" class="btn-check yesno-radio" name="emergency-radio"
+                                id="isEmergencyContact-no" value="0" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="isEmergencyContact-no">
+                                <i class="material-icons">close</i> No
+                            </label>
+
+                            <input type="radio" class="btn-check yesno-radio" name="emergency-radio"
+                                id="isEmergencyContact-yes" value="1" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="isEmergencyContact-yes">
+                                <i class="material-icons">check</i> Yes
+                            </label>
+
+                        </div>
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- PARENT IS EMERGENCY CONTACT? - OPTIONAL -->
+                    <div class="optional-div" id="emergency-contact-div">
+
+                        <!-- GUARDIAN NAME -->
+                        <div class="mb-3">
+                            <h3>Please provide the Applicant's emergency contact during the Course.</h3>
+
+                            <label for="form-input-emergency-name" class="form-label">Name of Contact
+                                Person</label>
+                            <input type="text" class="form-control" id="form-input-emergency-name">
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- GUARDIAN CONTACT -->
+                        <div class="mb-3">
+                            <label for="form-input-emergency-contact" class="form-label">Primary Contact
+                                Number</label>
+                            <input type="text" class="form-control" id="form-input-emergency-contact" min="0">
+                            <div class="invalid-feedback">Please enter a valid mobile number</div>
+                        </div>
+
+                        <!-- GUARDIAN RELATION -->
+                        <div class="mb-3">
+                            <label for="form-input-emergency-relation" class="form-label">Relation to
+                                Applicant</label>
+                            <select class="form-select form-control" id="form-input-emergency-relation">
+                                <option value="" selected>Select an option</option>
+                                <option value="1">Parent</option>
+                                <option value="2">Grandparent</option>
+                                <option value="3">Other Family Member</option>
+                                <option value="4">Other Non-Family Member</option>
+                                <option value="5">Siblings</option>
+                                <option value="6">Guardian</option>
+                            </select>
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- GUARDIAN ALT CONTACT -->
+                        <div class="mb-3"></div>
+                        <label for="form-input-emergency-alt-contact" class="form-label">Alternate Contact
+                            Number</label><span style="font-size: 14px; color: #636467; margin-left: 10px;">(optional)
+                        </span>
+                        <input type="text" class="form-control" id="form-input-emergency-alt-contact" min="0">
+                    </div>
+                </div>
+            </div>
+
+            <!-- PART 1: APPLICANT'S PERSONAL INFORMATION -->
+            <div class="col-12 form-container containers">
+                <h2>Part 1: Applicant's Personal Information</h2>
+                <div class="spacer"></div>
+                <div class="part1-container section-container">
+
+                    <!-- APPLICANT ID -->
+                    <div class="mb-3">
+                        <label for="form-input-applicant-id" class="form-label"><span class="label-indexes">7.
+                            </span>Applicant's Birth Certificate Number / NRIC Number / Foreign Identification
+                            Number</label>
+                        <input type="text" class="form-control required-field" id="form-input-applicant-id">
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- APPLICANT NAME -->
+                    <div class="mb-3">
+                        <label for="form-input-applicant-name" class="form-label help-text-parent"><span
+                                class="label-indexes">8.
+                            </span>Full Name of the Applicant</label>
+                        <div class="form-text help-text">as it appears in the Applicant's Personal Identification
+                            Document</div>
+                        <input type="text" class="form-control required-field" id="form-input-applicant-name">
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- APPLICANT SCHOOL -->
+                    <div class="mb-3">
+                        <label for="form-input-applicant-school" class="form-label"><span class="label-indexes">9.
+                            </span>School</label>
+                        <select class="form-select form-control required-field" id="form-input-applicant-school">
+                            <option value="" selected>Select an option</option>
+                        </select>
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- APPLICANT CLASS -->
+                    <div class="mb-3">
+                        <label for="form-input-applicant-class" class="form-label"><span class="label-indexes">10.
+                            </span>Class</label>
+                        <input type="text" class="form-control required-field" id="form-input-applicant-class">
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- APPLICANT RESIDENTIAL STATUS -->
+                    <div class="mb-3">
+                        <label for="form-input-applicant-residential" class="form-label"><span class="label-indexes">11.
+                            </span>Residential Status</label>
+
+                        <div class="required-field radio-field" id="form-input-applicant-residential"
+                            style="border: 0px !important;">
+
+                            <div class="form-check radio-check">
+                                <input class="radio-custom-dots" type="radio" name="residential-radio"
+                                    id="residential-citizen" value="Singapore Citizen" required>
+                                <label class="form-check-label radio-custom-label" for="residential-citizen">Singapore
+                                    Citizen</label>
+                            </div>
+
+                            <div class="form-check radio-check">
+                                <input class="radio-custom-dots" type="radio" name="residential-radio"
+                                    id="residential-pr" value="Singapore PR" required>
+                                <label class="form-check-label radio-custom-label" for="residential-pr">Singapore
+                                    PR</label>
+                            </div>
+
+                            <div class="form-check radio-check">
+                                <input class="radio-custom-dots" type="radio" name="residential-radio"
+                                    id="residential-foreigner" value="Foreigner" required>
+                                <label class="form-check-label radio-custom-label"
+                                    for="residential-foreigner">Foreigner</label>
+                            </div>
+
+                        </div>
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- APPLICANT DOB -->
+                    <div class="mb-3">
+                        <label for="form-input-applicant-dob" class="form-label"><span class="label-indexes">12.
+                            </span>Date of Birth</label>
+                        <input type="date" class="form-control required-field" id="form-input-applicant-dob">
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- APPLICANT RACE -->
+                    <div class="mb-3">
+                        <label for="form-input-applicant-race" class="form-label"><span class="label-indexes">13.
+                            </span>Race</label>
+                        <select class="form-select form-control required-field" id="form-input-applicant-race">
+                            <option value="" selected>Select an option</option>
+                        </select>
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- APPLICANT GENDER -->
+                    <div class="mb-3">
+                        <label for="form-input-applicant-gender" class="form-label"><span class="label-indexes">14.
+                            </span>Gender</label>
+
+                        <div class="required-field radio-field" id="form-input-applicant-gender"
+                            style="border: 0px !important;">
+
+                            <div class="form-check radio-check">
+                                <input class="radio-custom-dots" type="radio" name="gender-radio" id="gender-male"
+                                    value="Male" required>
+                                <label class="form-check-label radio-custom-label" for="gender-male">Male</label>
+                            </div>
+
+                            <div class="form-check radio-check">
+                                <input class="radio-custom-dots" type="radio" name="gender-radio" id="gender-female"
+                                    value="Female" required>
+                                <label class="form-check-label radio-custom-label" for="gender-female">Female</label>
+                            </div>
+
+                        </div>
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- APPLICANT EMAIL -->
+                    <div class="mb-3">
+                        <label for="form-input-applicant-email" class="form-label help-text-parent"><span
+                                class="label-indexes">15. </span>Email of the Applicant</label>
+                        <div class="form-text help-text">The email address provided will be used for
+                            pre-course preparation.
+                        </div>
+                        <input type="text" class="form-control required-field" id="form-input-applicant-email">
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- APPLICANT ADDRESS -->
+                    <div class="mb-3">
+                        <label for="form-input-applicant-address" class="form-label"><span class="label-indexes">16.
+                            </span>Registered address</label>
+                        <input type="text" class="form-control required-field" id="form-input-applicant-address">
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- APPLICANT DIETARY REQUIREMENTS -->
+                    <div class="mb-3">
+                        <label for="form-input-applicant-diet" class="form-label help-text-parent"><span
+                                class="label-indexes">17.
+                            </span>Dietary Requirements (if any)</label><span
+                            style="font-size: 14px; color: #636467; margin-left: 10px;">(optional)
+                        </span>
+                        <div class="form-text help-text">Please note that all meals provided will be Halal-certified and
+                            no beef will be provided.
+                        </div>
+
+                        <div class="" id="form-input-applicant-diet" style="border: 0px !important;">
+
+                            <div class="form-check checkbox-check checkbox-overflow">
+                                <input class="checkbox-custom" type="checkbox" name="vegeterian-checkbox"
+                                    id="diet-vegeterian" value="Vegeterian">
+                                <label class="form-check-label checkbox-custom-label checkbox-overflow-label"
+                                    for="diet-vegeterian">Vegeterian
+                                    (does not contain onion and garlic)</label>
+                            </div>
+
+                            <div class="form-check checkbox-check">
+                                <input class="checkbox-custom" type="checkbox" name="g6pd-checkbox" id="diet-g6pd"
+                                    value="G6PD">
+                                <label class="form-check-label checkbox-custom-label" for="diet-g6pd">G6PD</label>
+                            </div>
+
+                            <div class="form-check checkbox-check">
+                                <input class="checkbox-custom" type="checkbox" name="gluten-checkbox" id="diet-gluten"
+                                    value="Gluten Free">
+                                <label class="form-check-label checkbox-custom-label" for="diet-gluten">Gluten
+                                    Free</label>
+                            </div>
+
+                            <div class="form-check checkbox-check">
+                                <input class="checkbox-custom" type="checkbox" name="lactose-checkbox" id="diet-lactose"
+                                    value="Lactose Intolerant">
+                                <label class="form-check-label checkbox-custom-label" for="diet-lactose">Lactose
+                                    Intolerant</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PART 2: APPLICANT'S HEALTH INFORMATION -->
+            <div class="col-12 form-container containers">
+                <h2>Part 2: Applicant's Health Information</h2>
+                <div class="spacer"></div>
+                <div class="part2-container section-container">
+
+                    <!-- NOTE -->
+                    <div class="text-container">
+                        Note:
+                        <ol>
+                            <li>Health information provided must be comprehensive and recent for the Physician's
+                                recommendation of fitness to attend the Course.</li>
+                            <li>Ensure the Medical Examination takes place within six (6) months before the start of the
+                                Course.</li>
+                            <li>A “physician” refers to a medical practitioner registered under the Medical Registration
+                                Act (Chapter 174)</li>
+                        </ol>
+                    </div>
+
+                    <!-- ABOUT TETANUS -->
+                    <h3 class="sub-section-title">About Tetanus</h3>
+                    <div class="text-container">
+                        Applicants are at significantly higher risk of tetanus infection if they have never been
+                        vaccinated or if the validity period of their tetanus vaccination has lapsed. Tetanus
+                        vaccination has a validity of 10 years and is compulsory for the Applicants’ participation in
+                        the Course. For more information on the Tetanus infection, you may refer to the Parent's letter
+                        provided by the school.
+                    </div>
+
+                    <!-- APPLICANT HAS TETANUS VACCINATION? -->
+                    <div class="mb-3">
+                        <label for="form-input-hasTetanus" class="form-label help-text-parent"><span
+                                class="label-indexes">18.
+                            </span>Does the Applicant have valid Tetanus Vaccination?</label>
+                        <div class="form-text help-text">Tetanus Vaccination is compulsory and has a validity of ten
+                            (10) years<br>
+                            Check the date of the Applicant’s Tetanus vaccination(s) at <a class="help-text-link"
+                                href="https://www.nir.hpb.gov.sg/" target="_blank">https://www.nir.hpb.gov.sg/</a><br>
+                            (immunisation records are only available for children born in or after 1996).</div>
+
+                        <div class="btn-group tetanusStatus" id="form-input-hasTetanus" style=" border: 0px !important;"
+                            role="group">
+
+                            <input type="radio" class="btn-check yesno-radio" name="tetanus-radio" id="hasTetanus-no"
+                                value="0" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasTetanus-no">
+                                <i class="material-icons">close</i> No
+                            </label>
+
+                            <input type="radio" class="btn-check yesno-radio" name="tetanus-radio" id="hasTetanus-yes"
+                                value="1" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasTetanus-yes">
+                                <i class="material-icons">check</i> Yes
+                            </label>
+
+                        </div>
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- TETANUS DATE - OPTIONAL -->
+                    <div class="optional-div" id="tetanus-date-div">
+                        <div class="mb-3">
+                            <label for="form-input-tetanus-date" class="form-label help-text-parent">Tetanus
+                                Vaccination Date</label>
+                            <div class="form-text help-text">If you are not sure of the exact date of the Vaccination,
+                                use first day of the month which it occurred.</div>
+                            <input type="date" class="form-control" id="form-input-tetanus-date">
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+                    </div>
+
+                    <!-- TETANUS NOTE - OPTIONAL -->
+                    <div class="optional-div" id="tetanus-note-div" style="margin-top: 30px;">
+                        <div class="mb-3">
+                            <div class="text-container">
+                                If the Applicant does not have a valid tetanus vaccination within the past 10 years, the
+                                Applicant will be required to be vaccinated or re-vaccinated (as the case may be)
+                                against tetanus before the Applicant may be enrolled in the Course.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- APPLICANT HEIGHT -->
+                    <div class="mb-3">
+                        <label for="form-input-applicant-height" class="form-label help-text-parent"><span
+                                class="label-indexes">19.
+                            </span>Height of the Applicant</label>
+                        <div class="form-text help-text">Provide information in metres (m)</div>
+                        <input type="number" class="form-control required-field" id="form-input-applicant-height"
+                            min="0">
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- APPLICANT WEIGHT -->
+                    <div class="mb-3">
+                        <label for="form-input-applicant-weight" class="form-label help-text-parent"><span
+                                class="label-indexes">20.
+                            </span>Weight of the Applicant</label>
+                        <div class="form-text help-text">Provide information in kilograms (kg)</div>
+                        <input type="number" class="form-control required-field" id="form-input-applicant-weight"
+                            min="0">
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- APPLICANT BMI -->
+                    <div class="mb-3">
+                        <label for="form-input-applicant-bmi" class="form-label help-text-parent"><span
+                                class="label-indexes">21.
+                            </span>Body Mass Index (BMI)</label>
+                        <div class="form-text help-text">Calculating Body Mass Index (BMI) = weight (kg) / (height x
+                            height) (m)</div>
+                        <input type="number" class="form-control required-field" id="form-input-applicant-bmi" min="0">
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- MEDICAL CONDITION DIAGNOSED SUB SECTION -->
+                    <h3 class="sub-section-title" style="margin-top: 60px;">Medical Condition Diagnosed by Physician
+                    </h3>
+                    <div class="text-container">
+                        Additional report(s) may be required depending on the information provided.
+                    </div>
+
+                    <!-- BREATHING CONDITION -->
+                    <div class="mb-3">
+                        <label for="form-input-hasBreathingCondi" class="form-label help-text-parent"><span
+                                class="label-indexes">22.
+                            </span>Breathing condition</label>
+                        <div class="form-text help-text">e.g. asthma / exercise induced asthma</div>
+
+                        <div class="btn-group breathingStatus" id="form-input-hasBreathingCondi"
+                            style=" border: 0px !important;" role="group">
+
+                            <input type="radio" class="btn-check yesno-radio" name="breathing-condition-radio"
+                                id="hasBreathingCondi-no" value="0" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasBreathingCondi-no">
+                                <i class="material-icons">close</i> No
+                            </label>
+
+                            <input type="radio" class="btn-check yesno-radio" name="breathing-condition-radio"
+                                id="hasBreathingCondi-yes" value="1" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasBreathingCondi-yes">
+                                <i class="material-icons">check</i> Yes
+                            </label>
+                        </div>
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- BREATHING CONDITION - OPTIONAL -->
+                    <div class="optional-div" id="breathing-condition-div">
+
+                        <!-- DIAGNOSIS OF BREATHING CONDITION -->
+                        <div class="mb-3">
+                            <label for="form-input-breathing-condition" class="form-label help-text-parent">State the
+                                diagnosis
+                                of the breathing condition</label>
+                            <div class="form-text help-text">State in full sentence/word, avoid acronyms</div>
+                            <input type="text" class="form-control" id="form-input-breathing-condition">
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- LAST OCCURANCE OF BREATHING OCCURANCE -->
+                        <div class="mb-3">
+                            <label for="form-input-breathing-date" class="form-label help-text-parent">State the date
+                                of the breathing condition last occurrence:</label>
+                            <div class="form-text help-text">e.g. Last asthma attack<br>If you are not sure of the exact
+                                date, please select the first day of the month which it occurred.</div>
+                            <input type="date" class="form-control" id="form-input-breathing-date">
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- BREATHING MEDICATION STATUS -->
+                        <div class="mb-3">
+                            <label for="form-input-hasBreathingMedication" class="form-label">Is the
+                                Applicant on medication for the breathing condition?</label>
+
+                            <div class="btn-group breathingMedicineStatus" id="form-input-hasBreathingMedication"
+                                style=" border: 0px !important;" role="group">
+
+                                <input type="radio" class="btn-check yesno-radio" name="hasBreathingMedication-radio"
+                                    id="hasBreathingMedication-no" value="0" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="hasBreathingMedication-no">
+                                    <i class="material-icons">close</i> No
+                                </label>
+
+                                <input type="radio" class="btn-check yesno-radio" name="hasBreathingMedication-radio"
+                                    id="hasBreathingMedication-yes" value="1" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="hasBreathingMedication-yes">
+                                    <i class="material-icons">check</i> Yes
+                                </label>
+                            </div>
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- BREATHING MEDICATION - SUB OPTIONAL -->
+                        <div class="optional-div" id="breathing-medication-div">
+
+                            <!-- BREATHING MEDICATION DETAILS -->
+                            <div class="mb-3">
+                                <label for="form-input-medication-details" class="form-label">State the medication and
+                                    dosage</label>
+                                <input type="text" class="form-control" id="form-input-medication-details">
+                                <div class="invalid-feedback">This field is required</div>
+                            </div>
+
+                            <div style="margin-bottom: 20px;">
+                                <h3 style="margin: 55px 0px 20px 0px">Note: The Applicant is responsible for bringing
+                                    the
+                                    medication for the Course in a clearly-labelled plastic bag. The medication must be
+                                    prescribed in the Applicant’s name, with time validity and with sufficient quantity
+                                    for
+                                    the
+                                    full duration of the Course.</h3>
+                                <text>If the Applicant fails to do so, the Applicant may not
+                                    be able to participate in the
+                                    Course.</text>
+                            </div>
+                        </div>
+
+                        <!-- BREATHING CONDITION FOLLOWUP -->
+                        <div class="mb-3">
+                            <label for="form-input-breathingExcercise" class="form-label">Is Applicant on follow-up
+                                with a specialist for the breathing condition?</label>
+
+                            <div class="btn-group breathingFollowup" id="form-input-breathing-followup"
+                                style=" border: 0px !important;" role="group">
+
+                                <input type="radio" class="btn-check yesno-radio" name="breathing-followup-radio"
+                                    id="breathing-followup-no" value="0" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="breathing-followup-no">
+                                    <i class="material-icons">close</i> No
+                                </label>
+
+                                <input type="radio" class="btn-check yesno-radio" name="breathing-followup-radio"
+                                    id="breathing-followup-yes" value="1" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="breathing-followup-yes">
+                                    <i class="material-icons">check</i> Yes
+                                </label>
+                            </div>
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- BREATHING EXCERCISE -->
+                        <div class="mb-3">
+                            <label for="form-input-breathing-excercise" class="form-label help-text-parent">Is the
+                                breathing condition triggered by exercise?</label>
+                            <div class="form-text help-text">e.g. exercise-induced asthma</div>
+                            <div class="btn-group breathingExcercise" id="form-input-breathing-excercise"
+                                style=" border: 0px !important;" role="group">
+
+                                <input type="radio" class="btn-check yesno-radio" name="breathing-excercise-radio"
+                                    id="breathing-excercise-no" value="0" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="breathing-excercise-no">
+                                    <i class="material-icons">close</i> No
+                                </label>
+
+                                <input type="radio" class="btn-check yesno-radio" name="breathing-excercise-radio"
+                                    id="breathing-excercise-yes" value="1" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="breathing-excercise-yes">
+                                    <i class="material-icons">check</i> Yes
+                                </label>
+                            </div>
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+                        <div class="insert-note-template"></div>
+                    </div>
+
+                    <!-- HEART CONDITION -->
+                    <div class="mb-3">
+                        <label for="form-input-hasHeartCondi" class="form-label help-text-parent"><span
+                                class="label-indexes">23.
+                            </span>Heart condition</label>
+                        <div class="form-text help-text">e.g. angina / heart murmur / extra heartbeat / mitral valve
+                            prolapse</div>
+
+                        <div class="btn-group heartStatus" id="form-input-hasHeartCondi"
+                            style=" border: 0px !important;" role="group">
+
+                            <input type="radio" class="btn-check yesno-radio" name="heart-condition-radio"
+                                id="hasHeartCondi-no" value="0" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasHeartCondi-no">
+                                <i class="material-icons">close</i> No
+                            </label>
+
+                            <input type="radio" class="btn-check yesno-radio" name="heart-condition-radio"
+                                id="hasHeartCondi-yes" value="1" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasHeartCondi-yes">
+                                <i class="material-icons">check</i> Yes
+                            </label>
+
+                        </div>
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- HEART CONDITION - OPTIONAL -->
+                    <div class="optional-div" id="heart-condition-div">
+
+                        <!-- DIAGNOSIS OF HEART CONDITION -->
+                        <div class="mb-3">
+                            <label for="form-input-heart-condition" class="form-label help-text-parent">State the
+                                heart condition</label>
+                            <div class="form-text help-text">State in full sentence/word, avoid acronyms</div>
+                            <input type="text" class="form-control" id="form-input-heart-condition">
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- HEART CONDITION FOLLOW UP -->
+                        <div class="mb-3">
+                            <label for="form-input-heart-followup" class="form-label">Is the Applicant on follow-up with
+                                a specialist for the heart condition?</label>
+
+                            <div class="btn-group heartFollowup" id="form-input-heart-followup"
+                                style=" border: 0px !important;" role="group">
+
+                                <input type="radio" class="btn-check yesno-radio" name="heart-followup-radio"
+                                    id="heart-followup-no" value="0" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="heart-followup-no">
+                                    <i class="material-icons">close</i> No
+                                </label>
+
+                                <input type="radio" class="btn-check yesno-radio" name="heart-followup-radio"
+                                    id="heart-followup-yes" value="1" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="heart-followup-yes">
+                                    <i class="material-icons">check</i> Yes
+                                </label>
+
+                            </div>
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+                        <div class="insert-note-template"></div>
+                    </div>
+
+                    <!-- BLOOD CONDITION -->
+                    <div class="mb-3">
+                        <label for="form-input-hasBloodCondi" class="form-label help-text-parent"><span
+                                class="label-indexes">24.
+                            </span>Blood condition</label>
+                        <div class="form-text help-text">e.g. thalassaemia major / thalassaemia minor / anaemia</div>
+
+                        <div class="btn-group bloodStatus" id="form-input-hasBloodCondi"
+                            style=" border: 0px !important;" role="group">
+
+                            <input type="radio" class="btn-check yesno-radio" name="blood-condition-radio"
+                                id="hasBloodCondi-no" value="0" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasBloodCondi-no">
+                                <i class="material-icons">close</i> No
+                            </label>
+
+                            <input type="radio" class="btn-check yesno-radio" name="blood-condition-radio"
+                                id="hasBloodCondi-yes" value="1" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasBloodCondi-yes">
+                                <i class="material-icons">check</i> Yes
+                            </label>
+
+                        </div>
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- BLOOD CONDITION - OPTIONAL -->
+                    <div class="optional-div" id="blood-condition-div">
+
+                        <!-- DIAGNOSIS OF BLOOD CONDITION -->
+                        <div class="mb-3">
+                            <label for="form-input-blood-condition" class="form-label">The diagnosed blood condition
+                                is:</label>
+
+                            <div class="required-field radio-field" id="form-input-blood-condition"
+                                style="border: 0px !important;">
+
+                                <div class="form-check radio-check">
+                                    <input class="radio-custom-dots" type="radio" name="blood-radio" id="blood-anaemia"
+                                        value="Anaemia" required>
+                                    <label class="form-check-label radio-custom-label"
+                                        for="blood-anaemia">Anaemia</label>
+                                </div>
+
+                                <div class="form-check radio-check">
+                                    <input class="radio-custom-dots" type="radio" name="blood-radio" id="blood-Tminor"
+                                        value="Thalassaemia minor" required>
+                                    <label class="form-check-label radio-custom-label" for="blood-Tminor">Thalassaemia
+                                        minor</label>
+                                </div>
+
+                                <div class="form-check radio-check">
+                                    <input class="radio-custom-dots" type="radio" name="blood-radio" id="blood-Tmajor"
+                                        value="Thalassaemia major" required>
+                                    <label class="form-check-label radio-custom-label" for="blood-Tmajor">Thalassaemia
+                                        major</label>
+                                </div>
+
+                                <div class="form-check radio-check radio-others">
+                                    <input class="radio-custom-dots" type="radio" name="blood-radio" id="blood-other"
+                                        value="Others" required>
+
+                                    <div class="radio-others-container">
+                                        <label class="form-check-label radio-custom-label radio-other-label"
+                                            for="form-input-blood-other">Others</label>
+
+                                        <input type="text" class="form-control radio-other-input"
+                                            id="form-input-blood-other">
+                                        <div class="invalid-feedback">Please specify a value for the "others" option
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- BLOOD CONDITION - SUB OPTIONAL -->
+                        <div class="optional-div" id="blood-followup-div">
+
+                            <!-- BLOOD CONDITION FOLLOW UP -->
+                            <div class="mb-3">
+                                <label for="form-input-blood-followup" class="form-label">Is the
+                                    Applicant on follow-up with a specialist for the blood condition?</label>
+
+                                <div class="btn-group bloodFollowup" id="form-input-blood-followup"
+                                    style=" border: 0px !important;" role="group">
+
+                                    <input type="radio" class="btn-check yesno-radio" name="blood-followup-radio"
+                                        id="blood-followup-no" value="0" required>
+                                    <label class="radio-btns btn btn-outline-secondary" for="blood-followup-no">
+                                        <i class="material-icons">close</i> No
+                                    </label>
+
+                                    <input type="radio" class="btn-check yesno-radio" name="blood-followup-radio"
+                                        id="blood-followup-yes" value="1" required>
+                                    <label class="radio-btns btn btn-outline-secondary" for="blood-followup-yes">
+                                        <i class="material-icons">check</i> Yes
+                                    </label>
+
+                                </div>
+                                <div class="invalid-feedback">This field is required</div>
+                            </div>
+                        </div>
+                        <div class="insert-note-template"></div>
+                    </div>
+
+                    <!-- EPILEPSY, FITS OR SEIZURE CONDITION -->
+                    <div class="mb-3">
+                        <label for="form-input-hasEpilepsyCondi" class="form-label"><span class="label-indexes">25.
+                            </span>Epilepsy, fits or seizure condition</label>
+
+                        <div class="btn-group epilepsyStatus" id="form-input-hasEpilepsyCondi"
+                            style=" border: 0px !important;" role="group">
+
+                            <input type="radio" class="btn-check yesno-radio" name="epilepsy-condition-radio"
+                                id="hasEpilepsyCondi-no" value="0" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasEpilepsyCondi-no">
+                                <i class="material-icons">close</i> No
+                            </label>
+
+                            <input type="radio" class="btn-check yesno-radio" name="epilepsy-condition-radio"
+                                id="hasEpilepsyCondi-yes" value="1" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasEpilepsyCondi-yes">
+                                <i class="material-icons">check</i> Yes
+                            </label>
+
+                        </div>
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- EPILEPSY, FITS OR SEIZURE CONDITION - OPTIONAL -->
+                    <div class="optional-div" id="epilepsy-condition-div">
+
+                        <!-- EPILEPSY, FITS OR SEIZURE IN PAST 24 MONTHS -->
+                        <div class="mb-3">
+                            <label for="form-input-epilepsy-past-months" class="form-label">Was there any episode in the
+                                last 24 months?</label>
+
+                            <div class="btn-group epilepsyEpisode" id="form-input-epilepsy-past-months"
+                                style=" border: 0px !important;" role="group">
+
+                                <input type="radio" class="btn-check yesno-radio" name="epilepsy-past-months-radio"
+                                    id="epilepsyPastMonths-no" value="0" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="epilepsyPastMonths-no">
+                                    <i class="material-icons">close</i> No
+                                </label>
+
+                                <input type="radio" class="btn-check yesno-radio" name="epilepsy-past-months-radio"
+                                    id="epilepsyPastMonths-yes" value="1" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="epilepsyPastMonths-yes">
+                                    <i class="material-icons">check</i> Yes
+                                </label>
+
+                            </div>
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- EPILEPSY, FITS OR SEIZURE ON MEDICALTION PAST 24 MONTHS -->
+                        <div class="mb-3">
+                            <label for="form-input-epilepsy-medication" class="form-label">Has the Applicant been on
+                                medication for the epilepsy, fits or seizure condition in the last 24 months?</label>
+
+                            <div class="btn-group epilepsyMedication" id="form-input-epilepsy-medication"
+                                style=" border: 0px !important;" role="group">
+
+                                <input type="radio" class="btn-check yesno-radio" name="epilepsy-medication-radio"
+                                    id="epilepsyMedication-no" value="0" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="epilepsyMedication-no">
+                                    <i class="material-icons">close</i> No
+                                </label>
+
+                                <input type="radio" class="btn-check yesno-radio" name="epilepsy-medication-radio"
+                                    id="epilepsyMedication-yes" value="1" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="epilepsyMedication-yes">
+                                    <i class="material-icons">check</i> Yes
+                                </label>
+
+                            </div>
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- EPILEPSY, FITS OR SEIZURE CONDITION - SUB OPTIONAL -->
+                        <div class="optional-div" id="epilepsy-followup-div">
+
+                            <!-- EPILEPSY, FITS OR SEIZURE FOLLOW UP -->
+                            <div class="mb-3">
+                                <label for="form-input-epilepsy-followup" class="form-label">Is the Applicant on
+                                    follow-up
+                                    with a specialist for the epilepsy, fits or seizure condition?</label>
+
+                                <div class="btn-group epilepsyFollowup" id="form-input-epilepsy-followup"
+                                    style=" border: 0px !important;" role="group">
+
+                                    <input type="radio" class="btn-check yesno-radio" name="epilepsy-followup-radio"
+                                        id="epilepsyFollowup-no" value="0" required>
+                                    <label class="radio-btns btn btn-outline-secondary" for="epilepsyFollowup-no">
+                                        <i class="material-icons">close</i> No
+                                    </label>
+
+                                    <input type="radio" class="btn-check yesno-radio" name="epilepsy-followup-radio"
+                                        id="epilepsyFollowup-yes" value="1" required>
+                                    <label class="radio-btns btn btn-outline-secondary" for="epilepsyFollowup-yes">
+                                        <i class="material-icons">check</i> Yes
+                                    </label>
+
+                                </div>
+                                <div class="invalid-feedback">This field is required</div>
+                            </div>
+                        </div>
+
+                        <div class="insert-note-template"></div>
+                    </div>
+
+                    <!-- BONE / JOINT/ TENDON CONDITION -->
+                    <div class="mb-3">
+                        <label for="form-input-hasBoneCondi" class="form-label help-text-parent"><span
+                                class="label-indexes">26.
+                            </span>Bone / joint / tendon injury or condition</label>
+                        <div class="form-text help-text">e.g. dislocation / fracture / slip disc</div>
+
+                        <div class="btn-group boneStatus" id="form-input-hasBoneCondi" style=" border: 0px !important;"
+                            role="group">
+
+                            <input type="radio" class="btn-check yesno-radio" name="bone-condition-radio"
+                                id="hasBoneCondi-no" value="0" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasBoneCondi-no">
+                                <i class="material-icons">close</i> No
+                            </label>
+
+                            <input type="radio" class="btn-check yesno-radio" name="bone-condition-radio"
+                                id="hasBoneCondi-yes" value="1" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasBoneCondi-yes">
+                                <i class="material-icons">check</i> Yes
+                            </label>
+
+                        </div>
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- BONE CONDITION - OPTIONAL -->
+                    <div class="optional-div" id="bone-condition-div">
+
+                        <!-- DIAGNOSIS OF BONE CONDITION -->
+                        <div class="mb-3">
+                            <label for="form-input-bone-condition" class="form-label help-text-parent">State the bone /
+                                joint / tendon injury or condition</label>
+                            <div class="form-text help-text">State the body part with the injury or condition in full
+                                sentence/word, avoid acronyms e.g. right ankle fracture, left ring finger sprain.</div>
+                            <input type="text" class="form-control" id="form-input-bone-condition">
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- DATE OF BONE CONDITION -->
+                        <div class="mb-3">
+                            <label for="form-input-bone-date" class="form-label help-text-parent">State the date the
+                                bone / joint / tendon injury or condition was sustained</label>
+                            <div class="form-text help-text">If you are not sure of the exact date, please select the
+                                first day of the month which it occurred.</div>
+                            <input type="date" class="form-control" id="form-input-bone-date">
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- BONE CONDITION FOLLOW UP -->
+                        <div class="mb-3">
+                            <label for="form-input-bone-followup" class="form-label">Is the Applicant on follow-up with
+                                a specialist for the bone/joint/tendon injury or condition?</label>
+
+                            <div class="btn-group boneFollowup" id="form-input-bone-followup"
+                                style=" border: 0px !important;" role="group">
+
+                                <input type="radio" class="btn-check yesno-radio" name="bone-followup-radio"
+                                    id="bone-followup-no" value="0" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="bone-followup-no">
+                                    <i class="material-icons">close</i> No
+                                </label>
+
+                                <input type="radio" class="btn-check yesno-radio" name="bone-followup-radio"
+                                    id="bone-followup-yes" value="1" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="bone-followup-yes">
+                                    <i class="material-icons">check</i> Yes
+                                </label>
+
+                            </div>
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- BONE CONDITION FOLLOWUP- SUB OPTIONAL -->
+                        <div class="optional-div" id="bone-followup-div">
+
+                            <!-- FULLY RECOVERED -->
+                            <div class="mb-3">
+                                <label for="form-input-bone-recovered" class="form-label">Has the Applicant fully
+                                    recovered?</label>
+                                <div class="btn-group boneRecovered" id="form-input-bone-recovered"
+                                    style=" border: 0px !important;" role="group">
+
+                                    <input type="radio" class="btn-check yesno-radio" name="bone-recovered-radio"
+                                        id="bone-recovered-no" value="0" required>
+                                    <label class="radio-btns btn btn-outline-secondary" for="bone-recovered-no">
+                                        <i class="material-icons">close</i> No
+                                    </label>
+
+                                    <input type="radio" class="btn-check yesno-radio" name="bone-recovered-radio"
+                                        id="bone-recovered-yes" value="1" required>
+                                    <label class="radio-btns btn btn-outline-secondary" for="bone-recovered-yes">
+                                        <i class="material-icons">check</i> Yes
+                                    </label>
+                                </div>
+                                <div class="invalid-feedback">This field is required</div>
+                            </div>
+
+                            <!-- FULLY RECOVERED - SUB INNER OPTIONAL -->
+                            <div class="optional-div" id="bone-recovered-div">
+
+                                <!-- PROVIDE INFORMATION -->
+                                <div class="mb-3">
+                                    <label for="form-input-bone-information" class="form-label">Provide
+                                        further information about the condition, state any restrictions or precautionary
+                                        measures to be taken when the Applicant engages in outdoor physical
+                                        activities</label>
+                                    <input type="text" class="form-control" id="form-input-bone-information">
+                                    <div class="invalid-feedback">This field is required</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="insert-note-template"></div>
+                    </div>
+
+                    <!-- BEHAVIOURAL OR PSYCHOLOGICAL CONDITION -->
+                    <div class="mb-3">
+                        <label for="form-input-hasBehaviouralCondi" class="form-label help-text-parent"><span
+                                class="label-indexes">27.
+                            </span>Behavioural or psychological condition</label>
+                        <div class="form-text help-text">e.g. ADHD / ADD / ASD / OCD / eating disorders / anxiety /
+                            depression</div>
+
+                        <div class="btn-group behaviouralStatus" id="form-input-hasBehaviouralCondi"
+                            style=" border: 0px !important;" role="group">
+
+                            <input type="radio" class="btn-check yesno-radio" name="behavioural-condition-radio"
+                                id="hasBehaviouralCondi-no" value="0" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasBehaviouralCondi-no">
+                                <i class="material-icons">close</i> No
+                            </label>
+
+                            <input type="radio" class="btn-check yesno-radio" name="behavioural-condition-radio"
+                                id="hasBehaviouralCondi-yes" value="1" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasBehaviouralCondi-yes">
+                                <i class="material-icons">check</i> Yes
+                            </label>
+
+                        </div>
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- BEHAVIOURAL OR PSYCHOLOGICAL CONDITION - OPTIONAL -->
+                    <div class="optional-div" id="behavioural-condition-div">
+
+                        <!-- DIAGNOSIS OF BEHAVIOURAL OR PSYCHOLOGICAL CONDITION -->
+                        <div class="mb-3">
+                            <label for="form-input-behavioural-condition" class="form-label">State the condition</label>
+                            <input type="text" class="form-control" id="form-input-behavioural-condition">
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- BEHAVIOURAL OR PSYCHOLOGICAL CONDITION FOLLOW UP -->
+                        <div class="mb-3">
+                            <label for="form-input-behavioural-followup" class="form-label">Is the Applicant on
+                                follow-up
+                                with a
+                                specialist for the diagnosed behavioural or psychological condition?</label>
+
+                            <div class="btn-group behaviouralFollowup" id="form-input-behavioural-followup"
+                                style=" border: 0px !important;" role="group">
+
+                                <input type="radio" class="btn-check yesno-radio" name="behavioural-followup-radio"
+                                    id="behavioural-followup-no" value="0" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="behavioural-followup-no">
+                                    <i class="material-icons">close</i> No
+                                </label>
+
+                                <input type="radio" class="btn-check yesno-radio" name="behavioural-followup-radio"
+                                    id="behavioural-followup-yes" value="1" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="behavioural-followup-yes">
+                                    <i class="material-icons">check</i> Yes
+                                </label>
+
+                            </div>
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- BEHAVIOURAL OR PSYCHOLOGICAL - SUB OPTIONAL -->
+                        <div class="optional-div" id="behavioural-specialist-progress-div">
+
+                            <!-- BEHAVIOURAL OR PSYCHOLOGICAL PROGRESS WITH SPECIALIST -->
+                            <div class="mb-3">
+                                <label for="form-input-behavioural-specialist-progress" class="form-label">Describe the
+                                    progress of treatment with the specialist</label>
+                                <input type="text" class="form-control" id="form-input-behavioural-specialist-progress">
+                                <div class="invalid-feedback">This field is required</div>
+                            </div>
+
+                            <!-- BEHAVIOURAL OR PSYCHOLOGICAL CONDITION AT HOME -->
+                            <div class="mb-3">
+                                <label for="form-input-behavioural-home" class="form-label help-text-parent">State the
+                                    Applicant's behaviour at home and provide information on how OBS can help the
+                                    Applicant manage the condition during the Course.</label>
+                                <div class="form-text help-text">Such information should include but is not limited
+                                    to:<br>
+                                    <ul>
+                                        <li><text>The last episode/relapse;</text></li>
+                                        <li><text>Possible trigger factors to avoid; and</text></li>
+                                        <li><text>How to help the Applicant cope with the condition and/or to prevent
+                                                worsening of the condition.</text></li>
+                                    </ul>
+                                </div>
+                                <input type="text" class="form-control" id="form-input-behavioural-home">
+                                <div class="invalid-feedback">This field is required</div>
+                            </div>
+
+                            <!-- BEHAVIOURAL OR PSYCHOLOGICAL EXPERIENCE AND HELP -->
+                            <div class="mb-3">
+                                <label for="form-input-behavioural-experience" class="form-label">Considerable focus and
+                                    attention is needed from the Applicant to understand and execute safety
+                                    instructions. State what can OBS do to help the Applicant concentrate during safety
+                                    briefings to participate safely in outdoor activities such as sea-kayaking,
+                                    climbing, trekking/camping. If applicable, share the Applicant’s previous outdoor
+                                    experience.</label>
+                                <input type="text" class="form-control" id="form-input-behavioural-experience">
+                                <div class="invalid-feedback">This field is required</div>
+                            </div>
+
+                            <h3 style="margin: 70px 0px 20px 0px">Note: A specialist memo is needed for further
+                                assessment. Complete this registration and
+                                get in touch with the Teacher Coordinator.</h3>
+                            <text>A specialist for behavioural / psychological condition may include psychologist,
+                                therapist or counsellor.</text>
+                        </div>
+
+                        <h3 style="margin: 70px 0px 20px 0px">Acknowledgement of Risks and Declaration</h3>
+                        <text>Applicable to Applicants with
+                            behavioural/psychological
+                            condition</text>
+
+                        <!-- DIAGNOSIS OF BEHAVIOURAL OR PSYCHOLOGICAL RISK ACKNOWLEDGEMENT -->
+                        <div class="mb-3" style="margin-top: 20px;">
+                            <label class="form-label">Given the Applicant's
+                                condition, and the nature of the Course, participation may involve additional risks
+                                arising from:</label>
+                            <div class="form-text help-text">
+                                <ol class="custom-list">
+                                    <p>
+                                        <li>Exposure to physical, mental, social and emotional challenges that may have
+                                            influence on the Applicant's ability to manage himself/herself; </li>
+                                    </p>
+                                    <p>
+                                        <li>Group supervision which requires the Applicant to be able to understand and
+                                            follow safety instructions and procedures without individualised attention
+                                            by
+                                            the OBS Group Instructor; </li>
+                                    </p>
+                                    <p>
+                                        <li>Possible adverse reaction of the Applicant to the Course and/or peers in the
+                                            same group due to the condition; and </li>
+                                    </p>
+                                    <p>
+                                        <li>Access to emergency medical services and/or special management of triggered
+                                            condition on mainland Singapore being delayed depending on the location of
+                                            the
+                                            Applicant, the nature of the terrain, prevailing weather conditions and
+                                            other
+                                            factors beyond OBS’ control, at times by up to 2 hours (please note that 2
+                                            hours
+                                            is an estimated timing as there could be factors beyond OBS's control that
+                                            may
+                                            increase the timing).</li>
+                                    </p>
+                                </ol>
+                            </div>
+
+                            <div class="checkbox-field riskAcknowledgement"
+                                id="form-input-behavioural-risk-acknowledgement" style="border: 0px !important;">
+
+                                <div class="form-check checkbox-check checkbox-overflow">
+                                    <input class="checkbox-custom" type="checkbox" name="risk-acknowledgement-checkbox"
+                                        id="behavioural-risk-acknowledgement" value="1" required>
+                                    <label class="form-check-label checkbox-custom-label checkbox-overflow-label"
+                                        for="behavioural-risk-acknowledgement">I
+                                        understand and accept the above and that safety procedures are in place to
+                                        minimise risks, but complete elimination of these risks is not possible in the
+                                        outdoor environment.</label>
+                                </div>
+                            </div>
+
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- DIAGNOSIS OF BEHAVIOURAL OR PSYCHOLOGICAL PARTICIPATION ACKNOWLEDGEMENT -->
+                        <div class="mb-3" style="margin-top: 20px;">
+                            <label class="form-label">Acknowledgement of Risks
+                                And Declaration for Applicants with behavioural/psychological conditions</label>
+                            <div class="form-text help-text">
+                                <ol class="custom-list">
+                                    <p>
+                                        <li>I acknowledge that participation in the MOE-OBS Course is voluntary. </li>
+                                    </p>
+                                    <p>
+                                        <li>I hereby give consent to MOE-OBS to disclose the Applicant's condition to
+                                            the peers in the group if MOE-OBS consider it necessary for the purpose of
+                                            safe peer and/or group management.</li>
+                                    </p>
+                                </ol>
+                            </div>
+
+                            <div class="checkbox-field participationAcknowledgement"
+                                id="form-input-participation-risk-acknowledgement" style="border: 0px !important;">
+
+                                <div class="form-check checkbox-check checkbox-overflow">
+                                    <input class="checkbox-custom" type="checkbox"
+                                        name="participation-risk-acknowledgement-checkbox"
+                                        id="participation-risk-acknowledgement" value="1" required>
+                                    <label class="form-check-label checkbox-custom-label checkbox-overflow-label"
+                                        for="participation-risk-acknowledgement">I acknowledge the above, and agree to,
+                                        the Applicant's participation in the Course.</label>
+                                </div>
+                            </div>
+
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+                    </div>
+
+                    <!-- LONG TERM PRESCRIBTION MEDICATION -->
+                    <div class="mb-3">
+                        <label for="form-input-hasMedication" class="form-label"><span class="label-indexes">28.
+                            </span>Currently on long term prescribed medication</label>
+
+                        <div class="btn-group longMedicationStatus" id="form-input-hasMedication"
+                            style=" border: 0px !important;" role="group">
+
+                            <input type="radio" class="btn-check yesno-radio" name="medication-condition-radio"
+                                id="hasMedication-no" value="0" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasMedication-no">
+                                <i class="material-icons">close</i> No
+                            </label>
+
+                            <input type="radio" class="btn-check yesno-radio" name="medication-condition-radio"
+                                id="hasMedication-yes" value="1" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasMedication-yes">
+                                <i class="material-icons">check</i> Yes
+                            </label>
+
+                        </div>
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- LONG TERM PRESCRIBTION MEDICATION - OPTIONAL -->
+                    <div class="optional-div" id="medication-condition-div">
+
+                        <!-- MEDICATION AND DOSAGE -->
+                        <div class="mb-3">
+                            <label for="form-input-medication" class="form-label">State the medication and
+                                dosage</label>
+                            <input type="text" class="form-control" id="form-input-medication">
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <h3 style="margin: 70px 0px 20px 0px">Note: The Applicant is responsible for bringing the
+                                medication for the Course in a clearly-labelled plastic bag. The medication must be
+                                prescribed in the Applicant’s name, with time validity and with sufficient quantity for
+                                the
+                                full duration of the Course.</h3>
+                            <text>If the Applicant fails to do so, the Applicant may not
+                                be able to participate in the
+                                Course.</text>
+                        </div>
+
+                    </div>
+
+                    <!-- CARRIER STATUS FOR ANY INFECTIOUS DISEASE -->
+                    <div class="mb-3">
+                        <label for="form-input-hasDisease" class="form-label"><span class="label-indexes">29.
+                            </span>A carrier status for any infectious disease</label>
+
+                        <div class="btn-group diseaseStatus" id="form-input-hasDisease" style=" border: 0px !important;"
+                            role="group">
+
+                            <input type="radio" class="btn-check yesno-radio" name="disease-condition-radio"
+                                id="hasDisease-no" value="0" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasDisease-no">
+                                <i class="material-icons">close</i> No
+                            </label>
+
+                            <input type="radio" class="btn-check yesno-radio" name="disease-condition-radio"
+                                id="hasDisease-yes" value="1" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasDisease-yes">
+                                <i class="material-icons">check</i> Yes
+                            </label>
+
+                        </div>
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- CARRIER STATUS FOR ANY INFECTIOUS DISEASE - OPTIONAL -->
+                    <div class="optional-div" id="disease-condition-div">
+
+                        <!-- CARRIER STATUS FOR ANY INFECTIOUS DISEASE CONDITION -->
+                        <div class="mb-3">
+                            <label for="form-input-disease" class="form-label help-text-parent">State the
+                                condition</label>
+                            <div class="form-text help-text">State in full sentence/word, avoid acronyms.</div>
+                            <input type="text" class="form-control" id="form-input-disease">
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+                    </div>
+
+                    <!-- SLEEP WALKING -->
+                    <div class="mb-3">
+                        <label for="form-input-hasSleepWalk" class="form-label help-text-parent"><span
+                                class="label-indexes">30.
+                            </span>Sleep walking</label>
+                        <div class="form-text help-text">For the safety of the Applicant, any Applicant with sleep
+                            walking condition within the last 12 months will not be allowed to camp overnight.
+                            Arrangements must be made for the Applicant to be picked up daily and to return to the
+                            Course the next morning. The Teacher Coordinator will be in contact to discuss these
+                            arrangements.</div>
+                        <div class="btn-group sleepwalkStatus" id="form-input-hasSleepWalk"
+                            style=" border: 0px !important;" role="group">
+
+                            <input type="radio" class="btn-check yesno-radio" name="sleepwalk-condition-radio"
+                                id="hasSleepWalk-no" value="0" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasSleepWalk-no">
+                                <i class="material-icons">close</i> No
+                            </label>
+
+                            <input type="radio" class="btn-check yesno-radio" name="sleepwalk-condition-radio"
+                                id="hasSleepWalk-yes" value="1" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasSleepWalk-yes">
+                                <i class="material-icons">check</i> Yes
+                            </label>
+
+                        </div>
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- SLEEP WALKING - OPTIONAL -->
+                    <div class="optional-div" id="sleepwalk-condition-div">
+
+                        <!-- SLEEP WALKING LAST OCCURANCE -->
+                        <div class="mb-3">
+                            <label for="form-input-sleepwalk-date" class="form-label help-text-parent">State the date of
+                                last sleep walking occurrence:</label>
+                            <div class="form-text help-text">If you are not sure of the exact date, please select the
+                                first day of the month which it occurred.</div>
+                            <input type="date" class="form-control" id="form-input-sleepwalk-date">
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+                    </div>
+
+                    <!-- ALLERGY OR ADVERSE REACTIONS TO MEDICATIONS -->
+                    <div class="mb-3">
+                        <label for="form-input-hasMedicationAllergy" class="form-label"><span class="label-indexes">31.
+                            </span>Allergy or adverse reactions to medication(s) (including over-the-counter
+                            oral/topical medication)</label>
+                        <div class="btn-group medicationAllergyStatus" id="form-input-hasMedicationAllergy"
+                            style=" border: 0px !important;" role="group">
+
+                            <input type="radio" class="btn-check yesno-radio" name="medication-allergy-condition-radio"
+                                id="hasMedicationAllergy-no" value="0" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasMedicationAllergy-no">
+                                <i class="material-icons">close</i> No
+                            </label>
+
+                            <input type="radio" class="btn-check yesno-radio" name="medication-allergy-condition-radio"
+                                id="hasMedicationAllergy-yes" value="1" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasMedicationAllergy-yes">
+                                <i class="material-icons">check</i> Yes
+                            </label>
+
+                        </div>
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- ALLERGY OR ADVERSE REACTIONS TO MEDICATIONS - OPTIONAL -->
+                    <div class="optional-div" id="medication-allergy-condition-div">
+
+                        <!-- MEDICATION APPLICANT IS ALLERGIC TO -->
+                        <div class="mb-3">
+                            <label for="form-input-medication-name" class="form-label">State the medication that the
+                                Applicant is allergic to</label>
+                            <input type="text" class="form-control" id="form-input-medication-name">
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <div class="text-container" style="margin-top: 40px;">
+                            <p>Note:</p>
+                            <ol style="margin-top: 25px;">
+                                <li>
+                                    OBS instructors are proficient in outdoor skills and trained in Wilderness
+                                    Advanced
+                                    First Aid to stabilise injuries and manage illnesses when they surface. In the
+                                    event
+                                    where more medical care is required, OBS has a medical centre staffed by Outdoor
+                                    Nurse Practitioners who are Registered Nurses. Instructors and medical centre
+                                    staff
+                                    may administer over-the-counter oral/topical medication where necessary.
+                                </li>
+                                <li>
+                                    For a full list of over-the-counter oral/topical medication that may be
+                                    administered
+                                    during the Course if necessary, refer to <a class="help-text-link"
+                                        href="https://www.go.gov.sg/OBSOTC" target="_blank">www.go.gov.sg/OBSOTC</a>
+                                </li>
+                                <li>
+                                    You are required to inform us through the Teacher Coordinator if your child
+                                    suffers
+                                    any allergies to over-the-counter oral/topical medication, or if you are aware
+                                    of
+                                    any other medical reason that administration of over-the-counter medication is
+                                    not
+                                    possible.
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- ALLERGY TO ENVIRONMENTAL FACTOR(S) -->
+                    <div class="mb-3">
+                        <label for="form-input-hasEnvironmentalAllergy" class="form-label"><span
+                                class="label-indexes">32.
+                            </span>Allergy to environmental factor(s)</label>
+                        <div class="btn-group enviromentAllergyStatus" id="form-input-hasEnvironmentalAllergy"
+                            style=" border: 0px !important;" role="group">
+
+                            <input type="radio" class="btn-check yesno-radio"
+                                name="environmental-allergy-condition-radio" id="hasEnvironmentalAllergy-no" value="0"
+                                required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasEnvironmentalAllergy-no">
+                                <i class="material-icons">close</i> No
+                            </label>
+
+                            <input type="radio" class="btn-check yesno-radio"
+                                name="environmental-allergy-condition-radio" id="hasEnvironmentalAllergy-yes" value="1"
+                                required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasEnvironmentalAllergy-yes">
+                                <i class="material-icons">check</i> Yes
+                            </label>
+
+                        </div>
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- ALLERGY TO ENVIRONMENTAL FACTOR(S) - OPTIONAL -->
+                    <div class="optional-div" id="environmental-allergy-condition-div">
+
+                        <!-- SELECT ENVIRONMENTAL FACTORS -->
+                        <div class="mb-3">
+                            <label for="form-input-environmental-allergy" class="form-label help-text-parent">Select the
+                                environmental factors that the Applicant is allergic to:
+                                <div class="form-text help-text">Where OBS is unable to control the exposure to
+                                    allergen,
+                                    and risk of exposure is unavoidable with severe allergic reactions, OBS reserves the
+                                    right to refuse admission for the safety of the Applicant.
+                                </div>
+
+                                <div class="checkbox-field" id="form-input-environmental-allergy"
+                                    style="border: 0px !important;">
+
+                                    <div class="form-check checkbox-check">
+                                        <input class="checkbox-custom" type="checkbox" name="heat-checkbox"
+                                            id="environment-heat" value="Heat" required>
+                                        <label class="form-check-label checkbox-custom-label"
+                                            for="environment-heat">Heat</label>
+                                    </div>
+
+                                    <div class="form-check checkbox-check">
+                                        <input class="checkbox-custom" type="checkbox" name="sea-checkbox"
+                                            id="environment-sea" value="Sea-water" required>
+                                        <label class="form-check-label checkbox-custom-label"
+                                            for="environment-sea">Sea-water</label>
+                                    </div>
+
+                                    <div class="form-check checkbox-check">
+                                        <input class="checkbox-custom" type="checkbox" name="bee-checkbox"
+                                            id="environment-bee" value="Bee / Wasp sting" required>
+                                        <label class="form-check-label checkbox-custom-label" for="environment-bee">Bee
+                                            /
+                                            Wasp sting</label>
+                                    </div>
+
+                                    <div class="form-check checkbox-check">
+                                        <input class="checkbox-custom" type="checkbox" name="grass-checkbox"
+                                            id="environment-grass" value="Grass" required>
+                                        <label class="form-check-label checkbox-custom-label"
+                                            for="environment-grass">Grass</label>
+                                    </div>
+
+                                    <div class="form-check checkbox-check checkbox-others">
+                                        <input class="checkbox-custom" type="checkbox" name="others-checkbox"
+                                            id="environment-others" value="Others" required>
+
+                                        <div class="checkbox-others-container">
+                                            <label class="form-check-label checkbox-custom-label checkbox-other-label"
+                                                for="form-input-environment-other">Others</label>
+                                            <input type="text" class="form-control checkbox-other-input"
+                                                id="form-input-environment-other">
+                                            <div class="invalid-feedback">Please specify a value for the "others" option
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- DETAILS OF THE ENVIRONMENT APPLICANT IS ALLERGIC TO -->
+                        <div class="mb-3">
+                            <label for="form-input-enviroment-details" class="form-label help-text-parent">Provide
+                                details of the
+                                allergic trigger(s) and the allergic reaction for each environmental factor that the
+                                Applicant is allergic to:</label>
+                            <div class="form-text help-text">e.g. pollen causes rashes when in contact</div>
+                            <input type="text" class="form-control" id="form-input-enviroment-details">
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- HAVE MEDICATION TO RELIEVE ALLERGIC REACTION -->
+                        <div class="mb-3">
+                            <label for="form-input-hasAllergyMedication" class="form-label">Does the
+                                Applicant have medication to relieve the allergic reaction?</label>
+
+                            <div class="btn-group environmentMedicineStatus" id="form-input-hasAllergyMedication"
+                                style=" border: 0px !important;" role="group">
+
+                                <input type="radio" class="btn-check yesno-radio"
+                                    name="environmental-medication-condition-radio" id="hasAllergyMedication-no"
+                                    value="0" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="hasAllergyMedication-no">
+                                    <i class="material-icons">close</i> No
+                                </label>
+
+                                <input type="radio" class="btn-check yesno-radio"
+                                    name="environmental-medication-condition-radio" id="hasAllergyMedication-yes"
+                                    value="1" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="hasAllergyMedication-yes">
+                                    <i class="material-icons">check</i> Yes
+                                </label>
+
+                            </div>
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- HAVE MEDICATION TO RELIEVE ALLERGIC REACTION - SUB OPTIONAL -->
+                        <div class="optional-div" id="allergy-medication-div">
+
+                            <!-- ALLERGY MEDICATION -->
+                            <div class="mb-3">
+                                <label for="form-input-allergy-medication" class="form-label">State medication and
+                                    dosage</label>
+                                <input type="text" class="form-control" id="form-input-allergy-medication">
+                                <div class="invalid-feedback">This field is required</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ALLERGY TO FOOD ITEM(S) / INGREDIENT(S) -->
+                    <div class="mb-3">
+                        <label for="form-input-hasFoodAllergy" class="form-label"><span class="label-indexes">33.
+                            </span>Allergy to food item(s) / ingredient(s)</label>
+                        <div class="btn-group foodAllergyStatus" id="form-input-hasFoodAllergy"
+                            style=" border: 0px !important;" role="group">
+
+                            <input type="radio" class="btn-check yesno-radio" name="food-allergy-condition-radio"
+                                id="hasFoodAllergy-no" value="0" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasFoodAllergy-no">
+                                <i class="material-icons">close</i> No
+                            </label>
+
+                            <input type="radio" class="btn-check yesno-radio" name="food-allergy-condition-radio"
+                                id="hasFoodAllergy-yes" value="1" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasFoodAllergy-yes">
+                                <i class="material-icons">check</i> Yes
+                            </label>
+
+                        </div>
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- ALLERGY TO FOOD ITEM(S) / INGREDIENT(S) - OPTIONAL -->
+                    <div class="optional-div" id="food-allergy-condition-div">
+
+                        <!-- SELECT FOOD FACTORS -->
+                        <div class="mb-3">
+                            <label for="form-input-food-allergy" class="form-label">Select the food Item(s) /
+                                ingredient(s) that the Applicant is allergic to:</label>
+
+                            <div class="checkbox-field" id="form-input-food-allergy" style="border: 0px !important;">
+
+                                <div class="form-check checkbox-check">
+                                    <input class="checkbox-custom" type="checkbox" name="seafood-checkbox"
+                                        id="food-seafood" value="Seafood, excluding fish" required>
+                                    <label class="form-check-label checkbox-custom-label" for="food-seafood">Seafood,
+                                        excluding fish</label>
+                                </div>
+
+                                <div class="form-check checkbox-check">
+                                    <input class="checkbox-custom" type="checkbox" name="fish-checkbox" id="food-fish"
+                                        value="Fish" required>
+                                    <label class="form-check-label checkbox-custom-label" for="food-fish">Fish</label>
+                                </div>
+
+                                <div class="form-check checkbox-check">
+                                    <input class="checkbox-custom" type="checkbox" name="peanuts-checkbox"
+                                        id="food-peanuts" value="Peanuts" required>
+                                    <label class="form-check-label checkbox-custom-label"
+                                        for="food-peanuts">Peanuts</label>
+                                </div>
+
+                                <div class="form-check checkbox-check">
+                                    <input class="checkbox-custom" type="checkbox" name="treenuts-checkbox"
+                                        id="food-treenuts" value="Tree-nuts" required>
+                                    <label class="form-check-label checkbox-custom-label"
+                                        for="food-treenuts">Tree-nuts</label>
+                                </div>
+
+                                <div class="form-check checkbox-check">
+                                    <input class="checkbox-custom" type="checkbox" name="milk-checkbox"
+                                        id="milk-treenuts" value="Fresh milk" required>
+                                    <label class="form-check-label checkbox-custom-label" for="milk-treenuts">Fresh
+                                        milk</label>
+                                </div>
+
+                                <div class="form-check checkbox-check">
+                                    <input class="checkbox-custom" type="checkbox" name="creamer-checkbox"
+                                        id="creamer-treenuts" value="Creamer" required>
+                                    <label class="form-check-label checkbox-custom-label"
+                                        for="creamer-treenuts">Creamer</label>
+                                </div>
+
+                                <div class="form-check checkbox-check">
+                                    <input class="checkbox-custom" type="checkbox" name="soy-checkbox" id="soy-treenuts"
+                                        value="Soy" required>
+                                    <label class="form-check-label checkbox-custom-label" for="soy-treenuts">Soy</label>
+                                </div>
+
+                                <div class="form-check checkbox-check">
+                                    <input class="checkbox-custom" type="checkbox" name="wheat-checkbox"
+                                        id="wheat-treenuts" value="Wheat" required>
+                                    <label class="form-check-label checkbox-custom-label"
+                                        for="wheat-treenuts">Wheat</label>
+                                </div>
+
+                                <div class="form-check checkbox-check checkbox-others">
+                                    <input class="checkbox-custom" type="checkbox" name="others-checkbox"
+                                        id="food-others" value="Others" required>
+
+                                    <div class="checkbox-others-container">
+                                        <label class="form-check-label checkbox-custom-label checkbox-other-label"
+                                            for="form-input-food-other">Others</label>
+                                        <input type="text" class="form-control checkbox-other-input"
+                                            id="form-input-food-other">
+                                        <div class="invalid-feedback">Please specify a value for the "others" option
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- DETAILS OF THE FOOD APPLICANT IS ALLERGIC TO -->
+                        <div class="mb-3">
+                            <label for="form-input-food-details" class="form-label help-text-parent">Provide
+                                details of the allergic trigger(s) and the allergic reaction for every food item or
+                                ingredient that the Applicant is allergic to:</label>
+                            <div class="form-text help-text">e.g. peanut causes swelling of the airway</div>
+                            <input type="text" class="form-control" id="form-input-food-details">
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- EXPOSURE TO TRACES OF ALLERGEN -->
+                        <div class="mb-3">
+                            <label for="form-input-food-traces" class="form-label help-text-parent">OBS works with food
+                                suppliers that
+                                process different types of food within the same facility. Exposure to trace amounts of
+                                common food allergen(s) is highly probable.</label>
+                            <div class="form-text help-text">e.g. Although a food item may not contain peanuts, it may
+                                have tiny or trace amounts of peanuts if it was produced in a factory that also produced
+                                other food items that contain peanuts. If you are unsure about the severity of your
+                                child’s food allergy, you may seek advice from a doctor.</div>
+
+                            <div class="required-field radio-field" id="form-input-food-traces"
+                                style="border: 0px !important;">
+
+                                <div class="form-check radio-check checkbox-overflow">
+                                    <input class="radio-custom-dots" type="radio" name="traces-radio" id="traces-can"
+                                        value="Can take traces" required>
+                                    <label class="form-check-label radio-custom-label checkbox-overflow-label"
+                                        for="traces-can">My child CAN
+                                        take traces. I acknowledge the risks of, and agree to, the Applicant’s
+                                        participation in the Course where the Applicant is able to take traces of the
+                                        allergen(s).</label>
+                                </div>
+
+                                <div class="form-check radio-check checkbox-overflow">
+                                    <input class="radio-custom-dots" type="radio" name="traces-radio" id="traces-cannot"
+                                        value="Cannot take traces" required>
+                                    <label class="form-check-label radio-custom-label checkbox-overflow-label"
+                                        for="traces-cannot">My child
+                                        CANNOT take traces. I acknowledge that the Applicant will not be enrolled in the
+                                        Course as the Applicant is not able to take traces of the allergen(s).</label>
+                                </div>
+
+                            </div>
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- HAVE MEDICATION TO RELIEVE FOOD ALLERGIC REACTION -->
+                        <div class="mb-3">
+                            <label for="form-input-hasFoodAllergyMedication" class="form-label">Does the
+                                Applicant have medication to relieve the allergic reaction?</label>
+
+                            <div class="btn-group foodMedicineStatus" id="form-input-hasFoodAllergyMedication"
+                                style=" border: 0px !important;" role="group">
+
+                                <input type="radio" class="btn-check yesno-radio" name="food-medication-condition-radio"
+                                    id="hasFoodAllergyMedication-no" value="0" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="hasFoodAllergyMedication-no">
+                                    <i class="material-icons">close</i> No
+                                </label>
+
+                                <input type="radio" class="btn-check yesno-radio" name="food-medication-condition-radio"
+                                    id="hasFoodAllergyMedication-yes" value="1" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="hasFoodAllergyMedication-yes">
+                                    <i class="material-icons">check</i> Yes
+                                </label>
+
+                            </div>
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- HAVE MEDICATION TO RELIEVE FOOD ALLERGIC REACTION - SUB OPTIONAL -->
+                        <div class="optional-div" id="food-allergy-medication-div">
+
+                            <!-- FOOD ALLERGY MEDICATION -->
+                            <div class="mb-3">
+                                <label for="form-input-food-allergy-medication" class="form-label">State medication and
+                                    dosage</label>
+                                <input type="text" class="form-control" id="form-input-food-allergy-medication">
+                                <div class="invalid-feedback">This field is required</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ALLERGY RISK ACKNOWLEDGEMENT -->
+                    <div class="optional-div" id="allergy-acknowledgement-div">
+
+                        <div class="mb-3 checkbox-field allergyRiskAcknowledgement"
+                            id="form-input-allergy-risk-acknowledgement" style="border: 0px !important;">
+                            <label class="form-label">Given the level of the Applicant's sensitivity to medication,
+                                environmental and/or food allergen(s), the Applicant's ability to manage the condition,
+                                and OBS's limited ability to control the Applicant's contact with either known or
+                                unknown allergens:</label>
+
+                            <div class="form-check checkbox-check checkbox-overflow" style="border: none !important">
+
+                                <input class="checkbox-custom" type="checkbox" name="allergy-acknowledgement-checkbox"
+                                    id="form-input-allergy-acknowledgement" value="1" required>
+
+                                <label class="form-check-label checkbox-custom-label checkbox-overflow-label"
+                                    for="form-input-allergy-acknowledgement">I acknowledge the risks of, and agree to,
+                                    the Applicant's participation in the Course where access to emergency medical
+                                    services could be up to 2 hours away. (Note that 2 hours is an estimated timing as
+                                    there could be factors beyond OBS' control that may increase the timing.)</label>
+                            </div>
+                        </div>
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- OTHER KIND OF CONDITION(S) OR ISSUE(S) -->
+                    <div class="mb-3">
+                        <label for="form-input-hasOtherConditions" class="form-label help-text-parent"><span
+                                class="label-indexes">34.
+                            </span>Any other kind of condition(s) or issue(s) not listed above?</label>
+                        <label class="form-text help-text">e.g. restrictions on movement, carrying heavy loads, outdoor
+                            camping, any medical devices/implant required or difficulty in interacting with others in an
+                            unfamiliar setting</label>
+                        <div class="btn-group otherConditionStatus" id="form-input-hasOtherConditions"
+                            style=" border: 0px !important;" role="group">
+
+                            <input type="radio" class="btn-check yesno-radio" name="other-condition-radio"
+                                id="hasOtherConditions-no" value="0" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasOtherConditions-no">
+                                <i class="material-icons">close</i> No
+                            </label>
+
+                            <input type="radio" class="btn-check yesno-radio" name="other-condition-radio"
+                                id="hasOtherConditions-yes" value="1" required>
+                            <label class="radio-btns btn btn-outline-secondary" for="hasOtherConditions-yes">
+                                <i class="material-icons">check</i> Yes
+                            </label>
+
+                        </div>
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- OTHER KIND OF CONDITION(S) OR ISSUE(S) - OPTIONAL -->
+                    <div class="optional-div" id="other-condition-div">
+
+                        <!-- DETAILS OF THE OTHER CONDITION(S) OR ISSUE(S) -->
+                        <div class="mb-3">
+                            <label for="form-input-other-details" class="form-label help-text-parent">State
+                                the
+                                condition</label>
+                            <div class="form-text help-text">State in full sentence/word, avoid acronyms</div>
+                            <input type="text" class="form-control" id="form-input-other-details">
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- WHEN THE OTHER CONDITION(S) OR ISSUE(S) WERE DIAGNOSED -->
+                        <div class="mb-3">
+                            <label for="form-input-diagnosed-date" class="form-label help-text-parent">State when the
+                                condition was diagnosed:</label>
+                            <div class="form-text help-text">If you are not sure of the exact date, please select the
+                                first day of the month which it occurred</div>
+                            <input type="date" class="form-control" id="form-input-diagnosed-date">
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- AFFECT PHYSICAL ACTIVITIES -->
+                        <div class="mb-3">
+                            <label for="form-input-physical-engagement" class="form-label">State how the
+                                condition affects the Applicant's ability to engage in physical activities in the
+                                outdoors or interact with others in an unfamiliar social setting:</label>
+                            <input type="text" class="form-control" id="form-input-physical-engagement">
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- CONDITION TRIGGER -->
+                        <div class="mb-3">
+                            <label for="form-input-condition-trigger" class="form-label">State factors that may
+                                trigger the Applicant's condition:</label>
+                            <input type="text" class="form-control" id="form-input-condition-trigger">
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- PRECAUTIONARY MEASURES  -->
+                        <div class="mb-3">
+                            <label for="form-input-precautionary-measures" class="form-label">State precautionary
+                                measures that should be taken to prevent triggering the Applicant's condition:</label>
+                            <input type="text" class="form-control" id="form-input-precautionary-measures">
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- MEDICAL EQUIPMENT -->
+                        <div class="mb-3">
+                            <label for="form-input-medical-equipment" class="form-label help-text-parent">Medication /
+                                equipment to manage the condition (if any)</label><span
+                                style="font-size: 14px; color: #636467; margin-left: 10px;">(optional)
+                            </span>
+                            <div class="form-text help-text">State the name and dosage / usage:</div>
+                            <input type="text" class="form-control" id="form-input-medical-equipment">
+                        </div>
+
+                        <!-- OTHER KIND OF CONDITION(S) OR ISSUE(S) FOLLOW UP -->
+                        <div class="mb-3">
+                            <label for="form-input-other-followup" class="form-label">Is the Applicant on
+                                follow-up with a specialist for the condition?</label>
+
+                            <div class="btn-group otherFollowup" id="form-input-other-followup"
+                                style=" border: 0px !important;" role="group">
+
+                                <input type="radio" class="btn-check yesno-radio" name="other-followup-radio"
+                                    id="other-followup-no" value="0" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="other-followup-no">
+                                    <i class="material-icons">close</i> No
+                                </label>
+
+                                <input type="radio" class="btn-check yesno-radio" name="other-followup-radio"
+                                    id="other-followup-yes" value="1" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="other-followup-yes">
+                                    <i class="material-icons">check</i> Yes
+                                </label>
+
+                            </div>
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+                        <div class="insert-note-template"></div>
+
+                        <!-- AFFECT FOCUS ABILITY -->
+                        <div class="mb-3">
+                            <label for="form-input-affect-focus" class="form-label">Does the
+                                condition affect the Applicant's ability to focus?</label>
+                            <div class="btn-group otherFocusAbility" id="form-input-affect-focus"
+                                style=" border: 0px !important;" role="group">
+
+                                <input type="radio" class="btn-check yesno-radio" name="affect-focus-radio"
+                                    id="affect-focus-no" value="0" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="affect-focus-no">
+                                    <i class="material-icons">close</i> No
+                                </label>
+
+                                <input type="radio" class="btn-check yesno-radio" name="affect-focus-radio"
+                                    id="affect-focus-yes" value="1" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="affect-focus-yes">
+                                    <i class="material-icons">check</i> Yes
+                                </label>
+
+                            </div>
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- AFFECT UNDERSTANDABILITY ABILITY -->
+                        <div class="mb-3">
+                            <label for="form-input-affect-understand" class="form-label">Does the condition affect the
+                                Applicant's ability to understand and execute safety instructions?</label>
+                            <div class="btn-group otherUnderstandAbility" id="form-input-affect-understand"
+                                style=" border: 0px !important;" role="group">
+
+                                <input type="radio" class="btn-check yesno-radio" name="affect-understand-radio"
+                                    id="affect-understand-no" value="0" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="affect-understand-no">
+                                    <i class="material-icons">close</i> No
+                                </label>
+
+                                <input type="radio" class="btn-check yesno-radio" name="affect-understand-radio"
+                                    id="affect-understand-yes" value="1" required>
+                                <label class="radio-btns btn btn-outline-secondary" for="affect-understand-yes">
+                                    <i class="material-icons">check</i> Yes
+                                </label>
+
+                            </div>
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+
+                        <!-- FOCUS AND UNDERSTANDABILITY - SUB OPTIONAL -->
+                        <div class="optional-div" id="focus-understand-div">
+
+                            <!-- FOOD ALLERGY MEDICATION -->
+                            <div class="mb-3">
+                                <label for="form-input-focus-understand" class="form-label">Provide information that
+                                    will allow OBS to help the Applicant to focus and/or understand and execute safety
+                                    instructions.</label>
+                                <input type="text" class="form-control" id="form-input-focus-understand">
+                                <div class="invalid-feedback">This field is required</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PART 3: DECLARATION & ACKNOWLEDGEMENT -->
+            <div class="col-12 form-container containers">
+                <h2>Part 3: Declaration & Acknowledgement</h2>
+                <div class="spacer"></div>
+                <div class="part3-container section-container">
+
+                    <!-- INFORMATION DECLARATION -->
+                    <div class="mb-3">
+                        <label class="form-label"><span class="label-indexes">35.
+                            </span>Information Declaration</label>
+                        <div class="form-text help-text">
+                            <ol class="custom-list">
+                                <p>
+                                    <li>I declare and confirm that all the information provided is complete, true and
+                                        accurate to the best of my knowledge, and there is no undisclosed information
+                                        that would affect the assessment of this application for the Applicant’s safe
+                                        participation in the Course. </li>
+                                </p>
+                                <p>
+                                    <li>I understand and agree that MOE-OBS may obtain information about the Applicant
+                                        from school for enrolment consideration. </li>
+                                </p>
+                                <p>
+                                    <li>I will promptly inform MOE-OBS of any change in any of the information provided.
+                                        I understand that MOE-OBS reserve the right to make the final admission decision
+                                        based on the information provided in the Registration Form, course intensity and
+                                        other operational considerations. </li>
+                                </p>
+                                <p>
+                                    <li>I understand that if the information provided is incomplete, untrue or
+                                        incorrect, MOE-OBS reserve the right to reject the application or withdraw the
+                                        participation of the Applicant at any time.</li>
+                                </p>
+                            </ol>
+                        </div>
+
+                        <div class="form-check checkbox-check checkbox-overflow checkbox-field"
+                            style="border: none !important">
+
+                            <input class="checkbox-custom" type="checkbox" name="information-declaration-checkbox"
+                                id="form-input-information-declaration" value="1" required>
+
+                            <label class="form-check-label checkbox-custom-label checkbox-overflow-label"
+                                for="form-input-information-declaration">I acknowledge and agree to the above</label>
+                        </div>
+
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- MEDICAL DECLARATION -->
+                    <div class="mb-3">
+                        <label class="form-label"><span class="label-indexes">36.
+                            </span>Medical Declaration</label>
+
+                        <div class="form-check checkbox-check checkbox-overflow checkbox-field"
+                            style="border: none !important">
+
+                            <input class="checkbox-custom" type="checkbox" name="medical-declaration-checkbox"
+                                id="form-input-medical-declaration" value="1" required>
+
+                            <label class="form-check-label checkbox-custom-label checkbox-overflow-label"
+                                for="form-input-medical-declaration">I
+                                give permission for MOE-OBS to administer any medical treatment that MOE-OBS deem
+                                necessary to maintain the Applicant’s well-being during the Course. This includes
+                                administration of oral or topical over-the-counter medication. In the event of the
+                                Applicant’s illness or injury, I give my further consent to MOE-OBS to seek medical
+                                treatment and care as may be necessary for the Applicant, and for this purpose, to
+                                disclose the medical declaration and other relevant information to authorized medical
+                                personnel to provide the Applicant with appropriate treatment.</label>
+                        </div>
+
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- ACKNOWLEDGEMENT OF RISK -->
+                    <div class="mb-3">
+                        <label class="form-label"><span class="label-indexes">37.
+                            </span>Acknowledgement of Risk</label>
+                        <div class="form-text help-text">
+                            <ol class="custom-list">
+                                <p>
+                                    <li>I, consent to the Applicant’s participation in the 5-day MOE-OBS Challenge
+                                        Programme jointly organised by MOE and OBS as detailed in this Registration
+                                        Form. </li>
+                                </p>
+                                <p>
+                                    <li>I declare and confirm that I have read and fully understood all the parts in
+                                        this Registration Form. I understand and accept that participation in the Course
+                                        is strictly voluntary, and acknowledge that procedures are in place to ensure
+                                        the safety and security of participants but complete elimination of risks is not
+                                        possible in the outdoor environment and given the nature of the Course.
+                                        Accordingly, I agree that the Applicant will have to: </li>
+                                </p>
+                                <p>
+                                    <li>inform MOE-OBS in advance if he/she does not wish to participate in the Course;
+                                    </li>
+                                </p>
+                                <p>
+                                    <li>inform MOE-OBS immediately if any of the information declared in this form, in
+                                        particular in relation to medical information, changes; </li>
+                                </p>
+                                <p>
+                                    <li>cooperate fully with MOE-OBS and diligently comply with their instructions and
+                                        all procedures including but not limited to safety systems and processes; </li>
+                                </p>
+                                <p>
+                                    <li>inform MOE-OBS if he/she feels unwell at any time during the Course; and </li>
+                                </p>
+                                <p>
+                                    <li>withdraw from the Course if he/she poses any danger to himself/herself and/or
+                                        others, as determined at the sole discretion of MOE-OBS.</li>
+                                </p>
+                            </ol>
+                        </div>
+
+                        <div class="form-check checkbox-check checkbox-overflow checkbox-field"
+                            style="border: none !important">
+
+                            <input class="checkbox-custom" type="checkbox" name="risk-acknowledgement-checkbox"
+                                id="form-input-risk-acknowledgement" value="1" required>
+
+                            <label class="form-check-label checkbox-custom-label checkbox-overflow-label"
+                                for="form-input-risk-acknowledgement">I acknowledge and agree to the terms of
+                                participation as stated above.</label>
+                        </div>
+
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- CONSENT FOR COLLECTION -->
+                    <div class="mb-3">
+                        <label class="form-label"><span class="label-indexes">38.
+                            </span>Consent for Collection, Use and/or Disclosure of Personal Data For Course-related
+                            Purposes</label>
+                        <div class="form-text help-text">
+                            <ol class="custom-list">
+                                <p>
+                                    <li>The Applicant’s personal information, including any photographs and videos
+                                        of the Applicant during the Course, will be used for Course-related
+                                        purposes. I also understand and agree that, where appropriate, necessary
+                                        information may be shared with other government/public agencies, so as to
+                                        improve the discharge of public functions and to serve me in the most
+                                        efficient and effective way, unless such sharing is prohibited by law. </li>
+                                </p>
+                                <p>
+                                    <li>OBS may send the Applicant information related to the Applicant’s Course
+                                        experience. For this purpose, we may use the contact information provided in
+                                        this registration form or any other contact information separately provided
+                                        by the Applicant.</li>
+                                </p>
+                            </ol>
+                        </div>
+
+                        <div class="form-check checkbox-check checkbox-overflow checkbox-field"
+                            style="border: none !important">
+
+                            <input class="checkbox-custom" type="checkbox" name="collection-acknowledgement-checkbox"
+                                id="form-input-collection-acknowledgement" value="1" required>
+
+                            <label class="form-check-label checkbox-custom-label checkbox-overflow-label"
+                                for="form-input-collection-acknowledgement">I understand and agree to the
+                                above</label>
+                        </div>
+
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- SEND UPCOMING EVENTS DECLARATION -->
+                    <div class="mb-3">
+                        <label class="form-label"><span class="label-indexes">39.
+                            </span>National Youth Council (including Youth Corps Singapore) may send the Applicant
+                            information on youth programmes and events. For this purpose, we may use the contact
+                            information provided in this registration form.<span
+                                style="font-size: 14px; color: #636467; margin-left: 10px;">(optional)
+                            </span></label>
+
+                        <div class="form-check checkbox-check checkbox-overflow" style="border: none !important">
+
+                            <input class="checkbox-custom" type="checkbox" name="events-declaration-checkbox"
+                                id="form-input-events-declaration" value="1" required>
+
+                            <label class="form-check-label checkbox-custom-label checkbox-overflow-label"
+                                for="form-input-events-declaration">I DO NOT consent to the contact information
+                                provided in this registration form being used for NYC publicity</label>
+                        </div>
+
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+
+                    <!-- PHOTO / VIDEO PUBLICITY DECLARATION -->
+                    <div class="mb-3">
+                        <label class="form-label"><span class="label-indexes">40.
+                            </span>Consent for photograph and/or videography for publicity purposes<span
+                                style="font-size: 14px; color: #636467; margin-left: 10px;">(optional)
+                            </span></label>
+
+                        <div class="form-check checkbox-check checkbox-overflow" style="border: none !important">
+
+                            <input class="checkbox-custom" type="checkbox" name="photo-declaration-checkbox"
+                                id="form-input-photo-declaration" value="1" required>
+
+                            <label class="form-check-label checkbox-custom-label checkbox-overflow-label"
+                                for="form-input-photo-declaration">I DO NOT consent to photographs and videos of the
+                                Applicant being used for sharing of the Course experience in newsletters and/or
+                                publicity materials.</label>
+                        </div>
+
+                        <div class="invalid-feedback">This field is required</div>
+                    </div>
+                </div>
+
+                <div id="contact-us-div">
+                    <text>If you have any questions about the above, contact OBS at <a
+                            href="mailto:OBS_Programmes@nyc.gov.sg"
+                            class="help-text-link">OBS_Programmes@nyc.gov.sg</a></text>
+                </div>
+            </div>
+
+            <!-- SUBMIT BUTTON -->
+            <button id="submit-button">
+                Submit now
+            </button>
+        </div>
+    </div>
+
+    <!-- TEMPLATES -->
+    <template id="note-template">
+        <h3 style="margin: 55px 0px 20px 0px"></h3>
+    </template>
+
+    <template id="landing-template">
+        <div class="col-12 form-container containers landing-div">
+            <h2>Thank you for registering your child/ward for the MOE-OBS Challenge</h2><br>
+            <div class="note-container section-container">
+                <div class="text-container">
+                    <p>An email with the submission will be sent to the email address provided. Please contact
+                        the Coordinator for more information regarding the medical examination.</p>
+                    <p>The submission of a completed Registration Form by the Parent/Legal Guardian of the
+                        Applicant
+                        indicates your interest to enrol the Applicant into the MOE-OBS Challenge Programme (the
+                        “Course”).
+
+                    <p><b>FREQUENTLY ASKED QUESTIONS</b><br>
+                        Qn.1 When will the Applicant know he/she is accepted into the
+                        OBS Course?</p>
+                    <p>We will process the Registration Form and inform the Coordinator of the Applicant’s
+                        enrolment status for the Course at least 3 weeks before the course. If you need more
+                        information please contact the Coordinator.</p>
+                    <p>Qn. 2 Where can I find out more about OBS?</p>
+                    <p>To find out more about OBS, visit <a class="help-text-link"
+                            href="https://www.nyc.gov.sg/en/obs">https://www.nyc.gov.sg/en/obs</a> or connect
+                        via our social
+                        media on<br>
+                        Facebook: outwardboundsingapore<br>
+                        Instagram: OutwardBoundSG<br>
+                        YouTube: OutwardBoundSpore</p>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script src="https://unpkg.com/validator@latest/validator.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+        crossorigin="anonymous"></script>
+    <script src="index.js"></script>
+</body>
+
+</html>

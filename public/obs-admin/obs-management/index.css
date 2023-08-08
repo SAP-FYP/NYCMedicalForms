@@ -111,7 +111,7 @@ a.navbar-label-perms {
 .obsLogoContainer {
     width: 200px;
 }
-#obsLogo {
+#obs-logo {
     width: 100%;
 }
 .overviewText{
@@ -295,9 +295,7 @@ margin-top: 1px;
     font-weight: bold;
 }
 
-#filter-icon {
-    margin-left:5px;
-}
+
 .custom-menu {
     min-width: 200px;
     background-color: #C7D3EF !important;
