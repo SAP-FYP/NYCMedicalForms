@@ -1,7 +1,34 @@
-const url = window.location
-const domain = url.protocol + "//" + url.host;
-API_URL = `${domain}/obs-admin/pmt`;
-API_URL_MST = `${domain}/obs-admin/mst`;
+const url = window.location;
+const domain = `${url.protocol}//${url.host}`;
+const API_URL = `${domain}/obs-admin/pmt`;
+const API_URL_MST = `${domain}/obs-admin/mst`;
+
+const alertContainer = document.getElementById('alertbox');
+let dataAll = [];
+const arrowIcon = document.querySelector('.arrow-icon');
+const searchInput = document.querySelector('#searchInput');
+const searchBtn = document.querySelector('#search-button');
+const searchClearBtn = document.querySelector('#clear-button');
+const allForms = document.querySelector('#getAllForms');
+const rectanglePendingParent = document.querySelector('.rectanglePendingParent');
+const rectanglePending = document.querySelector('.rectanglePending');
+const rectangleApproved = document.querySelector('.rectangleApproved');
+const rectangleRejected = document.querySelector('.rectangleRejected');
+
+// All variables for sorting
+const nricColumn = document.querySelector('#nricColumn');
+const fullNameColumn = document.querySelector('#fullNameColumn');
+const classColumn = document.querySelector('#classColumn');
+const schoolColumn = document.querySelector('#schColumn');
+const eligibilityColumn = document.querySelector('#eligibilityColumn');
+const courseDateColumn = document.querySelector('#courseDateColumn');
+// Sorting arrow icon
+const sortIconName = document.querySelector('#fullNameColumn i.arrow-icon-name');
+const sortIconClass = document.querySelector('#classColumn i.arrow-icon-class');
+const sortIconSchool = document.querySelector('#schColumn i.arrow-icon-school');
+const sortIconEligibility = document.querySelector('#eligibilityColumn i.arrow-icon-eligibility');
+const sortIconCourseDate = document.querySelector('#courseDateColumn i.arrow-icon-coursedate');
+let ascending = true; // Variable to keep track of the current sorting order
 // === ALERT BOX ===
 function alertBox(message, type) {
   const alertIcon = document.getElementById('alert-icon');
@@ -26,7 +53,7 @@ function alertBox(message, type) {
   }
 
   alertMessage.textContent = message;
-  alertContainer.classList.add(alertColor)
+  alertContainer.classList.add(alertColor);
   alertContainer.classList.add('alert-visible');
   alertContainer.classList.remove('alert-hidden');
   alertContainer.style.zIndex = 99999;
@@ -36,30 +63,32 @@ function alertBox(message, type) {
     alertContainer.classList.remove('alert-visible');
     alertContainer.classList.remove(alertColor);
   }, 3000);
-};
+}
 function handleError(error) {
   if (error && error.message !== 'redirected') {
-    if (error.message !== "Failed to fetch") {
+    if (error.message !== 'Failed to fetch') {
       alertBox(error.message, 'danger');
     }
   }
 }
-//Function for status count
+// Function for status count
 function updateFormCounts(formData) {
   const formCounts = formData.reduce(
     (counts, form) => {
-      if (form.formStatus === "Pending") {
+      if (form.formStatus === 'Pending') {
         counts.pending++;
-      } else if (form.formStatus === "Approved") {
+      } else if (form.formStatus === 'Approved') {
         counts.approved++;
-      } else if (form.formStatus === "Rejected") {
+      } else if (form.formStatus === 'Rejected') {
         counts.rejected++;
-      } else if (form.formStatus === "Pending Parent") {
+      } else if (form.formStatus === 'Pending Parent') {
         counts.pendingParent++;
       }
       return counts;
     },
-    { pendingParent: 0, pending: 0, approved: 0, rejected: 0 }
+    {
+      pendingParent: 0, pending: 0, approved: 0, rejected: 0,
+    },
   );
   const pendingParentAmtElement = document.querySelector('.pendingParentAmt');
   const pendingAmtElement = document.querySelector('.pendingAmt');
@@ -74,10 +103,10 @@ function updateFormCounts(formData) {
 
 function createFormattedDate(date) {
   const dateObj = new Date(date);
-  return dateObj.toLocaleDateString("en-SG", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
+  return dateObj.toLocaleDateString('en-SG', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
   });
 }
 function createExportButtonAll(id) {
@@ -97,20 +126,94 @@ function createExportButtonAll(id) {
   });
   return exportIcon;
 }
+
+// Function to export to excel individually
+function exportToExcel(applicantName, schoolOrg, classNo, courseDate, formStatus, mstReview, docReview) {
+  axios.get('/export', {
+    params: {
+      applicantName,
+      schoolOrg,
+      classNo,
+      courseDate,
+      formStatus,
+      mstReview,
+      docReview,
+
+    },
+    responseType: 'blob', // Set the response type to 'blob' to handle binary data
+  })
+    .then((response) => {
+      const contentType = response.headers['content-type'];
+      if (contentType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+        const urlExport = URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = urlExport;
+        link.download = `${applicantName}.xlsx`;
+        document.body.appendChild(link);
+        link.click();
+        URL.revokeObjectURL(urlExport);
+        link.remove();
+        alertBox('You have successfully exported the data to excel!', 'success');
+      } else {
+        // console.error('Invalid file format received:', contentType);
+        alertBox('You do not have permission to export!', 'danger');
+        location.reload();
+      }
+    })
+    .catch((error) => {
+      // console.error('Export request failed:', error);
+      alertBox('Export request failed!', 'danger');
+    });
+}
+
+// Function to export to excel bulk
+function exportToExcelBulk(data) {
+  axios.post('/export-bulk', {
+    data: JSON.stringify(data),
+  }, {
+    responseType: 'blob',
+  })
+    .then((response) => {
+      const contentType = response.headers['content-type'];
+      if (contentType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+        const urlExportBulk = URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = urlExportBulk;
+        link.download = 'exported-form.xlsx';
+        document.body.appendChild(link);
+        link.click();
+        URL.revokeObjectURL(urlExportBulk);
+        link.remove();
+        alertBox('You have successfully exported the data to excel!', 'success');
+      } else {
+        // console.error('Invalid file format received:', contentType);
+        alertBox('You do not have permission to export!', 'danger');
+        location.reload();
+      }
+    })
+    .catch((error) => {
+      if (error.response.status === 400) {
+        alertBox('You did not select any rows to export!', 'danger');
+      }
+      // console.error('Export request failed:', error);
+      alertBox('Export request failed!', 'danger');
+    });
+}
+
 // Function to populate row data
 function populateRowData(clonedRowTemplate, formData, index, formattedDate) {
   const studentNRICCell = clonedRowTemplate.querySelector('.studentNRIC');
 
   // show last 4digits of NRIC
-  const studentNRIC = formData[index].studentNRIC;
+  const { studentNRIC } = formData[index];
   // const extractedNRIC = studentNRIC.substring(studentNRIC.length - 4);
   studentNRICCell.textContent = `*****${studentNRIC}`;
 
   const nameOfStudentCell = clonedRowTemplate.querySelector('.studentName');
   nameOfStudentCell.textContent = formData[index].nameOfStudent;
-  nameOfStudentCell.setAttribute("nameOfStudent", formData[index].nameOfStudent);
-  nameOfStudentCell.setAttribute("studentId", formData[index].studentId);
-  const studentId = formData[index].studentId;
+  nameOfStudentCell.setAttribute('nameOfStudent', formData[index].nameOfStudent);
+  nameOfStudentCell.setAttribute('studentId', formData[index].studentId);
+  const { studentId } = formData[index];
 
   const classCell = clonedRowTemplate.querySelector('.studentClass');
   classCell.textContent = formData[index].class;
@@ -128,7 +231,6 @@ function populateRowData(clonedRowTemplate, formData, index, formattedDate) {
   const mstReviewCell = formData[index].review;
   const docReviewCell = formData[index].comments;
 
-
   return {
     studentNRICCell,
     nameOfStudentCell,
@@ -145,7 +247,7 @@ function populateRowData(clonedRowTemplate, formData, index, formattedDate) {
 
 // Function to handle checkboxes
 function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportContainer, exportIcon, targetDataArray, i, formData) {
-  const formId = formData[i].formId;
+  const { formId } = formData[i];
   const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
   const checkBoxTop = document.querySelector('#checkBoxTop');
   function appendExportIcon() {
@@ -163,7 +265,7 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
 
   // Add event listener to each checkbox
   checkBoxes.forEach(function (checkbox) {
-    checkbox.setAttribute('class', 'checkBox-formid-' + formId)
+    checkbox.setAttribute('class', `checkBox-formid-${formId}`);
     checkbox.removeAttribute('disabled'); // Remove the disabled attribute
     checkbox.addEventListener('change', function () {
       const isChecked = this.checked;
@@ -177,13 +279,13 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
       const docReview = docReviewCell;
 
       const data = {
-        "Name of Applicant": applicantName,
-        "Organization/School": schoolOrg,
-        "Designation/Class": classNo,
-        "Course Date": courseDate,
-        "Form Status": formStatus,
-        "MST Review": mstReview,
-        "Doctor Review": docReview
+        'Name of Applicant': applicantName,
+        'Organization/School': schoolOrg,
+        'Designation/Class': classNo,
+        'Course Date': courseDate,
+        'Form Status': formStatus,
+        'MST Review': mstReview,
+        'Doctor Review': docReview,
       };
 
       if (isChecked) {
@@ -196,7 +298,7 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
         const hover = new bootstrap.Tooltip(checkBoxTop, { trigger: 'hover' });
         appendExportIcon();
       } else {
-        const index = targetDataArray.findIndex((item) => item["Name of Applicant"] === applicantName);
+        const index = targetDataArray.findIndex((item) => item['Name of Applicant'] === applicantName);
         if (index !== -1) {
           targetDataArray.splice(index, 1);
         }
@@ -221,13 +323,13 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
       if (checkbox.checked === isChecked) {
         return;
       }
-      //parent element
-      const parentElement = checkbox.parentElement.parentElement;
+      // parent element
+      const { parentElement } = checkbox.parentElement;
       const isHidden = parentElement.style.display === 'none';
       if (isHidden) {
         return;
       }
-    
+
       checkbox.checked = isChecked;
       const applicantName = nameOfStudentCell.textContent;
       const schoolOrg = schoolCell.textContent;
@@ -238,13 +340,13 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
       const docReview = docReviewCell;
 
       const data = {
-        "Name of Applicant": applicantName,
-        "Organization/School": schoolOrg,
-        "Designation/Class": classNo,
-        "Course Date": courseDate,
-        "Form Status": formStatus,
-        "MST Review": mstReview,
-        "Doctor Review": docReview
+        'Name of Applicant': applicantName,
+        'Organization/School': schoolOrg,
+        'Designation/Class': classNo,
+        'Course Date': courseDate,
+        'Form Status': formStatus,
+        'MST Review': mstReview,
+        'Doctor Review': docReview,
       };
 
       if (checkbox.checked) {
@@ -257,7 +359,7 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
         const hover = new bootstrap.Tooltip(checkBoxTop, { trigger: 'hover' });
         appendExportIcon();
       } else {
-        const index = targetDataArray.findIndex((item) => item["Name of Applicant"] === applicantName);
+        const index = targetDataArray.findIndex((item) => item['Name of Applicant'] === applicantName);
         if (index !== -1) {
           targetDataArray.splice(index, 1);
         }
@@ -272,131 +374,76 @@ function handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, clas
         const hover = new bootstrap.Tooltip(checkBoxTop, { trigger: 'hover' });
       }
     });
-
   });
 }
 
-//FUNCTION TO OPEN MODAL VIA CLICKING ON THE TABLE ROW
-function openModal(studentId, modalBtns) {
-  // Perform additional actions or make API requests using the studentId
-  axios.get(`${API_URL}/${studentId}`)
+// FUNCTION TO UPDATE STATUS OF FORM TO PENDING
+function updateStatusPending(formData) {
+  const { studentId } = formData;
+  axios
+    .put(`${API_URL}/${studentId}`, { formStatus: 'Pending' })
     .then(function (response) {
-      const formData = response.data[0];
-
-      const userPermissions = response.data[1];
-
-      const dateObjCourseDate = new Date(formData.courseDate);
-      const formatToLocal = dateObjCourseDate.toLocaleDateString("en-US", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      });
-      const datePartsCourseDate = formatToLocal.split("/");
-      const formattedCourseDate = `${datePartsCourseDate[2]}-${datePartsCourseDate[0]}-${datePartsCourseDate[1]}`;
-
-      //Format the dateOfVaccination
-      const dateObjVaccinationDate = new Date(formData.courseDate);
-      const formatToLocal2 = dateObjVaccinationDate.toLocaleDateString("en-US", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      });
-      const datePartsVaccinationDate = formatToLocal2.split("/");
-      const formattedVaccinationDate = `${datePartsVaccinationDate[2]}-${datePartsVaccinationDate[0]}-${datePartsVaccinationDate[1]}`;
-
-      //Format the examDate
-      const dateObjExamDate = new Date(formData.courseDate);
-      const formatToLocal3 = dateObjExamDate.toLocaleDateString("en-US", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      });
-      const datePartsExamDate = formatToLocal3.split("/");
-      const formattedExamDate = `${datePartsExamDate[2]}-${datePartsExamDate[0]}-${datePartsExamDate[1]}`;
-
-      //Format the dateOfBirth
-      const dateObjDob = new Date(formData.dateOfBirth);
-      const formatToLocal4 = dateObjDob.toLocaleDateString("en-US", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      });
-      const datePartsDob = formatToLocal4.split("/");
-      const formattedDateOfBirth = `${datePartsDob[2]}-${datePartsDob[0]}-${datePartsDob[1]}`;
-
-      //Format the dateOfAcknowledgement
-      let formattedAckDate;
-
-      if (formData.dateOfAcknowledgement) {
-        const dateObjAckDate = new Date(formData.dateOfAcknowledgement);
-        const formatToLocal5 = dateObjAckDate.toLocaleDateString("en-US", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        });
-        const datePartsAckDate = formatToLocal5.split("/");
-        formattedAckDate = `${datePartsAckDate[2]}-${datePartsAckDate[0]}-${datePartsAckDate[1]}`;
-      } else {
-        formattedAckDate = null;
-      }
-
-
-
-
-      //call exportToExcel function
-      const successBtn = document.querySelector(".successBtn");
-      const rejectBtn = document.querySelector(".rejectBtn");
-      const closeBtn = document.querySelector(".closeBtn");
-      const exportBtns = document.querySelectorAll(".exportBtn");
-
-      exportBtns.forEach((exportBtn) => {
-        //for cypress testing
-        exportBtn.setAttribute("id", "exportBtn-studentid-" + studentId);
-        if (userPermissions.includes(5)) {
-          exportBtn.classList.remove('d-none');
-          exportBtn.addEventListener("click", handleExportClick);
-          successBtn.addEventListener("click", function (e) {
-            exportBtn.removeEventListener("click", handleExportClick);
-          });
-          rejectBtn.addEventListener("click", function (e) {
-            exportBtn.removeEventListener("click", handleExportClick);
-          });
-          closeBtn.addEventListener("click", function (e) {
-            exportBtn.removeEventListener("click", handleExportClick);
-          });
-        }
-      });
-
-
-      function handleExportClick(e) {
-        e.preventDefault(); // prevent the default form submission behavior
-
-        // Extract the form data
-        const applicantName = formData.nameOfStudent;
-        const schoolOrg = formData.school;
-        const classNo = formData.class;
-        const courseDate = formattedCourseDate;
-        const formStatus = formData.formStatus;
-        const mstReview = formData.review
-        const docReview = formData.comments
-
-        // Call the exportData function with the form data
-        exportToExcel(applicantName, schoolOrg, classNo, courseDate, formStatus, mstReview, docReview);
-
-        // Remove the event listener to avoid repeated downloads
-        exportBtns.forEach((exportBtn) => {
-          exportBtn.removeEventListener("click", handleExportClick);
-        });
-      }
-
-
-      displayFormModal(formData, userPermissions, formattedCourseDate, formattedVaccinationDate, formattedExamDate, formattedAckDate, formattedDateOfBirth, modalBtns, studentId);
-
     })
-    .catch(handleError);
+    .catch(function (error) {
+      // Handle error
+      console.log(error);
+      // Display an error message or handle the error as needed
+    });
 }
 
-//FUNCTION TO DSIPLAY FORM MODAL
+// FUNCTION TO UPDATE STATUS OF FORM TO APPROVED
+function updateStatusApprove(formData) {
+  const { studentId } = formData;
+  axios
+    .put(`${API_URL}/${studentId}`, { formStatus: 'Approved' })
+    .then(function (response) {
+    })
+    .catch(function (error) {
+      // Handle error
+      console.log(error);
+      // Display an error message or handle the error as needed
+    });
+}
+
+// FUNCTION TO UPDATE STATUS OF FORM TO REJECTED
+function updateStatusReject(formData) {
+  const { studentId } = formData;
+  axios
+    .put(`${API_URL}/${studentId}`, { formStatus: 'Rejected' })
+    .then(function (response) {
+    })
+    .catch(function (error) {
+      // Handle error
+      console.log(error);
+      // Display an error message or handle the error as needed
+    });
+}
+
+// FUNCTION TO EDIT REVIEW OF FORM
+function editReview(formData, newReview) {
+  const submitReview = document.querySelector('.submitReviewBtn');
+  const { studentId } = formData;
+
+  axios.put(
+    `${API_URL_MST}/review/${studentId}`,
+    {
+      review: newReview.value,
+    },
+  )
+    .then(function (response) {
+      if (response.status === 204) {
+        alertBox('Your review has been deleted or is empty.', 'warn');
+      } else {
+        alertBox('Review has been submitted.', 'success');
+      }
+    })
+    .catch(function (error) {
+      // Handle error
+      alertBox(error.message, 'danger');
+    });
+}
+
+// FUNCTION TO DSIPLAY FORM MODAL
 function displayFormModal(formData, userPermissions, formattedCourseDate, formattedVaccinationDate, formattedExamDate, formattedAckDate, formattedDateOfBirth, modalBtns, studentId) {
   const nameInput = document.querySelector('#applicantName');
   const schoolInput = document.querySelector('#schoolOrg');
@@ -419,14 +466,14 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
   const parentDateInput = document.querySelector('#parent-date');
   const mstReview = document.querySelector('#mst-review');
 
-  //Doctor Signature
+  // Doctor Signature
   const doctorSignatureInput = document.querySelector('#doctor-signature');
-  const doctorSignatureURL = formData.signature
+  const doctorSignatureURL = formData.signature;
   const doctorSignatureImg = doctorSignatureURL.split(';')[0];
 
   doctorSignatureInput.setAttribute('src', doctorSignatureImg);
 
-  //Parent Signature
+  // Parent Signature
   const parentSignatureInput = document.querySelector('#parent-signature');
   const parentSignatureURL = formData.parentSignature;
   const parentSignatureImg = typeof parentSignatureURL === 'string' ? parentSignatureURL.split(';')[0] : null;
@@ -442,7 +489,6 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
     // Hide the parentSignatureInput element
 
     parentSignatureInput.style.display = 'none';
-
 
     const ctx = canvas.getContext('2d');
     // Style canvas
@@ -466,11 +512,11 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
   }
 
   // show last 4digits of NRIC
-  const studentNRIC = formData.studentNRIC;
+  const { studentNRIC } = formData;
   const extractedNRIC = studentNRIC.substring(studentNRIC.length - 4);
 
-  //show last 4digits of parent NRIC
-  const parentNRIC = formData.parentNRIC;
+  // show last 4digits of parent NRIC
+  const { parentNRIC } = formData;
   let extractedParentNRIC = 'N/A';
   if (parentNRIC) {
     extractedParentNRIC = parentNRIC.substring(parentNRIC.length - 4);
@@ -494,34 +540,28 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
   parentName.value = `${formData.nameOfParent || 'N/A'}`;
   mstReview.value = `${formData.review || ''}`;
 
-  parentNRICInput.value = `${formData.parentNRIC ? '*****' + formData.parentNRIC : 'N/A'}`;
+  parentNRICInput.value = `${formData.parentNRIC ? `*****${formData.parentNRIC}` : 'N/A'}`;
   parentEmailInput.value = `${formData.parentEmail || 'N/A'}`;
   parentContactInput.value = `${formData.parentContactNo || 'N/A'}`;
   parentDateInput.value = `${formattedAckDate}`;
-
-  // if (formData.formStatus === "Pending Parent") {
-  //   const apprRejContainer = document.querySelector('#apprRejContainer');
-  //   apprRejContainer.innerHTML = ''
-  //   const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
-  //   pmtHeadingForm.innerHTML = ''
-  // }
 
   const pillPending = document.querySelector('.changePill');
   const undoStatusContainer = document.querySelector('#undoStatusContainer');
   const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
   const apprRejContainer = document.querySelector('#apprRejContainer');
+  const pendingAmt = document.querySelector('.pendingAmt');
+  const rejAmt = document.querySelector('.rejAmt');
+  const apprAmt = document.querySelector('.apprAmt');
 
-  //if theres permission
+  // if theres permission
   if (userPermissions.includes(2) || userPermissions.includes(3)) {
-    //if Pending create heading and approve/reject buttons
+    // if Pending create heading and approve/reject buttons
 
-    if (isFormModalOpen && formData.formStatus === "Pending") {
-
+    if (isFormModalOpen && formData.formStatus === 'Pending') {
       // Create the h4 element
       const h4 = document.createElement('h4');
       h4.textContent = 'Partnership Management Team:';
       pmtHeadingForm.appendChild(h4);
-
 
       // Create the label element
       const label = document.createElement('label');
@@ -538,9 +578,9 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
       const approveBtn = document.createElement('button');
       approveBtn.setAttribute('type', 'button');
       approveBtn.setAttribute('class', 'btn btn-secondary approve-btn');
-      //cypress testing id
+      // cypress testing id
       approveBtn.setAttribute('id', 'approveBtn');
-      approveBtn.setAttribute("data-bs-dismiss", "modal");
+      approveBtn.setAttribute('data-bs-dismiss', 'modal');
       // approveBtn.setAttribute("data-bs-toggle", "modal");
       // approveBtn.setAttribute("data-bs-target", "#staticBackdropAppr");
       approveBtn.textContent = 'Approve';
@@ -553,9 +593,9 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
       const rejectBtn = document.createElement('button');
       rejectBtn.setAttribute('type', 'button');
       rejectBtn.setAttribute('class', 'btn btn-secondary reject-btn');
-      //cypress testing id
+      // cypress testing id
       rejectBtn.setAttribute('id', 'rejectBtn');
-      rejectBtn.setAttribute("data-bs-dismiss", "modal");
+      rejectBtn.setAttribute('data-bs-dismiss', 'modal');
       // rejectBtn.setAttribute("data-bs-toggle", "modal");
       // rejectBtn.setAttribute("data-bs-target", "#staticBackdropRej");
       rejectBtn.textContent = 'Reject';
@@ -568,113 +608,97 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
       buttonContainerDiv.appendChild(verticalLine);
       buttonContainerDiv.appendChild(rejectBtn);
 
-
-
       // Add the elements to the parent element
       apprRejContainer.appendChild(containerDiv);
       apprRejContainer.appendChild(buttonContainerDiv);
       if (undoStatusContainer) {
-        undoStatusContainer.innerHTML = ''
+        undoStatusContainer.innerHTML = '';
       }
     }
-    //if Approved create undo button
-    if (formData.formStatus === "Approved" || formData.formStatus === "Rejected") {
+    // if Approved create undo button
+    if (formData.formStatus === 'Approved' || formData.formStatus === 'Rejected') {
       undoStatusContainer.innerHTML = `<div class="btn btn-primary btn-sm undoStatusBtn"data-bs-dismiss="modal" id="undoStatusBtn-studentid-${studentId}">Undo
-     Back To Pending</div>`
+     Back To Pending</div>`;
     }
-    //check if form is rejected
+    // check if form is rejected
     if (pillPending.textContent === 'Rejected') {
-      modalBtns.forEach(modalBtn => {
-        alertBox("Form already rejected!", 'rejected');
-
-      })
+      modalBtns.forEach((modalBtn) => {
+        alertBox('Form already rejected!', 'rejected');
+      });
     }
-    //check if form is approved
+    // check if form is approved
     if (pillPending.textContent === 'Approved') {
-      modalBtns.forEach(modalBtn => {
-        alertBox("Form already approved!", 'rejected');
-
-      })
+      modalBtns.forEach((modalBtn) => {
+        alertBox('Form already approved!', 'rejected');
+      });
     }
 
-    //update status to reject
+    // update status to reject
     const rejectBtn = document.querySelector('#rejectBtn');
     if (rejectBtn) {
-      rejectBtn.setAttribute('id', 'rejectBtn-studentid-' + studentId);
+      rejectBtn.setAttribute('id', `rejectBtn-studentid-${studentId}`);
       rejectBtn.addEventListener('click', function () {
         // Update status to "rejected" in the database
-        updateStatusReject(formData)
+        updateStatusReject(formData);
 
         pillPending.classList.add('pillRejected');
 
         pillPending.textContent = 'Rejected';
-        alertBox("The form is rejected", 'success');
+        alertBox('The form is rejected', 'success');
 
-        const apprRejContainer = document.querySelector('#apprRejContainer');
-        apprRejContainer.innerHTML = ''
-        const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
-        pmtHeadingForm.innerHTML = ''
 
-        const apprAmt = document.querySelector('.rejAmt');
-        apprAmt.textContent = parseInt(apprAmt.textContent) + 1
+        apprRejContainer.innerHTML = '';
+        pmtHeadingForm.innerHTML = '';
 
-        const pendingAmt = document.querySelector('.pendingAmt');
-        pendingAmt.textContent = parseInt(pendingAmt.textContent) - 1
+
+        rejAmt.textContent = parseInt(rejAmt.textContent) + 1;
+        pendingAmt.textContent = parseInt(pendingAmt.textContent) - 1;
 
         pillPending.classList.remove('changePill');
         if (canvas.parentElement === parentContainer) {
           parentContainer.removeChild(canvas);
         }
         undoStatusContainer.innerHTML = `<div class="btn btn-primary btn-sm undoStatusBtn">Undo
-        Back To Pending</div>`
+        Back To Pending</div>`;
       });
-
     }
 
-    //update status to pending
+    // update status to pending
     const undoStatusBtn = document.querySelector('.undoStatusBtn');
-    if (formData.formStatus === "Approved") {
+    if (formData.formStatus === 'Approved') {
       if (undoStatusBtn) {
         undoStatusBtn.addEventListener('click', function () {
           // Update status to "rejected" in the database
-          updateStatusPending(formData)
+          updateStatusPending(formData);
 
           pillPending.classList.remove('pillApproved');
 
           pillPending.textContent = 'Pending';
-          alertBox("The form has been reverted back to pending.", 'success');
+          alertBox('The form has been reverted back to pending.', 'success');
 
-          const rejAmt = document.querySelector('.apprAmt');
-          rejAmt.textContent = parseInt(rejAmt.textContent) - 1
-
-          const pendingAmt = document.querySelector('.pendingAmt');
-          pendingAmt.textContent = parseInt(pendingAmt.textContent) + 1
+          apprAmt.textContent = parseInt(apprAmt.textContent) - 1;
+          pendingAmt.textContent = parseInt(pendingAmt.textContent) + 1;
 
           pillPending.classList.remove('changePill');
           if (canvas.parentElement === parentContainer) {
             parentContainer.removeChild(canvas);
           }
-
         });
-
       }
     }
-    if (formData.formStatus === "Rejected") {
+    if (formData.formStatus === 'Rejected') {
       if (undoStatusBtn) {
         undoStatusBtn.addEventListener('click', function () {
           // Update status to "rejected" in the database
-          updateStatusPending(formData)
+          updateStatusPending(formData);
 
           pillPending.classList.remove('pillRejected');
 
           pillPending.textContent = 'Pending';
-          alertBox("The form has been reverted back to pending.", 'success');
+          alertBox('The form has been reverted back to pending.', 'success');
 
-          const rejAmt = document.querySelector('.rejAmt');
-          rejAmt.textContent = parseInt(rejAmt.textContent) - 1
-
-          const pendingAmt = document.querySelector('.pendingAmt');
-          pendingAmt.textContent = parseInt(pendingAmt.textContent) + 1
+          rejAmt.textContent = parseInt(rejAmt.textContent) - 1;
+          pendingAmt.textContent = parseInt(pendingAmt.textContent) + 1;
 
           pillPending.classList.remove('changePill');
           if (canvas.parentElement === parentContainer) {
@@ -684,28 +708,24 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
       }
     }
 
-    //update status to approve
+    // update status to approve
     const approveBtn = document.querySelector('#approveBtn');
     if (approveBtn) {
-      approveBtn.setAttribute('id', 'approveBtn-studentid-' + studentId);
+      approveBtn.setAttribute('id', `approveBtn-studentid-${studentId}`);
       approveBtn.addEventListener('click', function () {
         // Update status to "approved" in the database
-        updateStatusApprove(formData)
-        const pillPending = document.querySelector('.changePill');
+        updateStatusApprove(formData);
+
         pillPending.classList.add('pillApproved');
 
         pillPending.textContent = 'Approved';
-        alertBox("The form is aproved!", 'success');
-        const apprRejContainer = document.querySelector('#apprRejContainer');
-        apprRejContainer.innerHTML = ''
-        const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
-        pmtHeadingForm.innerHTML = ''
+        alertBox('The form is aproved!', 'success');
 
-        const apprAmt = document.querySelector('.apprAmt');
-        apprAmt.textContent = parseInt(apprAmt.textContent) + 1
+        apprRejContainer.innerHTML = '';
+        pmtHeadingForm.innerHTML = '';
 
-        const pendingAmt = document.querySelector('.pendingAmt');
-        pendingAmt.textContent = parseInt(pendingAmt.textContent) - 1
+        apprAmt.textContent = parseInt(apprAmt.textContent) + 1;
+        pendingAmt.textContent = parseInt(pendingAmt.textContent) - 1;
 
         pillPending.classList.remove('changePill');
 
@@ -713,70 +733,163 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
           parentContainer.removeChild(canvas);
         }
         undoStatusContainer.innerHTML = `<div class="btn btn-primary btn-sm undoStatusBtn">Undo
-        Back To Pending</div>`
-
+        Back To Pending</div>`;
       });
     }
   }
 
   const closeBtn = document.querySelector('.closeBtn');
-  closeBtn.setAttribute("id", "closeBtn-studentid-" + studentId)
+  closeBtn.setAttribute('id', `closeBtn-studentid-${studentId}`);
   closeBtn.addEventListener('click', function () {
-    const apprRejContainer = document.querySelector('#apprRejContainer');
-    apprRejContainer.innerHTML = ''
-    const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
-    pmtHeadingForm.innerHTML = ''
-    const textarea = document.getElementById("doctor-comments");
+    apprRejContainer.innerHTML = '';
+    pmtHeadingForm.innerHTML = '';
+    const textarea = document.getElementById('doctor-comments');
     textarea.disabled = true;
     if (canvas.parentElement === parentContainer) {
       parentContainer.removeChild(canvas);
     }
-    pillPending.classList.remove("changePill");
-
+    pillPending.classList.remove('changePill');
   });
-  const textarea = document.querySelector("#mst-review");
+  const textarea = document.querySelector('#mst-review');
   const submitReview = document.querySelector('.submitReviewBtn');
   const newReview = document.querySelector('#mst-review');
   if (userPermissions.includes(7)) {
     submitReview.classList.remove('d-none');
     textarea.disabled = false;
   }
-  //click on submit button
+  // click on submit button
   submitReview.addEventListener('mousedown', function (event) {
     if (userPermissions.includes(7)) {
-      submitReview.setAttribute("data-bs-dismiss", "modal");
-      editReview(formData, newReview)
-      const apprRejContainer = document.querySelector('#apprRejContainer');
-        apprRejContainer.innerHTML = ''
-        const pmtHeadingForm = document.querySelector('#pmtHeadingForm');
-        pmtHeadingForm.innerHTML = ''
-        pillPending.classList.remove('changePill');
+      submitReview.setAttribute('data-bs-dismiss', 'modal');
+      editReview(formData, newReview);
+      apprRejContainer.innerHTML = '';
+      pmtHeadingForm.innerHTML = '';
+      pillPending.classList.remove('changePill');
 
-        if (canvas.parentElement === parentContainer) {
-          parentContainer.removeChild(canvas);
-        }
-      
+      if (canvas.parentElement === parentContainer) {
+        parentContainer.removeChild(canvas);
+      }
     } else {
       alertBox("You don't have permission to edit review!", 'danger');
     }
-  })
+  });
 }
 
-//FUNCTION TO UPDATE STATUS OF FORM TO APPROVED
-function updateStatusApprove(formData) {
-  const studentId = formData.studentId;
-  axios
-    .put(`${API_URL}/${studentId}`, { formStatus: 'Approved' })
+// FUNCTION TO OPEN MODAL VIA CLICKING ON THE TABLE ROW
+function openModal(studentId, modalBtns) {
+  // Perform additional actions or make API requests using the studentId
+  axios.get(`${API_URL}/${studentId}`)
     .then(function (response) {
+      const formData = response.data[0];
+
+      const userPermissions = response.data[1];
+
+      const dateObjCourseDate = new Date(formData.courseDate);
+      const formatToLocal = dateObjCourseDate.toLocaleDateString('en-US', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      });
+      const datePartsCourseDate = formatToLocal.split('/');
+      const formattedCourseDate = `${datePartsCourseDate[2]}-${datePartsCourseDate[0]}-${datePartsCourseDate[1]}`;
+
+      // Format the dateOfVaccination
+      const dateObjVaccinationDate = new Date(formData.courseDate);
+      const formatToLocal2 = dateObjVaccinationDate.toLocaleDateString('en-US', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      });
+      const datePartsVaccinationDate = formatToLocal2.split('/');
+      const formattedVaccinationDate = `${datePartsVaccinationDate[2]}-${datePartsVaccinationDate[0]}-${datePartsVaccinationDate[1]}`;
+
+      // Format the examDate
+      const dateObjExamDate = new Date(formData.courseDate);
+      const formatToLocal3 = dateObjExamDate.toLocaleDateString('en-US', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      });
+      const datePartsExamDate = formatToLocal3.split('/');
+      const formattedExamDate = `${datePartsExamDate[2]}-${datePartsExamDate[0]}-${datePartsExamDate[1]}`;
+
+      // Format the dateOfBirth
+      const dateObjDob = new Date(formData.dateOfBirth);
+      const formatToLocal4 = dateObjDob.toLocaleDateString('en-US', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      });
+      const datePartsDob = formatToLocal4.split('/');
+      const formattedDateOfBirth = `${datePartsDob[2]}-${datePartsDob[0]}-${datePartsDob[1]}`;
+
+      // Format the dateOfAcknowledgement
+      let formattedAckDate;
+
+      if (formData.dateOfAcknowledgement) {
+        const dateObjAckDate = new Date(formData.dateOfAcknowledgement);
+        const formatToLocal5 = dateObjAckDate.toLocaleDateString('en-US', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        });
+        const datePartsAckDate = formatToLocal5.split('/');
+        formattedAckDate = `${datePartsAckDate[2]}-${datePartsAckDate[0]}-${datePartsAckDate[1]}`;
+      } else {
+        formattedAckDate = null;
+      }
+
+      // call exportToExcel function
+      const successBtn = document.querySelector('.successBtn');
+      const rejectBtn = document.querySelector('.rejectBtn');
+      const closeBtn = document.querySelector('.closeBtn');
+      const exportBtns = document.querySelectorAll('.exportBtn');
+
+      function handleExportClick(e) {
+        e.preventDefault(); // prevent the default form submission behavior
+
+        // Extract the form data
+        const applicantName = formData.nameOfStudent;
+        const schoolOrg = formData.school;
+        const classNo = formData.class;
+        const courseDate = formattedCourseDate;
+        const { formStatus } = formData;
+        const mstReview = formData.review;
+        const docReview = formData.comments;
+
+        // Call the exportData function with the form data
+        exportToExcel(applicantName, schoolOrg, classNo, courseDate, formStatus, mstReview, docReview);
+
+        // Remove the event listener to avoid repeated downloads
+        exportBtns.forEach((exportBtn) => {
+          exportBtn.removeEventListener('click', handleExportClick);
+        });
+      }
+
+      exportBtns.forEach((exportBtn) => {
+        // for cypress testing
+        exportBtn.setAttribute('id', `exportBtn-studentid-${studentId}`);
+        if (userPermissions.includes(5)) {
+          exportBtn.classList.remove('d-none');
+          exportBtn.addEventListener('click', handleExportClick);
+          successBtn.addEventListener('click', function (e) {
+            exportBtn.removeEventListener('click', handleExportClick);
+          });
+          rejectBtn.addEventListener('click', function (e) {
+            exportBtn.removeEventListener('click', handleExportClick);
+          });
+          closeBtn.addEventListener('click', function (e) {
+            exportBtn.removeEventListener('click', handleExportClick);
+          });
+        }
+      });
+
+      displayFormModal(formData, userPermissions, formattedCourseDate, formattedVaccinationDate, formattedExamDate, formattedAckDate, formattedDateOfBirth, modalBtns, studentId);
     })
-    .catch(function (error) {
-      // Handle error
-      console.log(error);
-      // Display an error message or handle the error as needed
-    });
+    .catch(handleError);
 }
 
-//FUNCTION TO HANDLE MODAL BUTTONS SO THAT THEY OPEN THE MODAL
+// FUNCTION TO HANDLE MODAL BUTTONS SO THAT THEY OPEN THE MODAL
 function handleModalButtons(clonedRowTemplate, studentId, formData, index) {
   const modalBtn1 = clonedRowTemplate.querySelector('.modalBtn1');
   const modalBtn2 = clonedRowTemplate.querySelector('.modalBtn2');
@@ -788,222 +901,66 @@ function handleModalButtons(clonedRowTemplate, studentId, formData, index) {
   const modalBtns = [modalBtn1, modalBtn2, modalBtn3, modalBtn4, modalBtn5, modalBtn6, modalBtn7];
 
   modalBtns.forEach(function (modalBtn) {
-    //for cypress
-    modalBtn.setAttribute("id", "modalBtn-studentId-" + studentId);
-    modalBtn.setAttribute("data-bs-toggle", "modal");
+    // for cypress
+    modalBtn.setAttribute('id', `modalBtn-studentId-${studentId}`);
+    modalBtn.setAttribute('data-bs-toggle', 'modal');
   });
 
   const formStatusDiv = clonedRowTemplate.querySelector('.pillPending');
   formStatusDiv.textContent = formData[index].formStatus;
 
-  if (formData[index].formStatus === "Pending") {
-    formStatusDiv.classList.add("pillPending");
-  } else if (formData[index].formStatus === "Rejected") {
-    formStatusDiv.classList.add("pillRejected");
-  } else if (formData[index].formStatus === "Approved") {
-
-    formStatusDiv.classList.add("pillApproved");
-  } else if (formData[index].formStatus === "Pending Parent") {
-    formStatusDiv.classList.add("pillParent");
-  } else if (formData[index].formStatus === "Need Review") {
-    formStatusDiv.classList.add("pillParent");
+  if (formData[index].formStatus === 'Pending') {
+    formStatusDiv.classList.add('pillPending');
+  } else if (formData[index].formStatus === 'Rejected') {
+    formStatusDiv.classList.add('pillRejected');
+  } else if (formData[index].formStatus === 'Approved') {
+    formStatusDiv.classList.add('pillApproved');
+  } else if (formData[index].formStatus === 'Pending Parent') {
+    formStatusDiv.classList.add('pillParent');
+  } else if (formData[index].formStatus === 'Need Review') {
+    formStatusDiv.classList.add('pillParent');
   }
 
   getAllForms.appendChild(clonedRowTemplate);
 
   if (index >= 0 && index < formData.length) {
-    const formStatus = formData[index].formStatus;
+    const { formStatus } = formData[index];
     modalBtns.forEach(function (modalBtn) {
-      modalBtn.addEventListener("mousedown", function () {
-        if (formStatus === "Pending") {
-          modalBtn.setAttribute("data-bs-target", "#staticBackdrop");
-        } else if (formStatus === "Approved") {
-          modalBtn.setAttribute("data-bs-target", "#staticBackdrop");
-          //alert being called in displayFormModal function
-          alertBox(`Form already approved!`, 'rejected');
-        } else if (formStatus === "Rejected") {
-          modalBtn.setAttribute("data-bs-target", "#staticBackdrop");
-          //alert being called in displayFormModal function
-          alertBox(`Form already rejected!`, 'rejected');
-        } else if (formStatus === "Pending Parent") {
-          modalBtn.setAttribute("data-bs-target", "#staticBackdrop");
-          alertBox(`Form is pending for parent's acknowledgement!`, 'warn');
+      modalBtn.addEventListener('mousedown', function () {
+        if (formStatus === 'Pending') {
+          modalBtn.setAttribute('data-bs-target', '#staticBackdrop');
+        } else if (formStatus === 'Approved') {
+          modalBtn.setAttribute('data-bs-target', '#staticBackdrop');
+          // alert being called in displayFormModal function
+          alertBox('Form already approved!', 'rejected');
+        } else if (formStatus === 'Rejected') {
+          modalBtn.setAttribute('data-bs-target', '#staticBackdrop');
+          // alert being called in displayFormModal function
+          alertBox('Form already rejected!', 'rejected');
+        } else if (formStatus === 'Pending Parent') {
+          modalBtn.setAttribute('data-bs-target', '#staticBackdrop');
+          alertBox('Form is pending for parent\'s acknowledgement!', 'warn');
         }
-        modalBtn7.classList.add("changePill");
+        modalBtn7.classList.add('changePill');
         openModal(studentId, modalBtns);
       });
     });
   }
-
-
-
 }
 
-//FUNCTION TO UPDATE STATUS OF FORM TO REJECTED
-function updateStatusReject(formData) {
-  const studentId = formData.studentId;
-  axios
-    .put(`${API_URL}/${studentId}`, { formStatus: 'Rejected' })
-    .then(function (response) {
-    })
-    .catch(function (error) {
-      // Handle error
-      console.log(error);
-      // Display an error message or handle the error as needed
-    });
-}
 
-//FUNCTION TO UPDATE STATUS OF FORM TO PENDING
-function updateStatusPending(formData) {
-  const studentId = formData.studentId;
-  axios
-    .put(`${API_URL}/${studentId}`, { formStatus: 'Pending' })
-    .then(function (response) {
-    })
-    .catch(function (error) {
-      // Handle error
-      console.log(error);
-      // Display an error message or handle the error as needed
-    });
-}
-
-//FUNCTION TO EDIT REVIEW OF FORM
-function editReview(formData, newReview) {
-  const submitReview = document.querySelector('.submitReviewBtn');
-  const studentId = formData.studentId;
-
-  axios.put(`${API_URL_MST}/review/${studentId}`,
-    {
-      review: newReview.value,
-    }
-  )
-    .then(function (response) {
-      if (response.status === 204) {
-        alertBox('Your review has been deleted or is empty.', 'warn');
-      } else {
-        alertBox('Review has been submitted.', 'success');
-      }
-    })
-    .catch(function (error) {
-      // Handle error
-      alertBox(error.message, 'danger');
-
-    })
-
-}
-
-//Function to export to excel individually
-function exportToExcel(applicantName, schoolOrg, classNo, courseDate, formStatus, mstReview, docReview) {
-  axios.get('/export', {
-    params: {
-      applicantName: applicantName,
-      schoolOrg: schoolOrg,
-      classNo: classNo,
-      courseDate: courseDate,
-      formStatus: formStatus,
-      mstReview: mstReview,
-      docReview: docReview,
-
-
-    },
-    responseType: 'blob' // Set the response type to 'blob' to handle binary data
-  })
-    .then(response => {
-      const contentType = response.headers["content-type"];
-      if (contentType === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
-        const url = URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `${applicantName}.xlsx`;
-        document.body.appendChild(link);
-        link.click();
-        URL.revokeObjectURL(url);
-        link.remove();
-        alertBox("You have successfully exported the data to excel!", "success")
-      } else {
-        console.error("Invalid file format received:", contentType);
-        alertBox("You do not have permission to export!", "danger")
-        location.reload();
-      }
-    })
-    .catch(error => {
-      console.error("Export request failed:", error);
-    });
-
-}
-
-//Function to export to excel bulk
-function exportToExcelBulk(data) {
-  axios.post("/export-bulk", {
-    data: JSON.stringify(data),
-  }, {
-    responseType: "blob"
-  })
-    .then(response => {
-      const contentType = response.headers["content-type"];
-      if (contentType === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
-        const url = URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "exported-form.xlsx";
-        document.body.appendChild(link);
-        link.click();
-        URL.revokeObjectURL(url);
-        link.remove();
-        alertBox("You have successfully exported the data to excel!", "success")
-      }
-      else {
-        console.error("Invalid file format received:", contentType);
-        alertBox("You do not have permission to export!", "danger")
-        location.reload();
-      }
-    })
-    .catch(error => {
-      if (error.response.status === 400){
-        alertBox("You did not select any rows to export!", "danger")
-      }
-      console.error("Export request failed:", error);
-    });
-}
-//expportButtonHandler
+// expportButtonHandler
 const exportButtonHandler = () => {
   exportToExcelBulk(dataAll);
-  alertBox("You have successfully exported the data to excel!", "success")
-}
+  alertBox('You have successfully exported the data to excel!', 'success');
+};
 
-
-const alertContainer = document.getElementById('alertbox');
-let dataAll = [];
-const arrowIcon = document.querySelector('.arrow-icon');
-const searchInput = document.querySelector("#searchInput");
-const searchBtn = document.querySelector('#search-button');
-const searchClearBtn = document.querySelector('#clear-button');
-const allForms = document.querySelector('#getAllForms');
-const rectanglePendingParent = document.querySelector('.rectanglePendingParent');
-const rectanglePending = document.querySelector('.rectanglePending');
-const rectangleApproved = document.querySelector('.rectangleApproved');
-const rectangleRejected = document.querySelector('.rectangleRejected');
-
-//All variables for sorting
-const nricColumn = document.querySelector('#nricColumn');
-const fullNameColumn = document.querySelector('#fullNameColumn');
-const classColumn = document.querySelector('#classColumn');
-const schoolColumn = document.querySelector('#schColumn');
-const eligibilityColumn = document.querySelector('#eligibilityColumn');
-const courseDateColumn = document.querySelector('#courseDateColumn');
-//Sorting arrow icon
-const sortIconName = document.querySelector('#fullNameColumn i.arrow-icon-name');
-const sortIconClass = document.querySelector('#classColumn i.arrow-icon-class');
-const sortIconSchool = document.querySelector('#schColumn i.arrow-icon-school');
-const sortIconEligibility = document.querySelector('#eligibilityColumn i.arrow-icon-eligibility');
-const sortIconCourseDate = document.querySelector('#courseDateColumn i.arrow-icon-coursedate');
-let ascending = true; // Variable to keep track of the current sorting order
 function displayArrowIcons() {
   sortIconName.classList.remove('d-none');
   sortIconSchool.classList.remove('d-none');
 }
 
-//tooltip
+// tooltip
 const tipButton = document.querySelector('#help-li');
 const tooltipTriggerListClick = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip-click-tips"]'));
 const tooltipTriggerListHover = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip-hover"]'));
@@ -1061,26 +1018,26 @@ if (tipButton) {
 function tooltipForCheckBoxTop(checkBoxTop) {
   checkBoxTop.setAttribute('data-bs-toggle', 'tooltip-hover');
   checkBoxTop.setAttribute('data-bs-placement', 'top');
-  checkBoxTop.setAttribute('data-bs-title', `Click To Select All (0 Selected)`);
-  if (checkBoxTop.hasAttribute('data-bs-toggle') ) {
+  checkBoxTop.setAttribute('data-bs-title', 'Click To Select All (0 Selected)');
+  if (checkBoxTop.hasAttribute('data-bs-toggle')) {
     new bootstrap.Tooltip(checkBoxTop, { trigger: 'hover' });
   }
-  
 }
-//Function to sort table
+// Function to sort table
 function sortTable(columnIndex, ascending) {
-  var table, rows, switching, i, x, y, shouldSwitch;
-  table = document.getElementById("dashboard-table");
+  let table; let rows; let switching; let i; let x; let y; let
+    shouldSwitch;
+  table = document.getElementById('dashboard-table');
   switching = true;
 
   while (switching) {
     switching = false;
     rows = table.rows;
 
-    for (i = 1; i < (rows.length - 1); i++) {
+    for (let i = 1; i < (rows.length - 1); i++) {
       shouldSwitch = false;
-      x = rows[i].getElementsByTagName("TD")[columnIndex];
-      y = rows[i + 1].getElementsByTagName("TD")[columnIndex];
+      x = rows[i].getElementsByTagName('TD')[columnIndex];
+      y = rows[i + 1].getElementsByTagName('TD')[columnIndex];
 
       // Compare the values based on the sorting order (ascending or descending)
       if (ascending) {
@@ -1088,11 +1045,9 @@ function sortTable(columnIndex, ascending) {
           shouldSwitch = true;
           break;
         }
-      } else {
-        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-          shouldSwitch = true;
-          break;
-        }
+      } else if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+        shouldSwitch = true;
+        break;
       }
     }
 
@@ -1103,105 +1058,92 @@ function sortTable(columnIndex, ascending) {
   }
 }
 
-//Function to change sort icon back to normal when other elements are clicked
+// Function to change sort icon back to normal when other elements are clicked
 function changeBackSortIcon() {
   ascending = true;
   sortIconName.textContent = 'arrow_drop_down';
   sortIconSchool.textContent = 'arrow_drop_down';
 }
 
-document.addEventListener("DOMContentLoaded", function (event) {
-  //Event listner for sorting by fullname, alphabetically, ascending and descending
+document.addEventListener('DOMContentLoaded', function (event) {
+  // Event listner for sorting by fullname, alphabetically, ascending and descending
 
-fullNameColumn.addEventListener('click', () => {
-  let nameAscending = true;
-  if (fullNameColumn !== document.activeElement) {
-    nameAscending = true;
-    dataAll.sort((a, b) => {
-      const aValue = a["Name of Applicant"].toLowerCase();
-      const bValue = b["Name of Applicant"].toLowerCase();
-      return ascending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
-    });
-    console.log(dataAll)
-  } else {
-    nameAscending = !nameAscending;
-    dataAll.sort((a, b) => {
-      const aValue = a["Name of Applicant"].toLowerCase();
-      const bValue = b["Name of Applicant"].toLowerCase();
-      return ascending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
-    });
-    console.log(dataAll)
-  }
-  
+  fullNameColumn.addEventListener('click', () => {
+    let nameAscending = true;
+    if (fullNameColumn !== document.activeElement) {
+      nameAscending = true;
+      dataAll.sort((a, b) => {
+        const aValue = a['Name of Applicant'].toLowerCase();
+        const bValue = b['Name of Applicant'].toLowerCase();
+        return ascending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+      });
+    } else {
+      nameAscending = !nameAscending;
+      dataAll.sort((a, b) => {
+        const aValue = a['Name of Applicant'].toLowerCase();
+        const bValue = b['Name of Applicant'].toLowerCase();
+        return ascending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+      });
+    }
 
-  sortIconSchool.textContent = 'arrow_drop_down';
-  sortTable(2, ascending); // The index of the FULL NAME column is 2 (0-based index)
-  ascending = !ascending; // Toggle the sorting order
-  sortIconName.textContent = ascending ? 'arrow_drop_down' : 'arrow_drop_up';
+    sortIconSchool.textContent = 'arrow_drop_down';
+    sortTable(2, ascending); // The index of the FULL NAME column is 2 (0-based index)
+    ascending = !ascending; // Toggle the sorting order
+    sortIconName.textContent = ascending ? 'arrow_drop_down' : 'arrow_drop_up';
+  });
 
-  
-});
-
-//Event listner for sorting by school, alphabetically, ascending and descending
-schoolColumn.addEventListener('click', () => {
-  alertBox("Click select all, then you can sort!", "warn")
-  let schoolAscending = true;
-  if (schoolColumn !== document.activeElement) {
-    schoolAscending = true;
-    dataAll.sort((a, b) => {
-      const aValue = a["Organization/School"].toLowerCase();
-      const bValue = b["Organization/School"].toLowerCase();
-      return ascending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
-    });
-    console.log(dataAll)
-  } else {
-    schoolAscending = !schoolAscending;
-    dataAll.sort((a, b) => {
-      const aValue = a["Organization/School"].toLowerCase();
-      const bValue = b["Organization/School"].toLowerCase();
-      return ascending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
-    });
-    console.log(dataAll)
-  }
-  sortIconName.textContent = 'arrow_drop_down';
-  sortTable(4, ascending); // The index of the FULL NAME column is 2 (0-based index)
-  ascending = !ascending; // Toggle the sorting order
-  sortIconSchool.textContent = ascending ? 'arrow_drop_down' : 'arrow_drop_up';
-
-
-
-});
+  // Event listner for sorting by school, alphabetically, ascending and descending
+  schoolColumn.addEventListener('click', () => {
+    alertBox('Click select all, then you can sort!', 'warn');
+    let schoolAscending = true;
+    if (schoolColumn !== document.activeElement) {
+      schoolAscending = true;
+      dataAll.sort((a, b) => {
+        const aValue = a['Organization/School'].toLowerCase();
+        const bValue = b['Organization/School'].toLowerCase();
+        return ascending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+      });
+    } else {
+      schoolAscending = !schoolAscending;
+      dataAll.sort((a, b) => {
+        const aValue = a['Organization/School'].toLowerCase();
+        const bValue = b['Organization/School'].toLowerCase();
+        return ascending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+      });
+    }
+    sortIconName.textContent = 'arrow_drop_down';
+    sortTable(4, ascending); // The index of the FULL NAME column is 2 (0-based index)
+    ascending = !ascending; // Toggle the sorting order
+    sortIconSchool.textContent = ascending ? 'arrow_drop_down' : 'arrow_drop_up';
+  });
   axios.get(`${API_URL}/all`)
     .then(function (response) {
       const configURL = response.config.url;
       const requestURL = response.request.responseURL;
       if (configURL !== requestURL) {
         window.location.href = requestURL;
-        throw new Error("redirected");
+        throw new Error('redirected');
       }
 
-      //call function to update status count
+      // call function to update status count
       const formData = response.data;
 
-      //remove user permission from array of data
+      // remove user permission from array of data
       const userPermission = response.data.pop();
       updateFormCounts(formData);
 
-      //call function to create export button for
+      // call function to create export button for
       const exportBtnBulkContainer = document.querySelector('#export-btn-all');
       const exportIcon = createExportButtonAll('export-icon');
-
 
       const successBtn = document.querySelector('.successBtn');
       const rejectBtn = document.querySelector('.rejectBtn');
       if (successBtn) {
         successBtn.addEventListener('click', function () {
-
           const pillPending = document.querySelector('.changePill');
           if (pillPending) {
             pillPending.classList.remove('changePill');
           }
-
         });
       }
       if (rejectBtn) {
@@ -1212,23 +1154,21 @@ schoolColumn.addEventListener('click', () => {
           }
         });
       }
-      //create array to store all data for export to excel bulk
+      // create array to store all data for export to excel bulk
 
       // Loop through the data and add it to the page
-      for (i = 0; i < formData.length; i++) {
-
-        //call function to format date
+      for (let i = 0; i < formData.length; i++) {
+        // call function to format date
         const formattedDate = createFormattedDate(formData[i].courseDate);
         // Get references to the status container and template
         const getAllForms = document.querySelector('#getAllForms');
         const rowTemplate = document.querySelector('.row-table-template');
-        //checkbox
-   
+        // checkbox
 
-        //clear html content in getAllForms once since using template
+        // clear html content in getAllForms once since using template
         if (i === 0) {
           dataAll = [];
-          getAllForms.innerHTML = "";
+          getAllForms.innerHTML = '';
         }
         // Clone the template and append it to the status container
         const templateContent = rowTemplate.content;
@@ -1245,16 +1185,15 @@ schoolColumn.addEventListener('click', () => {
           formStatusValue,
           studentId,
           mstReviewCell,
-          docReviewCell
+          docReviewCell,
         } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
-        displayArrowIcons()
+        displayArrowIcons();
 
-
-        //call function to handle checkboxes
-        if (userPermission.includes(5)) { 
-          tooltipForCheckBoxTop(checkBoxTop)
+        // call function to handle checkboxes
+        if (userPermission.includes(5)) {
+          tooltipForCheckBoxTop(checkBoxTop);
           arrowIcon.classList.remove('d-none');
-          handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
+          handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportBtnBulkContainer, exportIcon, dataAll, i, formData);
         } else {
           const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
           const checkBoxTop = document.querySelector('#checkBoxTop');
@@ -1264,33 +1203,28 @@ schoolColumn.addEventListener('click', () => {
           checkBoxTop.classList.add('d-none');
         }
 
-
-        //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
+        // get all modalBtns and add attribute so that checkbox will not be affected by openModal function
         handleModalButtons(clonedRowTemplate, studentId, formData, i);
-
-
       }
-      //Outside of for loop 
-      //Export to Excel Bulk Once
+      // Outside of for loop
+      // Export to Excel Bulk Once
       const exportBtnBulk = document.querySelector('#export-btn-all');
       exportBtnBulk.addEventListener('click', function () {
         exportToExcelBulk(dataAll);
       });
-      
-
     })
     .catch(function (error) {
-      if (error && error.message !== "redirected") {
+      if (error && error.message !== 'redirected') {
         console.log(error);
       }
       console.log(error);
     });
 
-////////////////////////////
-//Filters
-////////////////////////////
+  /// /////////////////////////
+  // Filters
+  /// /////////////////////////
 
-  var dropdownMenuStayOpen = document.querySelectorAll('.dropdown-menu-stay');
+  const dropdownMenuStayOpen = document.querySelectorAll('.dropdown-menu-stay');
   const schoolMenuBtn = document.querySelector('#schoolMenuButton');
   const classMenuBtn = document.querySelector('#classMenuButton');
   const courseDateMenuBtn = document.querySelector('#courseDateMenuButton');
@@ -1298,15 +1232,13 @@ schoolColumn.addEventListener('click', () => {
   const clearFilterBtn = document.querySelector('#filter-clear');
   const rectangleButtons = [rectanglePendingParent, rectanglePending, rectangleApproved, rectangleRejected];
 
-
-  // prevent menu from closing down 
-  for (var i = 0; i < dropdownMenuStayOpen.length; i++) {
+  // prevent menu from closing down
+  for (let i = 0; i < dropdownMenuStayOpen.length; i++) {
     dropdownMenuStayOpen[i].addEventListener('click', function (e) {
       e.stopPropagation();
     });
   }
 
-  let dataAll = [];
   let classesArray = [];
   let schoolsArray = [];
   let courseDatesArray = [];
@@ -1318,17 +1250,16 @@ schoolColumn.addEventListener('click', () => {
   let courseDateCount = 0;
   let eligibilityCount = 0;
 
-
   // If array contains value, unhide clear filter button
   const unhideClearFilterBtn = () => {
     if (schoolsArray.length > 0 || classesArray.length > 0 || courseDatesArray.length > 0 || eligibilityArray.length > 0 || formStatusArray.length > 0) {
       clearFilterBtn.classList.remove('d-none');
       const searchFormByName = document.querySelector('#searchInput');
-      searchFormByName.value = "";
+      searchFormByName.value = '';
     } else {
       clearFilterBtn.classList.add('d-none');
     }
-  }
+  };
 
   // Clear all filters
   clearFilterBtn.addEventListener('click', function () {
@@ -1339,10 +1270,10 @@ schoolColumn.addEventListener('click', () => {
     formStatusArray = [];
     // Select each checkbox that is a child element of .filter-div
     const checkBoxes = document.querySelectorAll('.filter-div input[type="checkbox"]');
-    checkBoxes.forEach(checkBox => {
+    checkBoxes.forEach((checkBox) => {
       checkBox.checked = false;
     });
-    rectangleButtons.forEach(rectangleButton => {
+    rectangleButtons.forEach((rectangleButton) => {
       rectangleButton.style.border = '1px solid #485eab';
     });
 
@@ -1358,41 +1289,39 @@ schoolColumn.addEventListener('click', () => {
     pullDataWithFilter(exportButtonHandler);
   });
 
-
-
   function pullDataWithFilter(exportButtonHandler) {
-    changeBackSortIcon()
+    changeBackSortIcon();
     // Pull data to display in table
-    axios.post(`/obs-admin/pmt/filter`, {
+    axios.post('/obs-admin/pmt/filter', {
       school: schoolsArray,
       class: classesArray,
       courseDate: courseDatesArray,
       eligibility: eligibilityArray,
-      formStatus: formStatusArray
+      formStatus: formStatusArray,
     })
-      .then(response => {
+      .then((response) => {
         const formData = response.data;
 
-        //remove user permission from array of data
+        // remove user permission from array of data
         const userPermission = response.data.pop();
         if (formData.length === 0) {
           const getAllForms = document.querySelector('#getAllForms');
-          getAllForms.innerHTML = "";
+          getAllForms.innerHTML = '';
         }
 
-        axios.post(`/obs-admin/pmt/filter`, {
+        axios.post('/obs-admin/pmt/filter', {
           school: schoolsArray,
           class: classesArray,
           courseDate: courseDatesArray,
           eligibility: eligibilityArray,
-          formStatus: []
+          formStatus: [],
         })
-          .then(response => {
+          .then((response) => {
             const formData = response.data;
             updateFormCounts(formData);
-          })
+          });
 
-        //call function to create export button for
+        // call function to create export button for
         const exportBtnBulkContainer = document.querySelector('#export-btn-filter');
         const exportIcon = createExportButtonAll('export-icon');
 
@@ -1405,45 +1334,39 @@ schoolColumn.addEventListener('click', () => {
         const rejectBtn = document.querySelector('.rejectBtn');
         if (successBtn) {
           successBtn.addEventListener('click', function () {
-
             const pillPending = document.querySelector('.changePill');
             if (pillPending) {
               pillPending.classList.remove('changePill');
             }
-
-
           });
         }
         if (rejectBtn) {
           rejectBtn.addEventListener('click', function () {
             const pillPending = document.querySelector('.changePill');
             pillPending.classList.remove('changePill');
-
           });
         }
 
-        //create array to store all data for export to excel bulk
+        // create array to store all data for export to excel bulk
 
         // Loop through the data and add it to the page
-        for (i = 0; i < formData.length; i++) {
-
-          //call function to format date
+        for (let i = 0; i < formData.length; i++) {
+          // call function to format date
           const formattedDate = createFormattedDate(formData[i].courseDate);
           // Get references to the status container and template
           const getAllForms = document.querySelector('#getAllForms');
           const rowTemplate = document.querySelector('.row-table-template');
-          //checkbox
-     
-  
-          //clear html content in getAllForms once since using template
+          // checkbox
+
+          // clear html content in getAllForms once since using template
           if (i === 0) {
             dataAll = [];
-            getAllForms.innerHTML = "";
+            getAllForms.innerHTML = '';
           }
           // Clone the template and append it to the status container
           const templateContent = rowTemplate.content;
           const clonedRowTemplate = document.importNode(templateContent, true);
-  
+
           // Populate the cloned template function
           const {
             studentNRICCell,
@@ -1455,17 +1378,15 @@ schoolColumn.addEventListener('click', () => {
             formStatusValue,
             studentId,
             mstReviewCell,
-            docReviewCell
+            docReviewCell,
           } = populateRowData(clonedRowTemplate, formData, i, formattedDate);
-          displayArrowIcons()
-  
-  
-          //call function to handle checkboxes
-          if (userPermission.includes(5)) { 
-        
-            tooltipForCheckBoxTop(checkBoxTop)
+          displayArrowIcons();
+
+          // call function to handle checkboxes
+          if (userPermission.includes(5)) {
+            tooltipForCheckBoxTop(checkBoxTop);
             arrowIcon.classList.remove('d-none');
-            handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportBtnBulkContainer, exportIcon, dataAll, i, formData)
+            handleCheckBoxes(clonedRowTemplate, nameOfStudentCell, schoolCell, classCell, formattedDateCell, formStatusValue, mstReviewCell, docReviewCell, exportBtnBulkContainer, exportIcon, dataAll, i, formData);
           } else {
             const checkBoxes = clonedRowTemplate.querySelectorAll('#checkBox');
             const checkBoxTop = document.querySelector('#checkBoxTop');
@@ -1474,22 +1395,18 @@ schoolColumn.addEventListener('click', () => {
             });
             checkBoxTop.classList.add('d-none');
           }
-  
-  
-          //get all modalBtns and add attribute so that checkbox will not be affected by openModal function
+
+          // get all modalBtns and add attribute so that checkbox will not be affected by openModal function
           handleModalButtons(clonedRowTemplate, studentId, formData, i);
-  
-  
         }
-       
-        //Outside of for loop 
-        //Export to Excel Bulk Once
+
+        // Outside of for loop
+        // Export to Excel Bulk Once
         exportBtnBulkContainer.removeEventListener('click', exportButtonHandler);
         exportBtnBulkContainer.addEventListener('click', exportButtonHandler);
-
-  })
+      })
       .catch(function (error) {
-        if (error && error.message !== "redirected") {
+        if (error && error.message !== 'redirected') {
           console.log(error);
         }
         console.log(error);
@@ -1498,55 +1415,53 @@ schoolColumn.addEventListener('click', () => {
 
   // Clear searches when dropdown is closed
   const dropdowns = [schoolMenuBtn, classMenuBtn, courseDateMenuBtn, eligibilityMenuBtn];
-  dropdowns.forEach(dropdown => {
+  dropdowns.forEach((dropdown) => {
     dropdown.addEventListener('hide.bs.dropdown', function () {
       const searchInputs = document.querySelectorAll('.searchBarFilter');
-      searchInputs.forEach(searchInput => {
-        searchInput.value = "";
-      }
-      );
+      searchInputs.forEach((searchInput) => {
+        searchInput.value = '';
+      });
       const filterDiv = document.querySelectorAll('.filter-div');
-      filterDiv.forEach(filter => {
+      filterDiv.forEach((filter) => {
         const filterList = filter.querySelector('li');
-        filterList.style.display = "block";
-      }
-      );
+        filterList.style.display = 'block';
+      });
     });
   });
 
-  let fetchSchools = fetch(`/get-school-filter`)
-    .then(response => {
+  const fetchSchools = fetch('/get-school-filter')
+    .then((response) => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       return response.json();
     })
-    .then(data => {
+    .then((data) => {
       const loadingMsgDiv = schoolsDiv.querySelector('.loadingMsg');
       if (loadingMsgDiv) {
         loadingMsgDiv.remove();
       }
 
-      data.forEach(item => {
+      data.forEach((item) => {
         // Create a new <li> element with checkbox floating right
         const newDiv = document.createElement('div');
         newDiv.classList.add('filter-div');
         const li = document.createElement('li');
         li.textContent = item.school;
-        li.className = "m-3";
+        li.className = 'm-3';
         // Align checkbox to most right of li
         const checkbox = document.createElement('input');
-        checkbox.type = "checkbox";
-        checkbox.name = "school";
+        checkbox.type = 'checkbox';
+        checkbox.name = 'school';
         checkbox.value = item.school;
 
-        checkbox.style.float = "right";
-        checkbox.style.margin = "3px";
-        checkbox.style.width = "15px";
-        checkbox.style.height = "15px";
-        checkbox.style.borderRadius = "50%";
-        checkbox.style.border = "1px solid #000";
-        checkbox.style.cursor = "pointer";
+        checkbox.style.float = 'right';
+        checkbox.style.margin = '3px';
+        checkbox.style.width = '15px';
+        checkbox.style.height = '15px';
+        checkbox.style.borderRadius = '50%';
+        checkbox.style.border = '1px solid #000';
+        checkbox.style.cursor = 'pointer';
 
         li.appendChild(checkbox);
         newDiv.appendChild(li);
@@ -1554,46 +1469,45 @@ schoolColumn.addEventListener('click', () => {
       });
     })
     .catch(function (error) {
-      if (error && error.message !== "redirected") {
+      if (error && error.message !== 'redirected') {
         console.log(error);
       }
       console.log(error);
     });
 
-  let fetchClasses = fetch(`/getClasses`)
-    .then(response => {
+  const fetchClasses = fetch('/getClasses')
+    .then((response) => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       return response.json();
     })
-    .then(data => {
+    .then((data) => {
       const loadingMsgDiv = classesDiv.querySelector('.loadingMsg');
       if (loadingMsgDiv) {
         loadingMsgDiv.remove();
       }
 
-      data.forEach(item => {
+      data.forEach((item) => {
         // Create a new <li> element with checkbox floating right
         const newDiv = document.createElement('div');
         newDiv.classList.add('filter-div');
         const li = document.createElement('li');
         li.textContent = item.class;
-        li.className = "m-3";
+        li.className = 'm-3';
         // Align checkbox to most right of li
         const checkbox = document.createElement('input');
-        checkbox.type = "checkbox";
-        checkbox.name = "class";
+        checkbox.type = 'checkbox';
+        checkbox.name = 'class';
         checkbox.value = item.class;
 
-        checkbox.style.float = "right";
-        checkbox.style.margin = "3px";
-        checkbox.style.width = "15px";
-        checkbox.style.height = "15px";
-        checkbox.style.borderRadius = "50%";
-        checkbox.style.border = "1px solid #000";
-        checkbox.style.cursor = "pointer";
-
+        checkbox.style.float = 'right';
+        checkbox.style.margin = '3px';
+        checkbox.style.width = '15px';
+        checkbox.style.height = '15px';
+        checkbox.style.borderRadius = '50%';
+        checkbox.style.border = '1px solid #000';
+        checkbox.style.cursor = 'pointer';
 
         li.appendChild(checkbox);
         newDiv.appendChild(li);
@@ -1601,26 +1515,26 @@ schoolColumn.addEventListener('click', () => {
       });
     })
     .catch(function (error) {
-      if (error && error.message !== "redirected") {
+      if (error && error.message !== 'redirected') {
         console.log(error);
       }
       console.log(error);
     });
 
-  let fetchCourseDates = fetch(`/getCourseDates`)
-    .then(response => {
+  const fetchCourseDates = fetch('/getCourseDates')
+    .then((response) => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       return response.json();
     })
-    .then(data => {
+    .then((data) => {
       const loadingMsgDiv = courseDatesDiv.querySelector('.loadingMsg');
       if (loadingMsgDiv) {
         loadingMsgDiv.remove();
       }
 
-      data.forEach(item => {
+      data.forEach((item) => {
         // Create a new <li> element with checkbox floating right
         const newDiv = document.createElement('div');
         newDiv.classList.add('filter-div');
@@ -1628,26 +1542,26 @@ schoolColumn.addEventListener('click', () => {
         // Change date to singapore format, no time
         li.textContent = createFormattedDate(item.courseDate);
 
-        li.className = "m-3";
+        li.className = 'm-3';
         // Align checkbox to most right of li
         const checkbox = document.createElement('input');
-        checkbox.type = "checkbox";
-        checkbox.name = "course-date";
+        checkbox.type = 'checkbox';
+        checkbox.name = 'course-date';
 
-        //to cross check with database date format
-        //data format in website is dd-mm-yyyy
-        //database reads yyyy-mm-dd
-        const [day, month, year] = createFormattedDate(item.courseDate).split("/");
+        // to cross check with database date format
+        // data format in website is dd-mm-yyyy
+        // database reads yyyy-mm-dd
+        const [day, month, year] = createFormattedDate(item.courseDate).split('/');
         const formattedCourseDateISO = `${year}-${month}-${day}`;
-        checkbox.value = formattedCourseDateISO
+        checkbox.value = formattedCourseDateISO;
 
-        checkbox.style.float = "right";
-        checkbox.style.margin = "3px";
-        checkbox.style.width = "15px";
-        checkbox.style.height = "15px";
-        checkbox.style.borderRadius = "50%";
-        checkbox.style.border = "1px solid #000";
-        checkbox.style.cursor = "pointer";
+        checkbox.style.float = 'right';
+        checkbox.style.margin = '3px';
+        checkbox.style.width = '15px';
+        checkbox.style.height = '15px';
+        checkbox.style.borderRadius = '50%';
+        checkbox.style.border = '1px solid #000';
+        checkbox.style.cursor = 'pointer';
 
         li.appendChild(checkbox);
         newDiv.appendChild(li);
@@ -1655,46 +1569,45 @@ schoolColumn.addEventListener('click', () => {
       });
     })
     .catch(function (error) {
-      if (error && error.message !== "redirected") {
+      if (error && error.message !== 'redirected') {
         console.log(error);
       }
       console.log(error);
     });
 
-  let fetchEligiblity = fetch(`/getEligibility`)
-    .then(response => {
+  const fetchEligiblity = fetch('/getEligibility')
+    .then((response) => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       return response.json();
     })
-    .then(data => {
+    .then((data) => {
       const loadingMsgDiv = eligibilityDiv.querySelector('.loadingMsg');
       if (loadingMsgDiv) {
         loadingMsgDiv.remove();
       }
 
-      data.forEach(item => {
-
+      data.forEach((item) => {
         // Create a new <li> element with checkbox floating right
         const newDiv = document.createElement('div');
         newDiv.classList.add('filter-div');
         const li = document.createElement('li');
         li.textContent = item.eligibility;
-        li.className = "m-3";
+        li.className = 'm-3';
         // Align checkbox to most right of li
         const checkbox = document.createElement('input');
-        checkbox.type = "checkbox";
-        checkbox.name = "eligibility";
+        checkbox.type = 'checkbox';
+        checkbox.name = 'eligibility';
         checkbox.value = item.eligibility;
 
-        checkbox.style.float = "right";
-        checkbox.style.margin = "3px";
-        checkbox.style.width = "15px";
-        checkbox.style.height = "15px";
-        checkbox.style.borderRadius = "50%";
-        checkbox.style.border = "1px solid #000";
-        checkbox.style.cursor = "pointer";
+        checkbox.style.float = 'right';
+        checkbox.style.margin = '3px';
+        checkbox.style.width = '15px';
+        checkbox.style.height = '15px';
+        checkbox.style.borderRadius = '50%';
+        checkbox.style.border = '1px solid #000';
+        checkbox.style.cursor = 'pointer';
 
         li.appendChild(checkbox);
         newDiv.appendChild(li);
@@ -1702,7 +1615,7 @@ schoolColumn.addEventListener('click', () => {
       });
     })
     .catch(function (error) {
-      if (error && error.message !== "redirected") {
+      if (error && error.message !== 'redirected') {
         console.log(error);
       }
       console.log(error);
@@ -1713,14 +1626,14 @@ schoolColumn.addEventListener('click', () => {
     .then(() => {
       // For all the checkbox, add event listener then every on click, fetch the data again
       const allCheckBoxes = document.querySelectorAll('.filter-div input[type="checkbox"]');
-      rectangleButtons.forEach(rectangleButton => {
+      rectangleButtons.forEach((rectangleButton) => {
         rectangleButton.addEventListener('click', () => {
           // Check if this button was previously selected
           if (rectangleButton.classList.contains('selected')) {
             // Deselect the button
             rectangleButton.classList.remove('selected');
             rectangleButton.style.border = '1px solid #485eab';
-            formStatusArray = formStatusArray.filter(item => item !== rectangleButton.getAttribute('data-status'));
+            formStatusArray = formStatusArray.filter((item) => item !== rectangleButton.getAttribute('data-status'));
           } else {
             // Reset borders and highlight the button
             rectangleButton.classList.add('selected');
@@ -1735,136 +1648,135 @@ schoolColumn.addEventListener('click', () => {
           }
           unhideClearFilterBtn();
           pullDataWithFilter(exportButtonHandler);
-        })
-      })
-      allCheckBoxes.forEach(checkbox => {
+        });
+      });
+      allCheckBoxes.forEach((checkbox) => {
         checkbox.addEventListener('change', (event) => {
           // If checkbox is checked, add to array
           if (checkbox.checked) {
-            if (checkbox.name === "school") {
+            if (checkbox.name === 'school') {
               schoolCount++;
               if (schoolCount === 0) {
-                schoolMenuBtn.textContent = "School";
+                schoolMenuBtn.textContent = 'School';
               } else if (schoolCount === 1) {
-                schoolMenuBtn.textContent = schoolCount + " School Selected";
+                schoolMenuBtn.textContent = `${schoolCount} School Selected`;
               } else {
-                schoolMenuBtn.textContent = schoolCount + " Schools Selected";
+                schoolMenuBtn.textContent = `${schoolCount} Schools Selected`;
               }
               schoolsArray.push(checkbox.value);
-            } else if (checkbox.name === "class") {
+            } else if (checkbox.name === 'class') {
               classCount++;
               if (classCount === 0) {
-                classMenuBtn.textContent = "Class";
+                classMenuBtn.textContent = 'Class';
               } else if (classCount === 1) {
-                classMenuBtn.textContent = classCount + " Class Selected";
+                classMenuBtn.textContent = `${classCount} Class Selected`;
               } else {
-                classMenuBtn.textContent = classCount + " Classes Selected";
+                classMenuBtn.textContent = `${classCount} Classes Selected`;
               }
               classesArray.push(checkbox.value);
-            } else if (checkbox.name === "course-date") {
+            } else if (checkbox.name === 'course-date') {
               courseDateCount++;
               if (courseDateCount === 0) {
-                courseDateMenuBtn.textContent = "Course Date";
+                courseDateMenuBtn.textContent = 'Course Date';
               } else if (courseDateCount === 1) {
-                courseDateMenuBtn.textContent = courseDateCount + " Course Date Selected";
+                courseDateMenuBtn.textContent = `${courseDateCount} Course Date Selected`;
               } else {
-                courseDateMenuBtn.textContent = courseDateCount + " Course Dates Selected";
+                courseDateMenuBtn.textContent = `${courseDateCount} Course Dates Selected`;
               }
               courseDatesArray.push(checkbox.value);
-            } else if (checkbox.name === "eligibility") {
+            } else if (checkbox.name === 'eligibility') {
               eligibilityCount++;
               if (eligibilityCount === 0) {
-                eligibilityMenuBtn.textContent = "Eligibility";
+                eligibilityMenuBtn.textContent = 'Eligibility';
               } else if (eligibilityCount === 1) {
-                eligibilityMenuBtn.textContent = eligibilityCount + " Eligibility Selected";
+                eligibilityMenuBtn.textContent = `${eligibilityCount} Eligibility Selected`;
               } else {
-                eligibilityMenuBtn.textContent = eligibilityCount + " Eligibilities Selected";
+                eligibilityMenuBtn.textContent = `${eligibilityCount} Eligibilities Selected`;
               }
               eligibilityArray.push(checkbox.value);
             }
           } else {
             // If checkbox is unchecked, remove from array
-            if (checkbox.name === "school") {
+            if (checkbox.name === 'school') {
               schoolCount--;
               if (schoolCount === 0) {
-                schoolMenuBtn.textContent = "School";
+                schoolMenuBtn.textContent = 'School';
               } else if (schoolCount === 1) {
-                schoolMenuBtn.textContent = schoolCount + " School Selected";
+                schoolMenuBtn.textContent = `${schoolCount} School Selected`;
               } else {
-                schoolMenuBtn.textContent = schoolCount + " Schools Selected";
+                schoolMenuBtn.textContent = `${schoolCount} Schools Selected`;
               }
-              schoolsArray = schoolsArray.filter(item => item !== checkbox.value);
-            } else if (checkbox.name === "class") {
+              schoolsArray = schoolsArray.filter((item) => item !== checkbox.value);
+            } else if (checkbox.name === 'class') {
               classCount--;
               if (classCount === 0) {
-                classMenuBtn.textContent = "Class";
+                classMenuBtn.textContent = 'Class';
               } else if (classCount === 1) {
-                classMenuBtn.textContent = classCount + " Class Selected";
+                classMenuBtn.textContent = `${classCount} Class Selected`;
               } else {
-                classMenuBtn.textContent = classCount + " Classes Selected";
+                classMenuBtn.textContent = `${classCount} Classes Selected`;
               }
-              classesArray = classesArray.filter(item => item !== checkbox.value);
-            } else if (checkbox.name === "course-date") {
+              classesArray = classesArray.filter((item) => item !== checkbox.value);
+            } else if (checkbox.name === 'course-date') {
               courseDateCount--;
               if (courseDateCount === 0) {
-                courseDateMenuBtn.textContent = "Course Date";
+                courseDateMenuBtn.textContent = 'Course Date';
               } else if (courseDateCount === 1) {
-                courseDateMenuBtn.textContent = courseDateCount + " Course Date Selected";
+                courseDateMenuBtn.textContent = `${courseDateCount} Course Date Selected`;
               } else {
-                courseDateMenuBtn.textContent = courseDateCount + " Course Dates Selected";
+                courseDateMenuBtn.textContent = `${courseDateCount} Course Dates Selected`;
               }
-              courseDatesArray = courseDatesArray.filter(item => item !== checkbox.value);
-            } else if (checkbox.name === "eligibility") {
+              courseDatesArray = courseDatesArray.filter((item) => item !== checkbox.value);
+            } else if (checkbox.name === 'eligibility') {
               eligibilityCount--;
               if (eligibilityCount === 0) {
-                eligibilityMenuBtn.textContent = "Eligibility";
+                eligibilityMenuBtn.textContent = 'Eligibility';
               } else if (eligibilityCount === 1) {
-                eligibilityMenuBtn.textContent = eligibilityCount + " Eligibility Selected";
+                eligibilityMenuBtn.textContent = `${eligibilityCount} Eligibility Selected`;
               } else {
-                eligibilityMenuBtn.textContent = eligibilityCount + " Eligibilities Selected";
+                eligibilityMenuBtn.textContent = `${eligibilityCount} Eligibilities Selected`;
               }
-              eligibilityArray = eligibilityArray.filter(item => item !== checkbox.value);
+              eligibilityArray = eligibilityArray.filter((item) => item !== checkbox.value);
             }
           }
           unhideClearFilterBtn();
           pullDataWithFilter(exportButtonHandler);
-        })
-      })
+        });
+      });
     })
     .catch(function (error) {
-      if (error && error.message !== "redirected") {
+      if (error && error.message !== 'redirected') {
         console.log(error);
       }
     });
 
-const exportButtonHandler = () => {
+  const exportButtonHandler = () => {
     exportToExcelBulk(dataAll);
-    alertBox("You have successfully exported the data to excel!", "success")
-  }
-
+    alertBox('You have successfully exported the data to excel!', 'success');
+  };
 
   // Search bar to search for filters in the respective .filter-div
-  const filterSearch = document.querySelectorAll('.searchBarFilter')
-  filterSearch.forEach(search => {
+  const filterSearch = document.querySelectorAll('.searchBarFilter');
+  filterSearch.forEach((search) => {
     search.addEventListener('keyup', function () {
       const filter = search.value.toUpperCase();
       const filterDiv = search.parentElement;
       const filterDivItems = filterDiv.querySelectorAll('li');
-      filterDivItems.forEach(item => {
+      filterDivItems.forEach((item) => {
         const textValue = item.textContent || item.innerText;
         if (textValue.toUpperCase().indexOf(filter) > -1) {
-          item.style.display = "";
+          item.style.display = '';
         } else {
-          item.style.display = "none";
+          item.style.display = 'none';
         }
-      })
-    })
-  })
-})
+      });
+    });
+  });
+});
 
-////////////////////////////
-//SHOW FILTERS ON CLICK
-////////////////////////////
+/// /////////////////////////
+// SHOW FILTERS ON CLICK
+/// /////////////////////////
 const filterIcons = document.querySelector('#filter-icon');
 const filterDropDowns = document.querySelector('.displayFilters');
 filterIcons.addEventListener('click', () => {
@@ -1875,12 +1787,12 @@ filterIcons.addEventListener('click', () => {
   }
 });
 
-////////////////////////////
-//Navbar Error Handling
-////////////////////////////
-const navBarPerms = document.querySelector('#permission-li')
-const navBarUsers = document.querySelector('#user-li')
-const navBarForms = document.querySelector('#form-li')
+/// /////////////////////////
+// Navbar Error Handling
+/// /////////////////////////
+const navBarPerms = document.querySelector('#permission-li');
+const navBarUsers = document.querySelector('#user-li');
+const navBarForms = document.querySelector('#form-li');
 navBarPerms.addEventListener('click', function () {
   alertBox('You do not have permission to access this page!', 'danger');
 });
@@ -1891,49 +1803,48 @@ navBarForms.addEventListener('click', function () {
   alertBox('You are already on this page', 'warn');
 });
 
-////////////////////////////
+/// /////////////////////////
 // SEARCH Forms
-////////////////////////////
+/// /////////////////////////
 
 const searchFormByName = document.querySelector('#searchInput');
 
 searchClearBtn.addEventListener('click', function () {
-  changeBackSortIcon()
-  searchFormByName.value = "";
+  changeBackSortIcon();
+  searchFormByName.value = '';
   const AllForm = document.querySelectorAll('#getAllForms tr');
-  AllForm.forEach(form => {
-    form.style.display = "";
-  })
+  AllForm.forEach((form) => {
+    form.style.display = '';
+  });
 });
 
 searchBtn.addEventListener('click', function () {
-  changeBackSortIcon()
+  changeBackSortIcon();
   const searchValue = searchFormByName.value.toUpperCase();
   const AllForm = document.querySelectorAll('#getAllForms tr');
-  AllForm.forEach(form => {
+  AllForm.forEach((form) => {
     const textValue = form.textContent || form.innerText;
     if (textValue.toUpperCase().indexOf(searchValue) > -1) {
-      form.style.display = "";
+      form.style.display = '';
     } else {
-      form.style.display = "none";
+      form.style.display = 'none';
     }
-  })
-})
-
+  });
+});
 
 searchFormByName.addEventListener('keyup', function () {
-  changeBackSortIcon()
+  changeBackSortIcon();
   const searchValue = searchFormByName.value.toUpperCase();
   const AllForm = document.querySelectorAll('#getAllForms tr');
-  AllForm.forEach(form => {
+  AllForm.forEach((form) => {
     const textValue = form.textContent || form.innerText;
     if (textValue.toUpperCase().indexOf(searchValue) > -1) {
-      form.style.display = "";
+      form.style.display = '';
     } else {
-      form.style.display = "none";
+      form.style.display = 'none';
     }
-  })
-})
+  });
+});
 const exportBtnBulk = document.querySelector('#export-btn-search');
-  exportBtnBulk.removeEventListener('click', exportButtonHandler);
-  exportBtnBulk.addEventListener('click', exportButtonHandler);
+exportBtnBulk.removeEventListener('click', exportButtonHandler);
+exportBtnBulk.addEventListener('click', exportButtonHandler);
