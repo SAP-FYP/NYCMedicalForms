@@ -1911,10 +1911,12 @@ searchBtn.addEventListener('click', function () {
   const searchValue = searchFormByName.value.toUpperCase();
   const AllForm = document.querySelectorAll('#getAllForms tr');
   AllForm.forEach(form => {
-    const textValue = form.textContent || form.innerText;
+    const nameOfStudent = form.querySelector('td[nameofstudent]');
+    const textValue = nameOfStudent.textContent || nameOfStudent.innerText;
     if (textValue.toUpperCase().indexOf(searchValue) > -1) {
       form.style.display = "";
-    } else {
+    }
+    else {
       form.style.display = "none";
     }
   })
@@ -1926,14 +1928,17 @@ searchFormByName.addEventListener('keyup', function () {
   const searchValue = searchFormByName.value.toUpperCase();
   const AllForm = document.querySelectorAll('#getAllForms tr');
   AllForm.forEach(form => {
-    const textValue = form.textContent || form.innerText;
+    const nameOfStudent = form.querySelector('td[nameofstudent]');
+    const textValue = nameOfStudent.textContent || nameOfStudent.innerText;
     if (textValue.toUpperCase().indexOf(searchValue) > -1) {
       form.style.display = "";
-    } else {
+    }
+    else {
       form.style.display = "none";
     }
   })
 })
+
 const exportBtnBulk = document.querySelector('#export-btn-search');
   exportBtnBulk.removeEventListener('click', exportButtonHandler);
   exportBtnBulk.addEventListener('click', exportButtonHandler);
