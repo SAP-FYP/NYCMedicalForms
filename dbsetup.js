@@ -90,7 +90,7 @@ const CREATE_TABLE_SQL = `
     PRIMARY KEY (formId)
     );
 
-     CREATE TABLE IF NOT EXISTS registrationForm (
+        CREATE TABLE IF NOT EXISTS registrationForm (
     regFormId INT NOT NULL AUTO_INCREMENT,
     raceId INT NOT NULL,
     parentName VARCHAR(100) NOT NULL,
@@ -165,7 +165,7 @@ const CREATE_TABLE_SQL = `
     isAllergicToFood VARCHAR(3) NOT NULL,
     stateAllergicToFood VARCHAR(255) NULL,
     stateDetailsFoodTriggers VARCHAR(255) NULL,
-    isAbleToTakeTraces VARCHAR(3) NULL,
+    isAbleToTakeTraces VARCHAR(100) NULL,
     isMedsStopTracers VARCHAR(3) NULL,
     stateMedsStopTracers VARCHAR(255) NULL,
     isAcceptAllergyRisks VARCHAR(3) NOT NULL,
