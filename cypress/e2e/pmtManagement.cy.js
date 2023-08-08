@@ -145,7 +145,7 @@ describe('Export by filtering', () => {
         cy.get('div[id=classMenuButton]').click();
         cy.get('input[type="checkbox"][value="Class A"]').click();
         cy.get('div[id=courseDateMenuButton]').click();
-        cy.get('input[type="checkbox"][value="2023-03-02"]').click();
+        cy.get('input[type="checkbox"][value="2023-02-03"]').click();
         cy.get('div[id=eligibilityMenuButton]').click();
         cy.get('input[type="checkbox"][value="Fit"]').click();
         cy.wait(500);
