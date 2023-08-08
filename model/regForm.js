@@ -21,6 +21,7 @@ module.exports.submitRegForm = function submitRegForm(data) {
       "isAcceptAllRisk", "isAcceptPersonalData", "isDeclineUseOfContactInfo", "isDeclineUseOfPhoto"
     ];
 
+    console.log(data);
     const values = [];
     columns.forEach((column) => {
         values.push(data[column]);

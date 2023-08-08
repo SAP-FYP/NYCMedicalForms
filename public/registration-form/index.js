@@ -349,7 +349,7 @@ window.addEventListener('DOMContentLoaded', () => {
             breathingMedicineStatus: "form-input-hasBreathingMedication", //*OPTIONAL
             breathingMedicineDetails: "form-input-medication-details", //*SUB OPTIONAL 
             breathingFollowup: "form-input-breathing-followup", //*OPTIONAL
-            breathingExcercise: "form-input-breathing-excercise", //*OPTIONAL
+            breathingExercise: "form-input-breathing-excercise", //*OPTIONAL
 
             //HEART SECTION
             heartStatus: "form-input-hasHeartCondi",
@@ -406,7 +406,7 @@ window.addEventListener('DOMContentLoaded', () => {
             medicationName: "form-input-medication-name", //*OPTIONAL
 
             // ENVIRONMENTAL ALLERGIES
-            enviromentAllergyStatus: "form-input-hasEnvironmentalAllergy",
+            environmentAllergyStatus: "form-input-hasEnvironmentalAllergy",
             environmentCondition: "form-input-environmental-allergy", //*OPTIONAL
             environmentOther: "form-input-environment-other", //*OPTIONAL
             environmentDetails: "form-input-enviroment-details", //*OPTIONAL
