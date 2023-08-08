@@ -161,8 +161,7 @@ function exportToExcel(applicantName, schoolOrg, classNo, courseDate, formStatus
       }
     })
     .catch((error) => {
-      // console.error('Export request failed:', error);
-      alertBox('Export request failed!', 'danger');
+      console.error('Export request failed:', error);
     });
 }
 
@@ -195,8 +194,7 @@ function exportToExcelBulk(data) {
       if (error.response.status === 400) {
         alertBox('You did not select any rows to export!', 'danger');
       }
-      // console.error('Export request failed:', error);
-      alertBox('Export request failed!', 'danger');
+      console.error('Export request failed:', error);
     });
 }
 
@@ -646,13 +644,11 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
         pillPending.textContent = 'Rejected';
         alertBox('The form is rejected', 'success');
 
-
         apprRejContainer.innerHTML = '';
         pmtHeadingForm.innerHTML = '';
 
-
-        rejAmt.textContent = parseInt(rejAmt.textContent) + 1;
-        pendingAmt.textContent = parseInt(pendingAmt.textContent) - 1;
+        rejAmt.textContent = parseInt(rejAmt.textContent, 10) + 1;
+        pendingAmt.textContent = parseInt(pendingAmt.textContent, 10) - 1;
 
         pillPending.classList.remove('changePill');
         if (canvas.parentElement === parentContainer) {
@@ -676,8 +672,8 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
           pillPending.textContent = 'Pending';
           alertBox('The form has been reverted back to pending.', 'success');
 
-          apprAmt.textContent = parseInt(apprAmt.textContent) - 1;
-          pendingAmt.textContent = parseInt(pendingAmt.textContent) + 1;
+          apprAmt.textContent = parseInt(apprAmt.textContent, 10) - 1;
+          pendingAmt.textContent = parseInt(pendingAmt.textContent, 10) + 1;
 
           pillPending.classList.remove('changePill');
           if (canvas.parentElement === parentContainer) {
@@ -697,8 +693,8 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
           pillPending.textContent = 'Pending';
           alertBox('The form has been reverted back to pending.', 'success');
 
-          rejAmt.textContent = parseInt(rejAmt.textContent) - 1;
-          pendingAmt.textContent = parseInt(pendingAmt.textContent) + 1;
+          rejAmt.textContent = parseInt(rejAmt.textContent, 10) - 1;
+          pendingAmt.textContent = parseInt(pendingAmt.textContent, 10) + 1;
 
           pillPending.classList.remove('changePill');
           if (canvas.parentElement === parentContainer) {
@@ -724,8 +720,8 @@ function displayFormModal(formData, userPermissions, formattedCourseDate, format
         apprRejContainer.innerHTML = '';
         pmtHeadingForm.innerHTML = '';
 
-        apprAmt.textContent = parseInt(apprAmt.textContent) + 1;
-        pendingAmt.textContent = parseInt(pendingAmt.textContent) - 1;
+        apprAmt.textContent = parseInt(apprAmt.textContent, 10) + 1;
+        pendingAmt.textContent = parseInt(pendingAmt.textContent, 10) - 1;
 
         pillPending.classList.remove('changePill');
 
@@ -948,7 +944,6 @@ function handleModalButtons(clonedRowTemplate, studentId, formData, index) {
   }
 }
 
-
 // expportButtonHandler
 const exportButtonHandler = () => {
   exportToExcelBulk(dataAll);
@@ -1025,16 +1020,16 @@ function tooltipForCheckBoxTop(checkBoxTop) {
 }
 // Function to sort table
 function sortTable(columnIndex, ascending) {
-  let table; let rows; let switching; let i; let x; let y; let
+  let rows; let switching; let i; let x; let y; let
     shouldSwitch;
-  table = document.getElementById('dashboard-table');
+  const table = document.getElementById('dashboard-table');
   switching = true;
 
   while (switching) {
     switching = false;
     rows = table.rows;
 
-    for (let i = 1; i < (rows.length - 1); i++) {
+    for (i = 1; i < (rows.length - 1); i++) {
       shouldSwitch = false;
       x = rows[i].getElementsByTagName('TD')[columnIndex];
       y = rows[i + 1].getElementsByTagName('TD')[columnIndex];
@@ -1260,35 +1255,6 @@ document.addEventListener('DOMContentLoaded', function (event) {
       clearFilterBtn.classList.add('d-none');
     }
   };
-
-  // Clear all filters
-  clearFilterBtn.addEventListener('click', function () {
-    schoolsArray = [];
-    classesArray = [];
-    courseDatesArray = [];
-    eligibilityArray = [];
-    formStatusArray = [];
-    // Select each checkbox that is a child element of .filter-div
-    const checkBoxes = document.querySelectorAll('.filter-div input[type="checkbox"]');
-    checkBoxes.forEach((checkBox) => {
-      checkBox.checked = false;
-    });
-    rectangleButtons.forEach((rectangleButton) => {
-      rectangleButton.style.border = '1px solid #485eab';
-    });
-
-    schoolMenuBtn.textContent = 'School';
-    classMenuBtn.textContent = 'Class';
-    courseDateMenuBtn.textContent = 'Course Date';
-    eligibilityMenuBtn.textContent = 'Eligibility';
-    schoolCount = 0;
-    classCount = 0;
-    courseDateCount = 0;
-    eligibilityCount = 0;
-    unhideClearFilterBtn();
-    pullDataWithFilter(exportButtonHandler);
-  });
-
   function pullDataWithFilter(exportButtonHandler) {
     changeBackSortIcon();
     // Pull data to display in table
@@ -1412,6 +1378,33 @@ document.addEventListener('DOMContentLoaded', function (event) {
         console.log(error);
       });
   }
+  // Clear all filters
+  clearFilterBtn.addEventListener('click', function () {
+    schoolsArray = [];
+    classesArray = [];
+    courseDatesArray = [];
+    eligibilityArray = [];
+    formStatusArray = [];
+    // Select each checkbox that is a child element of .filter-div
+    const checkBoxes = document.querySelectorAll('.filter-div input[type="checkbox"]');
+    checkBoxes.forEach((checkBox) => {
+      checkBox.checked = false;
+    });
+    rectangleButtons.forEach((rectangleButton) => {
+      rectangleButton.style.border = '1px solid #485eab';
+    });
+
+    schoolMenuBtn.textContent = 'School';
+    classMenuBtn.textContent = 'Class';
+    courseDateMenuBtn.textContent = 'Course Date';
+    eligibilityMenuBtn.textContent = 'Eligibility';
+    schoolCount = 0;
+    classCount = 0;
+    courseDateCount = 0;
+    eligibilityCount = 0;
+    unhideClearFilterBtn();
+    pullDataWithFilter(exportButtonHandler);
+  });
 
   // Clear searches when dropdown is closed
   const dropdowns = [schoolMenuBtn, classMenuBtn, courseDateMenuBtn, eligibilityMenuBtn];
@@ -1428,7 +1421,10 @@ document.addEventListener('DOMContentLoaded', function (event) {
       });
     });
   });
-
+  const exportButtonHandler = () => {
+    exportToExcelBulk(dataAll);
+    alertBox('You have successfully exported the data to excel!', 'success');
+  };
   const fetchSchools = fetch('/get-school-filter')
     .then((response) => {
       if (!response.ok) {
@@ -1749,11 +1745,6 @@ document.addEventListener('DOMContentLoaded', function (event) {
         console.log(error);
       }
     });
-
-  const exportButtonHandler = () => {
-    exportToExcelBulk(dataAll);
-    alertBox('You have successfully exported the data to excel!', 'success');
-  };
 
   // Search bar to search for filters in the respective .filter-div
   const filterSearch = document.querySelectorAll('.searchBarFilter');
