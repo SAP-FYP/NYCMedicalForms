@@ -11,11 +11,12 @@ const CREATE_TABLE_SQL = `
     contactNo INT NOT NULL,
     groupId INT NOT NULL,
     created_at DATETIME NOT NULL,
-    isDisabled BOOLEAN NOT NULL DEFAULT FALSE,
-    isDeleted BOOLEAN NOT NULL DEFAULT FALSE,
+    isDisabled TINYINT(1) NOT NULL DEFAULT '0',
+    isDeleted TINYINT(1) NOT NULL DEFAULT '0',
     invalidationDate DATETIME,
     passwordUpdated DATETIME,
     roleId INT NOT NULL,
+    picUrl VARCHAR(255) NULL,
     PRIMARY KEY (email)
     );
 
@@ -47,7 +48,7 @@ const CREATE_TABLE_SQL = `
     CREATE TABLE IF NOT EXISTS doctor (
     doctorMCR VARCHAR(255) NOT NULL,
     nameOfDoctor VARCHAR(255) NOT NULL,
-    signature BLOB NOT NULL,
+    signature VARCHAR(1000) NOT NULL,
     nameOfClinic VARCHAR(255) NOT NULL,
     clinicAddress VARCHAR(255) NOT NULL,
     contactNo INT NOT NULL,
@@ -69,11 +70,12 @@ const CREATE_TABLE_SQL = `
     studentId INT NOT NULL AUTO_INCREMENT,
     parentNRIC VARCHAR(9) NULL,
     nameOfParent VARCHAR(255) NULL,
-    parentEmail VARCHAR(255) NOT NULL,
-    parentSignature BLOB NULL,
+    parentSignature VARCHAR(255) NULL,
     dateOfAcknowledgement DATE NULL,
+    statusOfAcknowledgement VARCHAR(50) NOT NULL DEFAULT 'Pending Parent',
     parentContactNo INT NULL,
-    statusOfAcknowledgement VARCHAR(50) NOT NULL  DEFAULT 'Pending Parent',
+    parentEmail VARCHAR(255) NOT NULL,
+    lastNotified TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (studentId)
     );
 
@@ -83,14 +85,14 @@ const CREATE_TABLE_SQL = `
     courseDate DATE NOT NULL,
     doctorMCR VARCHAR(255) NOT NULL,
     eligibility VARCHAR(5) NOT NULL,
-    comments VARCHAR(255) NOT NULL,
-    formStatus VARCHAR(50) NOT NULL DEFAULT 'Pending',
+    comments VARCHAR(1000) NULL,
+    formStatus VARCHAR(50) NULL DEFAULT 'Pending',
     examinationDate DATE NOT NULL,
     review VARCHAR(255) NOT NULL,
     PRIMARY KEY (formId)
     );
 
-        CREATE TABLE IF NOT EXISTS registrationForm (
+CREATE TABLE IF NOT EXISTS registrationForm (
     regFormId INT NOT NULL AUTO_INCREMENT,
     raceId INT NOT NULL,
     parentName VARCHAR(100) NOT NULL,
@@ -105,22 +107,22 @@ const CREATE_TABLE_SQL = `
     altEmergencyContactNo VARCHAR(50) NULL,
     applicantNRIC VARCHAR(9) NOT NULL,
     applicantName VARCHAR(100) NOT NULL,
-    aplicantSchool VARCHAR(100) NOT NULL,
+    applicantSchool VARCHAR(100) NOT NULL,
     applicantClass VARCHAR(100) NOT NULL,
     applicantResidentialStatus VARCHAR(100) NOT NULL,
-    applicantDOB DATE NOT NULL,
+    applicantDOB VARCHAR(100) NOT NULL,
     applicantGender VARCHAR(100) NOT NULL,
     applicantEmail VARCHAR(100) NOT NULL,
     applicantAddr VARCHAR(100) NOT NULL,
     applicantDietary VARCHAR(100) NULL,
     isApplicantVaccinationValid VARCHAR(3) NOT NULL,
-    applicantVaccinationDate DATE NULL,
+    applicantVaccinationDate VARCHAR(100) NULL,
     applicantHeight VARCHAR(50) NOT NULL,
     applicantWeight VARCHAR(50) NOT NULL,
     applicantBMI VARCHAR(50) NOT NULL,
     isBreathingCondition VARCHAR(3) NOT NULL,
     diagnosisBreathing VARCHAR(255) NULL,
-    lastDateBreathing DATE NULL,
+    lastDateBreathing VARCHAR(100) NULL,
     isOnBreathingMeds VARCHAR(3) NULL,
     stateBreathingMeds VARCHAR(255) NULL,
     isBreathingSpecialist VARCHAR(3) NULL,
@@ -137,7 +139,7 @@ const CREATE_TABLE_SQL = `
     isEpliepsySpecialist VARCHAR(3) NULL,  
     isBoneCondition VARCHAR(3) NOT NULL,
     stateBoneCondition VARCHAR(255) NULL,
-    dateOfBoneCondition DATE NULL,
+    dateOfBoneCondition VARCHAR(100) NULL,
     isBoneSpecialist VARCHAR(3) NULL,
     isBoneFullyRecovered VARCHAR(3) NULL,
     furtherInfoOnBone VARCHAR(255) NULL,
@@ -154,7 +156,7 @@ const CREATE_TABLE_SQL = `
     isInfectiousCondition VARCHAR(3) NOT NULL,
     stateInfectiousCondition VARCHAR(255) NULL,
     isSleepWalking VARCHAR(3) NOT NULL,
-    lastDateSleepWalking DATE NULL,
+    lastDateSleepWalking VARCHAR(100) NULL,
     isAllergicToMeds VARCHAR(3) NOT NULL,
     stateAllergicToMeds VARCHAR(255) NULL,
     isAllergicToEnvironment VARCHAR(3) NOT NULL,
@@ -165,13 +167,13 @@ const CREATE_TABLE_SQL = `
     isAllergicToFood VARCHAR(3) NOT NULL,
     stateAllergicToFood VARCHAR(255) NULL,
     stateDetailsFoodTriggers VARCHAR(255) NULL,
-    isAbleToTakeTraces VARCHAR(3) NULL,
+    isAbleToTakeTraces VARCHAR(100) NULL,
     isMedsStopTracers VARCHAR(3) NULL,
     stateMedsStopTracers VARCHAR(255) NULL,
     isAcceptAllergyRisks VARCHAR(3) NOT NULL,
     isOtherCondition VARCHAR(3) NOT NULL,
     stateOtherCondition VARCHAR(255) NULL,
-    dateOfOtherCondition DATE NULL,
+    dateOfOtherCondition VARCHAR(100) NULL,
     stateOtherConditionAffectsPhysical VARCHAR(255) NULL,
     stateTriggerOtherCondition VARCHAR(255) NULL,
     statePrecautionOtherCondition VARCHAR(255) NULL,
@@ -191,13 +193,13 @@ const CREATE_TABLE_SQL = `
 
     CREATE TABLE IF NOT EXISTS race (
     raceId INT NOT NULL AUTO_INCREMENT,
-    raceName VARCHAR(255) NOT NULL,
+    raceName VARCHAR(100) NOT NULL,
     PRIMARY KEY (raceId)
     )
     
     CREATE TABLE IF NOT EXISTS school (
     schoolId INT NOT NULL AUTO_INCREMENT,
-    schoolName VARCHAR(255) NOT NULL,
+    schoolName VARCHAR(100) NOT NULL,
     PRIMARY KEY (schoolId)
     )
 
