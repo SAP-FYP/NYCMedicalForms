@@ -156,7 +156,7 @@ module.exports.getCourseDates = function getCourseDates() {
 };
 
 module.exports.getSchools = function getSchools() {
-  const sql = `SELECT schoolName FROM school`;
+  const sql = `SELECT * FROM school`;
   return query(sql)
     .then(result => {
       const rows = result;

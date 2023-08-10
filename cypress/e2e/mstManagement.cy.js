@@ -26,6 +26,7 @@ describe('Reviewing forms', () => {
     it('should submit a review', () => {
         cy.wait(1300)
         cy.get('td[id=modalBtn-studentId-1]').eq(0).click();
+        cy.wait(500)
         cy.get('textarea[id=mst-review]').click().type('change review hello');
         cy.wait(500)
         cy.get('div[class="btn btn-primary btn-sm submitReviewBtn"]').contains('Submit Review').click()
@@ -36,7 +37,8 @@ describe('Reviewing forms', () => {
     it('should delete a review', () => {
         cy.wait(1500)
         cy.get('td[id=modalBtn-studentId-1]').eq(0).click();
-        cy.get('textarea[id=mst-review]').click().type('{selectall}{backspace}');
+        cy.wait(500)
+        cy.get('textarea[id=mst-review]').clear();
         cy.wait(500)
         cy.get('div[class="btn btn-primary btn-sm submitReviewBtn"]').contains('Submit Review').click()
         cy.wait(1000);

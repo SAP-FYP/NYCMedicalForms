@@ -67,6 +67,7 @@ app.get('/', (req, res) => {
 app.get('/obs-admin', (req, res) => {
     res.redirect(`/obs-admin/login`);
 });
+
 // callback function - directs back to home page
 app.get('/callback', function (req, res) {
     res.sendFile(__dirname + '/public/index.html');
@@ -1643,6 +1644,7 @@ app.get('/obs-admin/pmt/all', authHelper.verifyToken, authHelper.checkIat, async
             return res.status(error.status || 500).json({ error: error.message });
         });
 });
+
 app.get('/obs-admin/pmt/formStatus/:formStatus', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
     // AUTHORIZATION CHECK - PMT, MST 
     const formStatus = req.params.formStatus;
@@ -1719,7 +1721,6 @@ app.get('/obs-admin/pmt/:studentId', authHelper.verifyToken, authHelper.checkIat
             return res.status(error.status || 500).json({ error: error.message });
         });
 });
-
 
 //PMT Update Submission By Student ID
 app.put('/obs-admin/pmt/:studentId', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
@@ -1938,6 +1939,7 @@ app.get('/export', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
         res.status(400).send('Export request failed');
     }
 });
+
 // Endpoint for exporting the Excel file in bulk
 app.post('/export-bulk', authHelper.verifyToken, authHelper.checkIat, (req, res) => {
     // AUTHORIZATION CHECK - PMT
@@ -2014,7 +2016,6 @@ app.post('/export-bulk', authHelper.verifyToken, authHelper.checkIat, (req, res)
     res.send(excelBuffer);
 });
 
-
 //MST Update Submission Comment
 app.put('/obs-admin/mst/review/:studentId', authHelper.verifyToken, authHelper.checkIat, async (req, res, next) => {
     // AUTHORIZATION CHECK - PMT, MST 
@@ -2048,7 +2049,6 @@ app.put('/obs-admin/mst/review/:studentId', authHelper.verifyToken, authHelper.c
             return res.status(error.status || 500).json({ error: error.message });
         });
 });
-
 
 /**
  * Obs-form APIs
@@ -2347,12 +2347,15 @@ app.delete('/deleteStudentForm', authHelper.verifyToken, authHelper.checkIat, (r
             return res.status(error.status || 500).json({ error: error.message });
         });
 });
+
 /**
  * Registration Form
  */
+
 //Submit Registration Form
 app.post('/obs-reg-form/submit', (req, res, next) => {
-    const formData = req.body;
+    const formData = req.body.data;
+
     // Parent Validation
     const parentSectionInputs = ['parentName', 'parentEmail', 'parentNumber', 'parentAltNumber', 'parentRelation', 'parentIsEmergencyContact', 'emergencyName', 'emergencyNumber', 'emergencyRelation', 'emergencyAltNumber'];
     const parentSectionRequiredInputs = ['parentName', 'parentEmail', 'parentNumber', 'parentRelation', 'parentIsEmergencyContact'];
@@ -2361,6 +2364,7 @@ app.post('/obs-reg-form/submit', (req, res, next) => {
     // Check if all required inputs are filled
     for (let i = 0; i < parentSectionRequiredInputs.length; i++) {
         if (!formData.parentData[parentSectionRequiredInputs[i]]) {
+            console.log(`VALIDATION ERROR AT: ${parentSectionInputs[i]} : VALUE: ${formData.parentData[parentSectionInputs[i]]}`)
             return res.status(400).json({ error: 'Missing required input(s) in parent section' });
         }
     }
@@ -2370,10 +2374,12 @@ app.post('/obs-reg-form/submit', (req, res, next) => {
         if (formData.parentData[parentSectionInputs[i]]) {
             if (parentSectionInputs[i] === 'parentEmail') {
                 if (!validator.isEmail(formData.parentData[parentSectionInputs[i]])) {
+                    console.log(`VALIDATION ERROR AT: ${parentSectionInputs[i]} : VALUE: ${formData.parentData[parentSectionInputs[i]]}`)
                     return res.status(400).json({ error: 'Invalid email in parent section' });
                 }
-            } else if (parentSectionInputs[i] === 'parentNumber' || parentSectionInputs[i] === 'parentAltNumber' || parentSectionInputs[i] === 'emergencyNumber' || parentSectionInputs[i] === 'emergencyAltNumber') {
+            } else if (parentSectionInputs[i] === 'parentNumber' || parentSectionInputs[i] === 'emergencyNumber') {
                 if (!validator.isMobilePhone(formData.parentData[parentSectionInputs[i]])) {
+                    console.log(`VALIDATION ERROR AT: ${parentSectionInputs[i]} : VALUE: ${formData.parentData[parentSectionInputs[i]]}`)
                     return res.status(400).json({ error: 'Invalid phone number in parent section' });
                 }
             }
@@ -2384,6 +2390,7 @@ app.post('/obs-reg-form/submit', (req, res, next) => {
     if (formData.parentData.parentIsEmergencyContact === "0") {
         for (let i = 0; i < parentSectionOptionalInputs.length; i++) {
             if (!formData.parentData[parentSectionOptionalInputs[i]]) {
+                console.log(`VALIDATION ERROR AT: ${parentSectionInputs[i]} : VALUE: ${formData.parentData[parentSectionInputs[i]]}`)
                 return res.status(400).json({ error: 'Missing required input(s) in parent section' });
             }
         }
@@ -2393,6 +2400,7 @@ app.post('/obs-reg-form/submit', (req, res, next) => {
             if (formData.parentData[parentSectionOptionalInputs[i]]) {
                 if (parentSectionOptionalInputs[i] === 'parentAltNumber' || parentSectionOptionalInputs[i] === 'emergencyNumber' || parentSectionOptionalInputs[i] === 'emergencyAltNumber') {
                     if (!validator.isMobilePhone(formData.parentData[parentSectionOptionalInputs[i]])) {
+                        console.log(`VALIDATION ERROR AT: ${parentSectionInputs[i]} : VALUE: ${formData.parentData[parentSectionInputs[i]]}`)
                         return res.status(400).json({ error: 'Invalid phone number in parent section' });
                     }
                 }
@@ -2402,11 +2410,12 @@ app.post('/obs-reg-form/submit', (req, res, next) => {
 
     // Applicant Validation
     const applicantSectionInputs = ['applicantName', 'applicantSchool', 'applicantClass', 'applicantResidential', 'applicantDob', 'applicantRace', 'applicantGender', 'applicantEmail', 'applicantAddress', 'applicantDiet'];
-    const applicantSectionRequiredInputs = ['applicantName', 'applicantSchool', 'applicantClass', 'applicantResidential', 'applicantDob', 'applicantRace', 'applicantGender', 'applicantEmail', 'applicantAddress', 'applicantDiet'];
+    const applicantSectionRequiredInputs = ['applicantName', 'applicantSchool', 'applicantClass', 'applicantResidential', 'applicantDob', 'applicantRace', 'applicantGender', 'applicantEmail', 'applicantAddress'];
 
     // Check if all required inputs are filled
     for (let i = 0; i < applicantSectionRequiredInputs.length; i++) {
         if (!formData.applicantData[applicantSectionRequiredInputs[i]]) {
+            console.log(`VALIDATION ERROR AT: ${applicantSectionInputs[i]} : VALUE: ${formData.applicantData[applicantSectionInputs[i]]}`)
             return res.status(400).json({ error: 'Missing required input(s) in applicant section' });
         }
     }
@@ -2416,10 +2425,12 @@ app.post('/obs-reg-form/submit', (req, res, next) => {
         if (formData.applicantData[applicantSectionInputs[i]]) {
             if (applicantSectionInputs[i] === 'applicantEmail') {
                 if (!validator.isEmail(formData.applicantData[applicantSectionInputs[i]])) {
+                    console.log(`VALIDATION ERROR AT: ${applicantSectionInputs[i]} : VALUE: ${formData.applicantData[applicantSectionInputs[i]]}`)
                     return res.status(400).json({ error: 'Invalid email in applicant section' });
                 }
             } else if (applicantSectionInputs[i] === 'applicantDob') {
                 if (!validator.isDate(formData.applicantData[applicantSectionInputs[i]])) {
+                    console.log(`VALIDATION ERROR AT: ${applicantSectionInputs[i]} : VALUE: ${formData.applicantData[applicantSectionInputs[i]]}`)
                     return res.status(400).json({ error: 'Invalid date in applicant section' });
                 }
             }
@@ -2427,188 +2438,214 @@ app.post('/obs-reg-form/submit', (req, res, next) => {
     }
 
     // Health Validation
-    const healthSectionRequiredInputs = ['tetanusStatus', 'applicantHeight', 'applicantWeight', 'applicantBmi', 'breathingStatus', 'heartStatus', 'bloodStatus', 'epilepsyStatus', 'boneStatus', 'behaviouralStatus', 'longMedicationStatus', 'diseaseStatus', 'sleepwalkStatus', 'allergyRiskAcknowledgement', 'medicationAllergyStatus', 'environmentAllergyStatus', 'foodAllergyStatus', 'otherConditionStatus'];
+    const healthSectionRequiredInputs = ['tetanusStatus', 'applicantHeight', 'applicantWeight', 'applicantBmi', 'breathingStatus', 'heartStatus', 'bloodStatus', 'epilepsyStatus', 'boneStatus', 'behaviouralStatus', 'longMedicationStatus', 'diseaseStatus', 'sleepwalkStatus', 'medicationAllergyStatus', 'environmentAllergyStatus', 'foodAllergyStatus', 'otherConditionStatus'];
 
     // Check if all requiredInputs are filled
     for (let i = 0; i < healthSectionRequiredInputs.length; i++) {
         if (!formData.healthData[healthSectionRequiredInputs[i]]) {
+            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
             return res.status(400).json({ error: 'Missing required fields in health section' });
         }
     }
 
     // Tetanus
-
     if (formData.healthData.tetanusStatus === "1") {
         if (!formData.healthData.tetanusDate) {
+            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
             return res.status(400).json({ error: 'Missing required fields in health section' });
         }
         if (!validator.isDate(formData.healthData.tetanusDate)) {
+            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
             return res.status(400).json({ error: 'Invalid date in health section' });
         }
     }
 
     // Breathing
-
     if (formData.healthData.breathingStatus === "1") {
         if (!formData.healthData.breathingCondition || !formData.healthData.breathingDate || !formData.healthData.breathingMedicineStatus || !formData.healthData.breathingFollowup || !formData.healthData.breathingExercise) {
+            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
             return res.status(400).json({ error: 'Missing required fields in health section' });
         }
         if (!validator.isDate(formData.healthData.breathingDate)) {
+            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
             return res.status(400).json({ error: 'Invalid date in health section' });
         }
         if (formData.healthData.breathingMedicineStatus === "1") {
             if (!formData.healthData.breathingMedicineDetails) {
+                console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
                 return res.status(400).json({ error: 'Missing required fields in health section' });
             }
         }
     }
 
     // Heart
-    
     if (formData.healthData.heartStatus === "1") {
         if (!formData.healthData.heartCondition || !formData.healthData.heartFollowup) {
+            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
             return res.status(400).json({ error: 'Missing required fields in health section' });
         }
     }
 
     // Blood
-
     if (formData.healthData.bloodStatus === "1") {
         if (!formData.healthData.bloodCondition) {
+            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
             return res.status(400).json({ error: 'Missing required fields in health section' });
         }
         if (formData.healthData.bloodCondition !== 'not Thalassaemia minor' || formData.healthData.bloodCondition !== 'not Thalassaemia major') {
             if (!formData.healthData.bloodFollowup) {
+                console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
                 return res.status(400).json({ error: 'Missing required fields in health section' });
             }
         }
     }
 
-
     // Epilepsy
-
     if (formData.healthData.epilepsyStatus === "1") {
-        if (!formData.healthData.epilepsyEpisode || !formData.healthData.epilepsyMedication || !formData.healthData.epilepsyFollowup) {
+        if (!formData.healthData.epilepsyEpisode && !formData.healthData.epilepsyMedication) {
+            //console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
+            console.log(formData.healthData.epilepsyEpisode)
+            console.log(formData.healthData.epilepsyMedication)
+            console.log(formData.healthData.epilepsyFollowup)
+            if (!formData.healthData.epilepsyFollowup) {
+                return res.status(400).json({ error: 'Missing requireed fields in health section' })
+            }
             return res.status(400).json({ error: 'Missing required fields in health section' });
         }
     }
 
     // Bone
-
     if (formData.healthData.boneStatus === "1") {
         if (!formData.healthData.boneCondition || !formData.healthData.boneDate || !formData.healthData.boneFollowup) {
+            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
             return res.status(400).json({ error: 'Missing required fields in health section' });
         }
         if (!validator.isDate(formData.healthData.boneDate)) {
+            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
             return res.status(400).json({ error: 'Invalid date in health section' });
         }
         if (formData.healthData.boneFollowup === "0") {
             if (!formData.healthData.boneRecovered) {
+                console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
                 return res.status(400).json({ error: 'Missing required fields in health section' });
             }
             if (!formData.healthData.boneInformation) {
+                console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
                 return res.status(400).json({ error: 'Missing required fields in health section' });
             }
         }
     }
 
-
     // Behavioural 
-
     if (formData.healthData.behaviouralStatus === "1") {
         if (!formData.healthData.behaviouralCondition || !formData.healthData.behaviouralFollowup || !formData.healthData.riskAcknowledgement || !formData.healthData.participationAcknowledgement) {
+            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
             return res.status(400).json({ error: 'Missing required fields in health section' });
         }
         if (formData.healthData.behaviouralFollowup === "1") {
             if (!formData.healthData.specialistProgress || !formData.healthData.homeBehaviour || !formData.healthData.outdoorExperience) {
+                console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
                 return res.status(400).json({ error: 'Missing required fields in health section' });
             }
         }
     }
 
     // Long term medication
-
     if (formData.healthData.longMedicationStatus === "1") {
         if (!formData.healthData.longMedicationDetails) {
+            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
             return res.status(400).json({ error: 'Missing required fields in health section' });
         }
     }
 
     // Diseases
-
     if (formData.healthData.diseaseStatus === "1") {
         if (!formData.healthData.diseaseDetails) {
+            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
             return res.status(400).json({ error: 'Missing required fields in health section' });
         }
     }
 
     // Sleep walk 
-
     if (formData.healthData.sleepwalkStatus === "1") {
         if (!formData.healthData.sleepwalkDate) {
+            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
             return res.status(400).json({ error: 'Missing required fields in health section' });
         }
         if (!validator.isDate(formData.healthData.sleepwalkDate)) {
+            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
             return res.status(400).json({ error: 'Invalid date in health section' });
         }
     }
 
-    //  Allergy risk acknowledgement
-
-    if (!formData.healthData.allergyRiskAcknowledgement) {
-        return res.status(400).json({ error: 'Missing required fields in health section' });
-    }
-
     // Medication allergies
-
     if (formData.healthData.medicationAllergyStatus === "1") {
         if (!formData.healthData.medicationName) {
+            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
+            return res.status(400).json({ error: 'Missing required fields in health section' });
+        }
+        //  Allergy risk acknowledgement
+        if (!formData.healthData.allergyRiskAcknowledgement) {
+            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
             return res.status(400).json({ error: 'Missing required fields in health section' });
         }
     }
 
     // Environment allergies
-    
     if (formData.healthData.environmentAllergyStatus === "1") {
         if ((!formData.healthData.environmentCondition && !formData.healthData.environmentOther) || !formData.healthData.environmentDetails || !formData.healthData.environmentMedicineStatus) {
+            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
             return res.status(400).json({ error: 'Missing required fields in health section' });
         }
         if (formData.healthData.environmentMedicineStatus === "1") {
             if (!formData.healthData.environmentMedicineDetails) {
+                console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
                 return res.status(400).json({ error: 'Missing required fields in health section' });
             }
+        }
+        //  Allergy risk acknowledgement
+        if (!formData.healthData.allergyRiskAcknowledgement) {
+            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
+            return res.status(400).json({ error: 'Missing required fields in health section' });
         }
     }
 
     // Food allergies
-
     if (formData.healthData.foodAllergyStatus === "1") {
-        if ((!formData.healthData.foodCondition && !formData.healthData.foodOther) || !formData.healthData.foodDetails || !formData.healthData.foodTraces || !formData.healthData.foodMedicineStatus) {
+        if (!formData.healthData.foodCondition || !formData.healthData.foodDetails || !formData.healthData.foodTraces || !formData.healthData.foodMedicineStatus) {
+            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
             return res.status(400).json({ error: 'Missing required fields in health section' });
         }
         if (formData.healthData.foodMedicineStatus === "1") {
             if (!formData.healthData.foodMedicineDetails) {
+                console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
                 return res.status(400).json({ error: 'Missing required fields in health section' });
             }
+        }
+        //  Allergy risk acknowledgement
+        if (!formData.healthData.allergyRiskAcknowledgement) {
+            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
+            return res.status(400).json({ error: 'Missing required fields in health section' });
         }
     }
 
     // Other conditions
-
     if (formData.healthData.otherConditionStatus === "1") {
         if (!formData.healthData.otherConditionDetails || !formData.healthData.otherDiagnosedDate || !formData.healthData.otherPhysicalEngagement || !formData.healthData.otherTriggerFactor || !formData.healthData.otherMeasures || !formData.healthData.otherMedication || !formData.healthData.otherFollowup || !formData.healthData.otherFocusAbility || !formData.healthData.otherUnderstandAbility) {
+            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
             return res.status(400).json({ error: 'Missing required fields in health section' });
         }
         if (formData.healthData.otherFocusAbility === "1" || formData.healthData.otherUnderstandAbility === "1") {
             if (!formData.healthData.otherHelp) {
+                console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
                 return res.status(400).json({ error: 'Missing required fields in health section' });
             }
         }
     }
 
     // Declaration Validation
-    
     if (!formData.declarationData.informationDeclaration || !formData.declarationData.medicalDeclaration || !formData.declarationData.allRiskAcknowledgement || !formData.declarationData.contentDisclosure) {
+        console.log(`DECLARATION VALIDATION ERROR`);
         return res.status(400).json({ error: 'Missing required fields in declaration section' });
     }
 
@@ -2734,7 +2771,7 @@ app.post('/getStudentRegistrationInfo', authHelper.verifyToken, authHelper.check
     }
     const { studentName } = req.body;
     const { studentNRIC } = req.body;
-    console.log(studentName+studentNRIC)
+    console.log(studentName + studentNRIC)
     return doctorFormModel
         .getStudentRegistrationInfo(studentName, studentNRIC)
         .then((result) => {
@@ -2992,6 +3029,7 @@ app.get('/getisOtherConditionDetails/:regformid', (req, res, next) => {
             }
         });
 });
+
 /**
  * Error handling
  */
