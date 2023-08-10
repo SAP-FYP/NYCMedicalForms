@@ -41,9 +41,16 @@
     background-color: #485eab;
   }
 
+
 #logout-btn {
    /* btn line height 1 */
     line-height: 1!important;
+    padding: 0!important;
+}
+
+#icons-logout {
+    padding: 0!important;
+    cursor: pointer !important;
 
 }
 
