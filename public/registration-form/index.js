@@ -225,6 +225,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
             if (input == "parentNumber" || (input == "emergencyNumber" && !optionalFields.includes(input))) {
                 let numberRegex = /^[986]\d{7}$/
+                parentSectionValues[input] = value.replace(/\s/g, '');
                 if (!numberRegex.test(value.replace(/\s/g, ''))) {
                     inputEl.classList.add("is-invalid");
                     sectionIsValid = false;
@@ -349,7 +350,7 @@ window.addEventListener('DOMContentLoaded', () => {
             breathingMedicineStatus: "form-input-hasBreathingMedication", //*OPTIONAL
             breathingMedicineDetails: "form-input-medication-details", //*SUB OPTIONAL 
             breathingFollowup: "form-input-breathing-followup", //*OPTIONAL
-            breathingExercise: "form-input-breathing-excercise", //*OPTIONAL
+            breathingExercise: "form-input-breathing-exercise", //*OPTIONAL
 
             //HEART SECTION
             heartStatus: "form-input-hasHeartCondi",
@@ -409,7 +410,7 @@ window.addEventListener('DOMContentLoaded', () => {
             environmentAllergyStatus: "form-input-hasEnvironmentalAllergy",
             environmentCondition: "form-input-environmental-allergy", //*OPTIONAL
             environmentOther: "form-input-environment-other", //*OPTIONAL
-            environmentDetails: "form-input-enviroment-details", //*OPTIONAL
+            environmentDetails: "form-input-environment-details", //*OPTIONAL
             environmentMedicineStatus: "form-input-hasAllergyMedication", //*OPTIONAL
             environmentMedicineDetails: "form-input-allergy-medication", //*SUB OPTIONAL
 
@@ -445,10 +446,10 @@ window.addEventListener('DOMContentLoaded', () => {
             inputEl.classList.remove("is-invalid");
 
             if (input == "tetanusStatus" || input == "breathingStatus" || input == "breathingMedicineStatus" || input == "breathingFollowup" ||
-                input == "breathingExcercise" || input == "heartStatus" || input == "heartFollowup" || input == "bloodStatus" || input == "bloodFollowup" ||
+                input == "breathingExercise" || input == "heartStatus" || input == "heartFollowup" || input == "bloodStatus" || input == "bloodFollowup" ||
                 input == "epilepsyStatus" || input == "epilepsyEpisode" || input == "epilepsyMedication" || input == "epilepsyFollowup" || input == "boneStatus" ||
                 input == "boneFollowup" || input == "boneRecovered" || input == "behaviouralStatus" || input == "behaviouralFollowup" || input == "longMedicationStatus" || input == "diseaseStatus" ||
-                input == "sleepwalkStatus" || input == "medicationAllergyStatus" || input == "enviromentAllergyStatus" || input == "environmentMedicineStatus" ||
+                input == "sleepwalkStatus" || input == "medicationAllergyStatus" || input == "environmentAllergyStatus" || input == "environmentMedicineStatus" ||
                 input == "foodAllergyStatus" || input == "foodMedicineStatus" || input == "otherConditionStatus" || input == "otherFollowup" || input == "otherFocusAbility" ||
                 input == "otherUnderstandAbility") {
                 const radioButtons = document.querySelectorAll(`.${input} input[type="radio"]`);
@@ -522,7 +523,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }
 
         if (healthSectionValues.breathingStatus != 1) {
-            optionalFields.push("breathingCondition", "breathingDate", "breathingMedicineStatus", "breathingMedicineDetails", "breathingFollowup", "breathingExcercise")
+            optionalFields.push("breathingCondition", "breathingDate", "breathingMedicineStatus", "breathingMedicineDetails", "breathingFollowup", "breathingExercise")
         } else if (healthSectionValues.breathingMedicineStatus == 0) {
             optionalFields.push("breathingMedicineDetails")
         }
@@ -576,14 +577,14 @@ window.addEventListener('DOMContentLoaded', () => {
             optionalFields.push("medicationName")
         }
 
-        if (healthSectionValues.enviromentAllergyStatus != 1) {
+        if (healthSectionValues.environmentAllergyStatus != 1) {
             optionalFields.push("environmentCondition", "environmentOther", "environmentDetails", "environmentMedicineStatus",
                 "environmentMedicineDetails")
         } else if (!healthSectionValues.environmentCondition || !healthSectionValues.environmentCondition.includes("Others")) {
             optionalFields.push("environmentOther");
         }
 
-        if (healthSectionValues.enviromentAllergyStatus == 1 && healthSectionValues.environmentMedicineStatus == 0) {
+        if (healthSectionValues.environmentAllergyStatus == 1 && healthSectionValues.environmentMedicineStatus == 0) {
             optionalFields.push("environmentMedicineDetails")
         }
 
@@ -597,7 +598,7 @@ window.addEventListener('DOMContentLoaded', () => {
             optionalFields.push("foodMedicineDetails")
         }
 
-        if (healthSectionValues.enviromentAllergyStatus == 0 && healthSectionValues.medicationAllergyStatus == 0 && healthSectionValues.foodAllergyStatus == 0) {
+        if (healthSectionValues.environmentAllergyStatus == 0 && healthSectionValues.medicationAllergyStatus == 0 && healthSectionValues.foodAllergyStatus == 0) {
             optionalFields.push("allergyRiskAcknowledgement")
         }
 
@@ -1438,7 +1439,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // ALLERGY TO ENVIRONMENTAL FACTOR(S)
     document.querySelectorAll('input[name="environmental-allergy-condition-radio"]').forEach(button => {
-        const subFields = ["form-input-environmental-allergy", "form-input-environment-other", "form-input-enviroment-details",
+        const subFields = ["form-input-environmental-allergy", "form-input-environment-other", "form-input-environment-details",
             "form-input-hasAllergyMedication"]
         button.addEventListener("change", (e) => {
             const targetElement = document.getElementById('environmental-allergy-condition-div');

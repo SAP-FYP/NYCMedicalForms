@@ -399,7 +399,7 @@ document.addEventListener('DOMContentLoaded', function () {
             inputElement.classList.add('is-valid');
             return true;
         }
-    }
+    };
     const validateName = (inputElement, feedbackElement, value) => {
         const namePattern = /^[a-zA-Z\s]+$/;
         if (!namePattern.test(value)) {
@@ -649,7 +649,7 @@ document.addEventListener('DOMContentLoaded', function () {
         studentNameInput.disabled = false;
         studentNRICInput.disabled = false;
         dateOfBirth.disabled = false;
-        schoolDropDown.disabled = false;
+        schoolName.disabled = false;
         studentClassInput.disabled = false;
         dateOfVaccineInput.disabled = false;
 
@@ -897,7 +897,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     // student retrieval
-    retreiveStudentBtn.addEventListener('click', (event) => {8
+    retreiveStudentBtn.addEventListener('click', (event) => {
         event.preventDefault();
         validities.isRetreiveBtnClicked = true;
         if(validities.isStudentNameValid && validities.isStudentNRICValid){
@@ -1144,7 +1144,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const loadingTempClone = loadingTemp.content.cloneNode(true);
         loadingTempClone.querySelector('div').className = 'loadingMsg m-3';
         seeDetailModalElement.querySelector('.modal-body').appendChild(loadingTempClone);
-    })
+    });
 
     // handle form submission
     form.addEventListener('submit', function (event) {
