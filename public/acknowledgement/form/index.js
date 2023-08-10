@@ -45,8 +45,6 @@ window.addEventListener("DOMContentLoaded", function () {
 
   // Acknowledge & Flag Button
   const acknowledgeBtn = document.getElementById("acknowledge-button");
-  const flagBtn = document.getElementById("flag-button");
-
 
   const alertContainer = document.getElementById('alertbox');
   function alertBox(message, type) {
@@ -210,6 +208,9 @@ window.addEventListener("DOMContentLoaded", function () {
 
   // If parent has yet to acknowledge
   const requireAcknowledgement = () => {
+
+    const flagComment = document.getElementById("flag-comment");
+    const contactOBS = document.getElementById("contact-obs");
 
     // Signature Pad
     const canvas = document.getElementById("parent-signature-canvas");
@@ -376,35 +377,10 @@ window.addEventListener("DOMContentLoaded", function () {
         .catch(handleError);
     });
 
-    //   flagBtn.addEventListener("click", function (e) {
-    //     // Create a popup modal
-    //     e.preventDefault();
-    //     console.log("test")
-    //     const modal = document.createElement("div");
-    //     modal.classList.add("modal");
-    //     modal.setAttribute("id", "flagModal");
-    //     modal.setAttribute("tabindex", "-1");
-    //     modal.setAttribute("role", "dialog");
-    //     modal.setAttribute("aria-labelledby", "flagModalLabel");
-    //     modal.setAttribute("aria-hidden", "true");
-    //     modal.innerHTML = `
-    //     <div class="modal-dialog modal-dialog-centered" role="document">
-    //       <div class="modal-content">
-    //         <div class="modal-body">
-    //         <h5 class="modal-title" id="flagModalLabel">Flag Form</h5>
-    //         <p>Are you sure you want to flag this form?</p>
-    //         </div>
-    //         <div class="modal-footer">
-    //           <button type="button" class="btn btn-secondary" id="cancelFlagBtn" data-dismiss="modal">Cancel</button>
-    //           <button type="button" class="btn btn-danger" id="confirmFlagBtn">Flag</button>
-    //         </div>
-    //       </div>
-    //     </div>
-    //     `;
-    //     document.body.appendChild(modal);
-    //     $("#flagModal").modal("show");
-
-    //   });
+      contactOBS.addEventListener("click", function (e) {
+        e.preventDefault();
+        window.location.href = `mailto:sg.outwardbound@gmail.com?subject=Comments on my child's newly found medical conditions&body=${flagComment.value}`
+      });
   };
 
   // If parent has already acknowledged
