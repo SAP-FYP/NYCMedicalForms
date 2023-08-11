@@ -73,12 +73,32 @@ module.exports.remindParentJob = function remindParentJob() {
             result.forEach(async (parent) => {
                 const email = parent.parentEmail;
 
+                const htmlString = `
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Reminder: Important Medical Updates</title>
+                </head>
+                <body>
+                    <p>Dear Parent,</p>
+                    <p>We hope this email finds you well. This is a friendly reminder that we have recently made important updates to your child's medical records. However, we have not received your acknowledgment of these updates.</p>
+                    <p>It's important for us to have accurate and up-to-date information to ensure the well-being of your child.</p>
+                    <p>If you have already acknowledged the updates, please accept our apologies and disregard this reminder.</p>
+                    <p>Thank you for your prompt attention to this matter.</p>
+                    <p>Warm regards,</p>
+                    <p>National Youth Council in affiliation with Outward Bound Singapore</p>
+                </body>
+                </html>
+                `
+                
                 // Send email
                 const emailParams = {
                     to: email,
                     subject: "Reminder: Require Parent's Acknowledgement: New Changes in Your Child's Medical Condition",
                     from: 'sg.outwardbound@gmail.com',
-                    body: `test`
+                    body: htmlString
                 };
                 // Send the email using Elastic Email SDK
                 elasticEmailClient.mailer.send(emailParams, (err, result) => {
