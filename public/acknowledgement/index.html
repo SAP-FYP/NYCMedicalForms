@@ -15,18 +15,29 @@
 </head>
 
 <body>
+    <div id="loadingOverlay" class="overlay">
+        <div class="overlay-content d-flex justify-content-center align-items-center">
+            <div class="spinner-border text-white" role="status">
+
+            </div>
+            <span class="sr-only"
+                style="padding-left: 20px; font-size: 20px; color: white; font-weight: 600;">Loading...</span>
+        </div>
+    </div>
+
     <div class="container-fluid m-0">
         <div class="row h-100">
             <div id="login-form-container" class="col-md d-flex justify-content-center align-items-center">
                 <form id="login-form" class="col-8 col-lg-6">
                     <h1>Parent's Login</h1>
                     <label for="login-password" class="login-form-label">Password</label><br>
-                    <input id="login-password" class="w-100 mb-3" type="password" placeholder="eg. DDMMYYYY + Last 4 NRIC"><br>
+                    <input id="login-password" class="w-100 mb-3" type="password"
+                        placeholder="eg. DDMMYYYY + Last 4 NRIC"><br>
 
                     <div id="err-message-container">
                         <text id="err-message"><i class="material-symbols-outlined">error</i></text>
                     </div>
-                    
+
                     <button id="login-button" class="w-100" type="submit">
                         <span id="login-text">Login</span>
                         <span class="spinner-border spinner-border-sm spinner-item" role="status" aria-hidden="true"

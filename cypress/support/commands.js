@@ -24,7 +24,7 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 Cypress.Commands.add('doctorlogin', (email, pass) => {
-    cy.visit('http://localhost:3000/login');
+    cy.visit('http://localhost:3001/login');
     cy.get('input[id=login-email]').type(email);
     cy.get('input[id=login-password]').type(pass);
     cy.get('button[id=login-button]').click();
@@ -33,7 +33,7 @@ Cypress.Commands.add('doctorlogin', (email, pass) => {
 })
 
 Cypress.Commands.add('managementLogin', (email, pass) => {
-    cy.visit('http://localhost:3000/obs-admin/login');
+    cy.visit('http://localhost:3001/obs-admin/login');
     cy.get('input[id=login-email]').type(email);
     cy.get('input[id=login-password]').type(pass);
     cy.get('button[id=login-button]').click();
@@ -42,14 +42,14 @@ Cypress.Commands.add('managementLogin', (email, pass) => {
 })
 
 Cypress.Commands.add('parentLogin', (encrypted, password) => {
-    cy.visit(`http://localhost:3000/acknowledgement?encrypted=${encrypted}`)
+    cy.visit(`http://localhost:3001/acknowledgement?encrypted=${encrypted}`)
     cy.get('input[id=login-password]').type(password);
     cy.get('button[id=login-button]').click();
     cy.url().should('include', `/form/?encrypted=${encrypted}`);
     cy.contains('Parent Section:');
 })
 
-Cypress.Commands.add('fillInParentForm', (parentName, parentNRIC, ) => {
+Cypress.Commands.add('fillInParentForm', (parentName, parentNRIC,) => {
     cy.get('input[id=parent-name]').type(parentName);
     cy.get('input[id=parent-nric]').type(parentNRIC);
 })
@@ -80,7 +80,7 @@ Cypress.Commands.add('adminlogin', (email, pass) => {
     cy.session(
         [email, pass],
         () => {
-            cy.visit('http://localhost:3000/obs-admin/login');
+            cy.visit('http://localhost:3001/obs-admin/login');
             cy.get('input[id=login-email]').type(email);
             cy.get('input[id=login-password]').type(pass);
             cy.get('button[id=login-button]').click();

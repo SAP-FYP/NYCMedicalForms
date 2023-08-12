@@ -68,10 +68,11 @@ app.get('/obs-admin', (req, res) => {
     res.redirect(`/obs-admin/login`);
 });
 
-// callback function - directs back to home page
+// callback function - singpass demo
 app.get('/callback', function (req, res) {
-    console.log(req.body)
-    res.sendFile(__dirname + '/public/singpassdemo.html');
+    const code = req.query.code;
+    const state = req.query.state;
+    return res.redirect(`/acknowledgement?code=${code}&state=${state}`)
 });
 
 /**

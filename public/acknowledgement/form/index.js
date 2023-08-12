@@ -3,6 +3,7 @@ window.addEventListener("DOMContentLoaded", function () {
   const urlParams = new URLSearchParams(window.location.search);
   const encrypted = urlParams.get("encrypted");
   const baseURL = window.location.origin;
+  const singpassInfo = JSON.parse(decodeURIComponent(urlParams.get("user")));
 
   // Logout button
   const logoutBtn = document.getElementById("logout-button");
@@ -39,8 +40,8 @@ window.addEventListener("DOMContentLoaded", function () {
 
   // Validaties (Inline)
   const validities = {
-    isParentNameValid: false,
-    isParentNRICValid: false,
+    isParentNameValid: true,
+    isParentNRICValid: true,
   }
 
   // Acknowledge & Flag Button
@@ -134,6 +135,8 @@ window.addEventListener("DOMContentLoaded", function () {
 
       parentContactNo.value = data.parentContactNo;
       parentEmail.value = data.parentEmail;
+      parentName.value = singpassInfo.name;
+      parentNRIC.value = singpassInfo.nric;
     })
     .catch((error) => {
       alertBox('You have an invalid URL.', 'danger');
@@ -377,10 +380,10 @@ window.addEventListener("DOMContentLoaded", function () {
         .catch(handleError);
     });
 
-      contactOBS.addEventListener("click", function (e) {
-        e.preventDefault();
-        window.location.href = `mailto:sg.outwardbound@gmail.com?subject=Comments on my child's newly found medical conditions&body=${flagComment.value}`
-      });
+    contactOBS.addEventListener("click", function (e) {
+      e.preventDefault();
+      window.location.href = `mailto:sg.outwardbound@gmail.com?subject=Comments on my child's newly found medical conditions&body=${flagComment.value}`
+    });
   };
 
   // If parent has already acknowledged
@@ -398,8 +401,11 @@ window.addEventListener("DOMContentLoaded", function () {
 
         const data = response.data.user;
 
-        parentName.value = data.nameOfParent;
-        parentNRIC.value = "****" + data.parentNRIC;
+        // parentContactNo.value = singpassInfo.contact;
+        // parentEmail.value = singpassInfo.email;
+        // parentName.value = singpassInfo.name;
+        // parentNRIC.value = singpassInfo.nric;
+
         // Convert date to local time
         const parsedDate = new Date(data.dateOfAcknowledgement).toLocaleDateString();
 

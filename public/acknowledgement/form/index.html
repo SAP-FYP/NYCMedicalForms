@@ -179,13 +179,13 @@
 
                         <div class="mb-3 col-12">
                             <label for="parent-name" class="form-label">Name of Parent/Guardian:</label>
-                            <input type="text" class="form-control" id="parent-name" required>
+                            <input type="text" class="form-control" id="parent-name" disabled>
                             <div id="parent-name-feedback" class="invalid-tooltip">Please enter your name</div>
                         </div>
                         <div class="col-xl-6 col-12">
                             <div class="mb-3">
                                 <label for="parent-nric" class="form-label">NRIC/FIN No:</label>
-                                <input type="text" class="form-control" id="parent-nric" required>
+                                <input type="text" class="form-control" id="parent-nric" disabled>
                                 <div id="parent-nric-feedback" class="invalid-tooltip">Please enter your NRIC</div>
                             </div>
                             <div class="mb-3">
@@ -211,7 +211,7 @@
                                 type="submit">Acknowledge Form</button>
                             <div id="line" class="verticalLine mx-3"></div>
                             <button id="flag-button" class="btn btn-secondary decision-btn btn-md"
-                            data-bs-toggle="modal" data-bs-target="#staticBackdrop">Flag
+                                data-bs-toggle="modal" data-bs-target="#staticBackdrop">Flag
                                 Discrepancies</button>
                         </div>
             </form>
@@ -222,7 +222,8 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <p class="modal-title" id="staticBackdropLabel">Please comment any possible discrepancies for the child's newly found medical conditions</p>
+                        <p class="modal-title" id="staticBackdropLabel">Please comment any possible discrepancies for
+                            the child's newly found medical conditions</p>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">

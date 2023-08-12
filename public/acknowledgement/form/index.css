@@ -2,7 +2,7 @@
     background-image: url('../../assets/background.png');
     background-repeat: no-repeat;
     background-size: cover;
-    
+
 }
 
 
@@ -13,8 +13,8 @@
 }
 
 .invalid-tooltip {
-    position: relative!important;
-    top: 0!important;
+    position: relative !important;
+    top: 0 !important;
 }
 
 #doctor-signature-image {
@@ -30,7 +30,7 @@
 }
 
 .decision-btn {
-    background-color: #f2f2f2!important;
+    background-color: #f2f2f2 !important;
     border: 2px solid #485eab !important;
     color: #485eab !important;
 }
@@ -39,17 +39,17 @@
     width: 1px;
     height: 30px;
     background-color: #485eab;
-  }
+}
 
 
 #logout-btn {
-   /* btn line height 1 */
-    line-height: 1!important;
-    padding: 0!important;
+    /* btn line height 1 */
+    line-height: 1 !important;
+    padding: 0 !important;
 }
 
 #icons-logout {
-    padding: 0!important;
+    padding: 0 !important;
     cursor: pointer !important;
 
 }
