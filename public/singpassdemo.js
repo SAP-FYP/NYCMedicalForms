@@ -18,7 +18,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // ---START---WINDOW ONLOAD---
     window.onload = function (e) {
-        const getEnv = fetch('http://localhost:3001/getEnv')
+        const getEnv = fetch('http://localhost:3000/getEnv')
             .then((response) => {
                 if (response.status != 200) {
                     throw new Error('Failed to fetch ENV')
@@ -34,8 +34,8 @@ window.addEventListener('DOMContentLoaded', () => {
                 environment = result.environment;
                 authApiUrl = result.authApiUrl;
 
-                console.log(redirectUrl)
-                console.log(authApiUrl)
+                // console.log(redirectUrl)
+                // console.log(authApiUrl)
             }).catch((error) => {
                 alert("ERROR:" + JSON.stringify(result.responseJSON.error));
 
@@ -75,7 +75,6 @@ window.addEventListener('DOMContentLoaded', () => {
     const callServerAPIs = () => {
         // let authCode = $.url(this.location.href).param('code');
         // let state = $.url(this.location.href).param('state');
-        console.log('doing')
         const url = new URL(window.location.href);
         const searchParams = new URLSearchParams(url.search);
 
@@ -86,7 +85,7 @@ window.addEventListener('DOMContentLoaded', () => {
         // console.log("State:",state);
 
         // invoke AJAX call from frontend client side to your backend server side
-        fetch('http://localhost:3001/getPersonData', {
+        fetch('http://localhost:3000/getPersonData', {
             method: 'POST', // post to server side
             headers: {
                 'Content-Type': 'application/json'
@@ -100,7 +99,6 @@ window.addEventListener('DOMContentLoaded', () => {
                 if (response.status != 200) {
                     throw new Error('Request failed with status: ' + response.status);
                 }
-                // console.log("response",response);
                 return response.json();
             })
             .then((result) => {

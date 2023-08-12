@@ -70,7 +70,8 @@ app.get('/obs-admin', (req, res) => {
 
 // callback function - directs back to home page
 app.get('/callback', function (req, res) {
-    res.sendFile(__dirname + '/public/index.html');
+    console.log(req.body)
+    res.sendFile(__dirname + '/public/singpassdemo.html');
 });
 
 /**
@@ -3034,20 +3035,20 @@ app.get('/getisOtherConditionDetails/:regformid', (req, res, next) => {
  * Error handling
  */
 
-app.use((error, req, res, next) => {
-    let url = new URL(req.headers.referer)
-    let urlParams = url.searchParams.toString();
+// app.use((error, req, res, next) => {
+//     let url = new URL(req.headers.referer)
+//     let urlParams = url.searchParams.toString();
 
-    if (error) {
-        if (req.headers.referer.includes('obs-admin')) {
-            return res.redirect(`/error?code=${error.status || 500}&type=obs-admin`)
-        } else if (req.headers.referer.includes('acknowledgement')) {
-            return res.redirect(`/error?code=${error.status || 500}&type=acknowledgement&${urlParams}`)
-        } else {
-            return res.redirect(`/error?code=${error.status || 500}`)
-        }
-    }
-});
+//     if (error) {
+//         if (req.headers.referer.includes('obs-admin')) {
+//             return res.redirect(`/error?code=${error.status || 500}&type=obs-admin`)
+//         } else if (req.headers.referer.includes('acknowledgement')) {
+//             return res.redirect(`/error?code=${error.status || 500}&type=acknowledgement&${urlParams}`)
+//         } else {
+//             return res.redirect(`/error?code=${error.status || 500}`)
+//         }
+//     }
+// });
 
 app.get('*', (req, res) => {
     return res.redirect('/error?code=404')
