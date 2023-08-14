@@ -43,6 +43,9 @@ module.exports.submitRegForm = function submitRegForm(data) {
         throw error;
       }
       return row[0];
+    })
+    .catch((error) => {
+      console.log(error)
     });
 };
 

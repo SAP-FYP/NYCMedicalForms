@@ -2361,392 +2361,365 @@ app.post('/obs-reg-form/submit', (req, res, next) => {
     const parentSectionRequiredInputs = ['parentName', 'parentEmail', 'parentNumber', 'parentRelation', 'parentIsEmergencyContact'];
     const parentSectionOptionalInputs = ['emergencyName', 'emergencyNumber', 'emergencyRelation'];
 
-    // Check if all required inputs are filled
-    for (let i = 0; i < parentSectionRequiredInputs.length; i++) {
-        if (!formData.parentData[parentSectionRequiredInputs[i]]) {
-            console.log(`VALIDATION ERROR AT: ${parentSectionInputs[i]} : VALUE: ${formData.parentData[parentSectionInputs[i]]}`)
-            return res.status(400).json({ error: 'Missing required input(s) in parent section' });
-        }
-    }
-
-    // Check if all inputs are valid
-    for (let i = 0; i < parentSectionInputs.length; i++) {
-        if (formData.parentData[parentSectionInputs[i]]) {
-            if (parentSectionInputs[i] === 'parentEmail') {
-                if (!validator.isEmail(formData.parentData[parentSectionInputs[i]])) {
-                    console.log(`VALIDATION ERROR AT: ${parentSectionInputs[i]} : VALUE: ${formData.parentData[parentSectionInputs[i]]}`)
-                    return res.status(400).json({ error: 'Invalid email in parent section' });
-                }
-            } else if (parentSectionInputs[i] === 'parentNumber' || parentSectionInputs[i] === 'emergencyNumber') {
-                if (!validator.isMobilePhone(formData.parentData[parentSectionInputs[i]])) {
-                    console.log(`VALIDATION ERROR AT: ${parentSectionInputs[i]} : VALUE: ${formData.parentData[parentSectionInputs[i]]}`)
-                    return res.status(400).json({ error: 'Invalid phone number in parent section' });
-                }
-            }
-        }
-    }
-
-    // If parentIsEmergencyContact is false, then emergency contact is a must
-    if (formData.parentData.parentIsEmergencyContact === "0") {
-        for (let i = 0; i < parentSectionOptionalInputs.length; i++) {
-            if (!formData.parentData[parentSectionOptionalInputs[i]]) {
-                console.log(`VALIDATION ERROR AT: ${parentSectionInputs[i]} : VALUE: ${formData.parentData[parentSectionInputs[i]]}`)
+    try {
+        // Check if all required inputs are filled
+        for (let i = 0; i < parentSectionRequiredInputs.length; i++) {
+            if (!formData.parentData[parentSectionRequiredInputs[i]]) {
                 return res.status(400).json({ error: 'Missing required input(s) in parent section' });
             }
         }
 
         // Check if all inputs are valid
-        for (let i = 0; i < parentSectionOptionalInputs.length; i++) {
-            if (formData.parentData[parentSectionOptionalInputs[i]]) {
-                if (parentSectionOptionalInputs[i] === 'parentAltNumber' || parentSectionOptionalInputs[i] === 'emergencyNumber' || parentSectionOptionalInputs[i] === 'emergencyAltNumber') {
-                    if (!validator.isMobilePhone(formData.parentData[parentSectionOptionalInputs[i]])) {
-                        console.log(`VALIDATION ERROR AT: ${parentSectionInputs[i]} : VALUE: ${formData.parentData[parentSectionInputs[i]]}`)
+        for (let i = 0; i < parentSectionInputs.length; i++) {
+            if (formData.parentData[parentSectionInputs[i]]) {
+                if (parentSectionInputs[i] === 'parentEmail') {
+                    if (!validator.isEmail(formData.parentData[parentSectionInputs[i]])) {
+                        return res.status(400).json({ error: 'Invalid email in parent section' });
+                    }
+                } else if (parentSectionInputs[i] === 'parentNumber' || parentSectionInputs[i] === 'emergencyNumber') {
+                    if (!validator.isMobilePhone(formData.parentData[parentSectionInputs[i]])) {
                         return res.status(400).json({ error: 'Invalid phone number in parent section' });
                     }
                 }
             }
         }
-    }
 
-    // Applicant Validation
-    const applicantSectionInputs = ['applicantName', 'applicantSchool', 'applicantClass', 'applicantResidential', 'applicantDob', 'applicantRace', 'applicantGender', 'applicantEmail', 'applicantAddress', 'applicantDiet'];
-    const applicantSectionRequiredInputs = ['applicantName', 'applicantSchool', 'applicantClass', 'applicantResidential', 'applicantDob', 'applicantRace', 'applicantGender', 'applicantEmail', 'applicantAddress'];
-
-    // Check if all required inputs are filled
-    for (let i = 0; i < applicantSectionRequiredInputs.length; i++) {
-        if (!formData.applicantData[applicantSectionRequiredInputs[i]]) {
-            console.log(`VALIDATION ERROR AT: ${applicantSectionInputs[i]} : VALUE: ${formData.applicantData[applicantSectionInputs[i]]}`)
-            return res.status(400).json({ error: 'Missing required input(s) in applicant section' });
-        }
-    }
-
-    // Check if all inputs are valid
-    for (let i = 0; i < applicantSectionInputs.length; i++) {
-        if (formData.applicantData[applicantSectionInputs[i]]) {
-            if (applicantSectionInputs[i] === 'applicantEmail') {
-                if (!validator.isEmail(formData.applicantData[applicantSectionInputs[i]])) {
-                    console.log(`VALIDATION ERROR AT: ${applicantSectionInputs[i]} : VALUE: ${formData.applicantData[applicantSectionInputs[i]]}`)
-                    return res.status(400).json({ error: 'Invalid email in applicant section' });
+        // If parentIsEmergencyContact is false, then emergency contact is a must
+        if (formData.parentData.parentIsEmergencyContact === "0") {
+            for (let i = 0; i < parentSectionOptionalInputs.length; i++) {
+                if (!formData.parentData[parentSectionOptionalInputs[i]]) {
+                    return res.status(400).json({ error: 'Missing required input(s) in parent section' });
                 }
-            } else if (applicantSectionInputs[i] === 'applicantDob') {
-                if (!validator.isDate(formData.applicantData[applicantSectionInputs[i]])) {
-                    console.log(`VALIDATION ERROR AT: ${applicantSectionInputs[i]} : VALUE: ${formData.applicantData[applicantSectionInputs[i]]}`)
-                    return res.status(400).json({ error: 'Invalid date in applicant section' });
+            }
+
+            // Check if all inputs are valid
+            for (let i = 0; i < parentSectionOptionalInputs.length; i++) {
+                if (formData.parentData[parentSectionOptionalInputs[i]]) {
+                    if (parentSectionOptionalInputs[i] === 'parentAltNumber' || parentSectionOptionalInputs[i] === 'emergencyNumber' || parentSectionOptionalInputs[i] === 'emergencyAltNumber') {
+                        if (!validator.isMobilePhone(formData.parentData[parentSectionOptionalInputs[i]])) {
+                            return res.status(400).json({ error: 'Invalid phone number in parent section' });
+                        }
+                    }
                 }
             }
         }
-    }
 
-    // Health Validation
-    const healthSectionRequiredInputs = ['tetanusStatus', 'applicantHeight', 'applicantWeight', 'applicantBmi', 'breathingStatus', 'heartStatus', 'bloodStatus', 'epilepsyStatus', 'boneStatus', 'behaviouralStatus', 'longMedicationStatus', 'diseaseStatus', 'sleepwalkStatus', 'medicationAllergyStatus', 'environmentAllergyStatus', 'foodAllergyStatus', 'otherConditionStatus'];
+        // Applicant Validation
+        const applicantSectionInputs = ['applicantName', 'applicantSchool', 'applicantClass', 'applicantResidential', 'applicantDob', 'applicantRace', 'applicantGender', 'applicantEmail', 'applicantAddress', 'applicantDiet'];
+        const applicantSectionRequiredInputs = ['applicantName', 'applicantSchool', 'applicantClass', 'applicantResidential', 'applicantDob', 'applicantRace', 'applicantGender', 'applicantEmail', 'applicantAddress'];
 
-    // Check if all requiredInputs are filled
-    for (let i = 0; i < healthSectionRequiredInputs.length; i++) {
-        if (!formData.healthData[healthSectionRequiredInputs[i]]) {
-            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
-            return res.status(400).json({ error: 'Missing required fields in health section' });
+        // Check if all required inputs are filled
+        for (let i = 0; i < applicantSectionRequiredInputs.length; i++) {
+            if (!formData.applicantData[applicantSectionRequiredInputs[i]]) {
+                return res.status(400).json({ error: 'Missing required input(s) in applicant section' });
+            }
         }
-    }
 
-    // Tetanus
-    if (formData.healthData.tetanusStatus === "1") {
-        if (!formData.healthData.tetanusDate) {
-            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
-            return res.status(400).json({ error: 'Missing required fields in health section' });
+        // Check if all inputs are valid
+        for (let i = 0; i < applicantSectionInputs.length; i++) {
+            if (formData.applicantData[applicantSectionInputs[i]]) {
+                if (applicantSectionInputs[i] === 'applicantEmail') {
+                    if (!validator.isEmail(formData.applicantData[applicantSectionInputs[i]])) {
+                        return res.status(400).json({ error: 'Invalid email in applicant section' });
+                    }
+                } else if (applicantSectionInputs[i] === 'applicantDob') {
+                    if (!validator.isDate(formData.applicantData[applicantSectionInputs[i]])) {
+                        return res.status(400).json({ error: 'Invalid date in applicant section' });
+                    }
+                }
+            }
         }
-        if (!validator.isDate(formData.healthData.tetanusDate)) {
-            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
-            return res.status(400).json({ error: 'Invalid date in health section' });
-        }
-    }
 
-    // Breathing
-    if (formData.healthData.breathingStatus === "1") {
-        if (!formData.healthData.breathingCondition || !formData.healthData.breathingDate || !formData.healthData.breathingMedicineStatus || !formData.healthData.breathingFollowup || !formData.healthData.breathingExercise) {
-            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
-            return res.status(400).json({ error: 'Missing required fields in health section' });
-        }
-        if (!validator.isDate(formData.healthData.breathingDate)) {
-            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
-            return res.status(400).json({ error: 'Invalid date in health section' });
-        }
-        if (formData.healthData.breathingMedicineStatus === "1") {
-            if (!formData.healthData.breathingMedicineDetails) {
-                console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
+        // Health Validation
+        const healthSectionRequiredInputs = ['tetanusStatus', 'applicantHeight', 'applicantWeight', 'applicantBmi', 'breathingStatus', 'heartStatus', 'bloodStatus', 'epilepsyStatus', 'boneStatus', 'behaviouralStatus', 'longMedicationStatus', 'diseaseStatus', 'sleepwalkStatus', 'medicationAllergyStatus', 'environmentAllergyStatus', 'foodAllergyStatus', 'otherConditionStatus'];
+
+        // Check if all requiredInputs are filled
+        for (let i = 0; i < healthSectionRequiredInputs.length; i++) {
+            if (!formData.healthData[healthSectionRequiredInputs[i]]) {
                 return res.status(400).json({ error: 'Missing required fields in health section' });
             }
         }
-    }
 
-    // Heart
-    if (formData.healthData.heartStatus === "1") {
-        if (!formData.healthData.heartCondition || !formData.healthData.heartFollowup) {
-            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
-            return res.status(400).json({ error: 'Missing required fields in health section' });
-        }
-    }
-
-    // Blood
-    if (formData.healthData.bloodStatus === "1") {
-        if (!formData.healthData.bloodCondition) {
-            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
-            return res.status(400).json({ error: 'Missing required fields in health section' });
-        }
-        if (formData.healthData.bloodCondition !== 'not Thalassaemia minor' || formData.healthData.bloodCondition !== 'not Thalassaemia major') {
-            if (!formData.healthData.bloodFollowup) {
-                console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
+        // Tetanus
+        if (formData.healthData.tetanusStatus === "1") {
+            if (!formData.healthData.tetanusDate) {
                 return res.status(400).json({ error: 'Missing required fields in health section' });
             }
-        }
-    }
-
-    // Epilepsy
-    if (formData.healthData.epilepsyStatus === "1") {
-        if (!formData.healthData.epilepsyEpisode && !formData.healthData.epilepsyMedication) {
-            //console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
-            console.log(formData.healthData.epilepsyEpisode)
-            console.log(formData.healthData.epilepsyMedication)
-            console.log(formData.healthData.epilepsyFollowup)
-            if (!formData.healthData.epilepsyFollowup) {
-                return res.status(400).json({ error: 'Missing requireed fields in health section' })
+            if (!validator.isDate(formData.healthData.tetanusDate)) {
+                return res.status(400).json({ error: 'Invalid date in health section' });
             }
-            return res.status(400).json({ error: 'Missing required fields in health section' });
         }
-    }
 
-    // Bone
-    if (formData.healthData.boneStatus === "1") {
-        if (!formData.healthData.boneCondition || !formData.healthData.boneDate || !formData.healthData.boneFollowup) {
-            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
-            return res.status(400).json({ error: 'Missing required fields in health section' });
-        }
-        if (!validator.isDate(formData.healthData.boneDate)) {
-            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
-            return res.status(400).json({ error: 'Invalid date in health section' });
-        }
-        if (formData.healthData.boneFollowup === "0") {
-            if (!formData.healthData.boneRecovered) {
-                if (!formData.healthData.boneInformation) {
-                    console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
+        // Breathing
+        if (formData.healthData.breathingStatus === "1") {
+            if (!formData.healthData.breathingCondition || !formData.healthData.breathingDate || !formData.healthData.breathingMedicineStatus || !formData.healthData.breathingFollowup || !formData.healthData.breathingExercise) {
+                return res.status(400).json({ error: 'Missing required fields in health section' });
+            }
+            if (!validator.isDate(formData.healthData.breathingDate)) {
+                return res.status(400).json({ error: 'Invalid date in health section' });
+            }
+            if (formData.healthData.breathingMedicineStatus === "1") {
+                if (!formData.healthData.breathingMedicineDetails) {
                     return res.status(400).json({ error: 'Missing required fields in health section' });
                 }
             }
         }
-    }
 
-    // Behavioural 
-    if (formData.healthData.behaviouralStatus === "1") {
-        if (!formData.healthData.behaviouralCondition || !formData.healthData.behaviouralFollowup || !formData.healthData.riskAcknowledgement || !formData.healthData.participationAcknowledgement) {
-            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
-            return res.status(400).json({ error: 'Missing required fields in health section' });
-        }
-        if (formData.healthData.behaviouralFollowup === "1") {
-            if (!formData.healthData.specialistProgress || !formData.healthData.homeBehaviour || !formData.healthData.outdoorExperience) {
-                console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
+        // Heart
+        if (formData.healthData.heartStatus === "1") {
+            if (!formData.healthData.heartCondition || !formData.healthData.heartFollowup) {
                 return res.status(400).json({ error: 'Missing required fields in health section' });
             }
         }
-    }
 
-    // Long term medication
-    if (formData.healthData.longMedicationStatus === "1") {
-        if (!formData.healthData.longMedicationDetails) {
-            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
-            return res.status(400).json({ error: 'Missing required fields in health section' });
+        // Blood
+        if (formData.healthData.bloodStatus === "1") {
+            if (!formData.healthData.bloodCondition) {
+                return res.status(400).json({ error: 'Missing required fields in health section' });
+            }
+            if (formData.healthData.bloodCondition !== 'not Thalassaemia minor' || formData.healthData.bloodCondition !== 'not Thalassaemia major') {
+                if (!formData.healthData.bloodFollowup) {
+                    return res.status(400).json({ error: 'Missing required fields in health section' });
+                }
+            }
         }
-    }
 
-    // Diseases
-    if (formData.healthData.diseaseStatus === "1") {
-        if (!formData.healthData.diseaseDetails) {
-            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
-            return res.status(400).json({ error: 'Missing required fields in health section' });
-        }
-    }
-
-    // Sleep walk 
-    if (formData.healthData.sleepwalkStatus === "1") {
-        if (!formData.healthData.sleepwalkDate) {
-            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
-            return res.status(400).json({ error: 'Missing required fields in health section' });
-        }
-        if (!validator.isDate(formData.healthData.sleepwalkDate)) {
-            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
-            return res.status(400).json({ error: 'Invalid date in health section' });
-        }
-    }
-
-    // Medication allergies
-    if (formData.healthData.medicationAllergyStatus === "1") {
-        if (!formData.healthData.medicationName) {
-            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
-            return res.status(400).json({ error: 'Missing required fields in health section' });
-        }
-        //  Allergy risk acknowledgement
-        if (!formData.healthData.allergyRiskAcknowledgement) {
-            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
-            return res.status(400).json({ error: 'Missing required fields in health section' });
-        }
-    }
-
-    // Environment allergies
-    if (formData.healthData.environmentAllergyStatus === "1") {
-        if ((!formData.healthData.environmentCondition && !formData.healthData.environmentOther) || !formData.healthData.environmentDetails || !formData.healthData.environmentMedicineStatus) {
-            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
-            return res.status(400).json({ error: 'Missing required fields in health section' });
-        }
-        if (formData.healthData.environmentMedicineStatus === "1") {
-            if (!formData.healthData.environmentMedicineDetails) {
-                console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
+        // Epilepsy
+        if (formData.healthData.epilepsyStatus === "1") {
+            if (!formData.healthData.epilepsyEpisode && !formData.healthData.epilepsyMedication) {
+                if (!formData.healthData.epilepsyFollowup) {
+                    return res.status(400).json({ error: 'Missing requireed fields in health section' })
+                }
                 return res.status(400).json({ error: 'Missing required fields in health section' });
             }
         }
-        //  Allergy risk acknowledgement
-        if (!formData.healthData.allergyRiskAcknowledgement) {
-            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
-            return res.status(400).json({ error: 'Missing required fields in health section' });
-        }
-    }
 
-    // Food allergies
-    if (formData.healthData.foodAllergyStatus === "1") {
-        if (!formData.healthData.foodCondition || !formData.healthData.foodDetails || !formData.healthData.foodTraces || !formData.healthData.foodMedicineStatus) {
-            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
-            return res.status(400).json({ error: 'Missing required fields in health section' });
+        // Bone
+        if (formData.healthData.boneStatus === "1") {
+            if (!formData.healthData.boneCondition || !formData.healthData.boneDate || !formData.healthData.boneFollowup) {
+                return res.status(400).json({ error: 'Missing required fields in health section' });
+            }
+            if (!validator.isDate(formData.healthData.boneDate)) {
+                return res.status(400).json({ error: 'Invalid date in health section' });
+            }
+            if (formData.healthData.boneFollowup === "0") {
+                if (!formData.healthData.boneRecovered) {
+                    if (!formData.healthData.boneInformation) {
+                        return res.status(400).json({ error: 'Missing required fields in health section' });
+                    }
+                }
+            }
         }
-        if (formData.healthData.foodMedicineStatus === "1") {
-            if (!formData.healthData.foodMedicineDetails) {
-                console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
+
+        // Behavioural 
+        if (formData.healthData.behaviouralStatus === "1") {
+            if (!formData.healthData.behaviouralCondition || !formData.healthData.behaviouralFollowup || !formData.healthData.riskAcknowledgement || !formData.healthData.participationAcknowledgement) {
+                return res.status(400).json({ error: 'Missing required fields in health section' });
+            }
+            if (formData.healthData.behaviouralFollowup === "1") {
+                if (!formData.healthData.specialistProgress || !formData.healthData.homeBehaviour || !formData.healthData.outdoorExperience) {
+                    return res.status(400).json({ error: 'Missing required fields in health section' });
+                }
+            }
+        }
+
+        // Long term medication
+        if (formData.healthData.longMedicationStatus === "1") {
+            if (!formData.healthData.longMedicationDetails) {
                 return res.status(400).json({ error: 'Missing required fields in health section' });
             }
         }
-        //  Allergy risk acknowledgement
-        if (!formData.healthData.allergyRiskAcknowledgement) {
-            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
-            return res.status(400).json({ error: 'Missing required fields in health section' });
-        }
-    }
 
-    // Other conditions
-    if (formData.healthData.otherConditionStatus === "1") {
-        if (!formData.healthData.otherConditionDetails || !formData.healthData.otherDiagnosedDate || !formData.healthData.otherPhysicalEngagement || !formData.healthData.otherTriggerFactor || !formData.healthData.otherMeasures || !formData.healthData.otherMedication || !formData.healthData.otherFollowup || !formData.healthData.otherFocusAbility || !formData.healthData.otherUnderstandAbility) {
-            console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
-            return res.status(400).json({ error: 'Missing required fields in health section' });
-        }
-        if (formData.healthData.otherFocusAbility === "1" || formData.healthData.otherUnderstandAbility === "1") {
-            if (!formData.healthData.otherHelp) {
-                console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
+        // Diseases
+        if (formData.healthData.diseaseStatus === "1") {
+            if (!formData.healthData.diseaseDetails) {
                 return res.status(400).json({ error: 'Missing required fields in health section' });
             }
         }
+
+        // Sleep walk 
+        if (formData.healthData.sleepwalkStatus === "1") {
+            if (!formData.healthData.sleepwalkDate) {
+                return res.status(400).json({ error: 'Missing required fields in health section' });
+            }
+            if (!validator.isDate(formData.healthData.sleepwalkDate)) {
+                return res.status(400).json({ error: 'Invalid date in health section' });
+            }
+        }
+
+        // Medication allergies
+        if (formData.healthData.medicationAllergyStatus === "1") {
+            if (!formData.healthData.medicationName) {
+                return res.status(400).json({ error: 'Missing required fields in health section' });
+            }
+            //  Allergy risk acknowledgement
+            if (!formData.healthData.allergyRiskAcknowledgement) {
+                return res.status(400).json({ error: 'Missing required fields in health section' });
+            }
+        }
+
+        // Environment allergies
+        if (formData.healthData.environmentAllergyStatus === "1") {
+            if ((!formData.healthData.environmentCondition && !formData.healthData.environmentOther) || !formData.healthData.environmentDetails || !formData.healthData.environmentMedicineStatus) {
+                return res.status(400).json({ error: 'Missing required fields in health section' });
+            }
+            if (formData.healthData.environmentMedicineStatus === "1") {
+                if (!formData.healthData.environmentMedicineDetails) {
+                    return res.status(400).json({ error: 'Missing required fields in health section' });
+                }
+            }
+            //  Allergy risk acknowledgement
+            if (!formData.healthData.allergyRiskAcknowledgement) {
+                return res.status(400).json({ error: 'Missing required fields in health section' });
+            }
+        }
+
+        // Food allergies
+        if (formData.healthData.foodAllergyStatus === "1") {
+            if (!formData.healthData.foodCondition || !formData.healthData.foodDetails || !formData.healthData.foodTraces || !formData.healthData.foodMedicineStatus) {
+                return res.status(400).json({ error: 'Missing required fields in health section' });
+            }
+            if (formData.healthData.foodMedicineStatus === "1") {
+                if (!formData.healthData.foodMedicineDetails) {
+                    return res.status(400).json({ error: 'Missing required fields in health section' });
+                }
+            }
+            //  Allergy risk acknowledgement
+            if (!formData.healthData.allergyRiskAcknowledgement) {
+                return res.status(400).json({ error: 'Missing required fields in health section' });
+            }
+        }
+
+        // Other conditions
+        if (formData.healthData.otherConditionStatus === "1") {
+            if (!formData.healthData.otherConditionDetails || !formData.healthData.otherDiagnosedDate || !formData.healthData.otherPhysicalEngagement || !formData.healthData.otherTriggerFactor || !formData.healthData.otherMeasures || !formData.healthData.otherMedication || !formData.healthData.otherFollowup || !formData.healthData.otherFocusAbility || !formData.healthData.otherUnderstandAbility) {
+
+                return res.status(400).json({ error: 'Missing required fields in health section' });
+            }
+            if (formData.healthData.otherFocusAbility === "1" || formData.healthData.otherUnderstandAbility === "1") {
+                if (!formData.healthData.otherHelp) {
+                    return res.status(400).json({ error: 'Missing required fields in health section' });
+                }
+            }
+        }
+
+        // Declaration Validation
+        if (!formData.declarationData.informationDeclaration || !formData.declarationData.medicalDeclaration || !formData.declarationData.allRiskAcknowledgement || !formData.declarationData.contentDisclosure) {
+            console.log(`DECLARATION VALIDATION ERROR`);
+            return res.status(400).json({ error: 'Missing required fields in declaration section' });
+        }
+    } catch (ex) {
+        console.log("VALIDATION ERROR: ", ex)
     }
 
-    // Declaration Validation
-    if (!formData.declarationData.informationDeclaration || !formData.declarationData.medicalDeclaration || !formData.declarationData.allRiskAcknowledgement || !formData.declarationData.contentDisclosure) {
-        console.log(`DECLARATION VALIDATION ERROR`);
-        return res.status(400).json({ error: 'Missing required fields in declaration section' });
+
+    let data;
+    try {
+        data = {
+            "raceId": formData.applicantData.applicantRace,
+            "parentName": formData.parentData.parentName,
+            "parentEmail": formData.parentData.parentEmail,
+            "parentNo": formData.parentData.parentNumber,
+            "altParentNo": formData.parentData.parentAltNumber,
+            "relationToApplicant": formData.parentData.parentRelation,
+            "isYouEmergencyContact": formData.parentData.parentIsEmergencyContact,
+            "emergencyContactName": formData.parentData.emergencyName,
+            "emergencyContactNo": formData.parentData.emergencyNumber,
+            "relationToEmergencyContact": formData.parentData.emergencyRelation,
+            "altEmergencyContactNo": formData.parentData.emergencyAltNumber,
+            "applicantNRIC": formData.applicantData.applicantId.slice(-4),
+            "applicantName": formData.applicantData.applicantName,
+            "applicantSchool": formData.applicantData.applicantSchool,
+            "applicantClass": formData.applicantData.applicantClass,
+            "applicantResidentialStatus": formData.applicantData.applicantResidential,
+            "applicantDOB": formData.applicantData.applicantDob,
+            "applicantGender": formData.applicantData.applicantGender,
+            "applicantEmail": formData.applicantData.applicantEmail,
+            "applicantAddr": formData.applicantData.applicantAddress,
+            "applicantDietary": formData.applicantData.applicantDiet,
+            "isApplicantVaccinationValid": formData.healthData.tetanusStatus,
+            "applicantVaccinationDate": formData.healthData.tetanusDate,
+            "applicantHeight": formData.healthData.applicantHeight,
+            "applicantWeight": formData.healthData.applicantWeight,
+            "applicantBMI": formData.healthData.applicantBmi,
+            "isBreathingCondition": formData.healthData.breathingStatus,
+            "diagnosisBreathing": formData.healthData.breathingCondition,
+            "lastDateBreathing": formData.healthData.breathingDate,
+            "isOnBreathingMeds": formData.healthData.breathingMedicineStatus,
+            "stateBreathingMeds": formData.healthData.breathingMedicineDetails,
+            "isBreathingSpecialist": formData.healthData.breathingFollowup,
+            "isBreathingExercise": formData.healthData.breathingExercise,
+            "isHeartCondition": formData.healthData.heartStatus,
+            "stateHeartCondition": formData.healthData.heartCondition,
+            "isHeartSpecialist": formData.healthData.heartFollowup,
+            "isBloodCondition": formData.healthData.bloodStatus,
+            "diagnosisBlood": formData.healthData.bloodCondition,
+            "isBloodSpecialist": formData.healthData.bloodFollowup,
+            "isEpilepsyCondition": formData.healthData.epilepsyStatus,
+            "isEpliepsyEpisode": formData.healthData.epilepsyEpisode,
+            "isOnEpliepsyMeds": formData.healthData.epilepsyMedication,
+            "isEpliepsySpecialist": formData.healthData.epilepsyFollowup,
+            "isBoneCondition": formData.healthData.boneStatus,
+            "stateBoneCondition": formData.healthData.boneCondition,
+            "dateOfBoneCondition": formData.healthData.boneDate,
+            "isBoneSpecialist": formData.healthData.boneFollowup,
+            "isBoneFullyRecovered": formData.healthData.boneRecovered,
+            "furtherInfoOnBone": formData.healthData.boneInformation,
+            "isBehaviouralCondition": formData.healthData.behaviouralStatus,
+            "stateBehaviouralCondition": formData.healthData.behaviouralCondition,
+            "isBehaviouralSpecialist": formData.healthData.behaviouralFollowup,
+            "progressOfTreatingBehavioural": formData.healthData.specialistProgress,
+            "stateBehaviouralAtHome": formData.healthData.homeBehaviour,
+            "stateBehaviouralHelpTips": formData.healthData.outdoorExperience,
+            "isAcceptSafetyRisks": formData.healthData.riskAcknowledgement,
+            "isAcceptParticipation": formData.healthData.participationAcknowledgement,
+            "isOnLongTermMeds": formData.healthData.longMedicationStatus,
+            "stateLongTermMeds": formData.healthData.longMedicationDetails,
+            "isInfectiousCondition": formData.healthData.diseaseStatus,
+            "stateInfectiousCondition": formData.healthData.diseaseDetails,
+            "isSleepWalking": formData.healthData.sleepwalkStatus,
+            "lastDateSleepWalking": formData.healthData.sleepwalkDate,
+            "isAllergicToMeds": formData.healthData.medicationAllergyStatus,
+            "stateAllergicToMeds": formData.healthData.medicationName,
+            "isAllergicToEnvironment": formData.healthData.environmentAllergyStatus,
+            "stateAllergicToEnvironment": formData.healthData.environmentCondition,
+            "stateDetailsEnvironmentTriggers": formData.healthData.environmentDetails,
+            "isMedsStopAllergic": formData.healthData.environmentMedicineStatus,
+            "stateMedsStopAllergic": formData.healthData.environmentMedicineDetails,
+            "isAllergicToFood": formData.healthData.foodAllergyStatus,
+            "stateAllergicToFood": formData.healthData.foodCondition,
+            "stateDetailsFoodTriggers": formData.healthData.foodDetails,
+            "isAbleToTakeTraces": formData.healthData.foodTraces,
+            "isMedsStopTracers": formData.healthData.foodMedicineStatus,
+            "stateMedsStopTracers": formData.healthData.foodMedicineDetails,
+            "isAcceptAllergyRisks": formData.healthData.allergyRiskAcknowledgement,
+            "isOtherCondition": formData.healthData.otherConditionStatus,
+            "stateOtherCondition": formData.healthData.otherConditionDetails,
+            "dateOfOtherCondition": formData.healthData.otherDiagnosedDate,
+            "stateOtherConditionAffectsPhysical": formData.healthData.otherPhysicalEngagement,
+            "stateTriggerOtherCondition": formData.healthData.otherTriggerFactor,
+            "statePrecautionOtherCondition": formData.healthData.otherMeasures,
+            "stateMedsOtherCondition": formData.healthData.otherMedication,
+            "isOtherConditionSpecialist": formData.healthData.otherFollowup,
+            "isOtherConditionAffectFocus": formData.healthData.otherFocusAbility,
+            "isOtherConditionAffectUnderstanding": formData.healthData.otherUnderstandAbility,
+            "stateDetailsOtherConditionAffect": formData.healthData.otherHelp,
+            "isAcceptDeclartion": formData.declarationData.informationDeclaration,
+            "isAcceptMedicalDeclaration": formData.declarationData.medicalDeclaration,
+            "isAcceptAllRisk": formData.declarationData.allRiskAcknowledgement,
+            "isAcceptPersonalData": formData.declarationData.contentDisclosure,
+            "isDeclineUseOfContactInfo": formData.declarationData.disagreeEvents,
+            "isDeclineUseOfPhoto": formData.declarationData.disagreeMedia
+        };
+    } catch (ex) {
+        console.log("ASSIGN ERROR: ", ex)
     }
 
-    const data = {
-        "raceId": formData.applicantData.applicantRace,
-        "parentName": formData.parentData.parentName,
-        "parentEmail": formData.parentData.parentEmail,
-        "parentNo": formData.parentData.parentNumber,
-        "altParentNo": formData.parentData.parentAltNumber,
-        "relationToApplicant": formData.parentData.parentRelation,
-        "isYouEmergencyContact": formData.parentData.parentIsEmergencyContact,
-        "emergencyContactName": formData.parentData.emergencyName,
-        "emergencyContactNo": formData.parentData.emergencyNumber,
-        "relationToEmergencyContact": formData.parentData.emergencyRelation,
-        "altEmergencyContactNo": formData.parentData.emergencyAltNumber,
-        "applicantNRIC": formData.applicantData.applicantId.slice(-4),
-        "applicantName": formData.applicantData.applicantName,
-        "applicantSchool": formData.applicantData.applicantSchool,
-        "applicantClass": formData.applicantData.applicantClass,
-        "applicantResidentialStatus": formData.applicantData.applicantResidential,
-        "applicantDOB": formData.applicantData.applicantDob,
-        "applicantGender": formData.applicantData.applicantGender,
-        "applicantEmail": formData.applicantData.applicantEmail,
-        "applicantAddr": formData.applicantData.applicantAddress,
-        "applicantDietary": formData.applicantData.applicantDiet,
-        "isApplicantVaccinationValid": formData.healthData.tetanusStatus,
-        "applicantVaccinationDate": formData.healthData.tetanusDate,
-        "applicantHeight": formData.healthData.applicantHeight,
-        "applicantWeight": formData.healthData.applicantWeight,
-        "applicantBMI": formData.healthData.applicantBmi,
-        "isBreathingCondition": formData.healthData.breathingStatus,
-        "diagnosisBreathing": formData.healthData.breathingCondition,
-        "lastDateBreathing": formData.healthData.breathingDate,
-        "isOnBreathingMeds": formData.healthData.breathingMedicineStatus,
-        "stateBreathingMeds": formData.healthData.breathingMedicineDetails,
-        "isBreathingSpecialist": formData.healthData.breathingFollowup,
-        "isBreathingExercise": formData.healthData.breathingExercise,
-        "isHeartCondition": formData.healthData.heartStatus,
-        "stateHeartCondition": formData.healthData.heartCondition,
-        "isHeartSpecialist": formData.healthData.heartFollowup,
-        "isBloodCondition": formData.healthData.bloodStatus,
-        "diagnosisBlood": formData.healthData.bloodCondition,
-        "isBloodSpecialist": formData.healthData.bloodFollowup,
-        "isEpilepsyCondition": formData.healthData.epilepsyStatus,
-        "isEpliepsyEpisode": formData.healthData.epilepsyEpisode,
-        "isOnEpliepsyMeds": formData.healthData.epilepsyMedication,
-        "isEpliepsySpecialist": formData.healthData.epilepsyFollowup,
-        "isBoneCondition": formData.healthData.boneStatus,
-        "stateBoneCondition": formData.healthData.boneCondition,
-        "dateOfBoneCondition": formData.healthData.boneDate,
-        "isBoneSpecialist": formData.healthData.boneFollowup,
-        "isBoneFullyRecovered": formData.healthData.boneRecovered,
-        "furtherInfoOnBone": formData.healthData.boneInformation,
-        "isBehaviouralCondition": formData.healthData.behaviouralStatus,
-        "stateBehaviouralCondition": formData.healthData.behaviouralCondition,
-        "isBehaviouralSpecialist": formData.healthData.behaviouralFollowup,
-        "progressOfTreatingBehavioural": formData.healthData.specialistProgress,
-        "stateBehaviouralAtHome": formData.healthData.homeBehaviour,
-        "stateBehaviouralHelpTips": formData.healthData.outdoorExperience,
-        "isAcceptSafetyRisks": formData.healthData.riskAcknowledgement,
-        "isAcceptParticipation": formData.healthData.participationAcknowledgement,
-        "isOnLongTermMeds": formData.healthData.longMedicationStatus,
-        "stateLongTermMeds": formData.healthData.longMedicationDetails,
-        "isInfectiousCondition": formData.healthData.diseaseStatus,
-        "stateInfectiousCondition": formData.healthData.diseaseDetails,
-        "isSleepWalking": formData.healthData.sleepwalkStatus,
-        "lastDateSleepWalking": formData.healthData.sleepwalkDate,
-        "isAllergicToMeds": formData.healthData.medicationAllergyStatus,
-        "stateAllergicToMeds": formData.healthData.medicationName,
-        "isAllergicToEnvironment": formData.healthData.environmentAllergyStatus,
-        "stateAllergicToEnvironment": formData.healthData.environmentCondition,
-        "stateDetailsEnvironmentTriggers": formData.healthData.environmentDetails,
-        "isMedsStopAllergic": formData.healthData.environmentMedicineStatus,
-        "stateMedsStopAllergic": formData.healthData.environmentMedicineDetails,
-        "isAllergicToFood": formData.healthData.foodAllergyStatus,
-        "stateAllergicToFood": formData.healthData.foodCondition,
-        "stateDetailsFoodTriggers": formData.healthData.foodDetails,
-        "isAbleToTakeTraces": formData.healthData.foodTraces,
-        "isMedsStopTracers": formData.healthData.foodMedicineStatus,
-        "stateMedsStopTracers": formData.healthData.foodMedicineDetails,
-        "isAcceptAllergyRisks": formData.healthData.allergyRiskAcknowledgement,
-        "isOtherCondition": formData.healthData.otherConditionStatus,
-        "stateOtherCondition": formData.healthData.otherConditionDetails,
-        "dateOfOtherCondition": formData.healthData.otherDiagnosedDate,
-        "stateOtherConditionAffectsPhysical": formData.healthData.otherPhysicalEngagement,
-        "stateTriggerOtherCondition": formData.healthData.otherTriggerFactor,
-        "statePrecautionOtherCondition": formData.healthData.otherMeasures,
-        "stateMedsOtherCondition": formData.healthData.otherMedication,
-        "isOtherConditionSpecialist": formData.healthData.otherFollowup,
-        "isOtherConditionAffectFocus": formData.healthData.otherFocusAbility,
-        "isOtherConditionAffectUnderstanding": formData.healthData.otherUnderstandAbility,
-        "stateDetailsOtherConditionAffect": formData.healthData.otherHelp,
-        "isAcceptDeclartion": formData.declarationData.informationDeclaration,
-        "isAcceptMedicalDeclaration": formData.declarationData.medicalDeclaration,
-        "isAcceptAllRisk": formData.declarationData.allRiskAcknowledgement,
-        "isAcceptPersonalData": formData.declarationData.contentDisclosure,
-        "isDeclineUseOfContactInfo": formData.declarationData.disagreeEvents,
-        "isDeclineUseOfPhoto": formData.declarationData.disagreeMedia
-    };
-
+    console.log(data)
     return regFormModel
         .submitRegForm(data) // Assuming the function in regFormModel is named submitRegForm
         .then((result) => {
+            console.log(result)
             return res.status(200).json({ message: 'Form submission successful!', data: result });
         })
         .catch((error) => {
