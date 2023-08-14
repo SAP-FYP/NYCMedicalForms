@@ -910,7 +910,6 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 loadingModal.hide();
                 alertBox('Student is registered', 'success');
-                
                 validities.isClassValid = true;
                 validities.isDateOfBirthValid = true;
                 validities.isSchoolValid = true;
@@ -929,8 +928,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 for(const key in jsonData){
                     const currentValue = jsonData[key]
                     if(parentDiv.querySelector(`#${key}`)){
-                        parentDiv.querySelector(`#${key}`).textContent =currentValue;
-                        if(currentValue != 'Height' || currentValue != 'Weight' || currentValue != 'BMI'){
+                        parentDiv.querySelector(`#${key}`).textContent = currentValue;
+                        if(key != 'applicantHeight' || key != 'applicantWeight' || key != 'applicantBMI'){
                             if(currentValue === '1'){
                                 parentDiv.querySelector(`#${key}`).textContent ='Yes';
                             }
@@ -939,56 +938,61 @@ document.addEventListener('DOMContentLoaded', function () {
                             }
                         }
                         if(currentValue === '1'){
-                            if(key != 'isApplicantVaccinationValid'){
-                                const currentBtn = document.querySelector(`#${key}Btn`);
-                                const currentTitle = document.querySelector(`#${key}Title`).textContent;
-                                const modal = document.querySelector(`#seeDetailModal`);
-                                currentBtn.style.display = 'block';
-    
-                                document.querySelector(`#${key}Btn`).addEventListener('click', (event) => {
-                                    event.preventDefault();
-                                    seeDetailModal.show();
-                                    const modalTitle =  modal.querySelector('#conditionName');
-                                    const modalBody = modal.querySelector('.modal-body');
-                                    modalTitle.textContent = currentTitle;
-    
-                                    const apiUrl = key + 'Details'
-                                    getConditionDetails(apiUrl,regFormId)
-                                    .then(data => {
-                                        console.log(data);
-                                        modalBody.innerHTML = '';
-    
-                                        for(const key in data){
-                                            const modalConditionBodyRow = document.createElement('div');
-                                            modalConditionBodyRow.className = 'row mb-3';
-    
-                                            const title = document.createElement('div');
-                                            title.className = 'col-8';
-                                            title.textContent = key;
-                                            title.style.overflowX = 'auto';
-    
-                                            const details = document.createElement('div');
-                                            details.className = 'col-4';
-                                            details.textContent = data[key];
-                                            if(data[key] === '1'){
-                                                details.textContent = 'Yes'
+                            if(key == 'applicantHeight' || key == 'applicantWeight' || key == 'applicantBMI'){
+                                parentDiv.querySelector(`#${key}`).textContent = currentValue;
+                            }
+                            else{
+                                if(key != 'isApplicantVaccinationValid'){
+                                    const currentBtn = document.querySelector(`#${key}Btn`);
+                                    const currentTitle = document.querySelector(`#${key}Title`).textContent;
+                                    const modal = document.querySelector(`#seeDetailModal`);
+                                    currentBtn.style.display = 'block';
+        
+                                    document.querySelector(`#${key}Btn`).addEventListener('click', (event) => {
+                                        event.preventDefault();
+                                        seeDetailModal.show();
+                                        const modalTitle =  modal.querySelector('#conditionName');
+                                        const modalBody = modal.querySelector('.modal-body');
+                                        modalTitle.textContent = currentTitle;
+        
+                                        const apiUrl = key + 'Details'
+                                        getConditionDetails(apiUrl,regFormId)
+                                        .then(data => {
+                                            console.log(data);
+                                            modalBody.innerHTML = '';
+        
+                                            for(const key in data){
+                                                const modalConditionBodyRow = document.createElement('div');
+                                                modalConditionBodyRow.className = 'row mb-3';
+        
+                                                const title = document.createElement('div');
+                                                title.className = 'col-8';
+                                                title.textContent = key;
+                                                title.style.overflowX = 'auto';
+        
+                                                const details = document.createElement('div');
+                                                details.className = 'col-4';
+                                                details.textContent = data[key];
+                                                if(data[key] === '1'){
+                                                    details.textContent = 'Yes'
+                                                }
+                                                else if(data[key] === '0'){
+                                                    details.textContent = 'No'
+                                                }
+                                                details.style.overflowX = 'auto';
+        
+                                                modalConditionBodyRow.appendChild(title);
+                                                modalConditionBodyRow.appendChild(details);
+        
+                                                modalBody.appendChild(modalConditionBodyRow);
                                             }
-                                            else if(data[key] === '0'){
-                                                details.textContent = 'No'
-                                            }
-                                            details.style.overflowX = 'auto';
-    
-                                            modalConditionBodyRow.appendChild(title);
-                                            modalConditionBodyRow.appendChild(details);
-    
-                                            modalBody.appendChild(modalConditionBodyRow);
-                                        }
-                                    })
-                                    .catch(error => {
-                                        console.log(error);
-                                    })
-                                });
-                                
+                                        })
+                                        .catch(error => {
+                                            console.log(error);
+                                        })
+                                    });
+                                    
+                                }
                             }
                         }
                     }
@@ -1014,8 +1018,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     }
                 }
-    
-    
             })
             .catch( error => {
                 if (error.message == 'StudentNotRegistered') {
