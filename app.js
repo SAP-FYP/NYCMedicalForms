@@ -2526,12 +2526,10 @@ app.post('/obs-reg-form/submit', (req, res, next) => {
         }
         if (formData.healthData.boneFollowup === "0") {
             if (!formData.healthData.boneRecovered) {
-                console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
-                return res.status(400).json({ error: 'Missing required fields in health section' });
-            }
-            if (!formData.healthData.boneInformation) {
-                console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
-                return res.status(400).json({ error: 'Missing required fields in health section' });
+                if (!formData.healthData.boneInformation) {
+                    console.log(`VALIDATION ERROR AT: ${healthSectionRequiredInputs[i]} : VALUE: ${formData.healthData[healthSectionRequiredInputs[i]]}`)
+                    return res.status(400).json({ error: 'Missing required fields in health section' });
+                }
             }
         }
     }
