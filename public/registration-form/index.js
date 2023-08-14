@@ -75,7 +75,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const populateSchool = (schoolList) => {
         schoolList.forEach(school => {
             const newSchool = document.createElement("option");
-            newSchool.value = school.schoolId;
+            newSchool.value = school.schoolName;
             newSchool.textContent = school.schoolName;
             schoolInput.appendChild(newSchool);
         });

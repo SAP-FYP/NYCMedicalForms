@@ -2715,11 +2715,9 @@ app.post('/obs-reg-form/submit', (req, res, next) => {
         console.log("ASSIGN ERROR: ", ex)
     }
 
-    console.log(data)
     return regFormModel
         .submitRegForm(data) // Assuming the function in regFormModel is named submitRegForm
         .then((result) => {
-            console.log(result)
             return res.status(200).json({ message: 'Form submission successful!', data: result });
         })
         .catch((error) => {
@@ -2755,6 +2753,7 @@ app.post('/getStudentRegistrationInfo', authHelper.verifyToken, authHelper.check
             return res.json(result);
         })
         .catch((error) => {
+            console.log(error)
             if (error instanceof UserNotFoundError) {
                 // user is not found
                 res.status(404).json({ message: 'StudentNotRegistered' });

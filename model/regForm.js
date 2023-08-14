@@ -42,7 +42,7 @@ module.exports.submitRegForm = function submitRegForm(data) {
         error.status = 401;
         throw error;
       }
-      return row[0];
+      return row.affectedRows;
     })
     .catch((error) => {
       console.log(error)
