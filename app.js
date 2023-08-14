@@ -784,9 +784,6 @@ app.put('/parent/status', parentAuthHelper.verifyToken, parentAuthHelper.validat
             return res.status(error.status || 500).json({ error: error.message });
         }
         );
-
-
-
 });
 
 app.post('/parent/login-verify', (req, res, next) => {
