@@ -58,7 +58,7 @@ app.use(express.static("public"));
 
 // CRON Job
 cronJob.dataRetentionJob();
-cronJob.remindParentJob();
+//cronJob.remindParentJob();
 
 app.get('/', (req, res) => {
     res.redirect(`/login`);
