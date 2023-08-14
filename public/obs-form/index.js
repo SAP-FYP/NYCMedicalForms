@@ -972,12 +972,17 @@ document.addEventListener('DOMContentLoaded', function () {
         
                                                 const details = document.createElement('div');
                                                 details.className = 'col-4';
-                                                details.textContent = data[key];
-                                                if(data[key] === '1'){
+                                                if(data[key]){
+                                                    details.textContent = data[key];
+                                                }
+                                                else if(data[key] === '1'){
                                                     details.textContent = 'Yes'
                                                 }
                                                 else if(data[key] === '0'){
                                                     details.textContent = 'No'
+                                                }
+                                                else{
+                                                    details.textContent = 'N/A';
                                                 }
                                                 details.style.overflowX = 'auto';
         
@@ -1013,8 +1018,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                         else if(key === 'applicantVaccinationDate'){
                             const applicantVaccinationDate = currentValue.substring(0, 10);
-                            dateOfVaccineInput.value = applicantVaccinationDate;
-                            dateOfVaccineInput.disabled=  true;
+                            if(applicantVaccinationDate){
+                                dateOfVaccineInput.value = applicantVaccinationDate;
+                                dateOfVaccineInput.disabled=  true;
+                            }
                         }
                     }
                 }
@@ -1023,11 +1030,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (error.message == 'StudentNotRegistered') {
                     loadingModal.hide();
                     alertBox('Student is not registered', 'danger');
-                    // if doctor is new and available
-                    studentNameInput.disabled = true;
-                    studentNRICInput.disabled = true;
-                    retreiveStudentBtn.className = 'btn btn-secondary'
-                    isAvailabilityBtn = true;
                 }
                 else {
                     relocateToErrorPage(500);
