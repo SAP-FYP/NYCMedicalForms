@@ -2661,7 +2661,7 @@ app.post('/obs-reg-form/submit', (req, res, next) => {
         "emergencyContactNo": formData.parentData.emergencyNumber,
         "relationToEmergencyContact": formData.parentData.emergencyRelation,
         "altEmergencyContactNo": formData.parentData.emergencyAltNumber,
-        "applicantNRIC": formData.applicantData.applicantId,
+        "applicantNRIC": formData.applicantData.applicantId.slice(-4),
         "applicantName": formData.applicantData.applicantName,
         "applicantSchool": formData.applicantData.applicantSchool,
         "applicantClass": formData.applicantData.applicantClass,
