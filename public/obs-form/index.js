@@ -972,9 +972,7 @@ document.addEventListener('DOMContentLoaded', function () {
         
                                                 const details = document.createElement('div');
                                                 details.className = 'col-4';
-                                                if(data[key]){
-                                                    details.textContent = data[key];
-                                                }
+                                                
                                                 if(data[key] === '1'){
                                                     details.textContent = 'Yes'
                                                 }
@@ -982,7 +980,12 @@ document.addEventListener('DOMContentLoaded', function () {
                                                     details.textContent = 'No'
                                                 }
                                                 else{
-                                                    details.textContent = 'N/A';
+                                                    if(data[key]){
+                                                        details.textContent = data[key];
+                                                    }
+                                                    else{
+                                                        details.textContent = 'N/A';
+                                                    }
                                                 }
                                                 details.style.overflowX = 'auto';
         
