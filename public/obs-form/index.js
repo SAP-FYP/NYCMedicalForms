@@ -975,7 +975,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                                 if(data[key]){
                                                     details.textContent = data[key];
                                                 }
-                                                else if(data[key] === '1'){
+                                                if(data[key] === '1'){
                                                     details.textContent = 'Yes'
                                                 }
                                                 else if(data[key] === '0'){
