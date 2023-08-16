@@ -344,46 +344,46 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: JSON.stringify({ studentNRIC: studentNRIC })
         })
-        .then(response => {
-            if (response.status === 404) {
-                // student was not found
-                return { studentInfo: false, deleteStudent: false };
-            }
-            else if (response.status === 500) {
-                // Server error
-                throw new Error('ServerError');
-            }
-            return response.json().then(data => ({ studentInfo: data, deleteStudent: true }));
-        });
+            .then(response => {
+                if (response.status === 404) {
+                    // student was not found
+                    return { studentInfo: false, deleteStudent: false };
+                }
+                else if (response.status === 500) {
+                    // Server error
+                    throw new Error('ServerError');
+                }
+                return response.json().then(data => ({ studentInfo: data, deleteStudent: true }));
+            });
     };
     const getStudentRegistrationInfo = (registrationEntry) => {
-        return fetch('/getStudentRegistrationInfo',{
+        return fetch('/getStudentRegistrationInfo', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(registrationEntry)
         })
-        .then(response => {
-            if (response.status === 404) {
-                // Doctor was not found
-                throw new Error('StudentNotRegistered');
-            }
-            else if (response.status === 500) {
-                throw new Error('ServerError');
-            }
-            return response.json();
-        })
-        
+            .then(response => {
+                if (response.status === 404) {
+                    // Doctor was not found
+                    throw new Error('StudentNotRegistered');
+                }
+                else if (response.status === 500) {
+                    throw new Error('ServerError');
+                }
+                return response.json();
+            })
+
     };
-    const getConditionDetails = (conditionType,regFormId) => {
+    const getConditionDetails = (conditionType, regFormId) => {
         const apiUrl = `/get${conditionType}/${regFormId}`;
         console.log(apiUrl)
         return fetch(apiUrl)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Upload failed');
-            }
-            return response.json();
-        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Upload failed');
+                }
+                return response.json();
+            })
     };
 
     // Validation functions
@@ -518,7 +518,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
     const validateValidities = (validities) => {
-        
+
         let foundFalse = false;
         if (isAvailabilityBtn === false) {
             availabilityBtn.classList.add('is-invalid');
@@ -644,7 +644,7 @@ document.addEventListener('DOMContentLoaded', function () {
         validities.isEligibilityValid = false;
 
         let elements = form.elements;
-        
+
         document.getElementById('studentRegDiv').innerHTML = '';
         studentNameInput.disabled = false;
         studentNRICInput.disabled = false;
@@ -754,7 +754,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
     studentNRICInput.addEventListener('input', (event) => {
+
         const nric = event.target.value;
+
         if (studentNRIC.length < nric.length) {
             studentNRIC += nric[nric.length - 1];
         }
@@ -900,144 +902,145 @@ document.addEventListener('DOMContentLoaded', function () {
     retreiveStudentBtn.addEventListener('click', (event) => {
         event.preventDefault();
         validities.isRetreiveBtnClicked = true;
-        if(validities.isStudentNameValid && validities.isStudentNRICValid){
+        if (validities.isStudentNameValid && validities.isStudentNRICValid) {
             loadingModal.show();
             const registrationEntry = {
-                studentName : studentNameInput.value,
-                studentNRIC : studentNRIC.substring(studentNRIC.length - 4)
+                studentName: studentNameInput.value,
+                studentNRIC: studentNRIC.substring(studentNRIC.length - 4)
             };
             getStudentRegistrationInfo(registrationEntry)
-            .then(data => {
-                loadingModal.hide();
-                alertBox('Student is registered', 'success');
-                validities.isClassValid = true;
-                validities.isDateOfBirthValid = true;
-                validities.isSchoolValid = true;
-                validities.isVaccineValid = true;
+                .then(data => {
+                    loadingModal.hide();
+                    alertBox('Student is registered', 'success');
+                    validities.isClassValid = true;
+                    validities.isDateOfBirthValid = true;
+                    validities.isSchoolValid = true;
+                    validities.isVaccineValid = true;
 
-                studentNameInput.disabled = true;
-                studentNRICInput.disabled = true;
-                const jsonData = data[0];
-                regFormId = jsonData.regFormId;
-    
-                const studentRegTemp = document.getElementById('studentRegTemp');
-                const clone = studentRegTemp.content.cloneNode(true);
-                const parentDiv = document.getElementById('studentRegDiv');
-                parentDiv.appendChild(clone);
-    
-                for(const key in jsonData){
-                    const currentValue = jsonData[key]
-                    if(parentDiv.querySelector(`#${key}`)){
-                        parentDiv.querySelector(`#${key}`).textContent = currentValue;
-                        if(key != 'applicantHeight' || key != 'applicantWeight' || key != 'applicantBMI'){
-                            if(currentValue === '1'){
-                                parentDiv.querySelector(`#${key}`).textContent ='Yes';
+                    studentNameInput.disabled = true;
+                    studentNRICInput.disabled = true;
+                    const jsonData = data[0];
+                    regFormId = jsonData.regFormId;
+
+                    const studentRegTemp = document.getElementById('studentRegTemp');
+                    const clone = studentRegTemp.content.cloneNode(true);
+                    const parentDiv = document.getElementById('studentRegDiv');
+                    parentDiv.innerHTML = "";
+                    parentDiv.appendChild(clone);
+
+                    for (const key in jsonData) {
+                        const currentValue = jsonData[key]
+                        if (parentDiv.querySelector(`#${key}`)) {
+                            parentDiv.querySelector(`#${key}`).textContent = currentValue;
+                            if (key != 'applicantHeight' || key != 'applicantWeight' || key != 'applicantBMI') {
+                                if (currentValue === '1') {
+                                    parentDiv.querySelector(`#${key}`).textContent = 'Yes';
+                                }
+                                else if (currentValue === '0') {
+                                    parentDiv.querySelector(`#${key}`).textContent = 'No';
+                                }
                             }
-                            else if(currentValue === '0'){
-                                parentDiv.querySelector(`#${key}`).textContent ='No';
+                            if (currentValue === '1') {
+                                if (key == 'applicantHeight' || key == 'applicantWeight' || key == 'applicantBMI') {
+                                    parentDiv.querySelector(`#${key}`).textContent = currentValue;
+                                }
+                                else {
+                                    if (key != 'isApplicantVaccinationValid') {
+                                        const currentBtn = document.querySelector(`#${key}Btn`);
+                                        const currentTitle = document.querySelector(`#${key}Title`).textContent;
+                                        const modal = document.querySelector(`#seeDetailModal`);
+                                        currentBtn.style.display = 'block';
+
+                                        document.querySelector(`#${key}Btn`).addEventListener('click', (event) => {
+                                            event.preventDefault();
+                                            seeDetailModal.show();
+                                            const modalTitle = modal.querySelector('#conditionName');
+                                            const modalBody = modal.querySelector('.modal-body');
+                                            modalTitle.textContent = currentTitle;
+
+                                            const apiUrl = key + 'Details'
+                                            getConditionDetails(apiUrl, regFormId)
+                                                .then(data => {
+                                                    console.log(data);
+                                                    modalBody.innerHTML = '';
+
+                                                    for (const key in data) {
+                                                        const modalConditionBodyRow = document.createElement('div');
+                                                        modalConditionBodyRow.className = 'row mb-3';
+
+                                                        const title = document.createElement('div');
+                                                        title.className = 'col-8';
+                                                        title.textContent = key;
+                                                        title.style.overflowX = 'auto';
+
+                                                        const details = document.createElement('div');
+                                                        details.className = 'col-4';
+
+                                                        if (data[key] === '1') {
+                                                            details.textContent = 'Yes'
+                                                        }
+                                                        else if (data[key] === '0') {
+                                                            details.textContent = 'No'
+                                                        }
+                                                        else {
+                                                            if (data[key]) {
+                                                                details.textContent = data[key];
+                                                            }
+                                                            else {
+                                                                details.textContent = 'N/A';
+                                                            }
+                                                        }
+                                                        details.style.overflowX = 'auto';
+
+                                                        modalConditionBodyRow.appendChild(title);
+                                                        modalConditionBodyRow.appendChild(details);
+
+                                                        modalBody.appendChild(modalConditionBodyRow);
+                                                    }
+                                                })
+                                                .catch(error => {
+                                                    console.log(error);
+                                                })
+                                        });
+
+                                    }
+                                }
                             }
                         }
-                        if(currentValue === '1'){
-                            if(key == 'applicantHeight' || key == 'applicantWeight' || key == 'applicantBMI'){
-                                parentDiv.querySelector(`#${key}`).textContent = currentValue;
+                        else {
+                            if (key === 'applicantDOB') {
+                                const applicantDOB = currentValue.substring(0, 10);
+                                dateOfBirth.value = applicantDOB;
+                                dateOfBirth.disabled = true;
                             }
-                            else{
-                                if(key != 'isApplicantVaccinationValid'){
-                                    const currentBtn = document.querySelector(`#${key}Btn`);
-                                    const currentTitle = document.querySelector(`#${key}Title`).textContent;
-                                    const modal = document.querySelector(`#seeDetailModal`);
-                                    currentBtn.style.display = 'block';
-        
-                                    document.querySelector(`#${key}Btn`).addEventListener('click', (event) => {
-                                        event.preventDefault();
-                                        seeDetailModal.show();
-                                        const modalTitle =  modal.querySelector('#conditionName');
-                                        const modalBody = modal.querySelector('.modal-body');
-                                        modalTitle.textContent = currentTitle;
-        
-                                        const apiUrl = key + 'Details'
-                                        getConditionDetails(apiUrl,regFormId)
-                                        .then(data => {
-                                            console.log(data);
-                                            modalBody.innerHTML = '';
-        
-                                            for(const key in data){
-                                                const modalConditionBodyRow = document.createElement('div');
-                                                modalConditionBodyRow.className = 'row mb-3';
-        
-                                                const title = document.createElement('div');
-                                                title.className = 'col-8';
-                                                title.textContent = key;
-                                                title.style.overflowX = 'auto';
-        
-                                                const details = document.createElement('div');
-                                                details.className = 'col-4';
-                                                
-                                                if(data[key] === '1'){
-                                                    details.textContent = 'Yes'
-                                                }
-                                                else if(data[key] === '0'){
-                                                    details.textContent = 'No'
-                                                }
-                                                else{
-                                                    if(data[key]){
-                                                        details.textContent = data[key];
-                                                    }
-                                                    else{
-                                                        details.textContent = 'N/A';
-                                                    }
-                                                }
-                                                details.style.overflowX = 'auto';
-        
-                                                modalConditionBodyRow.appendChild(title);
-                                                modalConditionBodyRow.appendChild(details);
-        
-                                                modalBody.appendChild(modalConditionBodyRow);
-                                            }
-                                        })
-                                        .catch(error => {
-                                            console.log(error);
-                                        })
-                                    });
-                                    
+                            else if (key === 'applicantSchool') {
+                                currentSchool = currentValue;
+                                schoolName.disabled = true;
+                                schoolName.textContent = currentValue;
+                            }
+                            else if (key === 'applicantClass') {
+                                studentClassInput.value = currentValue;
+                                studentClassInput.disabled = true;
+                            }
+                            else if (key === 'applicantVaccinationDate') {
+                                const applicantVaccinationDate = currentValue.substring(0, 10);
+                                if (applicantVaccinationDate) {
+                                    dateOfVaccineInput.value = applicantVaccinationDate;
+                                    dateOfVaccineInput.disabled = true;
                                 }
                             }
                         }
                     }
-                    else{
-                        if(key === 'applicantDOB'){
-                            const applicantDOB = currentValue.substring(0, 10);
-                            dateOfBirth.value = applicantDOB;
-                            dateOfBirth.disabled=  true;
-                        }
-                        else if( key === 'applicantSchool'){
-                            currentSchool = currentValue;
-                            schoolName.disabled = true;
-                            schoolName.textContent = currentValue;
-                        }
-                        else if(key === 'applicantClass'){
-                            studentClassInput.value = currentValue;
-                            studentClassInput.disabled = true;
-                        }
-                        else if(key === 'applicantVaccinationDate'){
-                            const applicantVaccinationDate = currentValue.substring(0, 10);
-                            if(applicantVaccinationDate){
-                                dateOfVaccineInput.value = applicantVaccinationDate;
-                                dateOfVaccineInput.disabled=  true;
-                            }
-                        }
+                })
+                .catch(error => {
+                    if (error.message == 'StudentNotRegistered') {
+                        loadingModal.hide();
+                        alertBox('Student is not registered', 'danger');
                     }
-                }
-            })
-            .catch( error => {
-                if (error.message == 'StudentNotRegistered') {
-                    loadingModal.hide();
-                    alertBox('Student is not registered', 'danger');
-                }
-                else {
-                    relocateToErrorPage(500);
-                }
-            })
+                    else {
+                        relocateToErrorPage(500);
+                    }
+                })
         }
     });
     // clear signature
@@ -1066,7 +1069,7 @@ document.addEventListener('DOMContentLoaded', function () {
             availabilityBtn.innerHTML = '';
             availabilityBtn.className = 'btn btn-primary'
             availabilityBtn.appendChild(clone);
-         
+
             fetch('/checkDoctorMCR', {
                 method: 'POST',
                 headers: {
@@ -1074,41 +1077,41 @@ document.addEventListener('DOMContentLoaded', function () {
                 },
                 body: JSON.stringify({ doctorMCR: doctorMCRInput.value })
             })
-            .then(response => {
-                if (response.status === 404) {
-                    // Doctor was not found
-                    throw new Error('DoctorNotFound');
-                }
-                else if (response.status === 500) {
-                    throw new Error('ServerError');
-                }
-                return response.json();
-            })
-            .then(data => {
-                const { doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo } = data[0];
-                doctorAutoFill(doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo);
-                removeInvalidTooltips();
-                validities.isDoctorMCRValid = true;
-                validities.isDoctorNameValid = true;
-                validities.isDoctorContactValid = true;
-                validities.isClinicNameValid = true;
-                validities.isClinicAddressValid = true;
-                validities.isDateValid = true;
-                validities.isSignatureValid = true;
-            })
-            .catch(err => {
-                if (err.message == 'DoctorNotFound') {
-                    // if doctor is new and available
-                    doctorMCRInput.disabled = true;
-                    availabilityBtn.disabled = true;
-                    availabilityBtn.textContent = `You are new!`
-                    availabilityBtn.className = 'btn btn-success'
-                    isAvailabilityBtn = true;
-                }
-                else {
-                    relocateToErrorPage(500);
-                }
-            });
+                .then(response => {
+                    if (response.status === 404) {
+                        // Doctor was not found
+                        throw new Error('DoctorNotFound');
+                    }
+                    else if (response.status === 500) {
+                        throw new Error('ServerError');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const { doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo } = data[0];
+                    doctorAutoFill(doctorMCR, nameOfDoctor, signature, nameOfClinic, clinicAddress, contactNo);
+                    removeInvalidTooltips();
+                    validities.isDoctorMCRValid = true;
+                    validities.isDoctorNameValid = true;
+                    validities.isDoctorContactValid = true;
+                    validities.isClinicNameValid = true;
+                    validities.isClinicAddressValid = true;
+                    validities.isDateValid = true;
+                    validities.isSignatureValid = true;
+                })
+                .catch(err => {
+                    if (err.message == 'DoctorNotFound') {
+                        // if doctor is new and available
+                        doctorMCRInput.disabled = true;
+                        availabilityBtn.disabled = true;
+                        availabilityBtn.textContent = `You are new!`
+                        availabilityBtn.className = 'btn btn-success'
+                        isAvailabilityBtn = true;
+                    }
+                    else {
+                        relocateToErrorPage(500);
+                    }
+                });
         }
 
     });
@@ -1209,8 +1212,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         //modal response
                         deleteStudentModal.show();
                         const deletionStudentEntry = {
-                            studentId : data.studentInfo[0].studentId,
-                            formStatus : data.studentInfo[0].formStatus
+                            studentId: data.studentInfo[0].studentId,
+                            formStatus: data.studentInfo[0].formStatus
                         }
                         return waitModalResponse(deletionStudentEntry);
                     }
